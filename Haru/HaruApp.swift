@@ -11,7 +11,7 @@ import SwiftUI
 struct HaruApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
     }
 }

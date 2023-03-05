@@ -8,19 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE615529B489D500C08EB1 /* HaruApp.swift */; };
-		13AE615829B489D500C08EB1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE615729B489D500C08EB1 /* ContentView.swift */; };
 		13AE615A29B489D500C08EB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615929B489D500C08EB1 /* Assets.xcassets */; };
 		13AE615D29B489D500C08EB1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615C29B489D500C08EB1 /* Preview Assets.xcassets */; };
 		13AE616829B48AEA00C08EB1 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE616729B48AEA00C08EB1 /* Model.swift */; };
 		13AE616A29B48AF300C08EB1 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE616929B48AF300C08EB1 /* ViewModel.swift */; };
 		13AE616F29B48CA100C08EB1 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE616E29B48CA100C08EB1 /* Color.swift */; };
 		13AE617229B48D2300C08EB1 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE617129B48D2300C08EB1 /* Calendar.swift */; };
+		13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE617C29B498FC00C08EB1 /* RootView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		13AE615229B489D500C08EB1 /* Haru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13AE615529B489D500C08EB1 /* HaruApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaruApp.swift; sourceTree = "<group>"; };
-		13AE615729B489D500C08EB1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		13AE615929B489D500C08EB1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		13AE615C29B489D500C08EB1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		13AE616729B48AEA00C08EB1 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -32,6 +31,7 @@
 		13AE617929B48E6600C08EB1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		13AE617A29B48E8000C08EB1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		13AE617B29B48E9300C08EB1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		13AE617C29B498FC00C08EB1 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +90,7 @@
 		13AE616329B48A2700C08EB1 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				13AE615729B489D500C08EB1 /* ContentView.swift */,
+				13AE617C29B498FC00C08EB1 /* RootView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -224,9 +224,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				13AE616829B48AEA00C08EB1 /* Model.swift in Sources */,
-				13AE615829B489D500C08EB1 /* ContentView.swift in Sources */,
 				13AE616A29B48AF300C08EB1 /* ViewModel.swift in Sources */,
 				13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */,
+				13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */,
 				13AE616F29B48CA100C08EB1 /* Color.swift in Sources */,
 				13AE617229B48D2300C08EB1 /* Calendar.swift in Sources */,
 			);
