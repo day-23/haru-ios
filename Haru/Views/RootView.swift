@@ -19,7 +19,7 @@ struct RootView: View {
                     Text("SNS")
                 }
                 .tag(1)
-            Text("Calendar SubView")
+            CalendarMain()
                 .tabItem {
                     Image(systemName: "calendar")
                     Text("Calendar")
