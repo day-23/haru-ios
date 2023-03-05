@@ -1,0 +1,1 @@
+for project-wide enumerations.
