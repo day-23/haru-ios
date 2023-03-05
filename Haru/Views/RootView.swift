@@ -25,19 +25,20 @@ struct RootView: View {
                     Text("Calendar")
                 }
                 .tag(2)
-            Text("Todo SubView")
+            Text("Check-List SubView")
                 .tabItem {
                     Image(systemName: "checklist")
-                    Text("Todo")
+                    Text("Check-List")
                 }
                 .tag(3)
-            Text("TimeTable SubView")
+            Text("Time-Table SubView")
                 .tabItem {
                     Image(systemName: "calendar.day.timeline.left")
-                    Text("TimeTable")
+                    Text("Time-Table")
                 }
                 .tag(4)
-            Text("Setting SubView")
+
+            Modal()
                 .tabItem {
                     Image(systemName: "person")
                     Text("Setting")
