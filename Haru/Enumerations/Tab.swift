@@ -41,7 +41,9 @@ enum Tab: Int, CaseIterable {
         case .calendar:
             return AnyView(Text("Calendar SubView"))
         case .checkList:
-            return AnyView(CheckListMainView())
+            return AnyView(CheckListView(
+                viewModel: CheckListViewModel(service: TodoService())
+            ))
         case .timeTable:
             return AnyView(Text("Time-Table SubView"))
         case .setting:
