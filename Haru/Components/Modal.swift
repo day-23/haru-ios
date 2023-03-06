@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct Modal<Content>: View where Content: View {
-    @Binding var isActive: Bool
     @State private var modalOffset = CGSize.zero
+    @Binding var isActive: Bool
+    var ratio: CGFloat
     var content: () -> Content
 
-    @inlinable public init(isActive: Binding<Bool>, @ViewBuilder _ content: @escaping () -> Content) {
+    @inlinable public init(isActive: Binding<Bool>, ratio: CGFloat, @ViewBuilder _ content: @escaping () -> Content) {
         _isActive = isActive
+        self.ratio = ratio < 0.55 ? 0.55 : ratio
         self.content = content
     }
 
@@ -34,7 +36,7 @@ struct Modal<Content>: View where Content: View {
                 .background(Color.white)
                 .cornerRadius(20)
                 .shadow(radius: 10)
-                .offset(y: UIScreen.main.bounds.height * 0.25 + modalOffset.height)
+                .offset(y: UIScreen.main.bounds.height * (1 - ratio) + modalOffset.height)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
@@ -45,7 +47,7 @@ struct Modal<Content>: View where Content: View {
                         }
                         .onEnded { value in
                             withAnimation {
-                                if value.translation.height > UIScreen.main.bounds.height * 0.25 {
+                                if value.translation.height > UIScreen.main.bounds.height * 0.4 {
                                     isActive = false
                                 }
                                 modalOffset = .zero

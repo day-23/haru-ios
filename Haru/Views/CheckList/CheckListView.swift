@@ -33,9 +33,11 @@ struct CheckListView: View {
                             }
                         }
 
-                    Modal(isActive: $isModalVisible) {}
-                        .transition(.modal)
-                        .zIndex(2)
+                    Modal(isActive: $isModalVisible, ratio: 0.95) {
+                        VStack {}
+                    }
+                    .transition(.modal)
+                    .zIndex(2)
                 } else {
                     Button {
                         withAnimation {

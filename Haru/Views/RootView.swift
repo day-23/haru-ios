@@ -22,6 +22,9 @@ struct RootView: View {
                     .tag(tab)
             }
         }
+        .onAppear {
+            UITabBar.appearance().backgroundColor = .white
+        }
     }
 }
 

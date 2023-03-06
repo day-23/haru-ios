@@ -11,8 +11,8 @@ import SwiftUI
 extension AnyTransition {
     static var modal: AnyTransition {
         .asymmetric(
-            insertion: .push(from: .bottom).combined(with: .opacity),
-            removal: .push(from: .top).combined(with: .opacity)
+            insertion: .push(from: .bottom),
+            removal: .push(from: .top)
         )
     }
 }
