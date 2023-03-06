@@ -8,28 +8,18 @@
 import SwiftUI
 
 struct Modal<Content>: View where Content: View {
-    @State private var isModalVisible = false
+    @Binding var isActive: Bool
     @State private var modalOffset = CGSize.zero
     var content: () -> Content
 
-    @inlinable public init(@ViewBuilder content: @escaping () -> Content) {
+    @inlinable public init(isActive: Binding<Bool>, @ViewBuilder _ content: @escaping () -> Content) {
+        _isActive = isActive
         self.content = content
     }
 
     var body: some View {
         ZStack {
-            Color.white.edgesIgnoringSafeArea(.all)
-
-            if isModalVisible {
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .onTapGesture {
-                        withAnimation {
-                            isModalVisible = false
-                            modalOffset = .zero
-                        }
-                    }
-
+            if isActive {
                 VStack(spacing: 10) {
                     RoundedRectangle(cornerRadius: 50)
                         .frame(width: 50, height: 7)
@@ -56,7 +46,7 @@ struct Modal<Content>: View where Content: View {
                         .onEnded { value in
                             withAnimation {
                                 if value.translation.height > UIScreen.main.bounds.height * 0.25 {
-                                    isModalVisible = false
+                                    isActive = false
                                 }
                                 modalOffset = .zero
                             }
@@ -71,11 +61,8 @@ struct Modal<Content>: View where Content: View {
         }
         .onAppear {
             withAnimation {
-                isModalVisible = true
+                isActive = true
             }
-        }
-        .onDisappear {
-            modalOffset = .zero
         }
     }
 }

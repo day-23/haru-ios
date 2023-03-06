@@ -47,9 +47,7 @@ enum Tab: Int, CaseIterable {
         case .timeTable:
             return AnyView(Text("Time-Table SubView"))
         case .setting:
-            return AnyView(
-                Modal {}
-            )
+            return AnyView(Text("Setting SubView"))
         }
     }
 }
