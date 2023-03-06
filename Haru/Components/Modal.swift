@@ -15,55 +15,56 @@ struct Modal<Content>: View where Content: View {
 
     @inlinable public init(isActive: Binding<Bool>, ratio: CGFloat, @ViewBuilder _ content: @escaping () -> Content) {
         _isActive = isActive
-        self.ratio = ratio < 0.55 ? 0.55 : ratio
+        self.ratio = max(ratio, 0.2)
         self.content = content
     }
 
     var body: some View {
-        ZStack {
-            if isActive {
-                VStack(spacing: 10) {
-                    RoundedRectangle(cornerRadius: 50)
-                        .frame(width: 50, height: 7)
-                        .padding()
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 50)
-                        .foregroundColor(Color(0x33333F))
-                    content()
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.white)
-                .cornerRadius(20)
-                .shadow(radius: 10)
-                .offset(y: UIScreen.main.bounds.height * (1 - ratio) + modalOffset.height)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            if value.startLocation.y - value.location.y > 0 {
-                                return
-                            }
-                            modalOffset = value.translation
-                        }
-                        .onEnded { value in
-                            withAnimation {
-                                if value.translation.height > UIScreen.main.bounds.height * 0.4 {
-                                    isActive = false
+        GeometryReader { proxy1 in
+            ZStack {
+                if isActive {
+                    VStack(spacing: 10) {
+                        RoundedRectangle(cornerRadius: 50)
+                            .frame(width: 50, height: 7)
+                            .padding()
+                            .foregroundColor(Color(0x33333F))
+                        content()
+                            .padding(.bottom)
+                            .padding(.bottom, 17)
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, minHeight: proxy1.size.height * ratio + 40, maxHeight: proxy1.size.height * ratio + 40)
+                    .background(Color.white)
+                    .cornerRadius(20)
+                    .shadow(radius: 10)
+                    .position(x: proxy1.size.width * 0.5, y: proxy1.size.height * (1 - ratio) + modalOffset.height + (proxy1.size.height * ratio) * 0.5)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                if value.startLocation.y - value.location.y > 0 {
+                                    return
                                 }
-                                modalOffset = .zero
+                                modalOffset = value.translation
                             }
-                        }
-                )
-                .transition(.move(edge: .bottom))
-                .zIndex(1)
-                .onDisappear {
-                    modalOffset = .zero
+                            .onEnded { value in
+                                withAnimation {
+                                    if value.translation.height > proxy1.size.height * 0.5 {
+                                        isActive = false
+                                    }
+                                    modalOffset = .zero
+                                }
+                            }
+                    )
+                    .transition(.move(edge: .bottom))
+                    .onDisappear {
+                        modalOffset = .zero
+                    }
                 }
             }
-        }
-        .onAppear {
-            withAnimation {
-                isActive = true
+            .onAppear {
+                withAnimation {
+                    isActive = true
+                }
             }
         }
     }

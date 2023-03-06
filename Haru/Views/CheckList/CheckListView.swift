@@ -33,8 +33,12 @@ struct CheckListView: View {
                             }
                         }
 
-                    Modal(isActive: $isModalVisible, ratio: 0.95) {
-                        VStack {}
+                    Modal(isActive: $isModalVisible, ratio: 0.9) {
+                        VStack {
+                            Text("Test")
+                            Spacer()
+                            Text("HellO")
+                        }
                     }
                     .transition(.modal)
                     .zIndex(2)
