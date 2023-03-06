@@ -7,9 +7,14 @@
 
 import SwiftUI
 
-struct Modal: View {
+struct Modal<Content>: View where Content: View {
     @State private var isModalVisible = false
     @State private var modalOffset = CGSize.zero
+    var content: () -> Content
+
+    @inlinable public init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content
+    }
 
     var body: some View {
         ZStack {
@@ -25,13 +30,14 @@ struct Modal: View {
                         }
                     }
 
-                VStack {
+                VStack(spacing: 10) {
                     RoundedRectangle(cornerRadius: 50)
                         .frame(width: 50, height: 7)
                         .padding()
                         .padding(.vertical, 10)
                         .padding(.horizontal, 50)
                         .foregroundColor(Color(0x33333F))
+                    content()
                     Spacer()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -71,11 +77,5 @@ struct Modal: View {
         .onDisappear {
             modalOffset = .zero
         }
-    }
-}
-
-struct Modal_Previews: PreviewProvider {
-    static var previews: some View {
-        Modal()
     }
 }

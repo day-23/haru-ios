@@ -9,47 +9,24 @@ import Foundation
 import SwiftUI
 
 struct RootView: View {
-    @State var selection: Int = 3
+    @State private var selectedTab: Tab = .checkList
 
     var body: some View {
-        TabView(selection: $selection) {
-            Text("SNS SubView")
-                .tabItem {
-                    Image(systemName: "paperplane")
-                    Text("SNS")
-                }
-                .tag(1)
-            Text("Calendar SubView")
-                .tabItem {
-                    Image(systemName: "calendar")
-                    Text("Calendar")
-                }
-                .tag(2)
-            Text("Check-List SubView")
-                .tabItem {
-                    Image(systemName: "checklist")
-                    Text("Check-List")
-                }
-                .tag(3)
-            Text("Time-Table SubView")
-                .tabItem {
-                    Image(systemName: "calendar.day.timeline.left")
-                    Text("Time-Table")
-                }
-                .tag(4)
-
-            Modal()
-                .tabItem {
-                    Image(systemName: "person")
-                    Text("Setting")
-                }
-                .tag(5)
+        TabView(selection: $selectedTab) {
+            ForEach(Tab.allCases, id: \.self) { tab in
+                tab.view
+                    .tabItem {
+                        Image(systemName: tab.systemImageName)
+                        Text(tab.title)
+                    }
+                    .tag(tab)
+            }
         }
     }
 }
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        RootView(selection: 3)
+        RootView()
     }
 }
