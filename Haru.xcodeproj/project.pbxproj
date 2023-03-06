@@ -12,6 +12,7 @@
 		1334334F29B5A0AC00F26F57 /* CheckListMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334334E29B5A0AC00F26F57 /* CheckListMainView.swift */; };
 		1334335329B5A20800F26F57 /* Todo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334335229B5A20800F26F57 /* Todo.swift */; };
 		1334335529B5A75000F26F57 /* TodoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334335429B5A75000F26F57 /* TodoViewModel.swift */; };
+		137611EF29B5CB90008787BD /* TodoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611EE29B5CB90008787BD /* TodoService.swift */; };
 		13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE615529B489D500C08EB1 /* HaruApp.swift */; };
 		13AE615A29B489D500C08EB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615929B489D500C08EB1 /* Assets.xcassets */; };
 		13AE615D29B489D500C08EB1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615C29B489D500C08EB1 /* Preview Assets.xcassets */; };
@@ -26,6 +27,7 @@
 		1334334E29B5A0AC00F26F57 /* CheckListMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckListMainView.swift; sourceTree = "<group>"; };
 		1334335229B5A20800F26F57 /* Todo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Todo.swift; sourceTree = "<group>"; };
 		1334335429B5A75000F26F57 /* TodoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoViewModel.swift; sourceTree = "<group>"; };
+		137611EE29B5CB90008787BD /* TodoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoService.swift; sourceTree = "<group>"; };
 		13AE615229B489D500C08EB1 /* Haru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13AE615529B489D500C08EB1 /* HaruApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaruApp.swift; sourceTree = "<group>"; };
 		13AE615929B489D500C08EB1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -59,6 +61,14 @@
 			path = CheckList;
 			sourceTree = "<group>";
 		};
+		137611ED29B5C359008787BD /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				137611EE29B5CB90008787BD /* TodoService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		13AE614929B489D500C08EB1 = {
 			isa = PBXGroup;
 			children = (
@@ -80,9 +90,10 @@
 			children = (
 				13AE615529B489D500C08EB1 /* HaruApp.swift */,
 				13AE617429B48DDD00C08EB1 /* Global */,
-				13AE616429B48A5D00C08EB1 /* Model */,
+				13AE616429B48A5D00C08EB1 /* Models */,
+				137611ED29B5C359008787BD /* Services */,
 				13AE616329B48A2700C08EB1 /* Views */,
-				13AE616529B48A6200C08EB1 /* ViewModel */,
+				13AE616529B48A6200C08EB1 /* ViewModels */,
 				13AE616629B48A8200C08EB1 /* Components */,
 				13AE616D29B48C9000C08EB1 /* Extensions */,
 				13AE617029B48CFF00C08EB1 /* Enumerations */,
@@ -110,20 +121,20 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		13AE616429B48A5D00C08EB1 /* Model */ = {
+		13AE616429B48A5D00C08EB1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				1334335229B5A20800F26F57 /* Todo.swift */,
 			);
-			path = Model;
+			path = Models;
 			sourceTree = "<group>";
 		};
-		13AE616529B48A6200C08EB1 /* ViewModel */ = {
+		13AE616529B48A6200C08EB1 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
 				1334335429B5A75000F26F57 /* TodoViewModel.swift */,
 			);
-			path = ViewModel;
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		13AE616629B48A8200C08EB1 /* Components */ = {
@@ -243,6 +254,7 @@
 				1334334F29B5A0AC00F26F57 /* CheckListMainView.swift in Sources */,
 				13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */,
 				1334334C29B5A02400F26F57 /* Tab.swift in Sources */,
+				137611EF29B5CB90008787BD /* TodoService.swift in Sources */,
 				1334335329B5A20800F26F57 /* Todo.swift in Sources */,
 				13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */,
 				1334334A29B4FBC500F26F57 /* Modal.swift in Sources */,
