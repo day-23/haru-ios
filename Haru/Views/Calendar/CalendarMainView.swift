@@ -8,16 +8,13 @@
 import SwiftUI
 
 struct CalendarMain: View {
-    
-    @State private var currentDate: Date = Date()
-    @State private var weekDisplayMode: CalendarWeekDisplayMode = .startingSun
-    
+    @State private var currentDate: Date = .init()
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                
                 // Custom Date Picker...
-                CustomDatePicker(currentDate: $currentDate, startDisplayMode: $weekDisplayMode)
+                CustomDatePicker(currentDate: $currentDate)
             }
         }
     }

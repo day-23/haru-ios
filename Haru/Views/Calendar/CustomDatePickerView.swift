@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct CustomDatePicker: View {
-    @Binding var currentDate: Date
-    @Binding var startDisplayMode: CalendarWeekDisplayMode
+    @Binding var currentDate: Date // 현재 날짜의 연, 월, 일 정보 다 가지고 있음
+    @State var startOnSunday: Bool = true
     
     // Month update on arrow button clicks ...
     @State var currentMonth: Int = 0
@@ -30,10 +30,10 @@ struct CustomDatePicker: View {
                 } // VStack
                 
                 Spacer(minLength: 0)
+                Toggle("일요일 부터 시작", isOn: $startOnSunday)
                 
                 Button {
                     currentMonth -= 1
-                    print(currentMonth)
                 } label: {
                     Image(systemName: "chevron.left")
                         .font(.title2)
@@ -41,7 +41,6 @@ struct CustomDatePicker: View {
                 
                 Button {
                     currentMonth += 1
-                    print(currentMonth)
                 } label: {
                     Image(systemName: "chevron.right")
                         .font(.title2)
@@ -60,7 +59,7 @@ struct CustomDatePicker: View {
             } // HStack
             
             // Dates ...
-            let columns = Array(repeating: GridItem(.flexible()), count: 7)
+            let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
             
             LazyVGrid(columns: columns) {
                 ForEach(extractDate()) { value in
@@ -77,31 +76,28 @@ struct CustomDatePicker: View {
         }
     }
     
-    
     @ViewBuilder
     func CardView(value: DateValue) -> some View {
-        
-        VStack {
-            if value.day != -1 {
+        VStack(spacing: 5) {
+            if !value.isPrevDate {
                 Text("\(value.day)")
                     .font(.title3.bold())
             } else {
-                Text("-")
+                Text("\(value.day)")
                     .font(.title3.bold())
                     .foregroundColor(Color.gray)
             }
+            
+            // TODO: 일정과 할일 보여줄 수 있게 만들기
         }
         .padding(.vertical, 8)
-        .frame(height: 60, alignment: .top)
+        .frame(width: UIScreen.main.bounds.width / 7, height: 100, alignment: .top)
     }
     
-    
-    
     func getDays() -> [String] {
-        switch startDisplayMode {
-        case .startingSun:
+        if startOnSunday {
             return ["일", "월", "화", "수", "목", "금", "토"]
-        case .startingMon:
+        } else {
             return ["월", "화", "수", "목", "금", "토", "일"]
         }
     }
@@ -127,12 +123,12 @@ struct CustomDatePicker: View {
     }
     
     func extractDate() -> [DateValue] {
-        let calendar = Calendar.current
+        let calendar = Calendar.current // 현재 사용하고 있는 달력이 무엇인지 확인 (default: 그레고리)
         
         // Getting Current Month Date ...
-        let currentMonth = getCurrentMonth()
+        let currentMonth: Date = getCurrentMonth()
         
-        var days = currentMonth.getAllDates().compactMap { date -> DateValue in
+        var days: [DateValue] = currentMonth.getAllDates().compactMap { date -> DateValue in
             // getting day ...
             let day = calendar.component(.day, from: date)
             return DateValue(day: day, date: date)
@@ -141,15 +137,26 @@ struct CustomDatePicker: View {
         // adding offset days to get exact week day ...
         let firstWeekday = calendar.component(.weekday, from: days.first?.date ?? Date())
         
-        for _ in 0 ..< firstWeekday - 1 {
-            days.insert(DateValue(day: -1, date: Date()), at: 0)
+        // 현재 월의 날이 아닌 day들의 DateValue 값을 -1로 채워넣어 위치를 맞춰준다
+        if startOnSunday {
+            for i in 1 ..< firstWeekday {
+                guard let prevDate = calendar.date(byAdding: .day, value: -i, to: currentMonth.startOfMonth()) else {
+                    break
+                }
+                days.insert(DateValue(day: calendar.component(.day, from: prevDate), date: prevDate, isPrevDate: true), at: 0)
+            }
+        } else {
+            for _ in 0 ..< firstWeekday - 2 {
+                days.insert(DateValue(day: -1, date: Date()), at: 0)
+            }
         }
+        
         return days
     }
 }
 
 struct CustomDatePicker_Previews: PreviewProvider {
     static var previews: some View {
-        CustomDatePicker(currentDate: .constant(Date()), startDisplayMode: .constant(.startingSun))
+        CustomDatePicker(currentDate: .constant(Date()))
     }
 }
