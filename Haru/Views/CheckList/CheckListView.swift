@@ -9,18 +9,28 @@ import SwiftUI
 
 struct CheckListView: View {
     @ObservedObject var viewModel: CheckListViewModel
-    @State var isModalVisible: Bool = false
+    @State private var isModalVisible: Bool = false
 
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottomTrailing) {
                 VStack {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(viewModel.tagList) { tag in
+                                TagView(tag)
+                            }
+                        }
+                        .padding()
+                    }
+
                     List {
                         ForEach(viewModel.todoList) { todo in
                             TodoView(todo: todo)
                                 .frame(height: geometry.size.height * 0.06)
                         }
                     }
+                    .listStyle(.inset)
                 }
 
                 if isModalVisible {
@@ -34,11 +44,7 @@ struct CheckListView: View {
                         }
 
                     Modal(isActive: $isModalVisible, ratio: 0.9) {
-                        VStack {
-                            Text("Test")
-                            Spacer()
-                            Text("HellO")
-                        }
+                        TodoAddView()
                     }
                     .transition(.modal)
                     .zIndex(2)
@@ -55,5 +61,11 @@ struct CheckListView: View {
                 }
             }
         }
+    }
+}
+
+struct CheckListView_Previews: PreviewProvider {
+    static var previews: some View {
+        CheckListView(viewModel: CheckListViewModel(service: TodoService()))
     }
 }

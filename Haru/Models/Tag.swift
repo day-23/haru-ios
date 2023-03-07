@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct Tag {
+struct Tag: Identifiable {
     let id: String
     private(set) var content: String
     let createdAt: Date
-    private(set) var updatedAt: Date
-    private(set) var deletedAt: Date?
-    private(set) var tagWithTodo: [TagWithTodo]
+//    private(set) var updatedAt: Date
+//    private(set) var deletedAt: Date?
+//    private(set) var tagWithTodo: [TagWithTodo]
     // private(set) var tagWithPost: [TagWithPost]
 }

@@ -10,6 +10,7 @@ import Foundation
 struct SubTodo {
     let id: String
     let createdAt: Date
+    private(set) var content: String
     private(set) var updatedAt: Date
     private(set) var deletedAt: Date?
     private(set) var todo: Todo

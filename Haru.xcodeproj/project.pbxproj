@@ -20,12 +20,16 @@
 		137611FB29B61705008787BD /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611FA29B61705008787BD /* Tag.swift */; };
 		137611FD29B6253E008787BD /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611FC29B6253E008787BD /* TodoView.swift */; };
 		1376120129B64400008787BD /* AnyTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1376120029B64400008787BD /* AnyTransition.swift */; };
+		13968EF829B77401009A0831 /* DayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13968EF729B77401009A0831 /* DayButton.swift */; };
 		13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE615529B489D500C08EB1 /* HaruApp.swift */; };
 		13AE615A29B489D500C08EB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615929B489D500C08EB1 /* Assets.xcassets */; };
 		13AE615D29B489D500C08EB1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615C29B489D500C08EB1 /* Preview Assets.xcassets */; };
 		13AE616F29B48CA100C08EB1 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE616E29B48CA100C08EB1 /* Color.swift */; };
 		13AE617229B48D2300C08EB1 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE617129B48D2300C08EB1 /* Calendar.swift */; };
 		13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE617C29B498FC00C08EB1 /* RootView.swift */; };
+		13C79A1729B7047800E68E55 /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C79A1629B7047800E68E55 /* TagView.swift */; };
+		13C79A1929B7436000E68E55 /* RepeatOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C79A1829B7436000E68E55 /* RepeatOption.swift */; };
+		13C79A1B29B764F100E68E55 /* TodoAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C79A1A29B764F100E68E55 /* TodoAddView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +46,7 @@
 		137611FA29B61705008787BD /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		137611FC29B6253E008787BD /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 		1376120029B64400008787BD /* AnyTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyTransition.swift; sourceTree = "<group>"; };
+		13968EF729B77401009A0831 /* DayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayButton.swift; sourceTree = "<group>"; };
 		13AE615229B489D500C08EB1 /* Haru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13AE615529B489D500C08EB1 /* HaruApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaruApp.swift; sourceTree = "<group>"; };
 		13AE615929B489D500C08EB1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -54,6 +59,9 @@
 		13AE617A29B48E8000C08EB1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		13AE617B29B48E9300C08EB1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		13AE617C29B498FC00C08EB1 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		13C79A1629B7047800E68E55 /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
+		13C79A1829B7436000E68E55 /* RepeatOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepeatOption.swift; sourceTree = "<group>"; };
+		13C79A1A29B764F100E68E55 /* TodoAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoAddView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +80,8 @@
 			children = (
 				1334334E29B5A0AC00F26F57 /* CheckListView.swift */,
 				137611FC29B6253E008787BD /* TodoView.swift */,
+				13C79A1629B7047800E68E55 /* TagView.swift */,
+				13C79A1A29B764F100E68E55 /* TodoAddView.swift */,
 			);
 			path = CheckList;
 			sourceTree = "<group>";
@@ -162,6 +172,7 @@
 			children = (
 				13AE617A29B48E8000C08EB1 /* README.md */,
 				1334334929B4FBC500F26F57 /* Modal.swift */,
+				13968EF729B77401009A0831 /* DayButton.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -182,6 +193,7 @@
 				13AE617829B48E4D00C08EB1 /* README.md */,
 				13AE617129B48D2300C08EB1 /* Calendar.swift */,
 				1334334B29B5A02400F26F57 /* Tab.swift */,
+				13C79A1829B7436000E68E55 /* RepeatOption.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";
@@ -274,14 +286,18 @@
 			files = (
 				137611F929B61674008787BD /* SubTodo.swift in Sources */,
 				1334334F29B5A0AC00F26F57 /* CheckListView.swift in Sources */,
+				13C79A1B29B764F100E68E55 /* TodoAddView.swift in Sources */,
 				13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */,
 				137611F129B5FD1E008787BD /* CheckListViewModel.swift in Sources */,
 				1334334C29B5A02400F26F57 /* Tab.swift in Sources */,
+				13C79A1929B7436000E68E55 /* RepeatOption.swift in Sources */,
 				137611F529B6051F008787BD /* TodoLog.swift in Sources */,
+				13C79A1729B7047800E68E55 /* TagView.swift in Sources */,
 				137611EF29B5CB90008787BD /* TodoService.swift in Sources */,
 				1334335329B5A20800F26F57 /* Todo.swift in Sources */,
 				137611F729B615F8008787BD /* tagWithTodo.swift in Sources */,
 				13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */,
+				13968EF829B77401009A0831 /* DayButton.swift in Sources */,
 				1334334A29B4FBC500F26F57 /* Modal.swift in Sources */,
 				13AE616F29B48CA100C08EB1 /* Color.swift in Sources */,
 				137611FB29B61705008787BD /* Tag.swift in Sources */,
