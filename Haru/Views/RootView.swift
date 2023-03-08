@@ -19,7 +19,7 @@ struct RootView: View {
                     Text("SNS")
                 }
                 .tag(1)
-            CalendarMain()
+            CalendarMainView()
                 .tabItem {
                     Image(systemName: "calendar")
                     Text("Calendar")
@@ -43,6 +43,9 @@ struct RootView: View {
                     Text("Setting")
                 }
                 .tag(5)
+        }
+        .onAppear {
+            UITabBar.appearance().backgroundColor = .white
         }
     }
 }

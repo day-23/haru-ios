@@ -7,21 +7,19 @@
 
 import SwiftUI
 
-struct CalendarMain: View {
-    @State private var currentDate: Date = .init()
+struct CalendarMainView: View {
+    @State private var startOnSunday: Bool = true
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Custom Date Picker...
-                CustomDatePicker(currentDate: $currentDate)
-            }
+        VStack(spacing: 20) {
+            // Custom Date Picker...
+            CalendarDateView(startOnSunday: $startOnSunday, dateList: CalendarHelper.extractDate(0, startOnSunday))
         }
     }
 }
 
 struct CalendarMain_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarMain()
+        CalendarMainView()
     }
 }

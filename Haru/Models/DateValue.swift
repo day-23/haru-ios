@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DateValue: Identifiable {
+struct DateValue: Identifiable, Hashable {
     var id = UUID().uuidString
     var day: Int
     var date: Date

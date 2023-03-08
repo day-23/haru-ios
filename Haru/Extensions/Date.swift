@@ -7,8 +7,20 @@
 
 import Foundation
 
-extension Date {
-    func getAllDates() -> [Date] {
+public extension Date {
+    var year: Int {
+        Calendar.current.component(.year, from: self)
+    }
+        
+    var month: Int {
+        Calendar.current.component(.month, from: self)
+    }
+        
+    var day: Int {
+        Calendar.current.component(.day, from: self)
+    }
+    
+    internal func getAllDates() -> [Date] {
         let calendar = Calendar.current
 
         // getting start Date ...
@@ -22,7 +34,7 @@ extension Date {
         }
     }
     
-    func startOfMonth() -> Date {
+    internal func startOfMonth() -> Date {
         let calendar = Calendar.current
         return calendar.date(from: Calendar.current.dateComponents([.year, .month], from: self))!
     }
