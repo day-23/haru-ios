@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CheckListView: View {
-    @ObservedObject var viewModel: CheckListViewModel
+    @StateObject var viewModel: CheckListViewModel
     @State private var isModalVisible: Bool = false
 
     var body: some View {
@@ -24,13 +24,21 @@ struct CheckListView: View {
                         .padding()
                     }
 
-                    List {
-                        ForEach(viewModel.todoList) { todo in
-                            TodoView(todo: todo)
-                                .frame(height: geometry.size.height * 0.06)
+                    if viewModel.todoList.count > 0 {
+                        List {
+                            ForEach(viewModel.todoList) { todo in
+                                TodoView(todo: todo)
+                                    .frame(height: geometry.size.height * 0.06)
+                            }
+                            .listStyle(.inset)
                         }
+                    } else {
+                        VStack {
+                            Text("모든 할 일을 마쳤습니다!")
+                                .foregroundColor(Color(0x000000, opacity: 0.5))
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    .listStyle(.inset)
                 }
 
                 if isModalVisible {
@@ -44,7 +52,7 @@ struct CheckListView: View {
                         }
 
                     Modal(isActive: $isModalVisible, ratio: 0.9) {
-                        TodoAddView()
+                        TodoAddView(viewModel: viewModel)
                     }
                     .transition(.modal)
                     .zIndex(2)
@@ -66,6 +74,6 @@ struct CheckListView: View {
 
 struct CheckListView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckListView(viewModel: CheckListViewModel(service: TodoService()))
+        CheckListView(viewModel: CheckListViewModel())
     }
 }

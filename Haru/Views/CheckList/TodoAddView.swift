@@ -18,6 +18,7 @@ struct TodoAddView: View {
         }
     }
 
+    @ObservedObject var viewModel: CheckListViewModel
     @State private var isRepeatModalVisible: Bool = false
     @State private var isSubTodoModalVisible: Bool = false
     @State private var todoContent: String = ""
@@ -26,7 +27,6 @@ struct TodoAddView: View {
     @State private var deadline: Date = .init()
     @State private var alarm: Date = .init()
     @State private var memo: String = ""
-
     @State private var days: [Day] = [
         Day(content: "월"),
         Day(content: "화"),
@@ -36,7 +36,6 @@ struct TodoAddView: View {
         Day(content: "토"),
         Day(content: "일"),
     ]
-
     @State private var subTodoList: [SubTodo] = []
 
     var body: some View {
@@ -70,66 +69,84 @@ struct TodoAddView: View {
                 Modal(isActive: $isSubTodoModalVisible, ratio: 1) {}
                     .transition(.modal)
             } else {
-                List {
-                    Section {
-                        TextField("할 일을 입력해주세요", text: $todoContent)
-                    }
+                VStack {
+                    List {
+                        Section {
+                            TextField("할 일을 입력해주세요", text: $todoContent)
+                        }
 
-                    Spacer()
+                        Spacer()
 
-                    Section {
-                        TextField("태그를 입력해주세요", text: $tag)
+                        Section {
+                            TextField("태그를 입력해주세요", text: $tag)
 
-                        Button {
-                            isTodayTodo.toggle()
-                        } label: {
-                            HStack {
-                                if isTodayTodo {
-                                    Image(systemName: "sun.max.fill")
-                                } else {
-                                    Image(systemName: "sun.max")
+                            Button {
+                                isTodayTodo.toggle()
+                            } label: {
+                                HStack {
+                                    if isTodayTodo {
+                                        Image(systemName: "sun.max.fill")
+                                    } else {
+                                        Image(systemName: "sun.max")
+                                    }
+                                    Text("나의 하루에 추가")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                 }
-                                Text("나의 하루에 추가")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
+
+                            DatePicker("마감일", selection: $deadline)
+
+                            DatePicker("알림 설정", selection: $alarm)
+                                .onAppear {
+                                    UIDatePicker.appearance().minuteInterval = 5
+                                }
+
+                            Button {
+                                withAnimation {
+                                    isRepeatModalVisible = true
+                                }
+                            } label: {
+                                HStack {
+                                    Text("반복 설정")
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                            }
+
+                            Button {
+                                withAnimation {
+                                    isSubTodoModalVisible = true
+                                }
+                            } label: {
+                                HStack {
+                                    Text("하위 항목")
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                            }
+
+                            TextField("메모 추가", text: $memo, axis: .vertical)
+                                .lineLimit(8)
                         }
-
-                        DatePicker("마감일", selection: $deadline)
-
-                        DatePicker("알림 설정", selection: $alarm)
-                            .onAppear {
-                                UIDatePicker.appearance().minuteInterval = 5
-                            }
-
-                        Button {
-                            withAnimation {
-                                isRepeatModalVisible = true
-                            }
-                        } label: {
-                            HStack {
-                                Text("반복 설정")
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                            }
-                        }
-
-                        Button {
-                            withAnimation {
-                                isSubTodoModalVisible = true
-                            }
-                        } label: {
-                            HStack {
-                                Text("하위 항목")
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                            }
-                        }
-
-                        TextField("메모 추가", text: $memo, axis: .vertical)
-                            .lineLimit(10)
+                    }
+                    .listStyle(.plain)
+                    Spacer()
+                    Button {
+                        viewModel.addTodo(
+                            Request.Todo(
+                                content: todoContent,
+                                memo: memo,
+                                todayTodo: isTodayTodo,
+                                flag: false,
+                                tags: tag.components(separatedBy: " ").filter { tag in
+                                    tag.hasSuffix("#")
+                                }
+                            )
+                        )
+                    } label: {
+                        Text("추가하기")
                     }
                 }
-                .listStyle(.plain)
             }
         }
     }
@@ -137,6 +154,6 @@ struct TodoAddView: View {
 
 struct TodoAddView_Previews: PreviewProvider {
     static var previews: some View {
-        TodoAddView()
+        TodoAddView(viewModel: CheckListViewModel())
     }
 }

@@ -21,6 +21,9 @@
 		137611FD29B6253E008787BD /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611FC29B6253E008787BD /* TodoView.swift */; };
 		1376120129B64400008787BD /* AnyTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1376120029B64400008787BD /* AnyTransition.swift */; };
 		13968EF829B77401009A0831 /* DayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13968EF729B77401009A0831 /* DayButton.swift */; };
+		13968EFA29B77EBE009A0831 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13968EF929B77EBE009A0831 /* Request.swift */; };
+		13968EFC29B77EC8009A0831 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13968EFB29B77EC8009A0831 /* Response.swift */; };
+		13A15DB829B861B7003BE771 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 13A15DB729B861B7003BE771 /* Alamofire */; };
 		13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE615529B489D500C08EB1 /* HaruApp.swift */; };
 		13AE615A29B489D500C08EB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615929B489D500C08EB1 /* Assets.xcassets */; };
 		13AE615D29B489D500C08EB1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615C29B489D500C08EB1 /* Preview Assets.xcassets */; };
@@ -39,7 +42,7 @@
 		1334335229B5A20800F26F57 /* Todo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Todo.swift; sourceTree = "<group>"; };
 		137611EE29B5CB90008787BD /* TodoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoService.swift; sourceTree = "<group>"; };
 		137611F029B5FD1E008787BD /* CheckListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckListViewModel.swift; sourceTree = "<group>"; };
-		137611F229B600E9008787BD /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		137611F229B600E9008787BD /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = User.swift; path = ../Models/User.swift; sourceTree = "<group>"; };
 		137611F429B6051F008787BD /* TodoLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoLog.swift; sourceTree = "<group>"; };
 		137611F629B615F8008787BD /* tagWithTodo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tagWithTodo.swift; sourceTree = "<group>"; };
 		137611F829B61674008787BD /* SubTodo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubTodo.swift; sourceTree = "<group>"; };
@@ -47,6 +50,8 @@
 		137611FC29B6253E008787BD /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 		1376120029B64400008787BD /* AnyTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyTransition.swift; sourceTree = "<group>"; };
 		13968EF729B77401009A0831 /* DayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayButton.swift; sourceTree = "<group>"; };
+		13968EF929B77EBE009A0831 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		13968EFB29B77EC8009A0831 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		13AE615229B489D500C08EB1 /* Haru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13AE615529B489D500C08EB1 /* HaruApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaruApp.swift; sourceTree = "<group>"; };
 		13AE615929B489D500C08EB1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -69,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13A15DB829B861B7003BE771 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,11 +156,12 @@
 			isa = PBXGroup;
 			children = (
 				1334335229B5A20800F26F57 /* Todo.swift */,
-				137611F229B600E9008787BD /* User.swift */,
 				137611F429B6051F008787BD /* TodoLog.swift */,
 				137611F629B615F8008787BD /* tagWithTodo.swift */,
 				137611F829B61674008787BD /* SubTodo.swift */,
 				137611FA29B61705008787BD /* Tag.swift */,
+				13968EF929B77EBE009A0831 /* Request.swift */,
+				13968EFB29B77EC8009A0831 /* Response.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -209,6 +216,7 @@
 		13AE617429B48DDD00C08EB1 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				137611F229B600E9008787BD /* User.swift */,
 				13AE617B29B48E9300C08EB1 /* README.md */,
 			);
 			path = Global;
@@ -230,6 +238,9 @@
 			dependencies = (
 			);
 			name = Haru;
+			packageProductDependencies = (
+				13A15DB729B861B7003BE771 /* Alamofire */,
+			);
 			productName = Haru;
 			productReference = 13AE615229B489D500C08EB1 /* Haru.app */;
 			productType = "com.apple.product-type.application";
@@ -258,6 +269,9 @@
 				Base,
 			);
 			mainGroup = 13AE614929B489D500C08EB1;
+			packageReferences = (
+				13A15DB629B861B7003BE771 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = 13AE615329B489D500C08EB1 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -299,10 +313,12 @@
 				13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */,
 				13968EF829B77401009A0831 /* DayButton.swift in Sources */,
 				1334334A29B4FBC500F26F57 /* Modal.swift in Sources */,
+				13968EFA29B77EBE009A0831 /* Request.swift in Sources */,
 				13AE616F29B48CA100C08EB1 /* Color.swift in Sources */,
 				137611FB29B61705008787BD /* Tag.swift in Sources */,
 				13AE617229B48D2300C08EB1 /* Calendar.swift in Sources */,
 				1376120129B64400008787BD /* AnyTransition.swift in Sources */,
+				13968EFC29B77EC8009A0831 /* Response.swift in Sources */,
 				137611FD29B6253E008787BD /* TodoView.swift in Sources */,
 				137611F329B600E9008787BD /* User.swift in Sources */,
 			);
@@ -503,6 +519,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		13A15DB629B861B7003BE771 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		13A15DB729B861B7003BE771 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 13A15DB629B861B7003BE771 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 13AE614A29B489D500C08EB1 /* Project object */;
 }
