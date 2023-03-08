@@ -52,7 +52,7 @@ struct CheckListView: View {
                         }
 
                     Modal(isActive: $isModalVisible, ratio: 0.9) {
-                        TodoAddView(viewModel: viewModel)
+                        TodoAddView(viewModel: viewModel, isActive: $isModalVisible)
                     }
                     .transition(.modal)
                     .zIndex(2)
@@ -67,6 +67,10 @@ struct CheckListView: View {
                             .padding(.all, 30)
                     }
                 }
+            }
+        }
+        .onAppear {
+            viewModel.fetchTodoList { _, _ in
             }
         }
     }

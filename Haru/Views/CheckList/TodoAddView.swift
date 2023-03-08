@@ -18,7 +18,9 @@ struct TodoAddView: View {
         }
     }
 
+    @Environment(\.dismiss) var dismissAction
     @ObservedObject var viewModel: CheckListViewModel
+    @Binding var isActive: Bool
     @State private var isRepeatModalVisible: Bool = false
     @State private var isSubTodoModalVisible: Bool = false
     @State private var todoContent: String = ""
@@ -37,6 +39,11 @@ struct TodoAddView: View {
         Day(content: "일"),
     ]
     @State private var subTodoList: [SubTodo] = []
+
+    init(viewModel: CheckListViewModel, isActive: Binding<Bool>) {
+        self.viewModel = viewModel
+        _isActive = isActive
+    }
 
     var body: some View {
         ZStack {
@@ -142,7 +149,17 @@ struct TodoAddView: View {
                                     tag.hasSuffix("#")
                                 }
                             )
-                        )
+                        ) { statusCode in
+                            switch statusCode {
+                            case 201:
+                                withAnimation {
+                                    dismissAction.callAsFunction()
+                                    isActive = false
+                                }
+                            default:
+                                debugPrint("[Debug]: StatusCode = \(statusCode) in TodoAddView")
+                            }
+                        }
                     } label: {
                         Text("추가하기")
                     }
@@ -154,6 +171,6 @@ struct TodoAddView: View {
 
 struct TodoAddView_Previews: PreviewProvider {
     static var previews: some View {
-        TodoAddView(viewModel: CheckListViewModel())
+        TodoAddView(viewModel: CheckListViewModel(), isActive: .constant(false))
     }
 }

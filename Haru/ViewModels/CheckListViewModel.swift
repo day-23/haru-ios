@@ -14,20 +14,33 @@ final class CheckListViewModel: ObservableObject {
         Tag(id: "미분류", content: "#미분류", createdAt: Date())
     ]
 
-    func addTodo(_ todo: Request.Todo) {
-        service.addTodo(User.default.userId, todo) { [weak self] statusCode in
+    func addTodo(_ todo: Request.Todo, completion: @escaping (_ statusCode: Int) -> Void) {
+        service.addTodo(todo) { [weak self] statusCode in
             switch statusCode {
-            case 200:
-                debugPrint("[Debug]: Todo 생성 API 호출 성공")
+            case 201:
                 self?.todoList.append(
                     Todo(id: (self?.todoList.count.description)!,
                          content: todo.content,
                          memo: todo.memo,
+                         todayTodo: todo.todayTodo,
+                         flag: todo.flag,
                          createdAt: Date(),
                          updatedAt: Date())
                 )
             default:
                 debugPrint("[Debug]: StatusCode = \(statusCode) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
+            }
+            completion(statusCode)
+        }
+    }
+
+    func fetchTodoList(completion: @escaping (_ statusCode: Int, [Todo]) -> Void) {
+        service.requestTodoList { statusCode, todoList in
+            switch statusCode {
+            case 200:
+                self.todoList = todoList
+            default:
+                debugPrint("[Debug]: StatusCode = \(statusCode) in CheckListViewModel.fetchTodoList()")
             }
         }
     }
