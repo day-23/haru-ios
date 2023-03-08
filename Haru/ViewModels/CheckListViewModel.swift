@@ -24,6 +24,8 @@ final class CheckListViewModel: ObservableObject {
                          memo: todo.memo,
                          todayTodo: todo.todayTodo,
                          flag: todo.flag,
+                         repeatOption: todo.repeatOption,
+                         repeat: todo.repeat,
                          createdAt: Date(),
                          updatedAt: Date())
                 )

@@ -18,8 +18,8 @@ struct TodoService {
             "memo": todo.memo,
             "todayTodo": todo.todayTodo,
             "flag": todo.flag,
-            "repeatOption": nil,
-            "repeat": nil,
+            "repeatOption": todo.repeatOption,
+            "repeat": todo.repeat,
             "tags": todo.tags
         ]
 

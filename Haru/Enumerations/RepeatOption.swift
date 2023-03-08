@@ -8,6 +8,7 @@
 import Foundation
 
 enum RepeatOption: String, CaseIterable {
+    case none = "없음"
     case everyDay = "매일"
     case everyweek = "매주"
     case everySecondWeek = "2주마다"

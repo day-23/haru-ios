@@ -23,7 +23,7 @@ struct Modal<Content>: View where Content: View {
         GeometryReader { proxy1 in
             ZStack {
                 if isActive {
-                    VStack(spacing: 10) {
+                    VStack {
                         RoundedRectangle(cornerRadius: 50)
                             .frame(width: 50, height: 7)
                             .padding()
@@ -31,7 +31,6 @@ struct Modal<Content>: View where Content: View {
                         content()
                             .padding(.bottom)
                             .padding(.bottom, 17)
-                        Spacer()
                     }
                     .frame(maxWidth: .infinity, minHeight: proxy1.size.height * ratio + 40, maxHeight: proxy1.size.height * ratio + 40)
                     .background(Color.white)

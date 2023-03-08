@@ -28,6 +28,7 @@ struct TodoAddView: View {
     @State private var isTodayTodo: Bool = false
     @State private var deadline: Date = .init()
     @State private var alarm: Date = .init()
+    @State private var repeatOption: RepeatOption = .none
     @State private var memo: String = ""
     @State private var days: [Day] = [
         Day(content: "월"),
@@ -40,6 +41,25 @@ struct TodoAddView: View {
     ]
     @State private var subTodoList: [SubTodo] = []
 
+    var displayRepeat: String {
+        if repeatOption != .none {
+            return repeatOption.rawValue
+        }
+
+        let filtered = days.filter { day in day.isClicked }
+
+        if filtered.isEmpty {
+            return ""
+        }
+        return "매주: " + filtered.map { day in
+            day.content
+        }.joined(separator: ", ")
+    }
+
+    var disableButtons: Bool {
+        repeatOption != .none
+    }
+
     init(viewModel: CheckListViewModel, isActive: Binding<Bool>) {
         self.viewModel = viewModel
         _isActive = isActive
@@ -49,27 +69,25 @@ struct TodoAddView: View {
         ZStack {
             if isRepeatModalVisible {
                 Modal(isActive: $isRepeatModalVisible, ratio: 1) {
-                    List {
-                        ForEach(RepeatOption.allCases, id: \.self) { option in
-                            Text(option.rawValue)
-                        }
-                    }
-                    .listStyle(.inset)
-
-                    VStack(alignment: .leading) {
-                        Text("사용자화")
-                            .padding()
-                        HStack {
-                            Spacer()
-                            ForEach(days.indices, id: \.self) { index in
-                                DayButton(content: days[index].content, isClicked: days[index].isClicked) {
-                                    days[index] = Day(content: days[index].content, isClicked: !days[index].isClicked)
-                                }
-                                Spacer()
+                    HStack {
+                        ForEach(days.indices, id: \.self) { index in
+                            DayButton(disabled: disableButtons, content: days[index].content, isClicked: days[index].isClicked) {
+                                days[index] = Day(content: days[index].content, isClicked: !days[index].isClicked)
                             }
                         }
-                        .padding()
                     }
+                    .padding(.top, 20)
+                    .disabled(repeatOption != .none)
+
+                    List {
+                        Picker("반복 옵션", selection: $repeatOption) {
+                            ForEach(RepeatOption.allCases, id: \.self) {
+                                Text($0.rawValue)
+                            }
+                        }
+                        .pickerStyle(.inline)
+                    }
+                    .listStyle(.inset)
                 }
                 .transition(.modal)
             } else if isSubTodoModalVisible {
@@ -116,6 +134,8 @@ struct TodoAddView: View {
                                 HStack {
                                     Text("반복 설정")
                                     Spacer()
+                                    Text(displayRepeat)
+                                        .font(.caption)
                                     Image(systemName: "chevron.right")
                                 }
                             }
@@ -145,6 +165,12 @@ struct TodoAddView: View {
                                 memo: memo,
                                 todayTodo: isTodayTodo,
                                 flag: false,
+                                repeatOption: repeatOption == .none ? nil : repeatOption.rawValue,
+                                repeat: repeatOption != .none || self.days.filter { day in
+                                    day.isClicked
+                                }.isEmpty ? nil : self.days.reduce("") { acc, day in
+                                    acc + (day.isClicked ? "1" : "0")
+                                },
                                 tags: tag.components(separatedBy: " ").filter { tag in
                                     tag.hasSuffix("#")
                                 }
@@ -163,6 +189,7 @@ struct TodoAddView: View {
                     } label: {
                         Text("추가하기")
                     }
+                    .disabled(todoContent.isEmpty)
                 }
             }
         }
