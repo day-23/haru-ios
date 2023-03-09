@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct RootView: View {
-    @State var selection: Int = 3
+    @State var selection: Int = 2
 
     var body: some View {
         TabView(selection: $selection) {

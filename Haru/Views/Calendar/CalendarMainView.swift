@@ -13,7 +13,7 @@ struct CalendarMainView: View {
     var body: some View {
         VStack(spacing: 20) {
             // Custom Date Picker...
-            CalendarDateView(startOnSunday: $startOnSunday, dateList: CalendarHelper.extractDate(0, startOnSunday))
+            CalendarDateView(startOnSunday: $startOnSunday, dateList: CalendarHelper.extractDate(0, startOnSunday), numberOfWeeks: CalendarHelper.numberOfWeeksInMonth(CalendarHelper.extractDate(0, startOnSunday).count), calendarVM: CalendarViewModel(dateList: CalendarHelper.extractDate(0, startOnSunday)))
         }
     }
 }

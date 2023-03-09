@@ -7,6 +7,8 @@
 
 import Foundation
 
+// TODO: currentMonth가 Int 형인지 Date 형인지 구분할 수 있게 이름 짓기
+
 class CalendarHelper {
     /**
      * 일주일의 요일을 표시해주기 위한 함수
@@ -75,6 +77,15 @@ class CalendarHelper {
                 }
                 days.insert(DateValue(day: calendar.component(.day, from: prevDate), date: prevDate, isPrevDate: true), at: 0)
             }
+            let totalCnt = Self.numberOfWeeksInMonth(days.count) * 7
+            let offset = totalCnt - days.count
+            for i in 1 ... offset {
+                guard let nextDate = calendar.date(byAdding: .day, value: i, to: currentMonth.endOfMonth()) else {
+                    break
+                }
+                days.append(DateValue(day: calendar.component(.day, from: nextDate), date: nextDate, isNextDate: true))
+            }
+            
         } else {
             // 이전 달의 날짜를 보여줄 공간이 있다면 days에 추가
             for i in 1 ..< firstWeekday - 1 {
@@ -83,14 +94,23 @@ class CalendarHelper {
                 }
                 days.insert(DateValue(day: calendar.component(.day, from: prevDate), date: prevDate, isPrevDate: true), at: 0)
             }
+            let totalCnt = Self.numberOfWeeksInMonth(days.count) * 7
+            let offset = totalCnt - days.count
+            for i in 1 ... offset {
+                guard let nextDate = calendar.date(byAdding: .day, value: i, to: currentMonth.endOfMonth()) else {
+                    break
+                }
+                days.append(DateValue(day: calendar.component(.day, from: nextDate), date: nextDate, isNextDate: true))
+            }
         }
-        
-        
-        debugPrint("function call")
         
         return days
     }
     
+    class func numberOfWeeksInMonth(_ count: Int) -> Int {
+        Int(ceil(Double(count) / 7))
+    }
+
     class func isSameDay(date1: Date, date2: Date) -> Bool {
         let calendar = Calendar.current
         return calendar.isDate(date1, inSameDayAs: date2)

@@ -38,4 +38,8 @@ public extension Date {
         let calendar = Calendar.current
         return calendar.date(from: Calendar.current.dateComponents([.year, .month], from: self))!
     }
+    
+    internal func endOfMonth() -> Date {
+        Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth())!
+    }
 }

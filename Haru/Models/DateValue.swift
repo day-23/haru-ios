@@ -11,7 +11,8 @@ struct DateValue: Identifiable, Hashable {
     var id = UUID().uuidString
     var day: Int
     var date: Date
-    var isPrevDate: Bool = false
+    var isPrevDate: Bool = false    // 이전 달의 날인가?
+    var isNextDate: Bool = false    // 다음 달의 날인가?
 }
 
 // MARK: - Extensions

@@ -14,7 +14,7 @@ struct CalendarDateView: View {
     
     // Month update on arrow button clicks ...
     @State private var currentMonth: Int = 0 // 0(now) 1(next) -1(prev) ...
-    @State private var currentDate: DateValue = DateValue(day: Date().day, date: Date())
+    @State private var selectedDate: DateValue = .init(day: Date().day, date: Date())
     
     // 드래그로 선택된 셀들 저장해놓는 리스트
     @State private var selectionSet: Set<DateValue> = []
@@ -22,13 +22,17 @@ struct CalendarDateView: View {
     
     // 날짜
     @State var dateList: [DateValue]
+    @State var numberOfWeeks: Int
     
     // 요일
     var dayList: [String] {
         CalendarHelper.getDays(startOnSunday)
     }
     
-    @State var firstIndex: Int = 0
+    // 스케줄
+    @ObservedObject var calendarVM: CalendarViewModel
+    
+    @State var initIndex: Int = 0
     @State var startIndex: Int = 0
     @State var lastIndex: Int = 0
     
@@ -78,22 +82,22 @@ struct CalendarDateView: View {
                 } // HStack
                 
                 // Dates ...
-                let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
+                let dateColumns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
+                let scheduleCols = Array(repeating: GridItem(.flexible(), spacing: 0), count: 1)
                 
                 GeometryReader { proxy in
-                    let longPress = LongPressGesture(minimumDuration: 1.0)
-                        .onChanged { isPressed in
-                            if isPressed {
-                                print("클릭 시작")
-                            }
-                        }
-                        .onEnded { _ in
+                    // TODO: 꾹 누르기만 해도 selectionSet에 아이템 담아주기
+
+                    // MARK: - Gesture 분리를 위함
+
+                    let longPress = LongPressGesture(minimumDuration: 0.5)
+                        .onEnded { longPress in
                             firstSelected = true
                         }
                     
                     let drag = DragGesture()
                         .onChanged { value in
-                            selectItems(from: value, proxy.size.width / 7, proxy.size.height / 7)
+                            selectItems(from: value, proxy.size.width / 7, proxy.size.height / CGFloat(numberOfWeeks))
                         }
                         .onEnded { value in
                             isSchModalVisible = true
@@ -101,21 +105,38 @@ struct CalendarDateView: View {
                     
                     let combined = longPress.sequenced(before: drag)
                     
-                    LazyVGrid(columns: columns, spacing: 0) {
-                        ForEach(dateList) { item in
-                            CalendarDateItem(selectionSet: $selectionSet, value: item)
-                                .frame(width: proxy.size.width / 7, height: proxy.size.height / 7, alignment: .top)
-                                .background(selectionSet.contains(item) ? .cyan : .white)
-                                .onTapGesture {
-                                    currentDate = item
-                                    isDayModalVisible = true
-                                }
+                    ZStack {
+                        LazyVGrid(columns: dateColumns, spacing: 0) {
+                            ForEach(dateList) { item in
+                                CalendarDateItem(selectionSet: $selectionSet, value: item)
+                                    .frame(width: proxy.size.width / 7, height: proxy.size.height / CGFloat(numberOfWeeks), alignment: .top)
+                                    .background(selectionSet.contains(item) ? .cyan : .white)
+                                    .border(width: 0.5, edges: [.top], color: Color(0xd3d3d3))
+                                    .onTapGesture {
+                                        selectedDate = item
+                                        isDayModalVisible = true
+                                    }
+                            }
                         }
-                    }
-                    .gesture(combined)
+                        .gesture(combined)
+                        
+                        LazyVGrid(columns: scheduleCols, spacing: 0) {
+                            ForEach(Array(0 ..< numberOfWeeks), id: \.self) { value in
+                                VStack {
+                                    Spacer()
+                                        .frame(height: 32)
+                                    CalendarScheduleItem(widthSize: proxy.size.width, heightSize: proxy.size.height / CGFloat(numberOfWeeks), scheduleList: $calendarVM.scheduleList[value])
+                                        .frame(height: (proxy.size.height / CGFloat(numberOfWeeks)) - 32, alignment: .top)
+                                }
+                                .frame(height: proxy.size.height / CGFloat(numberOfWeeks), alignment: .top)
+                            }
+                        }
+                        .frame(height: proxy.size.height, alignment: .top)
+                    } // ZStack
                 }
             } // VStack
             
+            // 일정 추가를 위한 모달창
             if isSchModalVisible {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
@@ -134,7 +155,7 @@ struct CalendarDateView: View {
                 .zIndex(2)
             }
             
-            
+            // 선택된 날(하루)을 위한 모달창
             if isDayModalVisible {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
@@ -147,61 +168,76 @@ struct CalendarDateView: View {
                     VStack(spacing: 20) {
                         Text("선택된 날을 위한 뷰")
                         
-                        Text("\(currentDate.date.month)월 \(currentDate.date.day)일")
+                        Text("\(selectedDate.date.month)월 \(selectedDate.date.day)일")
                     }
                 }
                 .zIndex(2)
             }
-            
-            
         }
-        .onChange(of: isSchModalVisible) { newValue in
+        .onChange(of: isSchModalVisible) { _ in
             if !isSchModalVisible {
                 selectionSet.removeAll()
-                startIndex = 50
-                lastIndex = -1
             }
         }
-        .onChange(of: currentMonth) { newValue in
+        .onChange(of: currentMonth) { _ in
             dateList = CalendarHelper.extractDate(currentMonth, startOnSunday)
+            numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+            calendarVM.getCurMonthSchList(currentMonth, dateList)
+        }
+        .onChange(of: startOnSunday) { _ in
+            dateList = CalendarHelper.extractDate(currentMonth, startOnSunday)
+            numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+            calendarVM.getCurMonthSchList(currentMonth, dateList)
         }
     }
     
     func selectItems(from value: DragGesture.Value, _ cellWidth: Double, _ cellHeight: Double) {
         let index = Int(value.location.y / cellHeight) * 7 + Int(value.location.x / cellWidth)
+        var isRangeChanged = (true, true)
         
         if firstSelected {
-            firstIndex = index
+            initIndex = index
             startIndex = index
             lastIndex = index
             firstSelected = false
-        } else {
-            if startIndex > index {
-                for i in startIndex ... lastIndex {
-                    selectionSet.remove(dateList[i])
-                }
-                
-                lastIndex = firstIndex
-                startIndex = index
-            } else if lastIndex > index {
-                for i in index ... lastIndex {
-                    selectionSet.remove(dateList[i])
-                }
-                
-                lastIndex = max(index, firstIndex)
-            } else {
-                lastIndex = index
-            }
+            
+            selectionSet.insert(dateList[initIndex])
         }
         
-        for i in startIndex ... lastIndex {
-            selectionSet.insert(dateList[i])
+        if startIndex > index {
+            startIndex = index
+        } else if startIndex < index {
+            for i in startIndex ..< min(initIndex, index) {
+                selectionSet.remove(dateList[i])
+            }
+            startIndex = min(initIndex, index)
+        } else {
+            isRangeChanged.0 = false
+        }
+        
+        if lastIndex < index {
+            lastIndex = index
+        } else if lastIndex > index {
+            var i = max(initIndex, index) + 1
+            while i <= lastIndex {
+                selectionSet.remove(dateList[i])
+                i += 1
+            }
+            lastIndex = max(initIndex, index)
+        } else {
+            isRangeChanged.1 = false
+        }
+        
+        if isRangeChanged.0, isRangeChanged.1 {
+            for i in startIndex ... lastIndex {
+                selectionSet.insert(dateList[i])
+            }
         }
     }
 }
 
 struct CalendarDateView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDateView(startOnSunday: .constant(true), dateList: CalendarHelper.extractDate(0, true))
+        CalendarDateView(startOnSunday: .constant(true), dateList: CalendarHelper.extractDate(0, true), numberOfWeeks: CalendarHelper.numberOfWeeksInMonth(CalendarHelper.extractDate(0, true).count), calendarVM: CalendarViewModel(dateList: CalendarHelper.extractDate(0, true)))
     }
 }

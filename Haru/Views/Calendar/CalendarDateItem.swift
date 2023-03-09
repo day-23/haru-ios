@@ -8,47 +8,26 @@
 import SwiftUI
 
 struct CalendarDateItem: View {
-    @ObservedObject private var calendarVM: CalendarViewModel = .init()
-
     @Binding var selectionSet: Set<DateValue>
 
     let value: DateValue
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             // TODO: 코드 다듬기
-            if !value.isPrevDate {
-                if calendarVM.scheduleList.first(where: { schedule in
-                    CalendarHelper.isSameDay(date1: schedule.startTime, date2: value.date)
-                }) != nil {
-                    ZStack {
-                        Circle()
-                            .fill(.black)
-                            .frame(width: 30, height: 30)
-                            .opacity(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 1 : 0)
+            Spacer()
+                .frame(height: 1)
 
-                        Text("\(value.day)")
-                            .font(.title3.bold())
-                            .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .white : .primary)
-                    }
-
-                    // 일정 표시
+            if !value.isPrevDate, !value.isNextDate {
+                ZStack {
                     Circle()
-                        .fill(.red)
-                        .frame(width: 8, height: 8)
+                        .fill(.black)
+                        .frame(width: 30, height: 30)
+                        .opacity(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 1 : 0)
 
-                    Spacer()
-                } else {
-                    ZStack {
-                        Circle()
-                            .fill(.black)
-                            .frame(width: 30, height: 30)
-                            .opacity(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 1 : 0)
-
-                        Text("\(value.day)")
-                            .font(.title3.bold())
-                            .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .white : .primary)
-                    }
+                    Text("\(value.day)")
+                        .font(.title3.bold())
+                        .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .white : .primary)
                 }
 
             } else {
@@ -64,8 +43,9 @@ struct CalendarDateItem: View {
                 }
             }
 
-            // TODO: 할일 보여줄 수 있게 만들기
-        }
+            Spacer()
+                .frame(height: 1)
+        } // VStack
     }
 }
 
