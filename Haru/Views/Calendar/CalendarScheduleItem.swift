@@ -8,25 +8,25 @@
 import SwiftUI
 
 struct CalendarScheduleItem: View {
-//    @EnvironmentObject var caledarVM: CalendarViewModel
-    let widthSize: Double
-    let heightSize: Double
+    let widthSize: CGFloat
+    let heightSize: CGFloat
     @Binding var scheduleList: [Schedule]
-//    @Binding var numberOfWeeks: Int
 
     var body: some View {
         VStack {
-            ForEach(scheduleList) { list in
-                VStack(spacing: 5) {
+            ForEach(scheduleList.prefix(3)) { list in
+                VStack(spacing: 0) {
                     Text(list.content)
                 }
             }
+            
         }
     }
 }
 
 struct CalendarScheduleItem_Previews: PreviewProvider {
+    static var vm: CalendarViewModel = .init()
     static var previews: some View {
-        CalendarScheduleItem(widthSize: 393.0, heightSize: 612.6666666666666, scheduleList: .constant([]))
+        CalendarScheduleItem(widthSize: 393.0, heightSize: 612.6666666666666 / CGFloat(vm.numberOfWeeks) - 32, scheduleList: .constant(vm.scheduleList[0]))
     }
 }

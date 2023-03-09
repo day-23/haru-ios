@@ -25,6 +25,7 @@ public extension Date {
 
         // getting start Date ...
         let startDate = startOfMonth()
+        print(startDate)
         
         let range = calendar.range(of: .day, in: .month, for: startDate)!
         
