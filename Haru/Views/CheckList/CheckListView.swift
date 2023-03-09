@@ -30,8 +30,16 @@ struct CheckListView: View {
                                 TodoView(todo: todo)
                                     .frame(height: geometry.size.height * 0.06)
                             }
-                            .listStyle(.inset)
+                            .onDelete { indexSet in
+                                for index in indexSet {
+                                    viewModel.deleteTodo(viewModel.todoList[index].id) {
+                                        viewModel.todoList.remove(at: index)
+                                        viewModel.fetchTodoList { _, _ in }
+                                    }
+                                }
+                            }
                         }
+                        .listStyle(.inset)
                     } else {
                         VStack {
                             Text("모든 할 일을 마쳤습니다!")

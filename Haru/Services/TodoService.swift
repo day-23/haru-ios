@@ -13,27 +13,23 @@ struct TodoService {
 
     // Todo 생성 API 호출
     func addTodo(_ todo: Request.Todo, completion: @escaping (_ statusCode: Int) -> Void) {
-        do {
-            let headers: HTTPHeaders = [
-                "Content-Type": "application/json"
-            ]
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json"
+        ]
 
-            let encoder = JSONEncoder()
-            encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
 
-            AF.request(
-                TodoService.BaseUrl + (Global.shared.user?.id ?? "Unknown"),
-                method: .post,
-                parameters: todo,
-                encoder: JSONParameterEncoder(encoder: encoder),
-                headers: headers
-            ).response { response in
-                if let statusCode = response.response?.statusCode {
-                    completion(statusCode)
-                }
+        AF.request(
+            TodoService.BaseUrl + (Global.shared.user?.id ?? "Unknown"),
+            method: .post,
+            parameters: todo,
+            encoder: JSONParameterEncoder(encoder: encoder),
+            headers: headers
+        ).response { response in
+            if let statusCode = response.response?.statusCode {
+                completion(statusCode)
             }
-        } catch {
-            debugPrint(String(describing: error))
         }
     }
 
@@ -90,8 +86,28 @@ struct TodoService {
                     completion(statusCode, result.data)
                 }
             } catch {
-                debugPrint("[Debug] \(String(describing: error))")
+                print("[Debug] \(String(describing: error))")
             }
+        }
+    }
+
+    // Todo 삭제하기
+    func deleteTodo(_ todoId: String, completion: @escaping (_ statusCode: Int) -> Void) {
+        AF.request(
+            TodoService.BaseUrl + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
+            method: .delete
+        ).response { response in
+            guard let statusCode = response.response?.statusCode else {
+                completion(-1)
+                return
+            }
+
+            if statusCode != 200 {
+                completion(statusCode)
+                return
+            }
+
+            completion(statusCode)
         }
     }
 }

@@ -154,7 +154,7 @@ struct TodoAddView: View {
                                     }
 
                                     if viewModel.isSelectedRepeatEnd {
-                                        DatePicker("", selection: $viewModel.repeatEnd, displayedComponents: .hourAndMinute)
+                                        DatePicker("", selection: $viewModel.repeatEnd, displayedComponents: .date)
                                     }
                                 }
                             }
@@ -186,7 +186,7 @@ struct TodoAddView: View {
                                     isActive = false
                                 }
                             default:
-                                debugPrint("[Debug] StatusCode = \(statusCode) in TodoAddView")
+                                print("[Debug] StatusCode = \(statusCode) in TodoAddView")
                             }
                         }
                     } label: {

@@ -36,7 +36,7 @@ final class CheckListViewModel: ObservableObject {
                          createdAt: Date(),
                          updatedAt: Date()))
             default:
-                debugPrint("[Debug] StatusCode = \(statusCode) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
+                print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
             }
             completion(statusCode)
         }
@@ -48,9 +48,22 @@ final class CheckListViewModel: ObservableObject {
             case 200:
                 self.todoList = todoList
             case -1:
-                debugPrint("[Debug] Server not running now.")
+                print("[Debug] Server not running now.")
             default:
-                debugPrint("[Debug] StatusCode = \(statusCode) in CheckListViewModel.fetchTodoList()")
+                print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.fetchTodoList()")
+            }
+        }
+    }
+
+    func deleteTodo(_ todoId: String, completion: @escaping () -> Void) {
+        service.deleteTodo(todoId) { statusCode in
+            switch statusCode {
+            case 200:
+                completion()
+            case -1:
+                print("[Debug] Server not running now.")
+            default:
+                print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.deleteTodo(_ todoId: String)")
             }
         }
     }
