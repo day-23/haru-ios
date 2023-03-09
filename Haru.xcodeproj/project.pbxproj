@@ -25,6 +25,8 @@
 		13A15DB829B861B7003BE771 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 13A15DB729B861B7003BE771 /* Alamofire */; };
 		13A15DBC29B88497003BE771 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A15DBB29B88497003BE771 /* Constants.swift */; };
 		13A15DBE29B887A6003BE771 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A15DBD29B887A6003BE771 /* Global.swift */; };
+		13A15DC029B8C529003BE771 /* Day.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A15DBF29B8C529003BE771 /* Day.swift */; };
+		13A15DC229B8C939003BE771 /* TodoAddViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A15DC129B8C939003BE771 /* TodoAddViewModel.swift */; };
 		13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE615529B489D500C08EB1 /* HaruApp.swift */; };
 		13AE615A29B489D500C08EB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615929B489D500C08EB1 /* Assets.xcassets */; };
 		13AE615D29B489D500C08EB1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13AE615C29B489D500C08EB1 /* Preview Assets.xcassets */; };
@@ -54,6 +56,8 @@
 		13968EF929B77EBE009A0831 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		13A15DBB29B88497003BE771 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		13A15DBD29B887A6003BE771 /* Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
+		13A15DBF29B8C529003BE771 /* Day.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Day.swift; sourceTree = "<group>"; };
+		13A15DC129B8C939003BE771 /* TodoAddViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoAddViewModel.swift; sourceTree = "<group>"; };
 		13AE615229B489D500C08EB1 /* Haru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Haru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13AE615529B489D500C08EB1 /* HaruApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaruApp.swift; sourceTree = "<group>"; };
 		13AE615929B489D500C08EB1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -157,13 +161,14 @@
 		13AE616429B48A5D00C08EB1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				13968EF929B77EBE009A0831 /* Request.swift */,
 				137611F229B600E9008787BD /* User.swift */,
 				1334335229B5A20800F26F57 /* Todo.swift */,
+				137611F829B61674008787BD /* SubTodo.swift */,
 				137611F429B6051F008787BD /* TodoLog.swift */,
 				137611F629B615F8008787BD /* tagWithTodo.swift */,
-				137611F829B61674008787BD /* SubTodo.swift */,
 				137611FA29B61705008787BD /* Tag.swift */,
-				13968EF929B77EBE009A0831 /* Request.swift */,
+				13A15DBF29B8C529003BE771 /* Day.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -172,6 +177,7 @@
 			isa = PBXGroup;
 			children = (
 				137611F029B5FD1E008787BD /* CheckListViewModel.swift */,
+				13A15DC129B8C939003BE771 /* TodoAddViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -309,6 +315,7 @@
 				1334334C29B5A02400F26F57 /* Tab.swift in Sources */,
 				13C79A1929B7436000E68E55 /* RepeatOption.swift in Sources */,
 				137611F529B6051F008787BD /* TodoLog.swift in Sources */,
+				13A15DC229B8C939003BE771 /* TodoAddViewModel.swift in Sources */,
 				13C79A1729B7047800E68E55 /* TagView.swift in Sources */,
 				137611EF29B5CB90008787BD /* TodoService.swift in Sources */,
 				1334335329B5A20800F26F57 /* Todo.swift in Sources */,
@@ -319,6 +326,7 @@
 				1334334A29B4FBC500F26F57 /* Modal.swift in Sources */,
 				13968EFA29B77EBE009A0831 /* Request.swift in Sources */,
 				13AE616F29B48CA100C08EB1 /* Color.swift in Sources */,
+				13A15DC029B8C529003BE771 /* Day.swift in Sources */,
 				13A15DBE29B887A6003BE771 /* Global.swift in Sources */,
 				137611FB29B61705008787BD /* Tag.swift in Sources */,
 				13AE617229B48D2300C08EB1 /* Calendar.swift in Sources */,
@@ -453,6 +461,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Haru/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -481,6 +490,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Haru/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

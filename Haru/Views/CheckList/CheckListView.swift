@@ -52,7 +52,10 @@ struct CheckListView: View {
                         }
 
                     Modal(isActive: $isModalVisible, ratio: 0.9) {
-                        TodoAddView(viewModel: viewModel, isActive: $isModalVisible)
+                        TodoAddView(
+                            viewModel: TodoAddViewModel(checkListViewModel: viewModel),
+                            isActive: $isModalVisible
+                        )
                     }
                     .transition(.modal)
                     .zIndex(2)

@@ -13,8 +13,12 @@ struct Request: Codable {
         var memo: String
         var todayTodo: Bool
         var flag: Bool
+        var endDate: Date?
+        var endDateTime: Date?
         var repeatOption: String?
+        var repeatEnd: Date?
         var `repeat`: String?
         var tags: [String]
+        var subTodos: [SubTodo]
     }
 }

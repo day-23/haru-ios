@@ -31,6 +31,7 @@ struct Modal<Content>: View where Content: View {
                         content()
                             .padding(.bottom)
                             .padding(.bottom, 17)
+                        Spacer()
                     }
                     .frame(maxWidth: .infinity, minHeight: proxy1.size.height * ratio + 40, maxHeight: proxy1.size.height * ratio + 40)
                     .background(Color.white)

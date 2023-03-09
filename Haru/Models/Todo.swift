@@ -8,6 +8,8 @@
 import Foundation
 
 struct Todo: Identifiable, Codable {
+    // MARK: - Properties
+
     let id: String
     private(set) var content: String
     private(set) var memo: String
@@ -15,13 +17,15 @@ struct Todo: Identifiable, Codable {
     private(set) var flag: Bool
     private(set) var repeatOption: String?
     private(set) var `repeat`: String?
+    private(set) var endDate: Date?
+    private(set) var endDateTime: Date?
+    private(set) var subTodos: [SubTodo]
+
+    // MARK: - Dates
+
     let createdAt: Date
     private(set) var updatedAt: Date
     private(set) var deletedAt: Date?
-//    private(set) var user: User?
-//    private(set) var todoLog: [TodoLog]
-//    private(set) var tagWithTodo: [TagWithTodo]
-//    private(set) var subTodo: [SubTodo]
 }
 
 // MARK: - Extensions

@@ -8,59 +8,13 @@
 import SwiftUI
 
 struct TodoAddView: View {
-    struct Day {
-        var content: String
-        var isClicked: Bool
-
-        init(content: String, isClicked: Bool = false) {
-            self.content = content
-            self.isClicked = isClicked
-        }
-    }
-
     @Environment(\.dismiss) var dismissAction
-    @ObservedObject var viewModel: CheckListViewModel
+    @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isActive: Bool
     @State private var isRepeatModalVisible: Bool = false
     @State private var isSubTodoModalVisible: Bool = false
-    @State private var todoContent: String = ""
-    @State private var tag: String = ""
-    @State private var isTodayTodo: Bool = false
-    @State private var deadline: Date = .init()
-    @State private var alarm: Date = .init()
-    @State private var repeatOption: RepeatOption = .none
-    @State private var memo: String = ""
-    @State private var days: [Day] = [
-        Day(content: "월"),
-        Day(content: "화"),
-        Day(content: "수"),
-        Day(content: "목"),
-        Day(content: "금"),
-        Day(content: "토"),
-        Day(content: "일"),
-    ]
-    @State private var subTodoList: [SubTodo] = []
 
-    var displayRepeat: String {
-        if repeatOption != .none {
-            return repeatOption.rawValue
-        }
-
-        let filtered = days.filter { day in day.isClicked }
-
-        if filtered.isEmpty {
-            return ""
-        }
-        return "매주: " + filtered.map { day in
-            day.content
-        }.joined(separator: ", ")
-    }
-
-    var disableButtons: Bool {
-        repeatOption != .none
-    }
-
-    init(viewModel: CheckListViewModel, isActive: Binding<Bool>) {
+    init(viewModel: TodoAddViewModel, isActive: Binding<Bool>) {
         self.viewModel = viewModel
         _isActive = isActive
     }
@@ -70,17 +24,17 @@ struct TodoAddView: View {
             if isRepeatModalVisible {
                 Modal(isActive: $isRepeatModalVisible, ratio: 1) {
                     HStack {
-                        ForEach(days.indices, id: \.self) { index in
-                            DayButton(disabled: disableButtons, content: days[index].content, isClicked: days[index].isClicked) {
-                                days[index] = Day(content: days[index].content, isClicked: !days[index].isClicked)
+                        ForEach(viewModel.days.indices, id: \.self) { index in
+                            DayButton(disabled: viewModel.disableButtons, content: viewModel.days[index].content, isClicked: viewModel.days[index].isClicked) {
+                                viewModel.days[index] = Day(content: viewModel.days[index].content, isClicked: !viewModel.days[index].isClicked)
                             }
                         }
                     }
                     .padding(.top, 20)
-                    .disabled(repeatOption != .none)
+                    .disabled(viewModel.repeatOption != .none)
 
                     List {
-                        Picker("반복 옵션", selection: $repeatOption) {
+                        Picker("반복 옵션", selection: $viewModel.repeatOption) {
                             ForEach(RepeatOption.allCases, id: \.self) {
                                 Text($0.rawValue)
                             }
@@ -97,34 +51,84 @@ struct TodoAddView: View {
                 VStack {
                     List {
                         Section {
-                            TextField("할 일을 입력해주세요", text: $todoContent)
+                            TextField("할 일을 입력해주세요", text: $viewModel.todoContent)
                         }
 
                         Spacer()
 
                         Section {
-                            TextField("태그를 입력해주세요", text: $tag)
+                            TextField("태그를 입력해주세요", text: $viewModel.tag)
 
                             Button {
-                                isTodayTodo.toggle()
+                                viewModel.isTodayTodo.toggle()
                             } label: {
                                 HStack {
-                                    if isTodayTodo {
+                                    if viewModel.isTodayTodo {
                                         Image(systemName: "sun.max.fill")
+                                            .foregroundColor(.orange)
                                     } else {
                                         Image(systemName: "sun.max")
                                     }
                                     Text("나의 하루에 추가")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             }
 
-                            DatePicker("마감일", selection: $deadline)
-
-                            DatePicker("알림 설정", selection: $alarm)
-                                .onAppear {
-                                    UIDatePicker.appearance().minuteInterval = 5
+                            Button {
+                                viewModel.flag.toggle()
+                            } label: {
+                                HStack {
+                                    if viewModel.flag {
+                                        Image(systemName: "flag.fill")
+                                            .foregroundColor(.red)
+                                    } else {
+                                        Image(systemName: "flag")
+                                    }
+                                    Text("중요한 일")
                                 }
+                            }
+
+                            HStack {
+                                Button {
+                                    withAnimation {
+                                        viewModel.isSelectedEndDate.toggle()
+                                    }
+                                } label: {
+                                    Text("마감일 설정")
+                                        .foregroundColor(.blue)
+                                }
+
+                                if viewModel.isSelectedEndDate {
+                                    DatePicker("", selection: $viewModel.endDate, displayedComponents: .date)
+                                }
+                            }
+
+                            if viewModel.isSelectedEndDate {
+                                HStack {
+                                    Button {
+                                        viewModel.isSelectedEndDateTime.toggle()
+                                    } label: {
+                                        Text("마감일 시간 설정")
+                                            .foregroundColor(.blue)
+                                    }
+
+                                    if viewModel.isSelectedEndDateTime {
+                                        DatePicker("", selection: $viewModel.endDateTime, displayedComponents: .hourAndMinute)
+                                    }
+                                }
+                            }
+
+                            HStack {
+                                Button {
+                                    viewModel.isSelectedAlarm.toggle()
+                                } label: {
+                                    Text("알림 설정")
+                                        .foregroundColor(.blue)
+                                }
+
+                                if viewModel.isSelectedAlarm {
+                                    DatePicker("", selection: $viewModel.alarm)
+                                }
+                            }
 
                             Button {
                                 withAnimation {
@@ -134,9 +138,24 @@ struct TodoAddView: View {
                                 HStack {
                                     Text("반복 설정")
                                     Spacer()
-                                    Text(displayRepeat)
+                                    Text(viewModel.displayRepeat)
                                         .font(.caption)
                                     Image(systemName: "chevron.right")
+                                }
+                            }
+
+                            if !viewModel.displayRepeat.isEmpty {
+                                HStack {
+                                    Button {
+                                        viewModel.isSelectedRepeatEnd.toggle()
+                                    } label: {
+                                        Text("반복 끝 날짜 설정")
+                                            .foregroundColor(.blue)
+                                    }
+
+                                    if viewModel.isSelectedRepeatEnd {
+                                        DatePicker("", selection: $viewModel.repeatEnd, displayedComponents: .hourAndMinute)
+                                    }
                                 }
                             }
 
@@ -152,30 +171,14 @@ struct TodoAddView: View {
                                 }
                             }
 
-                            TextField("메모 추가", text: $memo, axis: .vertical)
-                                .lineLimit(8)
+                            TextField("메모 추가", text: $viewModel.memo)
+                                .lineLimit(1)
                         }
                     }
                     .listStyle(.plain)
                     Spacer()
                     Button {
-                        viewModel.addTodo(
-                            Request.Todo(
-                                content: todoContent,
-                                memo: memo,
-                                todayTodo: isTodayTodo,
-                                flag: false,
-                                repeatOption: repeatOption == .none ? nil : repeatOption.rawValue,
-                                repeat: repeatOption != .none || self.days.filter { day in
-                                    day.isClicked
-                                }.isEmpty ? nil : self.days.reduce("") { acc, day in
-                                    acc + (day.isClicked ? "1" : "0")
-                                },
-                                tags: tag.components(separatedBy: " ").filter { tag in
-                                    tag.hasSuffix("#")
-                                }
-                            )
-                        ) { statusCode in
+                        viewModel.addTodo { statusCode in
                             switch statusCode {
                             case 201:
                                 withAnimation {
@@ -183,21 +186,18 @@ struct TodoAddView: View {
                                     isActive = false
                                 }
                             default:
-                                debugPrint("[Debug]: StatusCode = \(statusCode) in TodoAddView")
+                                debugPrint("[Debug] StatusCode = \(statusCode) in TodoAddView")
                             }
                         }
                     } label: {
                         Text("추가하기")
                     }
-                    .disabled(todoContent.isEmpty)
+                    .disabled(viewModel.todoContent.isEmpty)
                 }
             }
         }
-    }
-}
-
-struct TodoAddView_Previews: PreviewProvider {
-    static var previews: some View {
-        TodoAddView(viewModel: CheckListViewModel(), isActive: .constant(false))
+        .onAppear {
+            UIDatePicker.appearance().minuteInterval = 5
+        }
     }
 }

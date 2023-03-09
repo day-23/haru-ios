@@ -13,30 +13,32 @@ struct TodoService {
 
     // Todo 생성 API 호출
     func addTodo(_ todo: Request.Todo, completion: @escaping (_ statusCode: Int) -> Void) {
-        let body: [String: Any?] = [
-            "content": todo.content,
-            "memo": todo.memo,
-            "todayTodo": todo.todayTodo,
-            "flag": todo.flag,
-            "repeatOption": todo.repeatOption,
-            "repeat": todo.repeat,
-            "tags": todo.tags
-        ]
+        do {
+            let headers: HTTPHeaders = [
+                "Content-Type": "application/json"
+            ]
 
-        AF.request(
-            TodoService.BaseUrl + (Global.shared.user?.id ?? "Unknown"),
-            method: .post,
-            parameters: body,
-            encoding: JSONEncoding.default
-        ).response { response in
-            if let statusCode = response.response?.statusCode {
-                completion(statusCode)
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+
+            AF.request(
+                TodoService.BaseUrl + (Global.shared.user?.id ?? "Unknown"),
+                method: .post,
+                parameters: todo,
+                encoder: JSONParameterEncoder(encoder: encoder),
+                headers: headers
+            ).response { response in
+                if let statusCode = response.response?.statusCode {
+                    completion(statusCode)
+                }
             }
+        } catch {
+            debugPrint(String(describing: error))
         }
     }
 
     // 나의 Todo 목록 가져오기
-    func requestTodoList(completion: @escaping (_ statusCode: Int, [Todo]) -> Void) {
+    func fetchTodoList(completion: @escaping (_ statusCode: Int, [Todo]) -> Void) {
         struct Response: Codable {
             struct Pagination: Codable {
                 let totalItems: Int
@@ -72,7 +74,7 @@ struct TodoService {
                     let dateString = try container.decode(String.self)
 
                     let formatter = DateFormatter()
-                    formatter.dateFormat = Constants.dataFormat
+                    formatter.dateFormat = Constants.dateFormat
                     if let date = formatter.date(from: dateString) {
                         return date
                     }
@@ -88,7 +90,7 @@ struct TodoService {
                     completion(statusCode, result.data)
                 }
             } catch {
-                debugPrint("[Debug]: \(String(describing: error))")
+                debugPrint("[Debug] \(String(describing: error))")
             }
         }
     }

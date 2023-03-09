@@ -8,5 +8,6 @@
 import Foundation
 
 struct Constants {
-    static let dataFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+    static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+    static let dateEncodingStrategy = JSONEncoder.DateEncodingStrategy.iso8601
 }

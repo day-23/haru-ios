@@ -8,11 +8,15 @@
 import Foundation
 
 final class CheckListViewModel: ObservableObject {
+    // MARK: - Properties
+
     private let service: TodoService = .init()
     @Published var todoList: [Todo] = []
     @Published var tagList: [Tag] = [
-        Tag(id: "미분류", content: "#미분류", createdAt: Date())
+        Tag(id: "미분류", content: "#미분류", createdAt: Date()),
     ]
+
+    // MARK: - Methods
 
     func addTodo(_ todo: Request.Todo, completion: @escaping (_ statusCode: Int) -> Void) {
         service.addTodo(todo) { [weak self] statusCode in
@@ -26,23 +30,27 @@ final class CheckListViewModel: ObservableObject {
                          flag: todo.flag,
                          repeatOption: todo.repeatOption,
                          repeat: todo.repeat,
+                         endDate: todo.endDate,
+                         endDateTime: todo.endDateTime,
+                         subTodos: todo.subTodos,
                          createdAt: Date(),
-                         updatedAt: Date())
-                )
+                         updatedAt: Date()))
             default:
-                debugPrint("[Debug]: StatusCode = \(statusCode) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
+                debugPrint("[Debug] StatusCode = \(statusCode) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
             }
             completion(statusCode)
         }
     }
 
     func fetchTodoList(completion: @escaping (_ statusCode: Int, [Todo]) -> Void) {
-        service.requestTodoList { statusCode, todoList in
+        service.fetchTodoList { statusCode, todoList in
             switch statusCode {
             case 200:
                 self.todoList = todoList
+            case -1:
+                debugPrint("[Debug] Server not running now.")
             default:
-                debugPrint("[Debug]: StatusCode = \(statusCode) in CheckListViewModel.fetchTodoList()")
+                debugPrint("[Debug] StatusCode = \(statusCode) in CheckListViewModel.fetchTodoList()")
             }
         }
     }

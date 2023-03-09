@@ -7,11 +7,15 @@
 
 import Foundation
 
-struct SubTodo {
+struct SubTodo: Codable {
+    // MARK: - Properties
+
     let id: String
-    let createdAt: Date
     private(set) var content: String
+
+    // MARK: - Dates
+
+    let createdAt: Date
     private(set) var updatedAt: Date
     private(set) var deletedAt: Date?
-    private(set) var todo: Todo
 }
