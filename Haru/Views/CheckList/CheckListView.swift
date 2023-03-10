@@ -33,6 +33,19 @@ struct CheckListView: View {
                                     todo: todo
                                 )
                                 .frame(height: geometry.size.height * 0.06)
+                                .contextMenu {
+                                    Button(action: {
+                                        if let index = viewModel.todoList.firstIndex(where: { $0.id == todo.id
+                                        }) {
+                                            viewModel.deleteTodo(viewModel.todoList[index].id) {
+                                                viewModel.todoList.remove(at: index)
+                                                viewModel.fetchTodoList { _, _ in }
+                                            }
+                                        }
+                                    }, label: {
+                                        Label("Delete", systemImage: "trash")
+                                    })
+                                }
                             }
                             .onDelete { indexSet in
                                 for index in indexSet {

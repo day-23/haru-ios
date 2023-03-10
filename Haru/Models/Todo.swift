@@ -20,12 +20,13 @@ struct Todo: Identifiable, Codable {
     private(set) var endDate: Date?
     private(set) var endDateTime: Date?
     private(set) var subTodos: [SubTodo]
+    private(set) var tags: [Tag]
 
     // MARK: - Dates
 
     let createdAt: Date
-    private(set) var updatedAt: Date
-    private(set) var deletedAt: Date?
+//    private(set) var updatedAt: Date
+//    private(set) var deletedAt: Date?
 }
 
 // MARK: - Extensions
@@ -33,7 +34,6 @@ struct Todo: Identifiable, Codable {
 extension Todo {
     mutating func setContent(_ content: String) {
         self.content = content
-        self.updatedAt = Date()
     }
 
     mutating func setMemo(_ memo: String) -> Bool {
@@ -41,27 +41,22 @@ extension Todo {
             return false
         }
         self.memo = memo
-        self.updatedAt = Date()
         return true
     }
 
     mutating func setTodayTodo(_ isTodayTodo: Bool) {
         self.todayTodo = isTodayTodo
-        self.updatedAt = Date()
     }
 
     mutating func setFlag(_ flag: Bool) {
         self.flag = flag
-        self.updatedAt = Date()
     }
 
     mutating func setRepeatOption(_ repeatOption: String) {
         self.repeatOption = repeatOption
-        self.updatedAt = Date()
     }
 
     mutating func setRepeat(_ repeat: String) {
         self.repeat = `repeat`
-        self.updatedAt = Date()
     }
 }

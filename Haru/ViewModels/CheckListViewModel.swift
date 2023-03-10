@@ -13,7 +13,7 @@ final class CheckListViewModel: ObservableObject {
     private let service: TodoService = .init()
     @Published var todoList: [Todo] = []
     @Published var tagList: [Tag] = [
-        Tag(id: "미분류", content: "#미분류", createdAt: Date()),
+        Tag(id: "미분류", content: "#미분류"),
     ]
 
     // MARK: - Methods
@@ -32,9 +32,9 @@ final class CheckListViewModel: ObservableObject {
                          repeat: todo.repeat,
                          endDate: todo.endDate,
                          endDateTime: todo.endDateTime,
-                         subTodos: [], // FIXME: 서브투두 불러 와야 할듯
-                         createdAt: Date(),
-                         updatedAt: Date()))
+                         subTodos: [], // FIXME: 데이터 만들고 Response로 subTodos 받아와야 함
+                         tags: [], // FIXME: 데이터 만들고 Response로 tags 받아와야 함
+                         createdAt: Date()))
             default:
                 print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
             }
@@ -75,9 +75,8 @@ final class CheckListViewModel: ObservableObject {
                     endDate: todo.endDate,
                     endDateTime: todo.endDateTime,
                     subTodos: todo.subTodos,
-                    createdAt: todo.createdAt,
-                    updatedAt: Date(),
-                    deletedAt: todo.deletedAt
+                    tags: todo.tags,
+                    createdAt: todo.createdAt
                 )
                 completion()
             case -1:

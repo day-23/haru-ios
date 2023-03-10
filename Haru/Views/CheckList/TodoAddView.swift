@@ -50,11 +50,19 @@ struct TodoAddView: View {
                         List {
                             ForEach(viewModel.subTodoList, id: \.self) { subTodo in
                                 Text(subTodo)
+                                    .contextMenu {
+                                        Button(action: {
+                                            if let index = viewModel.subTodoList.firstIndex(where: { $0 == subTodo
+                                            }) {
+                                                viewModel.subTodoList.remove(at: index)
+                                            }
+                                        }, label: {
+                                            Label("Delete", systemImage: "trash")
+                                        })
+                                    }
                             }
-                            .onDelete { indice in
-                                for index in indice {
-                                    viewModel.removeSubTodo(index)
-                                }
+                            .onDelete { indexSet in
+                                viewModel.subTodoList.remove(atOffsets: indexSet)
                             }
                         }
                         .listStyle(.inset)

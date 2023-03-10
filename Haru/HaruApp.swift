@@ -10,6 +10,7 @@
 //  TODO: Lazy Loading, Pagination 로딩 추가
 //  - IN-PROGRESS
 //  TODO: 하위 할일 기능 추가
+//          - API 연결
 //  - DONE
 //  TODO: 플래그 기능
 //

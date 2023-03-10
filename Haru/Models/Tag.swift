@@ -7,12 +7,15 @@
 
 import Foundation
 
-struct Tag: Identifiable {
+struct Tag: Codable, Identifiable {
+    // MARK: - Properties
+
     let id: String
     private(set) var content: String
-    let createdAt: Date
+
+    // MARK: - Dates Properties
+
+//    let createdAt: Date
 //    private(set) var updatedAt: Date
 //    private(set) var deletedAt: Date?
-//    private(set) var tagWithTodo: [TagWithTodo]
-    // private(set) var tagWithPost: [TagWithPost]
 }
