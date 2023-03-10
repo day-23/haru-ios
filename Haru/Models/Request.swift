@@ -19,6 +19,6 @@ struct Request: Codable {
         var repeatEnd: Date?
         var `repeat`: String?
         var tags: [String]
-        var subTodos: [SubTodo]
+        var subTodos: [String]
     }
 }

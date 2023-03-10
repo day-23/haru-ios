@@ -45,8 +45,35 @@ struct TodoAddView: View {
                 }
                 .transition(.modal)
             } else if isSubTodoModalVisible {
-                Modal(isActive: $isSubTodoModalVisible, ratio: 1) {}
-                    .transition(.modal)
+                Modal(isActive: $isSubTodoModalVisible, ratio: 1) {
+                    VStack {
+                        List {
+                            ForEach(viewModel.subTodoList, id: \.self) { subTodo in
+                                Text(subTodo)
+                            }
+                            .onDelete { indice in
+                                for index in indice {
+                                    viewModel.removeSubTodo(index)
+                                }
+                            }
+                        }
+                        .listStyle(.inset)
+                        Spacer()
+                        HStack {
+                            TextField("하위 항목을 입력해주세요", text: $viewModel.subTodoContent)
+                                .onSubmit(viewModel.createSubTodo)
+                            Button(action: viewModel.createSubTodo) {
+                                Image(systemName: "plus.app")
+                                    .scaleEffect(1.25)
+                            }
+                        }
+                        .padding(.all, 10)
+                        .background(Color(0xf1f1f5))
+                        .cornerRadius(10)
+                        .padding(.horizontal, 20)
+                    }
+                }
+                .transition(.modal)
             } else {
                 VStack {
                     List {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SubTodo: Codable {
+struct SubTodo: Codable, Identifiable {
     // MARK: - Properties
 
     let id: String

@@ -32,7 +32,7 @@ final class CheckListViewModel: ObservableObject {
                          repeat: todo.repeat,
                          endDate: todo.endDate,
                          endDateTime: todo.endDateTime,
-                         subTodos: todo.subTodos,
+                         subTodos: [], // FIXME: 서브투두 불러 와야 할듯
                          createdAt: Date(),
                          updatedAt: Date()))
             default:

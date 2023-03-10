@@ -35,7 +35,8 @@ final class TodoAddViewModel: ObservableObject {
         Day(content: "토"),
         Day(content: "일"),
     ]
-    @Published var subTodoList: [SubTodo] = []
+    @Published var subTodoContent: String = ""
+    @Published var subTodoList: [String] = []
 
     var selectedAlarm: Date? {
         if isSelectedAlarm { return alarm }
@@ -104,5 +105,14 @@ final class TodoAddViewModel: ObservableObject {
         )) { statusCode in
             completion(statusCode)
         }
+    }
+
+    func createSubTodo() {
+        subTodoList.append(subTodoContent)
+        subTodoContent = ""
+    }
+
+    func removeSubTodo(_ index: Int) {
+        subTodoList.remove(at: index)
     }
 }
