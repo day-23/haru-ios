@@ -91,6 +91,32 @@ struct TodoService {
         }
     }
 
+    // Todo 중요 표시하기
+    func updateFlag(_ todoId: String, _ flag: Bool, completion: @escaping (_ statusCode: Int) -> Void) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json"
+        ]
+
+        let params: [String: Any] = [
+            "flag": flag
+        ]
+
+        AF.request(
+            TodoService.BaseUrl + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            guard let statusCode = response.response?.statusCode else {
+                completion(-1)
+                return
+            }
+
+            completion(statusCode)
+        }
+    }
+
     // Todo 삭제하기
     func deleteTodo(_ todoId: String, completion: @escaping (_ statusCode: Int) -> Void) {
         AF.request(
@@ -99,11 +125,6 @@ struct TodoService {
         ).response { response in
             guard let statusCode = response.response?.statusCode else {
                 completion(-1)
-                return
-            }
-
-            if statusCode != 200 {
-                completion(statusCode)
                 return
             }
 

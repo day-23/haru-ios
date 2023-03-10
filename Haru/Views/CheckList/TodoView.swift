@@ -8,7 +8,20 @@
 import SwiftUI
 
 struct TodoView: View {
+    var checkListViewModel: CheckListViewModel
     var todo: Todo
+
+    let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
+    let formatterWithTime: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd, hh:mm:ss"
+        return formatter
+    }()
 
     var body: some View {
         HStack {
@@ -25,15 +38,37 @@ struct TodoView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(todo.content)
                     .font(.body)
-                Text("\(todo.memo) / \(todo.endDate?.localization() ?? todo.endDateTime?.localization() ?? Date())")
+                HStack {
+                    Group {
+                        if !todo.memo.isEmpty {
+                            Text("\(todo.memo)")
+                        }
+
+                        if let endDate = todo.endDate {
+                            if let endDateTime = todo.endDateTime {
+                                Text(formatterWithTime.string(from: endDateTime))
+                            } else {
+                                Text(formatter.string(from: endDate))
+                            }
+                        }
+                    }
                     .font(.caption2)
                     .foregroundColor(Color(0x000000, opacity: 0.5))
+                }
             }
 
             Spacer()
 
-            Image(systemName: "star")
-                .foregroundColor(Color(0x000000, opacity: 0.4))
+            Button {
+                checkListViewModel.updateFlag(todo) {}
+            } label: {
+                if todo.flag {
+                    Image(systemName: "flag.fill")
+                        .foregroundColor(.red)
+                } else {
+                    Image(systemName: "flag")
+                }
+            }
         }
     }
 }

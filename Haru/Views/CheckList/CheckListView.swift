@@ -27,8 +27,11 @@ struct CheckListView: View {
                     if viewModel.todoList.count > 0 {
                         List {
                             ForEach(viewModel.todoList) { todo in
-                                TodoView(todo: todo)
-                                    .frame(height: geometry.size.height * 0.06)
+                                TodoView(
+                                    checkListViewModel: viewModel,
+                                    todo: todo
+                                )
+                                .frame(height: geometry.size.height * 0.06)
                             }
                             .onDelete { indexSet in
                                 for index in indexSet {

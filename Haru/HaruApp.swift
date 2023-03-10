@@ -7,10 +7,9 @@
 //  Check-List Todos
 //  TODO: 하위 할일 기능 추가
 //  TODO: 수정 기능
-//  TODO: 완료 기능
 //  TODO: Lazy Loading, Pagination 로딩 추가
 //  IN-PROGRESS
-//
+//  TODO: 완료 기능
 
 import SwiftUI
 
