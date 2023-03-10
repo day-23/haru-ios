@@ -25,7 +25,7 @@ struct TodoView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(todo.content)
                     .font(.body)
-                Text(todo.memo)
+                Text("\(todo.memo) / \(todo.endDate?.localization() ?? todo.endDateTime?.localization() ?? Date())")
                     .font(.caption2)
                     .foregroundColor(Color(0x000000, opacity: 0.5))
             }
