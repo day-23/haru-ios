@@ -10,6 +10,7 @@ import SwiftUI
 struct CheckListView: View {
     @StateObject var viewModel: CheckListViewModel
     @State private var isModalVisible: Bool = false
+    @State private var isScrolled: Bool = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -42,6 +43,17 @@ struct CheckListView: View {
                                 }
                             }
                         }
+                        .simultaneousGesture(DragGesture().onChanged { value in
+                            if value.startLocation.y - value.location.y > 0 {
+                                withAnimation {
+                                    isScrolled = true
+                                }
+                            } else {
+                                withAnimation {
+                                    isScrolled = false
+                                }
+                            }
+                        })
                         .listStyle(.inset)
                     } else {
                         VStack {
@@ -71,14 +83,17 @@ struct CheckListView: View {
                     .transition(.modal)
                     .zIndex(2)
                 } else {
-                    Button {
-                        withAnimation {
-                            isModalVisible = true
+                    if !isScrolled {
+                        Button {
+                            withAnimation {
+                                isModalVisible = true
+                            }
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .scaleEffect(2)
+                                .padding(.all, 30)
                         }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .scaleEffect(2)
-                            .padding(.all, 30)
+                        .zIndex(5)
                     }
                 }
             }

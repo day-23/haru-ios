@@ -63,10 +63,11 @@ struct TodoView: View {
                 checkListViewModel.updateFlag(todo) {}
             } label: {
                 if todo.flag {
-                    Image(systemName: "flag.fill")
-                        .foregroundColor(.red)
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
                 } else {
-                    Image(systemName: "flag")
+                    Image(systemName: "star")
+                        .foregroundColor(.gray)
                 }
             }
         }
