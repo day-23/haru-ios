@@ -32,6 +32,7 @@ struct CheckListView: View {
                                     checkListViewModel: viewModel,
                                     todo: todo
                                 )
+                                .allowsHitTesting(false)
                                 .frame(height: geometry.size.height * 0.06)
                                 .contextMenu {
                                     Button(action: {

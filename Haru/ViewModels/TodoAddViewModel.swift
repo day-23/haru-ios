@@ -99,7 +99,7 @@ final class TodoAddViewModel: ObservableObject {
                 acc + (day.isClicked ? "1" : "0")
             },
             tags: tag.components(separatedBy: " ").filter { tag in
-                tag.hasSuffix("#")
+                tag.hasPrefix("#")
             },
             subTodos: subTodoList
         )) { statusCode in

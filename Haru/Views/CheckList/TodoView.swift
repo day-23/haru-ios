@@ -38,6 +38,7 @@ struct TodoView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(todo.content)
                     .font(.body)
+                    .padding(.all, todo.memo.isEmpty ? 10 : 0)
                 HStack {
                     Group {
                         if !todo.memo.isEmpty {

@@ -22,7 +22,7 @@ final class CheckListViewModel: ObservableObject {
         service.addTodo(todo) { [weak self] statusCode in
             switch statusCode {
             case 201:
-                self?.todoList.append(
+                self?.todoList.insert(
                     Todo(id: (self?.todoList.count.description)!,
                          content: todo.content,
                          memo: todo.memo,
@@ -34,7 +34,9 @@ final class CheckListViewModel: ObservableObject {
                          endDateTime: todo.endDateTime,
                          subTodos: [], // FIXME: 데이터 만들고 Response로 subTodos 받아와야 함
                          tags: [], // FIXME: 데이터 만들고 Response로 tags 받아와야 함
-                         createdAt: Date()))
+                         createdAt: Date()),
+                    at: 0
+                )
             default:
                 print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
             }
