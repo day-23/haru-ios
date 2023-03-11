@@ -16,14 +16,13 @@ class ScheduleService {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy/MM/dd HH:mm"
         return [
-            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 00:00")!, endTime: formatter.date(from: "2023/02/26 01:00")!),
-            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 22:00")!, endTime: formatter.date(from: "2023/02/26 23:00")!),
-
-            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 00:00")!, endTime: formatter.date(from: "2023/02/26 01:00")!),
-            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 22:00")!, endTime: formatter.date(from: "2023/02/26 23:00")!),
-
-            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 00:00")!, endTime: formatter.date(from: "2023/02/26 01:00")!),
-            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 22:00")!, endTime: formatter.date(from: "2023/02/26 23:00")!),
+            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 00:00")!, endTime: formatter.date(from: "2023/03/04 23:00")!),
+            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 00:00")!, endTime: formatter.date(from: "2023/03/04 23:00")!),
+            Schedule(content: "3월 4일 일정", memo: "", startTime: formatter.date(from: "2023/03/04 00:00")!, endTime: formatter.date(from: "2023/03/04 23:00")!),
+            
+            Schedule(content: "3월 5일 일정", memo: "", startTime: formatter.date(from: "2023/03/05 00:00")!, endTime: formatter.date(from: "2023/03/05 23:00")!),
+            Schedule(content: "3월 5일 일정", memo: "", startTime: formatter.date(from: "2023/03/05 00:00")!, endTime: formatter.date(from: "2023/03/05 23:00")!),
+            Schedule(content: "3월 5일 일정", memo: "", startTime: formatter.date(from: "2023/03/05 00:00")!, endTime: formatter.date(from: "2023/03/05 23:00")!),
         ]
     }
 

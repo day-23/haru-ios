@@ -43,11 +43,16 @@ class CalendarViewModel: ObservableObject {
         getCurMonthSchList(0, dateList)
     }
     
+//    func setMonthOffset(_ offset: Int) {
+//        monthOffest = offset
+//        getCurDateList(monthOffest, startOnSunday)
+//    }
+
     func addMonthOffset() {
         monthOffest += 1
         getCurDateList(monthOffest, startOnSunday)
     }
-    
+
     func subMonthOffset() {
         monthOffest -= 1
         getCurDateList(monthOffest, startOnSunday)

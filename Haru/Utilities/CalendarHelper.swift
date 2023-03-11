@@ -96,11 +96,13 @@ class CalendarHelper {
             }
             let totalCnt = Self.numberOfWeeksInMonth(days.count) * 7
             let offset = totalCnt - days.count
-            for i in 1 ... offset {
-                guard let nextDate = calendar.date(byAdding: .day, value: i, to: currentMonth.endOfMonth()) else {
-                    break
+            if offset >= 1 {
+                for i in 1 ... offset {
+                    guard let nextDate = calendar.date(byAdding: .day, value: i, to: currentMonth.endOfMonth()) else {
+                        break
+                    }
+                    days.append(DateValue(day: calendar.component(.day, from: nextDate), date: nextDate, isNextDate: true))
                 }
-                days.append(DateValue(day: calendar.component(.day, from: nextDate), date: nextDate, isNextDate: true))
             }
         }
         

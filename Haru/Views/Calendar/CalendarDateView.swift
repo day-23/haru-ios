@@ -28,9 +28,16 @@ struct CalendarDateView: View {
                     } // VStack
                     
                     Spacer(minLength: 0)
-//                    Toggle("일요일 부터 시작", isOn: $startOnSunday)
+                    Toggle("일요일 부터 시작", isOn: $calendarVM.startOnSunday)
+                    
+//                    Button {
+//                        calendarVM.setMonthOffset(0)
+//                    } label: {
+//                        Text("오늘로")
+//                    }
                     
                     Button {
+//                        calendarVM.setMonthOffset(calendarVM.monthOffest - 1)
                         calendarVM.subMonthOffset()
                     } label: {
                         Image(systemName: "chevron.left")
@@ -38,6 +45,7 @@ struct CalendarDateView: View {
                     }
                     
                     Button {
+//                        calendarVM.setMonthOffset(calendarVM.monthOffest + 1)
                         calendarVM.addMonthOffset()
                     } label: {
                         Image(systemName: "chevron.right")
@@ -93,7 +101,6 @@ struct CalendarDateView: View {
                                     }
                             }
                         }
-                        .gesture(combined)
                         
                         LazyVGrid(columns: scheduleCols, spacing: 0) {
                             ForEach(Array(0 ..< calendarVM.numberOfWeeks), id: \.self) { value in
@@ -107,6 +114,7 @@ struct CalendarDateView: View {
                         }
                         .frame(height: proxy.size.height, alignment: .top)
                     } // ZStack
+                    .gesture(combined)
                 }
             } // VStack
             
@@ -152,6 +160,9 @@ struct CalendarDateView: View {
             if !isSchModalVisible {
                 calendarVM.selectionSet.removeAll()
             }
+        }
+        .onChange(of: calendarVM.startOnSunday) { newValue in
+            calendarVM.setStartOnSunday(newValue)
         }
     }
 }
