@@ -35,7 +35,7 @@ final class CheckListViewModel: ObservableObject {
             switch result {
             case .success(let todo):
                 self.todoList.insert(
-                    Todo(id: self.todoList.count.description,
+                    Todo(id: todo.id,
                          content: todo.content,
                          memo: todo.memo,
                          todayTodo: todo.todayTodo,
