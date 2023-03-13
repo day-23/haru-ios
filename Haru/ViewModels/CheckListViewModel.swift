@@ -10,16 +10,27 @@ import Foundation
 final class CheckListViewModel: ObservableObject {
     // MARK: - Properties
 
-    private let service: TodoService = .init()
+    private let todoService: TodoService = .init()
+    private let tagService: TagService = .init()
     @Published var todoList: [Todo] = []
-    @Published var tagList: [Tag] = [
-        Tag(id: "미분류", content: "#미분류"),
-    ]
+    @Published var tagList: [Tag] = []
 
     // MARK: - Methods
 
+    func fetchTags(completion: @escaping (Result<[Tag], Error>) -> Void) {
+        tagService.fetchTags { result in
+            switch result {
+            case .success(let tagList):
+                self.tagList = tagList
+                completion(.success(tagList))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     func addTodo(_ todo: Request.Todo, completion: @escaping (_ statusCode: Int) -> Void) {
-        service.addTodo(todo) { [weak self] statusCode in
+        todoService.addTodo(todo) { [weak self] statusCode in
             switch statusCode {
             case 201:
                 self?.todoList.insert(
@@ -45,7 +56,7 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func fetchTodoList(completion: @escaping (_ statusCode: Int, [Todo]) -> Void) {
-        service.fetchTodoList { statusCode, todoList in
+        todoService.fetchTodoList { statusCode, todoList in
             switch statusCode {
             case 200:
                 self.todoList = todoList
@@ -63,7 +74,7 @@ final class CheckListViewModel: ObservableObject {
             return
         }
 
-        service.updateFlag(todo.id, !todo.flag) { statusCode in
+        todoService.updateFlag(todo.id, !todo.flag) { statusCode in
             switch statusCode {
             case 200:
                 self.todoList[index] = Todo(
@@ -90,7 +101,7 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func deleteTodo(_ todoId: String, completion: @escaping () -> Void) {
-        service.deleteTodo(todoId) { statusCode in
+        todoService.deleteTodo(todoId) { statusCode in
             switch statusCode {
             case 200:
                 completion()

@@ -113,8 +113,8 @@ struct CheckListView: View {
             }
         }
         .onAppear {
-            viewModel.fetchTodoList { _, _ in
-            }
+            viewModel.fetchTodoList { _, _ in }
+            viewModel.fetchTags { _ in }
         }
     }
 }

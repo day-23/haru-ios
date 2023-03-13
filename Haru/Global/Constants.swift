@@ -10,4 +10,5 @@ import Foundation
 struct Constants {
     static let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
     static let dateEncodingStrategy = JSONEncoder.DateEncodingStrategy.iso8601
+    static let baseURL = "http://localhost:8000/"
 }

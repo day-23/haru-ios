@@ -9,7 +9,7 @@ import Alamofire
 import Foundation
 
 struct TodoService {
-    private static let BaseUrl = "http://localhost:8000/todo/"
+    private static let baseURL = Constants.baseURL + "todo/"
 
     // Todo 생성 API 호출
     func addTodo(_ todo: Request.Todo, completion: @escaping (_ statusCode: Int) -> Void) {
@@ -21,7 +21,7 @@ struct TodoService {
         encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
 
         AF.request(
-            TodoService.BaseUrl + (Global.shared.user?.id ?? "Unknown"),
+            TodoService.baseURL + (Global.shared.user?.id ?? "Unknown"),
             method: .post,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: encoder),
@@ -49,7 +49,7 @@ struct TodoService {
         }
 
         AF.request(
-            TodoService.BaseUrl + "\(Global.shared.user?.id ?? "Unknown")/todos"
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/todos"
         ).response { response in
             guard let statusCode = response.response?.statusCode else {
                 completion(-1, [])
@@ -102,7 +102,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.BaseUrl + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
@@ -120,7 +120,7 @@ struct TodoService {
     // Todo 삭제하기
     func deleteTodo(_ todoId: String, completion: @escaping (_ statusCode: Int) -> Void) {
         AF.request(
-            TodoService.BaseUrl + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
             method: .delete
         ).response { response in
             guard let statusCode = response.response?.statusCode else {
