@@ -18,6 +18,21 @@ struct CheckListView: View {
                 VStack {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
+                            // 중요 태그
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                                .onTapGesture {}
+
+                            // 미분류 태그
+                            TagView(
+                                Tag(id: "미분류", content: "미분류")
+                            )
+
+                            // 완료 태그
+                            TagView(
+                                Tag(id: "완료", content: "완료")
+                            )
+
                             ForEach(viewModel.tagList) { tag in
                                 TagView(tag)
                                     .onTapGesture {
@@ -27,6 +42,22 @@ struct CheckListView: View {
                         }
                         .padding()
                     }
+
+                    HStack {
+                        Text("오늘 나의 하루")
+                            .font(.system(size: 20, weight: .heavy))
+                            .padding(.leading, 10)
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                    }
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(
+                        LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .leading, endPoint: .trailing)
+                    )
+                    .cornerRadius(15)
 
                     if viewModel.todoList.count > 0 {
                         List {
@@ -107,11 +138,15 @@ struct CheckListView: View {
                                 isModalVisible = true
                             }
                         } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .scaleEffect(2)
-                                .padding(.all, 30)
+                            Image(systemName: "plus")
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .bottomTrailing, endPoint: .topLeading))
+                                .clipShape(Circle())
+                                .frame(alignment: .center)
                         }
                         .zIndex(5)
+                        .padding()
                     }
                 }
             }

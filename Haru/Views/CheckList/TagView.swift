@@ -16,9 +16,11 @@ struct TagView: View {
     var body: some View {
         Text(tag.content)
             .font(.caption)
-            .padding(.all, 10)
+            .bold()
+            .padding(.vertical, 5)
+            .padding(.horizontal, 10)
             .background(Color(0xfefefe))
             .cornerRadius(10)
-            .shadow(color: Color(0x000000, opacity: 0.3), radius: 1)
+            .shadow(color: Color(0x000000, opacity: 0.7), radius: 0.5)
     }
 }

@@ -38,54 +38,65 @@ struct TodoView: View {
                 Text(todo.content)
                     .font(.body)
 
-                HStack {
-                    ForEach(todo.tags) { tag in
-                        Text(tag.content)
-                    }
+                if todo.tags.count > 0 ||
+                    todo.endDate != nil ||
+                    todo.endDateTime != nil ||
+                    todo.alarms.count > 0 ||
+                    todo.repeat != nil ||
+                    todo.repeatOption != nil ||
+                    !todo.memo.isEmpty
+                {
+                    HStack {
+                        ForEach(todo.tags) { tag in
+                            Text(tag.content)
+                        }
 
-                    if let todoDate = todo.endDate {
-                        if let todoDateTime = todo.endDateTime {
-                            Text(formatterWithTime.string(from: todoDateTime))
-                        } else {
-                            Text(formatter.string(from: todoDate))
+                        if let todoDate = todo.endDate {
+                            if let todoDateTime = todo.endDateTime {
+                                Text(formatterWithTime.string(from: todoDateTime))
+                            } else {
+                                Text(formatter.string(from: todoDate))
+                            }
+                        }
+
+                        if (todo.tags.count > 0 ||
+                            todo.endDate != nil ||
+                            todo.endDateTime != nil) &&
+                            (todo.alarms.count > 0 ||
+                                todo.repeat != nil ||
+                                todo.repeatOption != nil ||
+                                !todo.memo.isEmpty)
+                        {
+                            Text("∙")
+                        }
+
+                        if todo.alarms.count > 0 {
+                            Image(systemName: "bell")
+                        }
+
+                        if todo.repeat != nil || todo.repeatOption != nil {
+                            Image(systemName: "repeat")
+                        }
+
+                        if !todo.memo.isEmpty {
+                            Image(systemName: "note")
                         }
                     }
-
-                    if (todo.tags.count > 0 ||
-                        todo.endDate != nil ||
-                        todo.endDateTime != nil) &&
-                        (todo.alarms.count > 0 ||
-                            todo.repeat != nil ||
-                            todo.repeatOption != nil ||
-                            !todo.memo.isEmpty)
-                    {
-                        Text("∙")
-                    }
-
-                    if todo.alarms.count > 0 {
-                        Image(systemName: "bell")
-                    }
-
-                    if todo.repeat != nil || todo.repeatOption != nil {
-                        Image(systemName: "repeat")
-                    }
-
-                    if !todo.memo.isEmpty {
-                        Image(systemName: "note")
-                    }
+                    .font(.caption2)
+                    .foregroundColor(Color(0x000000, opacity: 0.5))
                 }
-                .font(.caption2)
-                .foregroundColor(Color(0x000000, opacity: 0.5))
             }
             .padding(.leading, 10)
 
             Spacer()
 
-            Image(systemName: todo.flag ? "star.fill" : "star")
-                .foregroundColor(todo.flag ? .yellow : Color(0x000000, opacity: 0.5))
-                .onTapGesture {
-                    checkListViewModel.updateFlag(todo) { _ in }
-                }
+            ZStack {
+                Image(systemName: todo.flag ? "star.fill" : "star")
+                    .foregroundStyle(todo.flag ? LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing) : LinearGradient(gradient: Gradient(colors: [Color(0x000000, opacity: 0.4)]), startPoint: .top, endPoint: .bottom))
+                    .onTapGesture {
+                        checkListViewModel.updateFlag(todo) { _ in }
+                    }
+            }
         }
     }
 }

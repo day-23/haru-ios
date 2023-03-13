@@ -99,7 +99,9 @@ final class TodoAddViewModel: ObservableObject {
             }.isEmpty ? nil : days.reduce("") { acc, day in
                 acc + (day.isClicked ? "1" : "0")
             },
-            tags: tag.components(separatedBy: " "),
+            tags: tag.components(separatedBy: " ").filter { tag in
+                !tag.isEmpty
+            },
             subTodos: subTodoList
         )) { result in
             switch result {
