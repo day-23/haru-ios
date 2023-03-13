@@ -41,6 +41,7 @@ final class CheckListViewModel: ObservableObject {
                          flag: todo.flag,
                          repeatOption: todo.repeatOption,
                          repeat: todo.repeat,
+                         alarms: [], // FIXME: 데이터 만들고 Response로 받아와야 함
                          endDate: todo.endDate,
                          endDateTime: todo.endDateTime,
                          subTodos: [], // FIXME: 데이터 만들고 Response로 subTodos 받아와야 함
@@ -85,6 +86,7 @@ final class CheckListViewModel: ObservableObject {
                     flag: !todo.flag,
                     repeatOption: todo.repeatOption,
                     repeat: todo.repeat,
+                    alarms: todo.alarms,
                     endDate: todo.endDate,
                     endDateTime: todo.endDateTime,
                     subTodos: todo.subTodos,

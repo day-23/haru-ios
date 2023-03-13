@@ -15,6 +15,7 @@ struct Request: Codable {
         var flag: Bool
         var endDate: Date?
         var endDateTime: Date?
+        var alarms: [Date]
         var repeatOption: String?
         var repeatEnd: Date?
         var `repeat`: String?

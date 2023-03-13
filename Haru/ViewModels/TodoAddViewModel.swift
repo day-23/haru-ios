@@ -38,9 +38,9 @@ final class TodoAddViewModel: ObservableObject {
     @Published var subTodoContent: String = ""
     @Published var subTodoList: [String] = []
 
-    var selectedAlarm: Date? {
-        if isSelectedAlarm { return alarm }
-        return nil
+    var selectedAlarm: [Date] {
+        if isSelectedAlarm { return [alarm] }
+        return []
     }
 
     var selectedEndDate: Date? {
@@ -91,6 +91,7 @@ final class TodoAddViewModel: ObservableObject {
             flag: flag,
             endDate: selectedEndDate,
             endDateTime: selectedEndDateTime,
+            alarms: selectedAlarm,
             repeatOption: repeatOption == .none ? nil : repeatOption.rawValue,
             repeatEnd: selectedRepeatEnd,
             repeat: repeatOption != .none || days.filter { day in

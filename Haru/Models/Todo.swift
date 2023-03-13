@@ -17,6 +17,7 @@ struct Todo: Identifiable, Codable {
     private(set) var flag: Bool
     private(set) var repeatOption: String?
     private(set) var `repeat`: String?
+    private(set) var alarms: [Alarm]
     private(set) var endDate: Date?
     private(set) var endDateTime: Date?
     private(set) var subTodos: [SubTodo]

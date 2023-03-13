@@ -7,7 +7,7 @@
 //  - Check-List Todos
 //  TODO: 완료 기능
 //  TODO: 수정 기능
-//  TODO: Lazy Loading, Pagination 로딩 추가
+//  TODO: Todo 추가시 Reponse로 Tag, SubTodo 받아서 데이터 넣어주기
 //  - IN-PROGRESS
 //  TODO: 하위 할일 기능 추가
 //          - API 연결
