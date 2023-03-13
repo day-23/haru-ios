@@ -31,7 +31,7 @@ struct TodoService {
         decoder.dateDecodingStrategy = .formatted(formatter)
 
         AF.request(
-            TodoService.baseURL + (Global.shared.user?.id ?? "Unknown"),
+            TodoService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: encoder),
@@ -70,7 +70,30 @@ struct TodoService {
         decoder.dateDecodingStrategy = .formatted(formatter)
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/todos"
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos"
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
+            switch response.result {
+            case .success(let response):
+                completion(.success(response.data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func fetchTodoListWithTag(_ tag: Tag, completion: @escaping (Result<[Todo], Error>) -> Void) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Todo]
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(formatter)
+
+        AF.request(
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)"
         ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case .success(let response):
@@ -92,7 +115,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
@@ -110,7 +133,7 @@ struct TodoService {
     // Todo 삭제하기
     func deleteTodo(_ todoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .delete
         ).response { response in
             switch response.result {
@@ -125,7 +148,7 @@ struct TodoService {
     // SubTodo 삭제하기
     func deleteSubTodo(_ todoId: String, _ subTodoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)/subtodo/\(subTodoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)/subtodo/\(subTodoId)",
             method: .delete
         ).response { response in
             switch response.result {

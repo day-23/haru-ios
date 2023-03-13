@@ -20,6 +20,9 @@ struct CheckListView: View {
                         HStack {
                             ForEach(viewModel.tagList) { tag in
                                 TagView(tag)
+                                    .onTapGesture {
+                                        viewModel.fetchTodoListWithTag(tag) { _ in }
+                                    }
                             }
                         }
                         .padding()

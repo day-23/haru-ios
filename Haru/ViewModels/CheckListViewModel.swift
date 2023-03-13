@@ -70,6 +70,18 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
+    func fetchTodoListWithTag(_ tag: Tag, completion: @escaping (Result<[Todo], Error>) -> Void) {
+        todoService.fetchTodoListWithTag(tag) { result in
+            switch result {
+            case .success(let todoList):
+                self.todoList = todoList
+                completion(.success(todoList))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     func updateFlag(_ todo: Todo, completion: @escaping (Result<Bool, Error>) -> Void) {
         guard let index = todoList.firstIndex(where: { $0.id == todo.id }) else {
             print("[Debug] Todo를 찾지 못했습니다.")

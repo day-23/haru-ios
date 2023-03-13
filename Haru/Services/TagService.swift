@@ -19,7 +19,7 @@ struct TagService {
         }
 
         AF.request(
-            TagService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/tags",
+            TagService.baseURL + "\(Global.shared.user?.id ?? "unknown")/tags",
             method: .get
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
