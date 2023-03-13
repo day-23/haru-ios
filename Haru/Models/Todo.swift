@@ -20,7 +20,7 @@ struct Todo: Identifiable, Codable {
     private(set) var alarms: [Alarm]
     private(set) var endDate: Date?
     private(set) var endDateTime: Date?
-    private(set) var subTodos: [SubTodo]
+    var subTodos: [SubTodo]
     private(set) var tags: [Tag]
 
     // MARK: - Dates
@@ -59,5 +59,9 @@ extension Todo {
 
     mutating func setRepeat(_ repeat: String) {
         self.repeat = `repeat`
+    }
+
+    mutating func setSubTodos(_ subTodos: [SubTodo]) {
+        self.subTodos = subTodos
     }
 }

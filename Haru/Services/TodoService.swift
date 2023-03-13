@@ -121,4 +121,19 @@ struct TodoService {
             }
         }
     }
+
+    // SubTodo 삭제하기
+    func deleteSubTodo(_ todoId: String, _ subTodoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        AF.request(
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)/subtodo/\(subTodoId)",
+            method: .delete
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
 }

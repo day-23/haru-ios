@@ -35,12 +35,8 @@ struct CheckListView: View {
                                 .frame(height: geometry.size.height * 0.06)
                                 .contextMenu {
                                     Button(action: {
-                                        if let index = viewModel.todoList.firstIndex(where: { $0.id == todo.id
-                                        }) {
-                                            viewModel.deleteTodo(viewModel.todoList[index].id) { _ in
-                                                viewModel.todoList.remove(at: index)
-                                                viewModel.fetchTodoList { _ in }
-                                            }
+                                        viewModel.deleteTodo(todo) { _ in
+                                            viewModel.fetchTodoList { _ in }
                                         }
                                     }, label: {
                                         Label("Delete", systemImage: "trash")
@@ -49,6 +45,15 @@ struct CheckListView: View {
 
                                 ForEach(todo.subTodos) { subTodo in
                                     SubTodoView(checkListViewModel: viewModel, subTodo: subTodo)
+                                        .contextMenu {
+                                            Button(action: {
+                                                viewModel.deleteSubTodo(todo, subTodo) { _ in
+                                                    viewModel.fetchTodoList { _ in }
+                                                }
+                                            }, label: {
+                                                Label("Delete", systemImage: "trash")
+                                            })
+                                        }
                                 }
                                 .padding(.leading, geometry.size.width * 0.05)
                             }

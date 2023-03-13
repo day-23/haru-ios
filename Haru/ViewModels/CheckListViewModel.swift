@@ -105,8 +105,19 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    func deleteTodo(_ todoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        todoService.deleteTodo(todoId) { result in
+    func deleteTodo(_ todo: Todo, completion: @escaping (Result<Bool, Error>) -> Void) {
+        todoService.deleteTodo(todo.id) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deleteSubTodo(_ todo: Todo, _ subTodo: SubTodo, completion: @escaping (Result<Bool, Error>) -> Void) {
+        todoService.deleteSubTodo(todo.id, subTodo.id) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
