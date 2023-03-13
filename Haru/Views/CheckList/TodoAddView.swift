@@ -61,9 +61,6 @@ struct TodoAddView: View {
                                         })
                                     }
                             }
-                            .onDelete { indexSet in
-                                viewModel.subTodoList.remove(atOffsets: indexSet)
-                            }
                         }
                         .listStyle(.inset)
                         Spacer()

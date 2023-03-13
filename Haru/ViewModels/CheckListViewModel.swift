@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 final class CheckListViewModel: ObservableObject {
     // MARK: - Properties
@@ -78,23 +79,25 @@ final class CheckListViewModel: ObservableObject {
         todoService.updateFlag(todo.id, !todo.flag) { result in
             switch result {
             case .success(let success):
-                self.todoList[index] = Todo(
-                    id: todo.id,
-                    content: todo.content,
-                    memo: todo.memo,
-                    todayTodo: todo.todayTodo,
-                    flag: !todo.flag,
-                    repeatOption: todo.repeatOption,
-                    repeat: todo.repeat,
-                    alarms: todo.alarms,
-                    endDate: todo.endDate,
-                    endDateTime: todo.endDateTime,
-                    subTodos: todo.subTodos,
-                    tags: todo.tags,
-                    createdAt: todo.createdAt,
-                    updatedAt: todo.updatedAt,
-                    deletedAt: todo.deletedAt
-                )
+                withAnimation(.easeOut(duration: 0.25)) {
+                    self.todoList[index] = Todo(
+                        id: todo.id,
+                        content: todo.content,
+                        memo: todo.memo,
+                        todayTodo: todo.todayTodo,
+                        flag: !todo.flag,
+                        repeatOption: todo.repeatOption,
+                        repeat: todo.repeat,
+                        alarms: todo.alarms,
+                        endDate: todo.endDate,
+                        endDateTime: todo.endDateTime,
+                        subTodos: todo.subTodos,
+                        tags: todo.tags,
+                        createdAt: todo.createdAt,
+                        updatedAt: todo.updatedAt,
+                        deletedAt: todo.deletedAt
+                    )
+                }
                 completion(.success(success))
             case .failure(let error):
                 completion(.failure(error))

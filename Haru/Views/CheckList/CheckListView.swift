@@ -32,7 +32,6 @@ struct CheckListView: View {
                                     checkListViewModel: viewModel,
                                     todo: todo
                                 )
-                                .allowsHitTesting(false)
                                 .frame(height: geometry.size.height * 0.06)
                                 .contextMenu {
                                     Button(action: {
@@ -52,14 +51,6 @@ struct CheckListView: View {
                                     SubTodoView(checkListViewModel: viewModel, subTodo: subTodo)
                                 }
                                 .padding(.leading, geometry.size.width * 0.05)
-                            }
-                            .onDelete { indexSet in
-                                for index in indexSet {
-                                    viewModel.deleteTodo(viewModel.todoList[index].id) { _ in
-                                        viewModel.todoList.remove(at: index)
-                                        viewModel.fetchTodoList { _ in }
-                                    }
-                                }
                             }
                         }
                         .simultaneousGesture(DragGesture().onChanged { value in

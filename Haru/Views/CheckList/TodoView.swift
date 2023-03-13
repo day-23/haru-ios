@@ -81,17 +81,11 @@ struct TodoView: View {
 
             Spacer()
 
-            Button {
-                checkListViewModel.updateFlag(todo) { _ in }
-            } label: {
-                if todo.flag {
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                } else {
-                    Image(systemName: "star")
-                        .foregroundColor(.gray)
+            Image(systemName: todo.flag ? "star.fill" : "star")
+                .foregroundColor(todo.flag ? .yellow : Color(0x000000, opacity: 0.5))
+                .onTapGesture {
+                    checkListViewModel.updateFlag(todo) { _ in }
                 }
-            }
         }
     }
 }
