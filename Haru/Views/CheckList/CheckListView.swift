@@ -38,9 +38,9 @@ struct CheckListView: View {
                                     Button(action: {
                                         if let index = viewModel.todoList.firstIndex(where: { $0.id == todo.id
                                         }) {
-                                            viewModel.deleteTodo(viewModel.todoList[index].id) {
+                                            viewModel.deleteTodo(viewModel.todoList[index].id) { _ in
                                                 viewModel.todoList.remove(at: index)
-                                                viewModel.fetchTodoList { _, _ in }
+                                                viewModel.fetchTodoList { _ in }
                                             }
                                         }
                                     }, label: {
@@ -50,9 +50,9 @@ struct CheckListView: View {
                             }
                             .onDelete { indexSet in
                                 for index in indexSet {
-                                    viewModel.deleteTodo(viewModel.todoList[index].id) {
+                                    viewModel.deleteTodo(viewModel.todoList[index].id) { _ in
                                         viewModel.todoList.remove(at: index)
-                                        viewModel.fetchTodoList { _, _ in }
+                                        viewModel.fetchTodoList { _ in }
                                     }
                                 }
                             }
@@ -113,7 +113,7 @@ struct CheckListView: View {
             }
         }
         .onAppear {
-            viewModel.fetchTodoList { _, _ in }
+            viewModel.fetchTodoList { _ in }
             viewModel.fetchTags { _ in }
         }
     }

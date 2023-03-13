@@ -82,7 +82,7 @@ struct TodoView: View {
             Spacer()
 
             Button {
-                checkListViewModel.updateFlag(todo) {}
+                checkListViewModel.updateFlag(todo) { _ in }
             } label: {
                 if todo.flag {
                     Image(systemName: "star.fill")

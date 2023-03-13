@@ -50,7 +50,7 @@ struct TodoService {
     }
 
     // 나의 Todo 목록 가져오기
-    func fetchTodoList(completion: @escaping (_ statusCode: Int, [Todo]) -> Void) {
+    func fetchTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {
         struct Response: Codable {
             struct Pagination: Codable {
                 let totalItems: Int
@@ -64,51 +64,25 @@ struct TodoService {
             let pagination: Pagination
         }
 
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(formatter)
+
         AF.request(
             TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/todos"
-        ).response { response in
-            guard let statusCode = response.response?.statusCode else {
-                completion(-1, [])
-                return
-            }
-
-            if statusCode != 200 {
-                completion(statusCode, [])
-                return
-            }
-
-            guard let data = response.data else { return }
-
-            let decoder: JSONDecoder = {
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .custom { decoder in
-                    let container = try decoder.singleValueContainer()
-                    let dateString = try container.decode(String.self)
-
-                    let formatter = DateFormatter()
-                    formatter.dateFormat = Constants.dateFormat
-                    if let date = formatter.date(from: dateString) {
-                        return date
-                    }
-
-                    throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date string \(dateString)")
-                }
-                return decoder
-            }()
-
-            do {
-                let result = try decoder.decode(Response.self, from: data)
-                if result.success {
-                    completion(statusCode, result.data)
-                }
-            } catch {
-                print("[Debug] \(String(describing: error))")
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
+            switch response.result {
+            case .success(let response):
+                completion(.success(response.data))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }
 
     // Todo 중요 표시하기
-    func updateFlag(_ todoId: String, _ flag: Bool, completion: @escaping (_ statusCode: Int) -> Void) {
+    func updateFlag(_ todoId: String, _ flag: Bool, completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json"
         ]
@@ -124,27 +98,27 @@ struct TodoService {
             encoding: JSONEncoding.default,
             headers: headers
         ).response { response in
-            guard let statusCode = response.response?.statusCode else {
-                completion(-1)
-                return
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case .failure(let error):
+                completion(.failure(error))
             }
-
-            completion(statusCode)
         }
     }
 
     // Todo 삭제하기
-    func deleteTodo(_ todoId: String, completion: @escaping (_ statusCode: Int) -> Void) {
+    func deleteTodo(_ todoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
         AF.request(
             TodoService.baseURL + "\(Global.shared.user?.id ?? "Unknown")/\(todoId)",
             method: .delete
         ).response { response in
-            guard let statusCode = response.response?.statusCode else {
-                completion(-1)
-                return
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case .failure(let error):
+                completion(.failure(error))
             }
-
-            completion(statusCode)
         }
     }
 }

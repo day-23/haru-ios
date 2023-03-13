@@ -57,28 +57,27 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    func fetchTodoList(completion: @escaping (_ statusCode: Int, [Todo]) -> Void) {
-        todoService.fetchTodoList { statusCode, todoList in
-            switch statusCode {
-            case 200:
+    func fetchTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {
+        todoService.fetchTodoList { result in
+            switch result {
+            case .success(let todoList):
                 self.todoList = todoList
-            case -1:
-                print("[Debug] Server not running now.")
-            default:
-                print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.fetchTodoList()")
+                completion(.success(todoList))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }
 
-    func updateFlag(_ todo: Todo, completion: @escaping () -> Void) {
+    func updateFlag(_ todo: Todo, completion: @escaping (Result<Bool, Error>) -> Void) {
         guard let index = todoList.firstIndex(where: { $0.id == todo.id }) else {
             print("[Debug] Todo를 찾지 못했습니다.")
             return
         }
 
-        todoService.updateFlag(todo.id, !todo.flag) { statusCode in
-            switch statusCode {
-            case 200:
+        todoService.updateFlag(todo.id, !todo.flag) { result in
+            switch result {
+            case .success(let success):
                 self.todoList[index] = Todo(
                     id: todo.id,
                     content: todo.content,
@@ -96,24 +95,20 @@ final class CheckListViewModel: ObservableObject {
                     updatedAt: todo.updatedAt,
                     deletedAt: todo.deletedAt
                 )
-                completion()
-            case -1:
-                print("[Debug] Server not running now.")
-            default:
-                print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.deleteTodo(_ todoId: String)")
+                completion(.success(success))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }
 
-    func deleteTodo(_ todoId: String, completion: @escaping () -> Void) {
-        todoService.deleteTodo(todoId) { statusCode in
-            switch statusCode {
-            case 200:
-                completion()
-            case -1:
-                print("[Debug] Server not running now.")
-            default:
-                print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.deleteTodo(_ todoId: String)")
+    func deleteTodo(_ todoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        todoService.deleteTodo(todoId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }
