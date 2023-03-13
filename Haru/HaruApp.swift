@@ -7,8 +7,8 @@
 //  - Check-List Todos
 //  TODO: 완료 기능
 //  TODO: 수정 기능
-//  - IN-PROGRESS
-//  TODO: API Call refactoring 하기
+//  IN-PROGRESS
+//  TODO: Tag 클릭시 해당 Tag로 정렬
 
 import SwiftUI
 

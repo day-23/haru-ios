@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1310B00C29BF109A00DEC17F /* TagService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00B29BF109A00DEC17F /* TagService.swift */; };
 		1310B00E29BF2FA700DEC17F /* Alarm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00D29BF2FA700DEC17F /* Alarm.swift */; };
+		1310B01029BF48A800DEC17F /* SubTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00F29BF48A700DEC17F /* SubTodoView.swift */; };
 		1334334A29B4FBC500F26F57 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334334929B4FBC500F26F57 /* Modal.swift */; };
 		1334334C29B5A02400F26F57 /* Tab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334334B29B5A02400F26F57 /* Tab.swift */; };
 		1334334F29B5A0AC00F26F57 /* CheckListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334334E29B5A0AC00F26F57 /* CheckListView.swift */; };
@@ -44,6 +45,7 @@
 /* Begin PBXFileReference section */
 		1310B00B29BF109A00DEC17F /* TagService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagService.swift; sourceTree = "<group>"; };
 		1310B00D29BF2FA700DEC17F /* Alarm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alarm.swift; sourceTree = "<group>"; };
+		1310B00F29BF48A700DEC17F /* SubTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubTodoView.swift; sourceTree = "<group>"; };
 		1334334929B4FBC500F26F57 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		1334334B29B5A02400F26F57 /* Tab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
 		1334334E29B5A0AC00F26F57 /* CheckListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckListView.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 				137611FC29B6253E008787BD /* TodoView.swift */,
 				13C79A1629B7047800E68E55 /* TagView.swift */,
 				13C79A1A29B764F100E68E55 /* TodoAddView.swift */,
+				1310B00F29BF48A700DEC17F /* SubTodoView.swift */,
 			);
 			path = CheckList;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 				1334334C29B5A02400F26F57 /* Tab.swift in Sources */,
 				13C79A1929B7436000E68E55 /* RepeatOption.swift in Sources */,
 				137611F529B6051F008787BD /* TodoLog.swift in Sources */,
+				1310B01029BF48A800DEC17F /* SubTodoView.swift in Sources */,
 				13A15DC229B8C939003BE771 /* TodoAddViewModel.swift in Sources */,
 				13C79A1729B7047800E68E55 /* TagView.swift in Sources */,
 				137611EF29B5CB90008787BD /* TodoService.swift in Sources */,

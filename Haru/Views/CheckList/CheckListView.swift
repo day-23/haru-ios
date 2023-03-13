@@ -47,6 +47,11 @@ struct CheckListView: View {
                                         Label("Delete", systemImage: "trash")
                                     })
                                 }
+
+                                ForEach(todo.subTodos) { subTodo in
+                                    SubTodoView(checkListViewModel: viewModel, subTodo: subTodo)
+                                }
+                                .padding(.leading, geometry.size.width * 0.05)
                             }
                             .onDelete { indexSet in
                                 for index in indexSet {
@@ -116,11 +121,5 @@ struct CheckListView: View {
             viewModel.fetchTodoList { _ in }
             viewModel.fetchTags { _ in }
         }
-    }
-}
-
-struct CheckListView_Previews: PreviewProvider {
-    static var previews: some View {
-        CheckListView(viewModel: CheckListViewModel())
     }
 }
