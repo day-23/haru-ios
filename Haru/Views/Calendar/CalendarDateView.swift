@@ -66,7 +66,6 @@ struct CalendarDateView: View {
                 
                 // Dates ...
                 let dateColumns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
-                let scheduleCols = Array(repeating: GridItem(.flexible(), spacing: 0), count: 1)
                 
                 GeometryReader { proxy in
                     // TODO: 꾹 누르기만 해도 selectionSet에 아이템 담아주기
@@ -88,34 +87,27 @@ struct CalendarDateView: View {
                     
                     let combined = longPress.sequenced(before: drag)
                     
-                    ZStack {
+                    Group {
                         LazyVGrid(columns: dateColumns, spacing: 0) {
-                            ForEach(calendarVM.dateList) { item in
-                                CalendarDateItem(selectionSet: $calendarVM.selectionSet, value: item)
-                                    .frame(width: proxy.size.width / 7, height: proxy.size.height / CGFloat(calendarVM.numberOfWeeks), alignment: .top)
-                                    .background(calendarVM.selectionSet.contains(item) ? .cyan : .white)
-                                    .border(width: 0.5, edges: [.top], color: Color(0xd3d3d3))
-                                    .onTapGesture {
-                                        calendarVM.selectedDate = item
-                                        isDayModalVisible = true
-                                    }
-                            }
-                        }
-                        
-                        LazyVGrid(columns: scheduleCols, spacing: 0) {
-                            ForEach(Array(0 ..< calendarVM.numberOfWeeks), id: \.self) { value in
-                                VStack {
+                            ForEach(0 ..< calendarVM.dateList.count, id: \.self) { index in
+                                VStack(spacing: 0) {
+                                    CalendarDateItem(selectionSet: $calendarVM.selectionSet, value: calendarVM.dateList[index])
+                                    
+                                    CalendarScheduleItem(scheduleList: $calendarVM.scheduleList[index], date: calendarVM.dateList[index].day)
                                     Spacer()
-                                        .frame(height: 32)
-                                    CalendarScheduleItem(widthSize: proxy.size.width, heightSize: proxy.size.height / CGFloat(calendarVM.numberOfWeeks) - 32, scheduleList: $calendarVM.scheduleList[value])
-                                        .frame(width: proxy.size.width, height: proxy.size.height / CGFloat(calendarVM.numberOfWeeks) - 32, alignment: .top)
+                                }
+                                .frame(width: proxy.size.width / 7, height: proxy.size.height / CGFloat(calendarVM.numberOfWeeks), alignment: .top)
+                                .background(calendarVM.selectionSet.contains(calendarVM.dateList[index]) ? .cyan : .white)
+                                .border(width: 0.5, edges: [.top], color: Color(0xd3d3d3))
+                                .onTapGesture {
+                                    calendarVM.selectedDate = calendarVM.dateList[index]
+                                    isDayModalVisible = true
                                 }
                             }
                         }
-                        .frame(height: proxy.size.height, alignment: .top)
-                    } // ZStack
+                    } // Group
                     .gesture(combined)
-                }
+                } // GeometryReader
             } // VStack
             
             // 일정 추가를 위한 모달창

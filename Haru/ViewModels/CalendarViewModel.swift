@@ -10,7 +10,7 @@ import SwiftUI
 
 class CalendarViewModel: ObservableObject {
     // 현재 달력에 보여질 일정들만 모은 자료구조
-    @Published var scheduleList: [[Schedule]] = []
+    @Published var scheduleList: [[Int: Schedule]] = [[:]]
 
     @Published var startOnSunday: Bool
     
@@ -39,7 +39,6 @@ class CalendarViewModel: ObservableObject {
         selectedDate = .init(day: Date().day, date: Date())
         
         setStartOnSunday(startOnSunday)
-        getCurMonthSchList(0, dateList)
     }
 
     func addMonthOffset() {
@@ -61,7 +60,6 @@ class CalendarViewModel: ObservableObject {
     }
     
     func getCurDateList(_ monthOffset: Int, _ startOnSunday: Bool) {
-        print("call")
         dateList = CalendarHelper.extractDate(monthOffset, startOnSunday)
         
         numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)

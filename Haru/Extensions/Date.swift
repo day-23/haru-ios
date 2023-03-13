@@ -42,4 +42,12 @@ public extension Date {
     internal func endOfMonth() -> Date {
         Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth())!
     }
+    
+    internal func distance(to other: Date) -> TimeInterval {
+        other.timeIntervalSinceReferenceDate - timeIntervalSinceReferenceDate
+    }
+
+    internal func advanced(by n: TimeInterval) -> Date {
+        self + n
+    }
 }
