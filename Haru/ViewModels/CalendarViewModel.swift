@@ -39,14 +39,8 @@ class CalendarViewModel: ObservableObject {
         selectedDate = .init(day: Date().day, date: Date())
         
         setStartOnSunday(startOnSunday)
-        getCurDateList(monthOffest, startOnSunday)
         getCurMonthSchList(0, dateList)
     }
-    
-//    func setMonthOffset(_ offset: Int) {
-//        monthOffest = offset
-//        getCurDateList(monthOffest, startOnSunday)
-//    }
 
     func addMonthOffset() {
         monthOffest += 1
@@ -60,11 +54,14 @@ class CalendarViewModel: ObservableObject {
     
     func setStartOnSunday(_ startOnSunday: Bool) {
         self.startOnSunday = startOnSunday
+        
         dayList = CalendarHelper.getDays(startOnSunday)
+        
         getCurDateList(monthOffest, startOnSunday)
     }
     
     func getCurDateList(_ monthOffset: Int, _ startOnSunday: Bool) {
+        print("call")
         dateList = CalendarHelper.extractDate(monthOffset, startOnSunday)
         
         numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)

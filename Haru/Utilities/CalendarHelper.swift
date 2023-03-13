@@ -78,8 +78,9 @@ class CalendarHelper {
                 days.insert(DateValue(day: calendar.component(.day, from: prevDate), date: prevDate, isPrevDate: true), at: 0)
             }
             let totalCnt = Self.numberOfWeeksInMonth(days.count) * 7
-            let offset = totalCnt - days.count
-            for i in 1 ... offset {
+            let offset = totalCnt - days.count + 1
+            
+            for i in 1 ..< offset {
                 guard let nextDate = calendar.date(byAdding: .day, value: i, to: currentMonth.endOfMonth()) else {
                     break
                 }
@@ -88,21 +89,21 @@ class CalendarHelper {
             
         } else {
             // 이전 달의 날짜를 보여줄 공간이 있다면 days에 추가
-            for i in 1 ..< firstWeekday - 1 {
+            for i in stride(from: 1, to: firstWeekday - 1 == 0 ? 7 : firstWeekday - 1, by: 1) {
                 guard let prevDate = calendar.date(byAdding: .day, value: -i, to: currentMonth.startOfMonth()) else {
                     break
                 }
                 days.insert(DateValue(day: calendar.component(.day, from: prevDate), date: prevDate, isPrevDate: true), at: 0)
             }
+            
             let totalCnt = Self.numberOfWeeksInMonth(days.count) * 7
-            let offset = totalCnt - days.count
-            if offset >= 1 {
-                for i in 1 ... offset {
-                    guard let nextDate = calendar.date(byAdding: .day, value: i, to: currentMonth.endOfMonth()) else {
-                        break
-                    }
-                    days.append(DateValue(day: calendar.component(.day, from: nextDate), date: nextDate, isNextDate: true))
+            let offset = totalCnt - days.count + 1
+            
+            for i in 1 ..< offset {
+                guard let nextDate = calendar.date(byAdding: .day, value: i, to: currentMonth.endOfMonth()) else {
+                    break
                 }
+                days.append(DateValue(day: calendar.component(.day, from: nextDate), date: nextDate, isNextDate: true))
             }
         }
         
