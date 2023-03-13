@@ -213,15 +213,15 @@ struct TodoAddView: View {
                     .listStyle(.plain)
                     Spacer()
                     Button {
-                        viewModel.addTodo { statusCode in
-                            switch statusCode {
-                            case 201:
+                        viewModel.addTodo { result in
+                            switch result {
+                            case .success(let success):
                                 withAnimation {
                                     dismissAction.callAsFunction()
                                     isActive = false
                                 }
-                            default:
-                                print("[Debug] StatusCode = \(statusCode) in TodoAddView")
+                            case .failure(let failure):
+                                print("[Debug] StatusCode = \(failure) in TodoAddView")
                             }
                         }
                     } label: {

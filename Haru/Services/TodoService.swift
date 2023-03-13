@@ -12,7 +12,12 @@ struct TodoService {
     private static let baseURL = Constants.baseURL + "todo/"
 
     // Todo 생성 API 호출
-    func addTodo(_ todo: Request.Todo, completion: @escaping (_ statusCode: Int) -> Void) {
+    func addTodo(_ todo: Request.Todo, completion: @escaping (Result<Todo, Error>) -> Void) {
+        struct Response: Codable {
+            let success: Bool
+            let data: Todo
+        }
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json"
         ]
@@ -20,15 +25,26 @@ struct TodoService {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
 
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(formatter)
+
         AF.request(
             TodoService.baseURL + (Global.shared.user?.id ?? "Unknown"),
             method: .post,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: encoder),
             headers: headers
-        ).response { response in
-            if let statusCode = response.response?.statusCode {
-                completion(statusCode)
+        ).responseDecodable(
+            of: Response.self,
+            decoder: decoder
+        ) { response in
+            switch response.result {
+            case .success(let response):
+                completion(.success(response.data))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }

@@ -83,7 +83,7 @@ final class TodoAddViewModel: ObservableObject {
 
     // MARK: - Methods
 
-    func addTodo(completion: @escaping (Int) -> Void) {
+    func addTodo(completion: @escaping (Result<Todo, Error>) -> Void) {
         checkListViewModel.addTodo(Request.Todo(
             content: todoContent,
             memo: memo,
@@ -99,12 +99,15 @@ final class TodoAddViewModel: ObservableObject {
             }.isEmpty ? nil : days.reduce("") { acc, day in
                 acc + (day.isClicked ? "1" : "0")
             },
-            tags: tag.components(separatedBy: " ").filter { tag in
-                tag.hasPrefix("#")
-            },
+            tags: tag.components(separatedBy: " "),
             subTodos: subTodoList
-        )) { statusCode in
-            completion(statusCode)
+        )) { result in
+            switch result {
+            case .success(let todo):
+                completion(.success(todo))
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
     }
 

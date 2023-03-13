@@ -26,8 +26,8 @@ struct Todo: Identifiable, Codable {
     // MARK: - Dates
 
     let createdAt: Date
-//    private(set) var updatedAt: Date
-//    private(set) var deletedAt: Date?
+    private(set) var updatedAt: Date?
+    private(set) var deletedAt: Date?
 }
 
 // MARK: - Extensions

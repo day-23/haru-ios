@@ -29,30 +29,31 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    func addTodo(_ todo: Request.Todo, completion: @escaping (_ statusCode: Int) -> Void) {
-        todoService.addTodo(todo) { [weak self] statusCode in
-            switch statusCode {
-            case 201:
-                self?.todoList.insert(
-                    Todo(id: (self?.todoList.count.description)!,
+    func addTodo(_ todo: Request.Todo, completion: @escaping (Result<Todo, Error>) -> Void) {
+        todoService.addTodo(todo) { result in
+            switch result {
+            case .success(let todo):
+                self.todoList.insert(
+                    Todo(id: self.todoList.count.description,
                          content: todo.content,
                          memo: todo.memo,
                          todayTodo: todo.todayTodo,
                          flag: todo.flag,
                          repeatOption: todo.repeatOption,
                          repeat: todo.repeat,
-                         alarms: [], // FIXME: 데이터 만들고 Response로 받아와야 함
+                         alarms: todo.alarms,
                          endDate: todo.endDate,
                          endDateTime: todo.endDateTime,
-                         subTodos: [], // FIXME: 데이터 만들고 Response로 subTodos 받아와야 함
-                         tags: [], // FIXME: 데이터 만들고 Response로 tags 받아와야 함
+                         subTodos: todo.subTodos,
+                         tags: todo.tags,
                          createdAt: Date()),
                     at: 0
                 )
-            default:
-                print("[Debug] StatusCode = \(statusCode) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
+                completion(.success(todo))
+            case .failure(let error):
+                print("[Debug] \(error) in CheckListViewModel.addTodo(_ todo: Request.Todo)")
+                completion(.failure(error))
             }
-            completion(statusCode)
         }
     }
 
@@ -91,7 +92,9 @@ final class CheckListViewModel: ObservableObject {
                     endDateTime: todo.endDateTime,
                     subTodos: todo.subTodos,
                     tags: todo.tags,
-                    createdAt: todo.createdAt
+                    createdAt: todo.createdAt,
+                    updatedAt: todo.updatedAt,
+                    deletedAt: todo.deletedAt
                 )
                 completion()
             case -1:
