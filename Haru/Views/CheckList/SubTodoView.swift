@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SubTodoView: View {
     var checkListViewModel: CheckListViewModel
+    var todo: Todo
     var subTodo: SubTodo
 
     var body: some View {
@@ -26,6 +27,16 @@ struct SubTodoView: View {
                 .padding(.leading, 10)
 
             Spacer()
+        }
+        .background(.white)
+        .contextMenu {
+            Button(action: {
+                checkListViewModel.deleteSubTodo(todo, subTodo) { _ in
+                    checkListViewModel.fetchTodoList { _ in }
+                }
+            }, label: {
+                Label("Delete", systemImage: "trash")
+            })
         }
     }
 }

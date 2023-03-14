@@ -98,5 +98,15 @@ struct TodoView: View {
                     }
             }
         }
+        .background(.white)
+        .contextMenu {
+            Button(action: {
+                checkListViewModel.deleteTodo(todo) { _ in
+                    checkListViewModel.fetchTodoList { _ in }
+                }
+            }, label: {
+                Label("Delete", systemImage: "trash")
+            })
+        }
     }
 }

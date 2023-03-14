@@ -15,6 +15,7 @@ final class CheckListViewModel: ObservableObject {
     private let tagService: TagService = .init()
     @Published var todoList: [Todo] = []
     @Published var tagList: [Tag] = []
+    @Published var selectedTag: Tag? = nil
 
     // MARK: - Methods
 
@@ -62,10 +63,23 @@ final class CheckListViewModel: ObservableObject {
         todoService.fetchTodoList { result in
             switch result {
             case .success(let todoList):
-                self.todoList = todoList
+                withAnimation {
+                    self.todoList = todoList
+                }
                 completion(.success(todoList))
             case .failure(let error):
                 completion(.failure(error))
+            }
+        }
+    }
+
+    func fetchTodayTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {
+        todoService.fetchTodoList { result in
+            switch result {
+            case .success(let todoList):
+                self.todoList = todoList.filter { $0.todayTodo || $0.endDate?.compare(Date.now) == .orderedSame }
+            case .failure(let error):
+                print("[Debug] \(error) in CheckListViewModel.fetchTodayTodoList")
             }
         }
     }
@@ -188,5 +202,13 @@ final class CheckListViewModel: ObservableObject {
 
     func filterTodoByWithoutTag() -> [Todo] {
         return todoList.filter { $0.tags.isEmpty }
+    }
+
+    func filterTodoByTodayTodo() -> [Todo] {
+        return todoList.filter { $0.todayTodo }
+    }
+
+    func filterTodoByTodayEndDate() -> [Todo] {
+        return todoList.filter { $0.endDate?.compare(Date.now) == .orderedSame }
     }
 }

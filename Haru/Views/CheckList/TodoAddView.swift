@@ -212,7 +212,7 @@ struct TodoAddView: View {
                     Button {
                         viewModel.addTodo { result in
                             switch result {
-                            case .success(let success):
+                            case .success:
                                 withAnimation {
                                     dismissAction.callAsFunction()
                                     isActive = false

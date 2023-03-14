@@ -147,7 +147,6 @@ struct TodoService {
 
     // SubTodo 삭제하기
     func deleteSubTodo(_ todoId: String, _ subTodoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        print(todoId, subTodoId)
         AF.request(
             TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)/subtodo/\(subTodoId)",
             method: .delete

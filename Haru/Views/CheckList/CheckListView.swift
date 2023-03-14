@@ -8,9 +8,20 @@
 import SwiftUI
 
 struct CheckListView: View {
+    struct EmptyText: View {
+        var body: some View {
+            Text("할 일이 없습니다!")
+                .font(.footnote)
+                .foregroundColor(Color(0x000000, opacity: 0.5))
+                .padding(.leading)
+        }
+    }
+
     @StateObject var viewModel: CheckListViewModel
     @State private var isModalVisible: Bool = false
-    @State private var isScrolled: Bool = false
+    @State var initialOffset: CGFloat?
+    @State var offset: CGFloat?
+    @State var viewIsShown: Bool = true
 
     var body: some View {
         GeometryReader { geometry in
@@ -22,12 +33,19 @@ struct CheckListView: View {
                             // 중요 태그
                             Image(systemName: "star.fill")
                                 .foregroundStyle(LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                                .onTapGesture {}
+                                .onTapGesture {
+                                    viewModel.selectedTag = Tag(id: "중요", content: "중요")
+                                    viewModel.fetchTodoListWithFlag()
+                                }
 
                             // 미분류 태그
                             TagView(
                                 Tag(id: "미분류", content: "미분류")
                             )
+                            .onTapGesture {
+                                viewModel.selectedTag = Tag(id: "미분류", content: "미분류")
+                                viewModel.fetchTodoListWithoutTag()
+                            }
 
                             // 완료 태그
                             TagView(
@@ -37,6 +55,7 @@ struct CheckListView: View {
                             ForEach(viewModel.tagList) { tag in
                                 TagView(tag)
                                     .onTapGesture {
+                                        viewModel.selectedTag = tag
                                         viewModel.fetchTodoListWithTag(tag) { _ in }
                                     }
                             }
@@ -44,6 +63,7 @@ struct CheckListView: View {
                         .padding()
                     }
 
+                    // 오늘 나의 하루 클릭시
                     HStack {
                         Text("오늘 나의 하루")
                             .font(.system(size: 20, weight: .heavy))
@@ -59,34 +79,204 @@ struct CheckListView: View {
                     .background(
                         LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .leading, endPoint: .trailing)
                     )
+                    .onTapGesture {
+                        viewModel.selectedTag = Tag(id: "하루", content: "하루")
+                        viewModel.fetchTodayTodoList { _ in }
+                    }
 
                     // 체크 리스트
                     if viewModel.todoList.count > 0 {
                         List {
-                            Group {
-                                ListSectionView(viewModel: viewModel, todoList: viewModel.filterTodoByFlag()) {
-                                    Image(systemName: "star.fill")
-                                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                            if viewModel.selectedTag == nil {
+                                Section {
+                                    if let todoList = viewModel.filterTodoByFlag(), !todoList.isEmpty {
+                                        ForEach(viewModel.filterTodoByFlag()) { todo in
+                                            TodoView(checkListViewModel: viewModel, todo: todo)
+
+                                            ForEach(todo.subTodos) { subTodo in
+                                                SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                            }
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                        }
+                                    } else {
+                                        EmptyText()
+                                    }
+                                } header: {
+                                    HStack {
+                                        Image(systemName: "star.fill")
+                                            .foregroundStyle(LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                                            .padding(.leading, 20)
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 5)
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
+                                    .background(.white)
                                 }
+                                .listRowSeparator(.hidden)
 
-                                Divider()
+                                Section {
+                                    if let todoList = viewModel.filterTodoByHasAnyTag(), !todoList.isEmpty {
+                                        ForEach(viewModel.filterTodoByHasAnyTag()) { todo in
+                                            TodoView(checkListViewModel: viewModel, todo: todo)
 
-                                ListSectionView(viewModel: viewModel, todoList: viewModel.filterTodoByHasAnyTag()) {
-                                    TagView(
-                                        Tag(id: "분류됨", content: "분류됨")
-                                    )
+                                            ForEach(todo.subTodos) { subTodo in
+                                                SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                            }
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                        }
+                                    } else {
+                                        EmptyText()
+                                    }
+                                } header: {
+                                    HStack {
+                                        TagView(
+                                            Tag(id: "분류됨", content: "분류됨")
+                                        )
+                                        .padding(.leading, 20)
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 5)
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
+                                    .background(.white)
                                 }
+                                .listRowSeparator(.hidden)
 
-                                Divider()
+                                Section {
+                                    if let todoList = viewModel.filterTodoByWithoutTag(), !todoList.isEmpty {
+                                        ForEach(viewModel.filterTodoByWithoutTag()) { todo in
+                                            TodoView(checkListViewModel: viewModel, todo: todo)
 
-                                ListSectionView(viewModel: viewModel, todoList: viewModel.filterTodoByWithoutTag()) {
-                                    TagView(
-                                        Tag(id: "미분류", content: "미분류")
-                                    )
+                                            ForEach(todo.subTodos) { subTodo in
+                                                SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                            }
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                        }
+                                    } else {
+                                        EmptyText()
+                                    }
+                                } header: {
+                                    HStack {
+                                        TagView(
+                                            Tag(id: "미분류", content: "미분류")
+                                        )
+                                        .padding(.leading, 20)
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 5)
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
+                                    .background(.white)
                                 }
-                            }.listRowSeparator(.hidden)
+                                .listRowSeparator(.hidden)
+                            } else {
+                                if let tag = viewModel.selectedTag {
+                                    if tag.content == "하루" {
+                                        Section {
+                                            if let todoList = viewModel.filterTodoByTodayTodo(), !todoList.isEmpty {
+                                                ForEach(viewModel.filterTodoByTodayTodo()) { todo in
+                                                    TodoView(checkListViewModel: viewModel, todo: todo)
+
+                                                    ForEach(todo.subTodos) { subTodo in
+                                                        SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                                    }
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                                }
+                                            } else {
+                                                EmptyText()
+                                            }
+                                        } header: {
+                                            HStack {
+                                                TagView(Tag(id: "오늘 할 일", content: "오늘 할 일"))
+                                                    .padding(.leading, 20)
+                                                Spacer()
+                                            }
+                                            .padding(.vertical, 5)
+                                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
+                                            .background(.white)
+                                        }
+                                        .listRowSeparator(.hidden)
+
+                                        Section {
+                                            if let todoList = viewModel.filterTodoByTodayEndDate(), !todoList.isEmpty {
+                                                ForEach(viewModel.filterTodoByTodayEndDate()) { todo in
+                                                    TodoView(checkListViewModel: viewModel, todo: todo)
+
+                                                    ForEach(todo.subTodos) { subTodo in
+                                                        SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                                    }
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                                }
+                                            } else {
+                                                EmptyText()
+                                            }
+                                        } header: {
+                                            HStack {
+                                                TagView(Tag(id: "오늘까지", content: "오늘까지"))
+                                                    .padding(.leading, 20)
+                                                Spacer()
+                                            }
+                                            .padding(.vertical, 5)
+                                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
+                                            .background(.white)
+                                        }
+                                        .listRowSeparator(.hidden)
+                                    } else {
+                                        Section {
+                                            ForEach(viewModel.todoList) { todo in
+                                                TodoView(checkListViewModel: viewModel, todo: todo)
+
+                                                ForEach(todo.subTodos) { subTodo in
+                                                    SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                                }
+                                                .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                            }
+                                        } header: {
+                                            HStack {
+                                                if tag.id != "중요" {
+                                                    TagView(tag)
+                                                        .padding(.leading, 20)
+                                                    Spacer()
+                                                } else {
+                                                    Image(systemName: "star.fill")
+                                                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                                                        .padding(.leading, 20)
+                                                    Spacer()
+                                                }
+                                            }
+                                            .padding(.vertical, 5)
+                                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
+                                            .background(.white)
+                                        }
+                                        .listRowSeparator(.hidden)
+                                    }
+                                }
+                            }
+
+                            GeometryReader { geometry in
+                                Color.clear.preference(key: OffsetKey.self, value: geometry.frame(in: .global).minY).frame(height: 0)
+                            }
+                            .listRowSeparator(.hidden)
                         }
                         .listStyle(.inset)
+                        .onPreferenceChange(OffsetKey.self) {
+                            if self.initialOffset == nil || self.initialOffset == 0 {
+                                self.initialOffset = $0
+                            }
+                            self.offset = $0
+
+                            guard let initialOffset = self.initialOffset,
+                                  let offset = self.offset
+                            else {
+                                return
+                            }
+
+                            withAnimation {
+                                if initialOffset > offset {
+                                    self.viewIsShown = false
+                                } else {
+                                    self.viewIsShown = true
+                                }
+                            }
+                        }
 
                     } else {
                         VStack {
@@ -116,7 +306,7 @@ struct CheckListView: View {
                     .transition(.modal)
                     .zIndex(2)
                 } else {
-                    if !isScrolled {
+                    if viewIsShown {
                         Button {
                             withAnimation {
                                 isModalVisible = true
@@ -136,8 +326,16 @@ struct CheckListView: View {
             }
         }
         .onAppear {
+            viewModel.selectedTag = nil
             viewModel.fetchTodoList { _ in }
             viewModel.fetchTags { _ in }
         }
+    }
+}
+
+struct OffsetKey: PreferenceKey {
+    static let defaultValue: CGFloat? = nil
+    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+        value = value ?? nextValue()
     }
 }
