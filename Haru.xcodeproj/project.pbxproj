@@ -22,8 +22,11 @@
 		6F79715F29BF74CA001B82FD /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F79715E29BF74CA001B82FD /* View.swift */; };
 		6F79716129C05E6C001B82FD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F79716029C05E6C001B82FD /* Constants.swift */; };
 		6F79716329C05EA9001B82FD /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F79716229C05EA9001B82FD /* Global.swift */; };
-		6F79716529C05ECA001B82FD /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F79716429C05ECA001B82FD /* User.swift */; };
 		6F79716729C05EFF001B82FD /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F79716629C05EFF001B82FD /* User.swift */; };
+		6F79716929C08DFB001B82FD /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F79716829C08DFB001B82FD /* Request.swift */; };
+		6F79716B29C08E44001B82FD /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F79716A29C08E44001B82FD /* Category.swift */; };
+		6F79716D29C09049001B82FD /* Alarm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F79716C29C09049001B82FD /* Alarm.swift */; };
+		6F79717029C09727001B82FD /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 6F79716F29C09727001B82FD /* Alamofire */; settings = {ATTRIBUTES = (Required, ); }; };
 		6F8F5DDC29B509B1009807B8 /* CalendarMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8F5DDB29B509B1009807B8 /* CalendarMainView.swift */; };
 		6F9F442829B8F34600E2B890 /* Border.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9F442729B8F34600E2B890 /* Border.swift */; };
 		6F9F442A29B9DEA700E2B890 /* CalendarScheduleItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9F442929B9DEA700E2B890 /* CalendarScheduleItem.swift */; };
@@ -56,8 +59,10 @@
 		6F79715E29BF74CA001B82FD /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		6F79716029C05E6C001B82FD /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6F79716229C05EA9001B82FD /* Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
-		6F79716429C05ECA001B82FD /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6F79716629C05EFF001B82FD /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		6F79716829C08DFB001B82FD /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
+		6F79716A29C08E44001B82FD /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		6F79716C29C09049001B82FD /* Alarm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alarm.swift; sourceTree = "<group>"; };
 		6F8F5DDB29B509B1009807B8 /* CalendarMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMainView.swift; sourceTree = "<group>"; };
 		6F9F442729B8F34600E2B890 /* Border.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Border.swift; sourceTree = "<group>"; };
 		6F9F442929B9DEA700E2B890 /* CalendarScheduleItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarScheduleItem.swift; sourceTree = "<group>"; };
@@ -73,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F79717029C09727001B82FD /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +144,9 @@
 				6FE3FBCF29B5100A00B6CCB9 /* DateValue.swift */,
 				6FE3FBD229B655CB00B6CCB9 /* Schedule.swift */,
 				6F79716629C05EFF001B82FD /* User.swift */,
+				6F79716829C08DFB001B82FD /* Request.swift */,
+				6F79716A29C08E44001B82FD /* Category.swift */,
+				6F79716C29C09049001B82FD /* Alarm.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -196,7 +205,6 @@
 				13AE617B29B48E9300C08EB1 /* README.md */,
 				6F79716029C05E6C001B82FD /* Constants.swift */,
 				6F79716229C05EA9001B82FD /* Global.swift */,
-				6F79716429C05ECA001B82FD /* User.swift */,
 			);
 			path = Global;
 			sourceTree = "<group>";
@@ -236,6 +244,9 @@
 			dependencies = (
 			);
 			name = Haru;
+			packageProductDependencies = (
+				6F79716F29C09727001B82FD /* Alamofire */,
+			);
 			productName = Haru;
 			productReference = 13AE615229B489D500C08EB1 /* Haru.app */;
 			productType = "com.apple.product-type.application";
@@ -264,6 +275,9 @@
 				Base,
 			);
 			mainGroup = 13AE614929B489D500C08EB1;
+			packageReferences = (
+				6F79716E29C09727001B82FD /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = 13AE615329B489D500C08EB1 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -291,6 +305,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6FE3FBD529B6576C00B6CCB9 /* CalendarViewModel.swift in Sources */,
+				6F79716929C08DFB001B82FD /* Request.swift in Sources */,
 				6F8F5DDC29B509B1009807B8 /* CalendarMainView.swift in Sources */,
 				6FE3FBD329B655CB00B6CCB9 /* Schedule.swift in Sources */,
 				6F9F442A29B9DEA700E2B890 /* CalendarScheduleItem.swift in Sources */,
@@ -300,15 +315,16 @@
 				13AE616A29B48AF300C08EB1 /* ViewModel.swift in Sources */,
 				6FE3FBD729B65B2600B6CCB9 /* ScheduleService.swift in Sources */,
 				13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */,
-				6F79716529C05ECA001B82FD /* User.swift in Sources */,
 				6F1D9DEB29B65EDF00AA9EE0 /* CalendarDateView.swift in Sources */,
 				6F9F442829B8F34600E2B890 /* Border.swift in Sources */,
 				6F1D9DED29B65F6200AA9EE0 /* CalendarDateItem.swift in Sources */,
 				13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */,
+				6F79716B29C08E44001B82FD /* Category.swift in Sources */,
 				6F1D9DEF29B660E500AA9EE0 /* CalendarHelper.swift in Sources */,
 				6F79716129C05E6C001B82FD /* Constants.swift in Sources */,
 				13AE616F29B48CA100C08EB1 /* Color.swift in Sources */,
 				6FE3FBCE29B50F1A00B6CCB9 /* Date.swift in Sources */,
+				6F79716D29C09049001B82FD /* Alarm.swift in Sources */,
 				13AE617229B48D2300C08EB1 /* Calendar.swift in Sources */,
 				6FE3FBD029B5100A00B6CCB9 /* DateValue.swift in Sources */,
 				6F79716329C05EA9001B82FD /* Global.swift in Sources */,
@@ -513,6 +529,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6F79716E29C09727001B82FD /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6F79716F29C09727001B82FD /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6F79716E29C09727001B82FD /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 13AE614A29B489D500C08EB1 /* Project object */;
 }

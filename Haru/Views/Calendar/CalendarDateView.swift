@@ -30,14 +30,7 @@ struct CalendarDateView: View {
                     Spacer(minLength: 0)
                     Toggle("일요일 부터 시작", isOn: $calendarVM.startOnSunday)
                     
-//                    Button {
-//                        calendarVM.setMonthOffset(0)
-//                    } label: {
-//                        Text("오늘로")
-//                    }
-                    
                     Button {
-//                        calendarVM.setMonthOffset(calendarVM.monthOffest - 1)
                         calendarVM.subMonthOffset()
                     } label: {
                         Image(systemName: "chevron.left")
@@ -45,7 +38,6 @@ struct CalendarDateView: View {
                     }
                     
                     Button {
-//                        calendarVM.setMonthOffset(calendarVM.monthOffest + 1)
                         calendarVM.addMonthOffset()
                     } label: {
                         Image(systemName: "chevron.right")

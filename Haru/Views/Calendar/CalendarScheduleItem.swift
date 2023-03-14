@@ -18,8 +18,8 @@ struct CalendarScheduleItem: View {
                     Rectangle()
                         .fill(.gray)
                         .frame(height: 20)
-                        .cornerRadius(date == value.startTime.day ? 6 : 0, corners: [.topLeft, .bottomLeft])
-                        .cornerRadius(date == value.endTime.day ? 6 : 0, corners: [.topRight, .bottomRight])
+                        .cornerRadius(date == value.repeatStart.day ? 6 : 0, corners: [.topLeft, .bottomLeft])
+                        .cornerRadius(date == value.repeatEnd.day ? 6 : 0, corners: [.topRight, .bottomRight])
                 } else {
                     Spacer()
                         .frame(height: 20)

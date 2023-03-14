@@ -5,37 +5,68 @@
 //  Created by 이준호 on 2023/03/07.
 //
 
+import Alamofire
 import Foundation
 
 class ScheduleService {
+    private static let baseURL = Constants.baseURL + "schedule/"
     /**
      * 현재 선택된 달을 기준으로 이전 달, (선택된) 현재 달, 다음 달의 스케줄 데이터 가져오기
      */
-    func fetchScheduleList(_ monthOffset: Int) -> [Schedule] {
-        // api 호출
+    func fetchScheduleList(_ startDate: Date, _ endDate: Date, _ completion: @escaping (Result<[Schedule], Error>) -> Void) {
+        struct Response: Codable {
+            struct Pagination: Codable {
+                let totalItems: Int
+                let startDate: Date
+                let endDate: Date
+            }
+
+            let success: Bool
+            let data: [Schedule]
+            let pagination: Pagination
+        }
+
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
-        return [
-            Schedule(content: "5~8일 일정", memo: "", startTime: formatter.date(from: "2023/03/05 00:00")!, endTime: formatter.date(from: "2023/03/08 23:00")!),
+        formatter.dateFormat = Constants.dateFormat
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(formatter)
 
-            Schedule(content: "8~10일 일정", memo: "", startTime: formatter.date(from: "2023/03/08 00:00")!, endTime: formatter.date(from: "2023/03/10 01:00")!),
+        let paramFormatter = DateFormatter()
+        paramFormatter.dateFormat = "yyyyMMdd"
 
-            Schedule(content: "9일 일정", memo: "", startTime: formatter.date(from: "2023/03/09 00:00")!, endTime: formatter.date(from: "2023/03/09 01:00")!),
-            Schedule(content: "9~12일 일정", memo: "", startTime: formatter.date(from: "2023/03/09 00:10")!, endTime: formatter.date(from: "2023/03/12 23:59")!),
-            Schedule(content: "9~13일 일정", memo: "", startTime: formatter.date(from: "2023/03/09 00:30")!, endTime: formatter.date(from: "2023/03/13 01:00")!),
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
         ]
+
+        let parameters: Parameters = [
+            "startDate": paramFormatter.string(from: startDate),
+            "endDate": paramFormatter.string(from: endDate),
+        ]
+
+        AF.request(
+            ScheduleService.baseURL + Global.shared.user!.id + "/schedules/date",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.queryString,
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: decoder) { response in
+            switch response.result {
+            case .success(let response):
+                completion(.success(response.data))
+
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
 
-    func fittingScheduleList(_ dateList: [DateValue], monthOffset: Int) -> [[Int: Schedule]] {
-        let scheduleList = fetchScheduleList(monthOffset)
-
+    func fittingScheduleList(_ dateList: [DateValue], _ scheduleList: [Schedule]) -> [[Int: Schedule]] {
         let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
 
         // 주차별 스케줄
         var weeksOfScheduleList = [[Schedule]](repeating: [], count: numberOfWeeks)
 
-//        var result = [[(schedule: Schedule, order: Int)]](repeating: [], count: dateList.count) // row: 일별
-        
         var result = [[Int: Schedule]](repeating: [:], count: dateList.count)
 
         var splitDateList = [[Date]]() // row: 주차, col: row주차에 있는 날짜들
@@ -46,10 +77,10 @@ class ScheduleService {
 
         for schedule in scheduleList {
             for (week, dates) in splitDateList.enumerated() {
-                if schedule.endTime < dates[0] {
+                if schedule.repeatEnd < dates[0] {
                     break
                 }
-                if schedule.startTime >= dates[1] {
+                if schedule.repeatStart >= dates[1] {
                     continue
                 }
                 weeksOfScheduleList[week].append(schedule)
@@ -64,8 +95,8 @@ class ScheduleService {
                 var isFirst = true
 
                 for (index, dateValue) in dateList[week*7 ..< (week + 1)*7].enumerated() {
-                    if schedule.startTime < Calendar.current.date(byAdding: .day, value: 1, to: dateValue.date)!,
-                       schedule.endTime > dateValue.date
+                    if schedule.repeatStart < Calendar.current.date(byAdding: .day, value: 1, to: dateValue.date)!,
+                       schedule.repeatEnd > dateValue.date
                     {
                         if isFirst {
                             var i = 0
@@ -77,7 +108,6 @@ class ScheduleService {
                             isFirst = false
                         }
                         orders[index][order] = false
-//                        result[week*7 + index].append((schedule, order))
                         result[week*7 + index][order] = schedule
                     }
                 }

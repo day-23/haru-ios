@@ -68,7 +68,15 @@ class CalendarViewModel: ObservableObject {
     }
 
     func getCurMonthSchList(_ monthOffset: Int, _ dateList: [DateValue]) {
-        scheduleList = scheduleService.fittingScheduleList(dateList, monthOffset: monthOffset)
+        scheduleList = [[Int: Schedule]](repeating: [:], count: dateList.count)
+        scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
+            switch result {
+            case .success(let success):
+                self.scheduleList = self.scheduleService.fittingScheduleList(dateList, success)
+            case .failure(let failure):
+                print("[Debug] \(failure)")
+            }
+        }
     }
     
     func addSelectedItems(from value: DragGesture.Value, _ cellWidth: Double, _ cellHeight: Double) {
