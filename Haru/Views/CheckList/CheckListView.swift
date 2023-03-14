@@ -16,6 +16,7 @@ struct CheckListView: View {
         GeometryReader { geometry in
             ZStack(alignment: .bottomTrailing) {
                 VStack {
+                    // 태그 리스트
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             // 중요 태그
@@ -46,64 +47,47 @@ struct CheckListView: View {
                     HStack {
                         Text("오늘 나의 하루")
                             .font(.system(size: 20, weight: .heavy))
-                            .padding(.leading, 10)
 
                         Spacer()
 
                         Image(systemName: "chevron.right")
+                            .scaleEffect(1.25)
                     }
                     .foregroundColor(.white)
                     .padding()
+                    .padding(.horizontal, 15)
                     .background(
                         LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .leading, endPoint: .trailing)
                     )
-                    .cornerRadius(15)
 
+                    // 체크 리스트
                     if viewModel.todoList.count > 0 {
                         List {
-                            ForEach(viewModel.todoList) { todo in
-                                TodoView(
-                                    checkListViewModel: viewModel,
-                                    todo: todo
-                                )
-                                .frame(height: geometry.size.height * 0.06)
-                                .contextMenu {
-                                    Button(action: {
-                                        viewModel.deleteTodo(todo) { _ in
-                                            viewModel.fetchTodoList { _ in }
-                                        }
-                                    }, label: {
-                                        Label("Delete", systemImage: "trash")
-                                    })
+                            Group {
+                                ListSectionView(viewModel: viewModel, todoList: viewModel.filterTodoByFlag()) {
+                                    Image(systemName: "star.fill")
+                                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing))
                                 }
 
-                                ForEach(todo.subTodos) { subTodo in
-                                    SubTodoView(checkListViewModel: viewModel, subTodo: subTodo)
-                                        .contextMenu {
-                                            Button(action: {
-                                                viewModel.deleteSubTodo(todo, subTodo) { _ in
-                                                    viewModel.fetchTodoList { _ in }
-                                                }
-                                            }, label: {
-                                                Label("Delete", systemImage: "trash")
-                                            })
-                                        }
+                                Divider()
+
+                                ListSectionView(viewModel: viewModel, todoList: viewModel.filterTodoByHasAnyTag()) {
+                                    TagView(
+                                        Tag(id: "분류됨", content: "분류됨")
+                                    )
                                 }
-                                .padding(.leading, geometry.size.width * 0.05)
-                            }
+
+                                Divider()
+
+                                ListSectionView(viewModel: viewModel, todoList: viewModel.filterTodoByWithoutTag()) {
+                                    TagView(
+                                        Tag(id: "미분류", content: "미분류")
+                                    )
+                                }
+                            }.listRowSeparator(.hidden)
                         }
-                        .simultaneousGesture(DragGesture().onChanged { value in
-                            if value.startLocation.y - value.location.y > 0 {
-                                withAnimation {
-                                    isScrolled = true
-                                }
-                            } else {
-                                withAnimation {
-                                    isScrolled = false
-                                }
-                            }
-                        })
                         .listStyle(.inset)
+
                     } else {
                         VStack {
                             Text("모든 할 일을 마쳤습니다!")

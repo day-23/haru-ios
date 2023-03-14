@@ -15,15 +15,17 @@ struct SubTodoView: View {
         HStack {
             Circle()
                 .foregroundColor(.white)
-                .frame(width: 30, height: 30)
+                .frame(width: 20, height: 20)
                 .overlay {
                     Circle()
-                        .stroke()
-                        .foregroundColor(Color(0x000000, opacity: 0.3))
+                        .stroke(lineWidth: 2)
+                        .foregroundColor(Color(0x000000, opacity: 0.5))
                 }
 
             Text(subTodo.content)
                 .padding(.leading, 10)
+
+            Spacer()
         }
     }
 }

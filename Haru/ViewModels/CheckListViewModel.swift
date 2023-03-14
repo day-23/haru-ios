@@ -70,6 +70,17 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
+    func fetchTodoListWithAnyTag() {
+        todoService.fetchTodoList { result in
+            switch result {
+            case .success(let todoList):
+                self.todoList = todoList.filter { !$0.tags.isEmpty }
+            case .failure(let error):
+                print("[Debug] \(error) in CheckListViewModel.fetchTodoListWithAnyTag")
+            }
+        }
+    }
+
     func fetchTodoListWithTag(_ tag: Tag, completion: @escaping (Result<[Todo], Error>) -> Void) {
         todoService.fetchTodoListWithTag(tag) { result in
             switch result {
@@ -80,6 +91,32 @@ final class CheckListViewModel: ObservableObject {
                 completion(.failure(error))
             }
         }
+    }
+
+    func fetchTodoListWithFlag() {
+        todoService.fetchTodoList { result in
+            switch result {
+            case .success(let todoList):
+                self.todoList = todoList.filter { $0.flag }
+            case .failure(let error):
+                print("[Debug] \(error) in CheckListViewModel.fetchTodoListWithFlag()")
+            }
+        }
+    }
+
+    func fetchTodoListWithoutTag() {
+        todoService.fetchTodoList { result in
+            switch result {
+            case .success(let todoList):
+                self.todoList = todoList.filter { $0.tags.isEmpty }
+            case .failure(let error):
+                print("[Debug] \(error) in CheckListViewModel.fetchTodoListWithOutTag()")
+            }
+        }
+    }
+
+    func fetchTodoListWithCompleted() {
+        todoService.fetchTodoList { result in }
     }
 
     func updateFlag(_ todo: Todo, completion: @escaping (Result<Bool, Error>) -> Void) {
@@ -137,5 +174,19 @@ final class CheckListViewModel: ObservableObject {
                 completion(.failure(error))
             }
         }
+    }
+
+    // MARK: - TodoList 분류하는 함수 (API 이용 fetch가 아닙니다.)
+
+    func filterTodoByFlag() -> [Todo] {
+        return todoList.filter { $0.flag }
+    }
+
+    func filterTodoByHasAnyTag() -> [Todo] {
+        return todoList.filter { !$0.tags.isEmpty }
+    }
+
+    func filterTodoByWithoutTag() -> [Todo] {
+        return todoList.filter { $0.tags.isEmpty }
     }
 }

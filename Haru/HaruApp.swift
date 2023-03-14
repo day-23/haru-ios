@@ -7,8 +7,9 @@
 //  - Check-List Todos
 //  TODO: 완료 기능
 //  TODO: 수정 기능
-//  IN-PROGRESS
-//  TODO: Tag 클릭시 해당 Tag로 정렬
+//  - In Progress
+//  TODO: 디자인 시안 적용하기
+//  TODO: Section Component 만들기
 
 import SwiftUI
 
