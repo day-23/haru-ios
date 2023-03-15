@@ -84,6 +84,11 @@ struct CheckListView: View {
                                     if let todoList = viewModel.filterTodoByFlag(), !todoList.isEmpty {
                                         ForEach(todoList) { todo in
                                             TodoView(checkListViewModel: viewModel, todo: todo)
+
+                                            ForEach(todo.subTodos) { subTodo in
+                                                SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                            }
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                     } else {
                                         EmptyText()
