@@ -25,7 +25,14 @@ struct TodoAddView: View {
                     HStack {
                         Text("∙")
                         TextField("", text: $viewModel.subTodoList[index])
+                        Button {
+                            viewModel.subTodoList.remove(at: index)
+                        } label: {
+                            Image(systemName: "minus.circle.fill")
+                                .foregroundStyle(Constants.lightGray)
+                        }
                     }
+                    Divider()
                 }
                 .padding(.horizontal, 30)
 
