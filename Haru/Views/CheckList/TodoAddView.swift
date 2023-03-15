@@ -238,6 +238,12 @@ struct TodoAddView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
                     
+                    if viewModel.isWritedMemo {
+                        TextField("메모를 작성해주세요.", text: $viewModel.memo, axis: .vertical)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 5)
+                    }
+                    
                     Divider()
                 }
                 
