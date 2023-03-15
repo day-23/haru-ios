@@ -19,12 +19,14 @@ final class TodoAddViewModel: ObservableObject {
     @Published var isSelectedAlarm: Bool = false
     @Published var alarm: Date = .init()
     @Published var repeatOption: RepeatOption = .none
+    @Published var isSelectedRepeat: Bool = false
     @Published var isSelectedEndDate: Bool = false
     @Published var isSelectedEndDateTime: Bool = false
     @Published var endDate: Date = .init()
     @Published var endDateTime: Date = .init()
     @Published var isSelectedRepeatEnd: Bool = false
     @Published var repeatEnd: Date = .init()
+    @Published var isWritedMemo: Bool = false
     @Published var memo: String = ""
     @Published var days: [Day] = [
         Day(content: "월"),
@@ -54,23 +56,8 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     var selectedRepeatEnd: Date? {
-        if isSelectedRepeatEnd { return repeatEnd }
+        if isSelectedRepeat && isSelectedRepeatEnd { return repeatEnd }
         return nil
-    }
-
-    var displayRepeat: String {
-        if repeatOption != .none {
-            return repeatOption.rawValue
-        }
-
-        let filtered = days.filter { day in day.isClicked }
-
-        if filtered.isEmpty {
-            return ""
-        }
-        return "매주: " + filtered.map { day in
-            day.content
-        }.joined(separator: ", ")
     }
 
     var disableButtons: Bool {
@@ -86,7 +73,7 @@ final class TodoAddViewModel: ObservableObject {
     func addTodo(completion: @escaping (Result<Todo, Error>) -> Void) {
         checkListViewModel.addTodo(Request.Todo(
             content: todoContent,
-            memo: memo,
+            memo: isWritedMemo ? memo : "",
             todayTodo: isTodayTodo,
             flag: flag,
             endDate: selectedEndDate,

@@ -59,7 +59,7 @@ struct TodoAddView: View {
                         TextField("태그", text: $viewModel.tag)
                             .foregroundColor(Constants.lightGray)
                     } icon: {
-                        Image(systemName: "tag.fill")
+                        Image(systemName: "tag")
                             .padding(.trailing, 10)
                             .foregroundColor(Constants.lightGray)
                     }
@@ -148,30 +148,72 @@ struct TodoAddView: View {
                 
                 // 알림 설정
                 Group {
-                    VStack {
-                        Label {
-                            Toggle(isOn: $viewModel.isSelectedAlarm) {
-                                HStack {
-                                    Text("알림 설정")
-                                        .frame(alignment: .leading)
-                                        .foregroundColor(viewModel.isSelectedAlarm ? .black : Constants.lightGray)
-                                }
+                    Label {
+                        Toggle(isOn: $viewModel.isSelectedAlarm) {
+                            HStack {
+                                Text("알림 설정")
+                                    .frame(alignment: .leading)
+                                    .foregroundColor(viewModel.isSelectedAlarm ? .black : Constants.lightGray)
                             }
-                            .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
-                        } icon: {
-                            Image(systemName: "bell.fill")
-                                .padding(.trailing, 10)
-                                .foregroundColor(viewModel.isSelectedAlarm ? .black : Constants.lightGray)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 5)
-                        
-                        if viewModel.isSelectedAlarm {
-                            DatePicker(selection: $viewModel.alarm) {}
-                                .labelsHidden()
-                                .padding(.vertical, -5)
-                        }
+                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                    } icon: {
+                        Image(systemName: "bell")
+                            .padding(.trailing, 10)
+                            .foregroundColor(viewModel.isSelectedAlarm ? .black : Constants.lightGray)
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
+                        
+                    if viewModel.isSelectedAlarm {
+                        DatePicker(selection: $viewModel.alarm) {}
+                            .labelsHidden()
+                            .padding(.vertical, -5)
+                    }
+                    Divider()
+                }
+                
+                // 반복 설정
+                Group {
+                    Label {
+                        Toggle(isOn: $viewModel.isSelectedRepeat) {
+                            HStack {
+                                Text("반복 설정")
+                                    .frame(alignment: .leading)
+                                    .foregroundColor(viewModel.isSelectedRepeat ? .black : Constants.lightGray)
+                            }
+                        }
+                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                    } icon: {
+                        Image(systemName: "repeat")
+                            .padding(.trailing, 10)
+                            .foregroundColor(viewModel.isSelectedRepeat ? .black : Constants.lightGray)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
+                    
+                    Divider()
+                }
+                
+                // 메모 추가
+                Group {
+                    Label {
+                        Toggle(isOn: $viewModel.isWritedMemo) {
+                            HStack {
+                                Text("메모 추가")
+                                    .frame(alignment: .leading)
+                                    .foregroundColor(viewModel.isWritedMemo ? .black : Constants.lightGray)
+                            }
+                        }
+                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                    } icon: {
+                        Image(systemName: "note")
+                            .padding(.trailing, 10)
+                            .foregroundColor(viewModel.isWritedMemo ? .black : Constants.lightGray)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
+                    
                     Divider()
                 }
                 
