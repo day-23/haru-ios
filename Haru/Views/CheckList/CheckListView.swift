@@ -269,7 +269,7 @@ struct CheckListView: View {
                                 return
                             }
 
-                            withAnimation {
+                            withAnimation(.easeInOut(duration: 0.25)) {
                                 if initialOffset > offset {
                                     self.viewIsShown = false
                                 } else {

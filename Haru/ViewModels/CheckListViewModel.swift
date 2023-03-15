@@ -197,11 +197,11 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func filterTodoByHasAnyTag() -> [Todo] {
-        return todoList.filter { !$0.tags.isEmpty }
+        return todoList.filter { !$0.tags.isEmpty && !$0.flag }
     }
 
     func filterTodoByWithoutTag() -> [Todo] {
-        return todoList.filter { $0.tags.isEmpty }
+        return todoList.filter { $0.tags.isEmpty && !$0.flag }
     }
 
     func filterTodoByTodayTodo() -> [Todo] {
