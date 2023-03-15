@@ -49,7 +49,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     var selectedEndDateTime: Date? {
-        if isSelectedEndDateTime { return endDateTime }
+        if selectedEndDate != nil && isSelectedEndDateTime { return endDateTime }
         return nil
     }
 

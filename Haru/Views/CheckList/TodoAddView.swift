@@ -87,9 +87,19 @@ struct TodoAddView: View {
             // 마감 설정
             Label {
                 Toggle(isOn: $viewModel.isSelectedEndDate) {
-                    Text("마감 설정")
-                        .frame(alignment: .leading)
-                        .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
+                    HStack {
+                        Text("마감 설정")
+                            .frame(alignment: .leading)
+                            .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
+
+                        Spacer()
+
+                        if viewModel.isSelectedEndDate {
+                            DatePicker(selection: $viewModel.endDate, displayedComponents: [.date]) {}
+                                .labelsHidden()
+                                .padding(.vertical, -5)
+                        }
+                    }
                 }
                 .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
             } icon: {
@@ -101,14 +111,30 @@ struct TodoAddView: View {
             .padding(.vertical, 5)
 
             if viewModel.isSelectedEndDate {
-                HStack {
-                    Spacer()
-                    DatePicker(selection: $viewModel.endDate, displayedComponents: [.date]) {}
-                        .labelsHidden()
-                    DatePicker(selection: $viewModel.endDateTime, displayedComponents: [.hourAndMinute]) {}
-                        .labelsHidden()
-                    Spacer()
+                Label {
+                    Toggle(isOn: $viewModel.isSelectedEndDateTime) {
+                        HStack {
+                            Text("마감 시간 설정")
+                                .frame(alignment: .leading)
+                                .foregroundColor(viewModel.isSelectedEndDateTime ? .black : Constants.lightGray)
+
+                            Spacer()
+
+                            if viewModel.isSelectedEndDateTime {
+                                DatePicker(selection: $viewModel.endDateTime, displayedComponents: [.hourAndMinute]) {}
+                                    .labelsHidden()
+                                    .padding(.vertical, -5)
+                            }
+                        }
+                    }
+                    .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                } icon: {
+                    Image(systemName: "clock")
+                        .padding(.trailing, 10)
+                        .foregroundColor(viewModel.isSelectedEndDateTime ? .black : Constants.lightGray)
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 5)
             }
 
             Divider()
