@@ -73,65 +73,17 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    func fetchTodayTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {
-        todoService.fetchTodoList { result in
-            switch result {
-            case .success(let todoList):
-                self.todoList = todoList.filter { $0.todayTodo || $0.endDate?.compare(Date.now) == .orderedSame }
-            case .failure(let error):
-                print("[Debug] \(error) in CheckListViewModel.fetchTodayTodoList")
-            }
-        }
-    }
+    func fetchTodayTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {}
 
-    func fetchTodoListWithAnyTag() {
-        todoService.fetchTodoList { result in
-            switch result {
-            case .success(let todoList):
-                self.todoList = todoList.filter { !$0.tags.isEmpty }
-            case .failure(let error):
-                print("[Debug] \(error) in CheckListViewModel.fetchTodoListWithAnyTag")
-            }
-        }
-    }
+    func fetchTodoListWithAnyTag() {}
 
-    func fetchTodoListWithTag(_ tag: Tag, completion: @escaping (Result<[Todo], Error>) -> Void) {
-        todoService.fetchTodoListWithTag(tag) { result in
-            switch result {
-            case .success(let todoList):
-                self.todoList = todoList
-                completion(.success(todoList))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-    }
+    func fetchTodoListWithTag(_ tag: Tag, completion: @escaping (Result<[Todo], Error>) -> Void) {}
 
-    func fetchTodoListWithFlag() {
-        todoService.fetchTodoList { result in
-            switch result {
-            case .success(let todoList):
-                self.todoList = todoList.filter { $0.flag }
-            case .failure(let error):
-                print("[Debug] \(error) in CheckListViewModel.fetchTodoListWithFlag()")
-            }
-        }
-    }
+    func fetchTodoListWithFlag() {}
 
-    func fetchTodoListWithoutTag() {
-        todoService.fetchTodoList { result in
-            switch result {
-            case .success(let todoList):
-                self.todoList = todoList.filter { $0.tags.isEmpty }
-            case .failure(let error):
-                print("[Debug] \(error) in CheckListViewModel.fetchTodoListWithOutTag()")
-            }
-        }
-    }
+    func fetchTodoListWithoutTag() {}
 
-    func fetchTodoListWithCompleted() {
-        todoService.fetchTodoList { result in }
-    }
+    func fetchTodoListWithCompleted() {}
 
     func updateFlag(_ todo: Todo, completion: @escaping (Result<Bool, Error>) -> Void) {
         guard let index = todoList.firstIndex(where: { $0.id == todo.id }) else {
@@ -192,6 +144,10 @@ final class CheckListViewModel: ObservableObject {
 
     // MARK: - TodoList 분류하는 함수 (API 이용 fetch가 아닙니다.)
 
+    func filterTodoByTag() -> [Todo] {
+        return todoList.filter { $0.tags.contains { $0.id == self.selectedTag?.id } }
+    }
+
     func filterTodoByFlag() -> [Todo] {
         return todoList.filter { $0.flag }
     }
@@ -202,6 +158,10 @@ final class CheckListViewModel: ObservableObject {
 
     func filterTodoByWithoutTag() -> [Todo] {
         return todoList.filter { $0.tags.isEmpty && !$0.flag }
+    }
+
+    func filterTodoByTodayTodoOrTodayEndDate() -> [Todo] {
+        return todoList.filter { $0.todayTodo || $0.endDate?.compare(Date.now) == .orderedAscending }
     }
 
     func filterTodoByTodayTodo() -> [Todo] {

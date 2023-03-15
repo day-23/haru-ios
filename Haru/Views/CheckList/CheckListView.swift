@@ -10,7 +10,7 @@ import SwiftUI
 struct CheckListView: View {
     struct EmptyText: View {
         var body: some View {
-            Text("할 일이 없습니다!")
+            Text("모든 할 일을 마쳤습니다!")
                 .font(.footnote)
                 .foregroundColor(Color(0x000000, opacity: 0.5))
                 .padding(.leading)
@@ -35,28 +35,21 @@ struct CheckListView: View {
                                 .foregroundStyle(LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing))
                                 .onTapGesture {
                                     viewModel.selectedTag = Tag(id: "중요", content: "중요")
-                                    viewModel.fetchTodoListWithFlag()
                                 }
 
                             // 미분류 태그
-                            TagView(
-                                Tag(id: "미분류", content: "미분류")
-                            )
-                            .onTapGesture {
-                                viewModel.selectedTag = Tag(id: "미분류", content: "미분류")
-                                viewModel.fetchTodoListWithoutTag()
-                            }
+                            TagView(Tag(id: "미분류", content: "미분류"))
+                                .onTapGesture {
+                                    viewModel.selectedTag = Tag(id: "미분류", content: "미분류")
+                                }
 
                             // 완료 태그
-                            TagView(
-                                Tag(id: "완료", content: "완료")
-                            )
+                            TagView(Tag(id: "완료", content: "완료"))
 
                             ForEach(viewModel.tagList) { tag in
                                 TagView(tag)
                                     .onTapGesture {
                                         viewModel.selectedTag = tag
-                                        viewModel.fetchTodoListWithTag(tag) { _ in }
                                     }
                             }
                         }
@@ -81,7 +74,6 @@ struct CheckListView: View {
                     )
                     .onTapGesture {
                         viewModel.selectedTag = Tag(id: "하루", content: "하루")
-                        viewModel.fetchTodayTodoList { _ in }
                     }
 
                     // 체크 리스트
@@ -90,7 +82,7 @@ struct CheckListView: View {
                             if viewModel.selectedTag == nil {
                                 Section {
                                     if let todoList = viewModel.filterTodoByFlag(), !todoList.isEmpty {
-                                        ForEach(viewModel.filterTodoByFlag()) { todo in
+                                        ForEach(todoList) { todo in
                                             TodoView(checkListViewModel: viewModel, todo: todo)
 
                                             ForEach(todo.subTodos) { subTodo in
@@ -116,7 +108,7 @@ struct CheckListView: View {
 
                                 Section {
                                     if let todoList = viewModel.filterTodoByHasAnyTag(), !todoList.isEmpty {
-                                        ForEach(viewModel.filterTodoByHasAnyTag()) { todo in
+                                        ForEach(todoList) { todo in
                                             TodoView(checkListViewModel: viewModel, todo: todo)
 
                                             ForEach(todo.subTodos) { subTodo in
@@ -143,7 +135,7 @@ struct CheckListView: View {
 
                                 Section {
                                     if let todoList = viewModel.filterTodoByWithoutTag(), !todoList.isEmpty {
-                                        ForEach(viewModel.filterTodoByWithoutTag()) { todo in
+                                        ForEach(todoList) { todo in
                                             TodoView(checkListViewModel: viewModel, todo: todo)
 
                                             ForEach(todo.subTodos) { subTodo in
@@ -172,7 +164,7 @@ struct CheckListView: View {
                                     if tag.content == "하루" {
                                         Section {
                                             if let todoList = viewModel.filterTodoByTodayTodo(), !todoList.isEmpty {
-                                                ForEach(viewModel.filterTodoByTodayTodo()) { todo in
+                                                ForEach(todoList) { todo in
                                                     TodoView(checkListViewModel: viewModel, todo: todo)
 
                                                     ForEach(todo.subTodos) { subTodo in
@@ -197,7 +189,7 @@ struct CheckListView: View {
 
                                         Section {
                                             if let todoList = viewModel.filterTodoByTodayEndDate(), !todoList.isEmpty {
-                                                ForEach(viewModel.filterTodoByTodayEndDate()) { todo in
+                                                ForEach(todoList) { todo in
                                                     TodoView(checkListViewModel: viewModel, todo: todo)
 
                                                     ForEach(todo.subTodos) { subTodo in
@@ -221,13 +213,17 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
                                     } else {
                                         Section {
-                                            ForEach(viewModel.todoList) { todo in
-                                                TodoView(checkListViewModel: viewModel, todo: todo)
+                                            if let todoList = viewModel.filterTodoByTag(), !todoList.isEmpty {
+                                                ForEach(todoList) { todo in
+                                                    TodoView(checkListViewModel: viewModel, todo: todo)
 
-                                                ForEach(todo.subTodos) { subTodo in
-                                                    SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                                    ForEach(todo.subTodos) { subTodo in
+                                                        SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
+                                                    }
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
-                                                .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                            } else {
+                                                EmptyText()
                                             }
                                         } header: {
                                             HStack {
@@ -277,7 +273,6 @@ struct CheckListView: View {
                                 }
                             }
                         }
-
                     } else {
                         VStack {
                             Text("모든 할 일을 마쳤습니다!")
