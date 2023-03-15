@@ -13,136 +13,173 @@ struct TodoAddView: View {
     @Binding var isActive: Bool
 
     var body: some View {
-        VStack {
-            // Todo, SubTodo 입력 View
-            VStack(alignment: .leading) {
-                TextField("투두 입력", text: $viewModel.todoContent)
-                    .padding(.horizontal, 20)
-                    .font(.title)
-                    .bold()
-
-                ForEach(viewModel.subTodoList.indices, id: \.self) { index in
-                    HStack {
-                        Text("∙")
-                        TextField("", text: $viewModel.subTodoList[index])
-                        Button {
-                            viewModel.subTodoList.remove(at: index)
-                        } label: {
-                            Image(systemName: "minus.circle.fill")
-                                .foregroundStyle(Constants.lightGray)
+        ScrollView {
+            VStack {
+                // Todo, SubTodo 입력 View
+                VStack(alignment: .leading) {
+                    TextField("투두 입력", text: $viewModel.todoContent)
+                        .padding(.horizontal, 20)
+                        .font(.title)
+                        .bold()
+                    
+                    ForEach(viewModel.subTodoList.indices, id: \.self) { index in
+                        HStack {
+                            Text("∙")
+                            TextField("", text: $viewModel.subTodoList[index])
+                            Button {
+                                viewModel.subTodoList.remove(at: index)
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .foregroundStyle(Constants.lightGray)
+                            }
+                        }
+                        Divider()
+                    }
+                    .padding(.horizontal, 30)
+                    
+                    Button {
+                        viewModel.subTodoList.append("")
+                    } label: {
+                        Label {
+                            Text("하위 항목 추가")
+                        } icon: {
+                            Image(systemName: "plus")
                         }
                     }
+                    .padding(.horizontal, 30)
+                    .foregroundColor(Constants.lightGray)
+                    
                     Divider()
                 }
                 .padding(.horizontal, 30)
-
-                Button {
-                    viewModel.subTodoList.append("")
-                } label: {
+                
+                // Tag 입력 View
+                Group {
                     Label {
-                        Text("하위 항목 추가")
+                        TextField("태그", text: $viewModel.tag)
+                            .foregroundColor(Constants.lightGray)
                     } icon: {
-                        Image(systemName: "plus")
+                        Image(systemName: "tag.fill")
+                            .padding(.trailing, 10)
+                            .foregroundColor(Constants.lightGray)
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
+                    
+                    Divider()
                 }
-                .padding(.horizontal, 30)
-                .foregroundColor(Constants.lightGray)
-
-                Divider()
-            }
-            .padding(.horizontal, 30)
-
-            // Tag 입력 View
-            Label {
-                TextField("태그", text: $viewModel.tag)
-                    .foregroundColor(Constants.lightGray)
-            } icon: {
-                Image(systemName: "tag.fill")
-                    .padding(.trailing, 10)
-                    .foregroundColor(Constants.lightGray)
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 5)
-
-            Divider()
-
-            // 나의 하루에 추가
-            Label {
-                Toggle(isOn: $viewModel.isTodayTodo) {
-                    Text("나의 하루에 추가")
-                        .frame(alignment: .leading)
-                        .foregroundColor(viewModel.isTodayTodo ? .black : Constants.lightGray)
+                
+                // 나의 하루에 추가
+                Group {
+                    Label {
+                        Toggle(isOn: $viewModel.isTodayTodo) {
+                            Text("나의 하루에 추가")
+                                .frame(alignment: .leading)
+                                .foregroundColor(viewModel.isTodayTodo ? .black : Constants.lightGray)
+                        }
+                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                    } icon: {
+                        Image(systemName: "sun.max")
+                            .padding(.trailing, 10)
+                            .foregroundColor(viewModel.isTodayTodo ? .black : Constants.lightGray)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
+                    
+                    Divider()
                 }
-                .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
-            } icon: {
-                Image(systemName: "sun.max")
-                    .padding(.trailing, 10)
-                    .foregroundColor(viewModel.isTodayTodo ? .black : Constants.lightGray)
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 5)
-
-            Divider()
-
-            // 마감 설정
-            Label {
-                Toggle(isOn: $viewModel.isSelectedEndDate) {
-                    HStack {
-                        Text("마감 설정")
-                            .frame(alignment: .leading)
+                
+                // 마감 설정
+                Group {
+                    Label {
+                        Toggle(isOn: $viewModel.isSelectedEndDate) {
+                            HStack {
+                                Text("마감 설정")
+                                    .frame(alignment: .leading)
+                                    .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
+                                
+                                Spacer()
+                                
+                                if viewModel.isSelectedEndDate {
+                                    DatePicker(selection: $viewModel.endDate, displayedComponents: [.date]) {}
+                                        .labelsHidden()
+                                        .padding(.vertical, -5)
+                                }
+                            }
+                        }
+                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                    } icon: {
+                        Image(systemName: "calendar")
+                            .padding(.trailing, 10)
                             .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
-
-                        Spacer()
-
-                        if viewModel.isSelectedEndDate {
-                            DatePicker(selection: $viewModel.endDate, displayedComponents: [.date]) {}
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
+                    
+                    if viewModel.isSelectedEndDate {
+                        Label {
+                            Toggle(isOn: $viewModel.isSelectedEndDateTime) {
+                                HStack {
+                                    Text("마감 시간 설정")
+                                        .frame(alignment: .leading)
+                                        .foregroundColor(viewModel.isSelectedEndDateTime ? .black : Constants.lightGray)
+                                    
+                                    Spacer()
+                                    
+                                    if viewModel.isSelectedEndDateTime {
+                                        DatePicker(selection: $viewModel.endDateTime, displayedComponents: [.hourAndMinute]) {}
+                                            .labelsHidden()
+                                            .padding(.vertical, -5)
+                                    }
+                                }
+                            }
+                            .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                        } icon: {
+                            Image(systemName: "clock")
+                                .padding(.trailing, 10)
+                                .foregroundColor(viewModel.isSelectedEndDateTime ? .black : Constants.lightGray)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 5)
+                    }
+                    
+                    Divider()
+                }
+                
+                // 알림 설정
+                Group {
+                    VStack {
+                        Label {
+                            Toggle(isOn: $viewModel.isSelectedAlarm) {
+                                HStack {
+                                    Text("알림 설정")
+                                        .frame(alignment: .leading)
+                                        .foregroundColor(viewModel.isSelectedAlarm ? .black : Constants.lightGray)
+                                }
+                            }
+                            .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                        } icon: {
+                            Image(systemName: "bell.fill")
+                                .padding(.trailing, 10)
+                                .foregroundColor(viewModel.isSelectedAlarm ? .black : Constants.lightGray)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 5)
+                        
+                        if viewModel.isSelectedAlarm {
+                            DatePicker(selection: $viewModel.alarm) {}
                                 .labelsHidden()
                                 .padding(.vertical, -5)
                         }
                     }
+                    Divider()
                 }
-                .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
-            } icon: {
-                Image(systemName: "calendar")
-                    .padding(.trailing, 10)
-                    .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
+                
+                Spacer()
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 5)
-
-            if viewModel.isSelectedEndDate {
-                Label {
-                    Toggle(isOn: $viewModel.isSelectedEndDateTime) {
-                        HStack {
-                            Text("마감 시간 설정")
-                                .frame(alignment: .leading)
-                                .foregroundColor(viewModel.isSelectedEndDateTime ? .black : Constants.lightGray)
-
-                            Spacer()
-
-                            if viewModel.isSelectedEndDateTime {
-                                DatePicker(selection: $viewModel.endDateTime, displayedComponents: [.hourAndMinute]) {}
-                                    .labelsHidden()
-                                    .padding(.vertical, -5)
-                            }
-                        }
-                    }
-                    .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
-                } icon: {
-                    Image(systemName: "clock")
-                        .padding(.trailing, 10)
-                        .foregroundColor(viewModel.isSelectedEndDateTime ? .black : Constants.lightGray)
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 5)
+            .onAppear {
+                UIDatePicker.appearance().minuteInterval = 5
             }
-
-            Divider()
-
-            Spacer()
-        }
-        .onAppear {
-            UIDatePicker.appearance().minuteInterval = 5
         }
     }
 }
