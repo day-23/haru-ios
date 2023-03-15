@@ -22,6 +22,7 @@ struct Todo: Identifiable, Codable {
     private(set) var endDateTime: Date?
     private(set) var repeatEnd: Date?
     private(set) var order: Int?
+    private(set) var completed: Bool?
     var subTodos: [SubTodo]
     private(set) var tags: [Tag]
 
