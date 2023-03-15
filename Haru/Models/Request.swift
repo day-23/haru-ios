@@ -22,8 +22,16 @@ struct Request: Codable {
         var tags: [String]
         var subTodos: [String]
     }
-    
+
     struct Schedule: Codable {
-        
+        var content: String
+        var memo: String
+        var category: String
+        var alarms: [Date]
+        var flag: Bool
+        var repeatOption: String?
+        var `repeat`: String?
+        var repeatStart: Date?
+        var repeatEnd: Date?
     }
 }

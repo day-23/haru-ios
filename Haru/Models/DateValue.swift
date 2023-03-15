@@ -16,3 +16,10 @@ struct DateValue: Identifiable, Hashable {
 }
 
 // MARK: - Extensions
+extension DateValue: Comparable {
+    static func < (lhs: DateValue, rhs: DateValue) -> Bool {
+        return lhs.date < rhs.date
+    }
+    
+    
+}

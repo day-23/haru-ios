@@ -64,7 +64,7 @@ struct CalendarDateView: View {
 
                     // MARK: - Gesture 분리를 위함
 
-                    let longPress = LongPressGesture(minimumDuration: 0.5)
+                    let longPress = LongPressGesture(minimumDuration: 0.3)
                         .onEnded { longPress in
                             calendarVM.firstSelected = true
                         }
@@ -112,11 +112,7 @@ struct CalendarDateView: View {
                     }
                 
                 Modal(isActive: $isSchModalVisible, ratio: 0.8) {
-                    VStack {
-                        List(Array(calendarVM.selectionSet)) { value in
-                            Text("\(value.date)")
-                        }
-                    }
+                    ScheduleFormView(repeatStart: calendarVM.selectionSet.sorted(by: <).first!.date, repeatEnd: calendarVM.selectionSet.sorted(by: <).last!.date)
                 }
                 .zIndex(2)
             }

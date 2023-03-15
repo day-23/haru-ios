@@ -30,6 +30,11 @@
 		6F8F5DDC29B509B1009807B8 /* CalendarMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8F5DDB29B509B1009807B8 /* CalendarMainView.swift */; };
 		6F9F442829B8F34600E2B890 /* Border.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9F442729B8F34600E2B890 /* Border.swift */; };
 		6F9F442A29B9DEA700E2B890 /* CalendarScheduleItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9F442929B9DEA700E2B890 /* CalendarScheduleItem.swift */; };
+		6FE3AFF229C19ADB002B9CE6 /* ScheduleFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3AFF129C19ADB002B9CE6 /* ScheduleFormView.swift */; };
+		6FE3AFF429C19E8B002B9CE6 /* ScheduleFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3AFF329C19E8B002B9CE6 /* ScheduleFormViewModel.swift */; };
+		6FE3AFF629C1B58C002B9CE6 /* CategoryModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3AFF529C1B58C002B9CE6 /* CategoryModal.swift */; };
+		6FE3AFF829C1BEAE002B9CE6 /* MyToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3AFF729C1BEAE002B9CE6 /* MyToggleStyle.swift */; };
+		6FE3AFFA29C22BEE002B9CE6 /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3AFF929C22BEE002B9CE6 /* CategoryView.swift */; };
 		6FE3FBCE29B50F1A00B6CCB9 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3FBCD29B50F1A00B6CCB9 /* Date.swift */; };
 		6FE3FBD029B5100A00B6CCB9 /* DateValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3FBCF29B5100A00B6CCB9 /* DateValue.swift */; };
 		6FE3FBD329B655CB00B6CCB9 /* Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3FBD229B655CB00B6CCB9 /* Schedule.swift */; };
@@ -66,6 +71,11 @@
 		6F8F5DDB29B509B1009807B8 /* CalendarMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMainView.swift; sourceTree = "<group>"; };
 		6F9F442729B8F34600E2B890 /* Border.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Border.swift; sourceTree = "<group>"; };
 		6F9F442929B9DEA700E2B890 /* CalendarScheduleItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarScheduleItem.swift; sourceTree = "<group>"; };
+		6FE3AFF129C19ADB002B9CE6 /* ScheduleFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormView.swift; sourceTree = "<group>"; };
+		6FE3AFF329C19E8B002B9CE6 /* ScheduleFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormViewModel.swift; sourceTree = "<group>"; };
+		6FE3AFF529C1B58C002B9CE6 /* CategoryModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModal.swift; sourceTree = "<group>"; };
+		6FE3AFF729C1BEAE002B9CE6 /* MyToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyToggleStyle.swift; sourceTree = "<group>"; };
+		6FE3AFF929C22BEE002B9CE6 /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		6FE3FBCD29B50F1A00B6CCB9 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		6FE3FBCF29B5100A00B6CCB9 /* DateValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateValue.swift; sourceTree = "<group>"; };
 		6FE3FBD229B655CB00B6CCB9 /* Schedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schedule.swift; sourceTree = "<group>"; };
@@ -156,6 +166,7 @@
 			children = (
 				13AE616929B48AF300C08EB1 /* ViewModel.swift */,
 				6FE3FBD429B6576C00B6CCB9 /* CalendarViewModel.swift */,
+				6FE3AFF329C19E8B002B9CE6 /* ScheduleFormViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -165,6 +176,8 @@
 			children = (
 				13AE617A29B48E8000C08EB1 /* README.md */,
 				6F1D9DF229B6767800AA9EE0 /* Modal.swift */,
+				6FE3AFF529C1B58C002B9CE6 /* CategoryModal.swift */,
+				6FE3AFF729C1BEAE002B9CE6 /* MyToggleStyle.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -216,6 +229,8 @@
 				6F1D9DEA29B65EDF00AA9EE0 /* CalendarDateView.swift */,
 				6F1D9DEC29B65F6200AA9EE0 /* CalendarDateItem.swift */,
 				6F9F442929B9DEA700E2B890 /* CalendarScheduleItem.swift */,
+				6FE3AFF129C19ADB002B9CE6 /* ScheduleFormView.swift */,
+				6FE3AFF929C22BEE002B9CE6 /* CategoryView.swift */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -305,6 +320,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6FE3FBD529B6576C00B6CCB9 /* CalendarViewModel.swift in Sources */,
+				6FE3AFF229C19ADB002B9CE6 /* ScheduleFormView.swift in Sources */,
 				6F79716929C08DFB001B82FD /* Request.swift in Sources */,
 				6F8F5DDC29B509B1009807B8 /* CalendarMainView.swift in Sources */,
 				6FE3FBD329B655CB00B6CCB9 /* Schedule.swift in Sources */,
@@ -312,11 +328,15 @@
 				6F1D9DF329B6767800AA9EE0 /* Modal.swift in Sources */,
 				13AE616829B48AEA00C08EB1 /* Model.swift in Sources */,
 				6F79715F29BF74CA001B82FD /* View.swift in Sources */,
+				6FE3AFF629C1B58C002B9CE6 /* CategoryModal.swift in Sources */,
 				13AE616A29B48AF300C08EB1 /* ViewModel.swift in Sources */,
+				6FE3AFF829C1BEAE002B9CE6 /* MyToggleStyle.swift in Sources */,
 				6FE3FBD729B65B2600B6CCB9 /* ScheduleService.swift in Sources */,
 				13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */,
+				6FE3AFFA29C22BEE002B9CE6 /* CategoryView.swift in Sources */,
 				6F1D9DEB29B65EDF00AA9EE0 /* CalendarDateView.swift in Sources */,
 				6F9F442829B8F34600E2B890 /* Border.swift in Sources */,
+				6FE3AFF429C19E8B002B9CE6 /* ScheduleFormViewModel.swift in Sources */,
 				6F1D9DED29B65F6200AA9EE0 /* CalendarDateItem.swift in Sources */,
 				13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */,
 				6F79716B29C08E44001B82FD /* Category.swift in Sources */,

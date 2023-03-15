@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-class CalendarViewModel: ObservableObject {
+final class CalendarViewModel: ObservableObject {
     // 현재 달력에 보여질 일정들만 모은 자료구조
     @Published var scheduleList: [[Int: Schedule]] = [[:]]
 
