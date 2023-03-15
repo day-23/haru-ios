@@ -14,6 +14,7 @@ final class TodoAddViewModel: ObservableObject {
 
     @Published var todoContent: String = ""
     @Published var tag: String = ""
+    @Published var tagList: [String] = []
     @Published var isTodayTodo: Bool = false
     @Published var flag: Bool = false
     @Published var isSelectedAlarm: Bool = false
@@ -86,9 +87,7 @@ final class TodoAddViewModel: ObservableObject {
             }.isEmpty ? nil : days.reduce("") { acc, day in
                 acc + (day.isClicked ? "1" : "0")
             },
-            tags: tag.components(separatedBy: " ").filter { tag in
-                !tag.isEmpty
-            },
+            tags: tagList,
             subTodos: subTodoList
         )) { result in
             switch result {

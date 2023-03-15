@@ -11,7 +11,7 @@ struct TodoAddView: View {
     @Environment(\.dismiss) var dismissAction
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isActive: Bool
-
+    
     var body: some View {
         ScrollView {
             VStack {
@@ -56,12 +56,35 @@ struct TodoAddView: View {
                 // Tag 입력 View
                 Group {
                     Label {
-                        TextField("태그", text: $viewModel.tag)
-                            .foregroundColor(Constants.lightGray)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(viewModel.tagList.indices, id: \.self) { index in
+                                    TagView(Tag(id: viewModel.tagList[index].description, content: viewModel.tagList[index].description))
+                                        .onTapGesture {
+                                            viewModel.tagList.remove(at: index)
+                                        }
+                                }
+                                
+                                TextField("태그", text: $viewModel.tag)
+                                    .foregroundColor(viewModel.tagList.isEmpty ? Constants.lightGray : .black)
+                                    .onChange(of: viewModel.tag) { _ in
+                                        if !viewModel.tag.isEmpty &&
+                                            viewModel.tag[viewModel.tag.index(viewModel.tag.endIndex, offsetBy: -1)] == " "
+                                        {
+                                            let tag = viewModel.tag.trimmingCharacters(in: .whitespaces)
+                                            if !viewModel.tagList.contains(tag) {
+                                                viewModel.tagList.append(tag)
+                                                viewModel.tag = ""
+                                            }
+                                        }
+                                    }
+                            }
+                            .padding(1)
+                        }
                     } icon: {
                         Image(systemName: "tag")
                             .padding(.trailing, 10)
-                            .foregroundColor(Constants.lightGray)
+                            .foregroundColor(viewModel.tagList.isEmpty ? Constants.lightGray : .black)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
@@ -168,8 +191,9 @@ struct TodoAddView: View {
                     if viewModel.isSelectedAlarm {
                         DatePicker(selection: $viewModel.alarm) {}
                             .labelsHidden()
-                            .padding(.vertical, -5)
+                            .padding(.vertical, 5)
                     }
+                    
                     Divider()
                 }
                 
