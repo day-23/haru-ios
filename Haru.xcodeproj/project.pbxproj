@@ -23,6 +23,7 @@
 		137611FB29B61705008787BD /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611FA29B61705008787BD /* Tag.swift */; };
 		137611FD29B6253E008787BD /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611FC29B6253E008787BD /* TodoView.swift */; };
 		1376120129B64400008787BD /* AnyTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1376120029B64400008787BD /* AnyTransition.swift */; };
+		137D670429C2084C0010C8B3 /* TodoAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137D670329C2084C0010C8B3 /* TodoAddView.swift */; };
 		13968EF829B77401009A0831 /* DayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13968EF729B77401009A0831 /* DayButton.swift */; };
 		13968EFA29B77EBE009A0831 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13968EF929B77EBE009A0831 /* Request.swift */; };
 		13A15DB829B861B7003BE771 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 13A15DB729B861B7003BE771 /* Alamofire */; };
@@ -39,7 +40,6 @@
 		13C2647D29BAD84400C84D1F /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C2647C29BAD84400C84D1F /* Date.swift */; };
 		13C79A1729B7047800E68E55 /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C79A1629B7047800E68E55 /* TagView.swift */; };
 		13C79A1929B7436000E68E55 /* RepeatOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C79A1829B7436000E68E55 /* RepeatOption.swift */; };
-		13C79A1B29B764F100E68E55 /* TodoAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C79A1A29B764F100E68E55 /* TodoAddView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +59,7 @@
 		137611FA29B61705008787BD /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		137611FC29B6253E008787BD /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 		1376120029B64400008787BD /* AnyTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyTransition.swift; sourceTree = "<group>"; };
+		137D670329C2084C0010C8B3 /* TodoAddView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodoAddView.swift; sourceTree = "<group>"; };
 		13968EF729B77401009A0831 /* DayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayButton.swift; sourceTree = "<group>"; };
 		13968EF929B77EBE009A0831 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		13A15DBB29B88497003BE771 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -80,7 +81,6 @@
 		13C2647C29BAD84400C84D1F /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		13C79A1629B7047800E68E55 /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
 		13C79A1829B7436000E68E55 /* RepeatOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepeatOption.swift; sourceTree = "<group>"; };
-		13C79A1A29B764F100E68E55 /* TodoAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoAddView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +101,7 @@
 				1334334E29B5A0AC00F26F57 /* CheckListView.swift */,
 				137611FC29B6253E008787BD /* TodoView.swift */,
 				13C79A1629B7047800E68E55 /* TagView.swift */,
-				13C79A1A29B764F100E68E55 /* TodoAddView.swift */,
+				137D670329C2084C0010C8B3 /* TodoAddView.swift */,
 				1310B00F29BF48A700DEC17F /* SubTodoView.swift */,
 			);
 			path = CheckList;
@@ -321,7 +321,7 @@
 			files = (
 				137611F929B61674008787BD /* SubTodo.swift in Sources */,
 				1334334F29B5A0AC00F26F57 /* CheckListView.swift in Sources */,
-				13C79A1B29B764F100E68E55 /* TodoAddView.swift in Sources */,
+				137D670429C2084C0010C8B3 /* TodoAddView.swift in Sources */,
 				13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */,
 				1310B00C29BF109A00DEC17F /* TagService.swift in Sources */,
 				137611F129B5FD1E008787BD /* CheckListViewModel.swift in Sources */,

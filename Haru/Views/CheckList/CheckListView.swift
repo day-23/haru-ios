@@ -24,9 +24,6 @@ struct CheckListView: View {
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
 
-    // TEST
-    @State private var draggedItem: Todo? = nil
-
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottomTrailing) {
@@ -88,19 +85,15 @@ struct CheckListView: View {
                                     if let todoList = viewModel.filterTodoByFlag(), !todoList.isEmpty {
                                         ForEach(todoList) { todo in
                                             TodoView(checkListViewModel: viewModel, todo: todo)
-                                                .onDrag {
-                                                    self.draggedItem = todo
-                                                    return NSItemProvider(item: nil, typeIdentifier: todo.id)
-                                                }
 
                                             ForEach(todo.subTodos) { subTodo in
                                                 SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
                                             }
                                             .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                            .moveDisabled(true)
                                         }
                                         .onMove { source, destination in
                                             withAnimation {
-                                                draggedItem = nil
                                                 viewModel.todoList.move(fromOffsets: source, toOffset: destination)
                                             }
                                         }

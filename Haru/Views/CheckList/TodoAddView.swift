@@ -11,225 +11,111 @@ struct TodoAddView: View {
     @Environment(\.dismiss) var dismissAction
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isActive: Bool
-    @State private var isRepeatModalVisible: Bool = false
-    @State private var isSubTodoModalVisible: Bool = false
-
-    init(viewModel: TodoAddViewModel, isActive: Binding<Bool>) {
-        self.viewModel = viewModel
-        _isActive = isActive
-    }
 
     var body: some View {
-        ZStack {
-            if isRepeatModalVisible {
-                Modal(isActive: $isRepeatModalVisible, ratio: 1) {
+        VStack {
+            // Todo, SubTodo 입력 View
+            VStack(alignment: .leading) {
+                TextField("투두 입력", text: $viewModel.todoContent)
+                    .padding(.horizontal, 20)
+                    .font(.title)
+                    .bold()
+
+                ForEach(viewModel.subTodoList.indices, id: \.self) { index in
                     HStack {
-                        ForEach(viewModel.days.indices, id: \.self) { index in
-                            DayButton(disabled: viewModel.disableButtons, content: viewModel.days[index].content, isClicked: viewModel.days[index].isClicked) {
-                                viewModel.days[index] = Day(content: viewModel.days[index].content, isClicked: !viewModel.days[index].isClicked)
-                            }
-                        }
-                    }
-                    .padding(.top, 20)
-                    .disabled(viewModel.repeatOption != .none)
-
-                    List {
-                        Picker("반복 옵션", selection: $viewModel.repeatOption) {
-                            ForEach(RepeatOption.allCases, id: \.self) {
-                                Text($0.rawValue)
-                            }
-                        }
-                        .pickerStyle(.inline)
-                    }
-                    .listStyle(.inset)
-                }
-                .transition(.modal)
-            } else if isSubTodoModalVisible {
-                Modal(isActive: $isSubTodoModalVisible, ratio: 1) {
-                    VStack {
-                        List {
-                            ForEach(viewModel.subTodoList, id: \.self) { subTodo in
-                                Text(subTodo)
-                                    .contextMenu {
-                                        Button(action: {
-                                            if let index = viewModel.subTodoList.firstIndex(where: { $0 == subTodo
-                                            }) {
-                                                viewModel.subTodoList.remove(at: index)
-                                            }
-                                        }, label: {
-                                            Label("Delete", systemImage: "trash")
-                                        })
-                                    }
-                            }
-                        }
-                        .listStyle(.inset)
-                        Spacer()
-                        HStack {
-                            TextField("하위 항목을 입력해주세요", text: $viewModel.subTodoContent)
-                                .onSubmit(viewModel.createSubTodo)
-                            Button(action: viewModel.createSubTodo) {
-                                Image(systemName: "plus.app")
-                                    .scaleEffect(1.25)
-                            }
-                        }
-                        .padding(.all, 10)
-                        .background(Color(0xf1f1f5))
-                        .cornerRadius(10)
-                        .padding(.horizontal, 20)
+                        Text("∙")
+                        TextField("", text: $viewModel.subTodoList[index])
                     }
                 }
-                .transition(.modal)
-            } else {
-                VStack {
-                    List {
-                        Section {
-                            TextField("할 일을 입력해주세요", text: $viewModel.todoContent)
-                        }
+                .padding(.horizontal, 30)
 
-                        Spacer()
-
-                        Section {
-                            TextField("태그를 입력해주세요", text: $viewModel.tag)
-
-                            Button {
-                                viewModel.isTodayTodo.toggle()
-                            } label: {
-                                HStack {
-                                    if viewModel.isTodayTodo {
-                                        Image(systemName: "sun.max.fill")
-                                            .foregroundColor(.orange)
-                                    } else {
-                                        Image(systemName: "sun.max")
-                                    }
-                                    Text("나의 하루에 추가")
-                                }
-                            }
-
-                            Button {
-                                viewModel.flag.toggle()
-                            } label: {
-                                HStack {
-                                    if viewModel.flag {
-                                        Image(systemName: "flag.fill")
-                                            .foregroundColor(.red)
-                                    } else {
-                                        Image(systemName: "flag")
-                                    }
-                                    Text("중요한 일")
-                                }
-                            }
-
-                            HStack {
-                                Button {
-                                    withAnimation {
-                                        viewModel.isSelectedEndDate.toggle()
-                                    }
-                                } label: {
-                                    Text("마감일 설정")
-                                        .foregroundColor(.blue)
-                                }
-
-                                if viewModel.isSelectedEndDate {
-                                    DatePicker("", selection: $viewModel.endDate, displayedComponents: .date)
-                                }
-                            }
-
-                            if viewModel.isSelectedEndDate {
-                                HStack {
-                                    Button {
-                                        viewModel.isSelectedEndDateTime.toggle()
-                                    } label: {
-                                        Text("마감일 시간 설정")
-                                            .foregroundColor(.blue)
-                                    }
-
-                                    if viewModel.isSelectedEndDateTime {
-                                        DatePicker("", selection: $viewModel.endDateTime, displayedComponents: .hourAndMinute)
-                                    }
-                                }
-                            }
-
-                            HStack {
-                                Button {
-                                    viewModel.isSelectedAlarm.toggle()
-                                } label: {
-                                    Text("알림 설정")
-                                        .foregroundColor(.blue)
-                                }
-
-                                if viewModel.isSelectedAlarm {
-                                    DatePicker("", selection: $viewModel.alarm)
-                                }
-                            }
-
-                            Button {
-                                withAnimation {
-                                    isRepeatModalVisible = true
-                                }
-                            } label: {
-                                HStack {
-                                    Text("반복 설정")
-                                    Spacer()
-                                    Text(viewModel.displayRepeat)
-                                        .font(.caption)
-                                    Image(systemName: "chevron.right")
-                                }
-                            }
-
-                            if !viewModel.displayRepeat.isEmpty {
-                                HStack {
-                                    Button {
-                                        viewModel.isSelectedRepeatEnd.toggle()
-                                    } label: {
-                                        Text("반복 끝 날짜 설정")
-                                            .foregroundColor(.blue)
-                                    }
-
-                                    if viewModel.isSelectedRepeatEnd {
-                                        DatePicker("", selection: $viewModel.repeatEnd, displayedComponents: .date)
-                                    }
-                                }
-                            }
-
-                            Button {
-                                withAnimation {
-                                    isSubTodoModalVisible = true
-                                }
-                            } label: {
-                                HStack {
-                                    Text("하위 항목")
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                }
-                            }
-
-                            TextField("메모 추가", text: $viewModel.memo)
-                                .lineLimit(1)
-                        }
+                Button {
+                    viewModel.subTodoList.append("")
+                } label: {
+                    Label {
+                        Text("하위 항목 추가")
+                    } icon: {
+                        Image(systemName: "plus")
                     }
-                    .listStyle(.plain)
+                }
+                .padding(.horizontal, 30)
+                .foregroundColor(Constants.lightGray)
+
+                Divider()
+            }
+            .padding(.horizontal, 30)
+
+            // Tag 입력 View
+            Label {
+                TextField("태그", text: $viewModel.tag)
+                    .foregroundColor(Constants.lightGray)
+            } icon: {
+                Image(systemName: "tag.fill")
+                    .padding(.trailing, 10)
+                    .foregroundColor(Constants.lightGray)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 5)
+
+            Divider()
+
+            // 나의 하루에 추가
+            Label {
+                Toggle(isOn: $viewModel.isTodayTodo) {
+                    Text("나의 하루에 추가")
+                        .frame(alignment: .leading)
+                        .foregroundColor(viewModel.isTodayTodo ? .black : Constants.lightGray)
+                }
+                .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+            } icon: {
+                Image(systemName: "sun.max")
+                    .padding(.trailing, 10)
+                    .foregroundColor(viewModel.isTodayTodo ? .black : Constants.lightGray)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 5)
+
+            Divider()
+
+            // 마감 설정
+            Label {
+                Toggle(isOn: $viewModel.isSelectedEndDate) {
+                    Text("마감 설정")
+                        .frame(alignment: .leading)
+                        .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
+                }
+                .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+            } icon: {
+                Image(systemName: "calendar")
+                    .padding(.trailing, 10)
+                    .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 5)
+
+            if viewModel.isSelectedEndDate {
+                HStack {
                     Spacer()
-                    Button {
-                        viewModel.addTodo { result in
-                            switch result {
-                            case .success:
-                                withAnimation {
-                                    dismissAction.callAsFunction()
-                                    isActive = false
-                                }
-                            case .failure(let failure):
-                                print("[Debug] StatusCode = \(failure) in TodoAddView")
-                            }
-                        }
-                    } label: {
-                        Text("추가하기")
-                    }
-                    .disabled(viewModel.todoContent.isEmpty)
+                    DatePicker(selection: $viewModel.endDate, displayedComponents: [.date]) {}
+                        .labelsHidden()
+                    DatePicker(selection: $viewModel.endDateTime, displayedComponents: [.hourAndMinute]) {}
+                        .labelsHidden()
+                    Spacer()
                 }
             }
+
+            Divider()
+
+            Spacer()
         }
         .onAppear {
             UIDatePicker.appearance().minuteInterval = 5
         }
+    }
+}
+
+struct TodoAddView_Previews: PreviewProvider {
+    static var previews: some View {
+        TodoAddView(viewModel: TodoAddViewModel(checkListViewModel: CheckListViewModel()), isActive: .constant(true))
     }
 }

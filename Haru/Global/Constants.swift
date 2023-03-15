@@ -16,4 +16,5 @@ struct Constants {
 
     static let gradientStart = Color(0x53acf8)
     static let gradientEnd = Color(0x9da6f5)
+    static let lightGray = Color(0x000000, opacity: 0.3)
 }
