@@ -97,7 +97,7 @@ struct TodoAddView: View {
                 // 나의 하루에 추가
                 Group {
                     Label {
-                        Toggle(isOn: $viewModel.isTodayTodo) {
+                        Toggle(isOn: $viewModel.isTodayTodo.animation()) {
                             Text("나의 하루에 추가")
                                 .frame(alignment: .leading)
                                 .foregroundColor(viewModel
@@ -124,7 +124,7 @@ struct TodoAddView: View {
                 // 마감 설정
                 Group {
                     Label {
-                        Toggle(isOn: $viewModel.isSelectedEndDate) {
+                        Toggle(isOn: $viewModel.isSelectedEndDate.animation()) {
                             HStack {
                                 Text("마감 설정")
                                     .frame(alignment: .leading)
@@ -162,34 +162,38 @@ struct TodoAddView: View {
 
                     if viewModel.isSelectedEndDate {
                         Label {
-                            Toggle(isOn: $viewModel.isSelectedEndDateTime) {
-                                HStack {
-                                    Text("마감 시간 설정")
-                                        .frame(alignment: .leading)
-                                        .foregroundColor(viewModel
-                                            .isSelectedEndDateTime ? .black :
-                                            Constants.lightGray)
+                            Toggle(isOn: $viewModel.isSelectedEndDateTime
+                                .animation()) {
+                                    HStack {
+                                        Text("마감 시간 설정")
+                                            .frame(alignment: .leading)
+                                            .foregroundColor(viewModel
+                                                .isSelectedEndDateTime ?
+                                                .black :
+                                                Constants.lightGray)
 
-                                    Spacer()
+                                        Spacer()
 
-                                    if viewModel.isSelectedEndDateTime {
-                                        DatePicker(
-                                            selection: $viewModel.endDateTime,
-                                            displayedComponents: [
-                                                .hourAndMinute,
-                                            ]
-                                        ) {}
-                                            .labelsHidden()
-                                            .padding(.vertical, -5)
+                                        if viewModel.isSelectedEndDateTime {
+                                            DatePicker(
+                                                selection: $viewModel
+                                                    .endDateTime,
+                                                displayedComponents: [
+                                                    .hourAndMinute,
+                                                ]
+                                            ) {}
+                                                .labelsHidden()
+                                                .padding(.vertical, -5)
+                                        }
                                     }
                                 }
-                            }
-                            .tint(LinearGradient(
-                                gradient: Gradient(colors: [Constants
-                                        .gradientStart, Constants.gradientEnd]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ))
+                                .tint(LinearGradient(
+                                    gradient: Gradient(colors: [Constants
+                                            .gradientStart,
+                                        Constants.gradientEnd]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ))
                         } icon: {
                             Image(systemName: "clock")
                                 .padding(.trailing, 10)
@@ -207,7 +211,7 @@ struct TodoAddView: View {
                 // 알림 설정
                 Group {
                     Label {
-                        Toggle(isOn: $viewModel.isSelectedAlarm) {
+                        Toggle(isOn: $viewModel.isSelectedAlarm.animation()) {
                             HStack {
                                 Text("알림 설정")
                                     .frame(alignment: .leading)
@@ -243,7 +247,7 @@ struct TodoAddView: View {
                 // 반복 설정
                 Group {
                     Label {
-                        Toggle(isOn: $viewModel.isSelectedRepeat) {
+                        Toggle(isOn: $viewModel.isSelectedRepeat.animation()) {
                             HStack {
                                 Text("반복 설정")
                                     .frame(alignment: .leading)
@@ -274,7 +278,7 @@ struct TodoAddView: View {
                 // 메모 추가
                 Group {
                     Label {
-                        Toggle(isOn: $viewModel.isWritedMemo) {
+                        Toggle(isOn: $viewModel.isWritedMemo.animation()) {
                             HStack {
                                 Text("메모 추가")
                                     .frame(alignment: .leading)
@@ -327,7 +331,7 @@ struct TodoAddView: View {
                     case .edit:
                         viewModel.updateTodo { result in
                             switch result {
-                            case let .success(success):
+                            case .success:
                                 withAnimation {
                                     isActive = false
                                 }
@@ -352,16 +356,5 @@ struct TodoAddView: View {
         .onDisappear {
             viewModel.clear()
         }
-    }
-}
-
-struct TodoAddView_Previews: PreviewProvider {
-    static var previews: some View {
-        TodoAddView(
-            viewModel: TodoAddViewModel(
-                checkListViewModel: CheckListViewModel()
-            ),
-            isActive: .constant(true)
-        )
     }
 }
