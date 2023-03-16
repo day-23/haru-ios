@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct CalendarMainView: View {
+    
+    @ObservedObject var calendarVM: CalendarViewModel = .init()
+    
     var body: some View {
         VStack(spacing: 20) {
-            CalendarDateView()
+            CalendarDateView(calendarVM: calendarVM)
         }
     }
 }

@@ -27,11 +27,15 @@ final class CalendarViewModel: ObservableObject {
     @Published var dayList: [String] = [] // 달력에 표시할 요일
     
     @Published var firstSelected: Bool = false
-    @Published var initIndex: Int = 0
-    @Published var startIndex: Int = 0
-    @Published var lastIndex: Int = 0
+    var initIndex: Int = 0
+    var startIndex: Int = 0
+    var lastIndex: Int = 0
+    
+    
+    @Published var categoryList: [Category] = []
     
     private let scheduleService = ScheduleService()
+    private let categoryService = CategoryService()
     
     init() {
         startOnSunday = true
@@ -39,6 +43,7 @@ final class CalendarViewModel: ObservableObject {
         selectedDate = .init(day: Date().day, date: Date())
         
         setStartOnSunday(startOnSunday)
+        getCategoryList()
     }
 
     func addMonthOffset() {
@@ -72,6 +77,7 @@ final class CalendarViewModel: ObservableObject {
         scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
             switch result {
             case .success(let success):
+                print(success.first?.repeatEnd)
                 self.scheduleList = self.scheduleService.fittingScheduleList(dateList, success)
             case .failure(let failure):
                 print("[Debug] \(failure)")
@@ -119,6 +125,17 @@ final class CalendarViewModel: ObservableObject {
         if isRangeChanged.0, isRangeChanged.1 {
             for i in startIndex ... lastIndex {
                 selectionSet.insert(dateList[i])
+            }
+        }
+    }
+    
+    func getCategoryList() {
+        categoryService.fetchCategoryList { result in
+            switch result {
+            case .success(let success):
+                self.categoryList = success
+            case .failure(let failure):
+                print("[Debug] \(failure)")
             }
         }
     }

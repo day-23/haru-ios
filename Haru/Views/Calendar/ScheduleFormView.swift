@@ -5,25 +5,17 @@
 //  Created by 이준호 on 2023/03/15.
 //
 
+import PopupView
 import SwiftUI
 
 struct ScheduleFormView: View {
-    @State var repeatStart: Date = .init()
-    @State var repeatEnd: Date = .init()
-    
-    @State private var content: String = ""
-    @State private var memo: String = ""
-    
-    @State private var alarmDate: Date = Date()
+    @ObservedObject var scheduleFormVM: ScheduleFormViewModel
+//    @Binding var categoryList: [Category]
 
     @State private var showCategorySheet: Bool = false
-    @State private var timeOption: Bool = false
-    @State private var alarmOption: Bool = false
-    @State private var repeatOption: Bool = false
-    @State private var memoOption: Bool = false
 
-    @State private var categoryList: [Category] = [Category(id: UUID().uuidString, content: "집"), Category(id: UUID().uuidString, content: "학교"), Category(id: UUID().uuidString, content: "친구")]
-    @State private var selectionCategory: Int?
+    @State private var idx: Int?
+    @State private var showingPopup: Bool = false
 
     var body: some View {
         VStack(spacing: 15) {
@@ -38,6 +30,7 @@ struct ScheduleFormView: View {
 
                 Button {
                     // TODO: 일정의 종료 시간이 일정의 시작 시간보다 빠르면 toast 알림창
+                    scheduleFormVM.addSchedule()
                     print("complete")
                 } label: {
                     Image(systemName: "checkmark")
@@ -46,7 +39,7 @@ struct ScheduleFormView: View {
 
             // 일정 입력
             Group {
-                TextField("일정 입력", text: $content)
+                TextField("일정 입력", text: $scheduleFormVM.content)
                     .font(Font.system(size: 20, weight: .bold))
                 Divider()
             }
@@ -54,36 +47,67 @@ struct ScheduleFormView: View {
             // 카테고리 선택
             Group {
                 HStack {
-                    if let selectIndex = selectionCategory {
+                    if let selectIndex = scheduleFormVM.selectionCategory {
                         Circle()
-                            .fill(Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]))
+                            .fill(Gradient(colors: [Constants.gradientStart,
+                                                    Constants.gradientEnd]))
                             .overlay {
                                 Image(systemName: "checkmark")
                                     .foregroundColor(.white)
                             }
                             .frame(width: 20, height: 20)
-                        Button("\(categoryList[selectIndex].content)") {
+                        Button("\(scheduleFormVM.categoryList[selectIndex].content)") {
                             showCategorySheet = true
                         }
-                        .sheet(isPresented: $showCategorySheet) {
-                            CategoryView(categoryList: $categoryList, selectionCategory: $selectionCategory)
-                                .presentationDetents([.medium])
+                        .popup(isPresented: $showCategorySheet) {
+                            CategoryView(
+                                categoryList: $scheduleFormVM.categoryList,
+                                selectionCategory: $idx
+                            )
+                            .background(Color.white)
+                            .frame(height: 450)
+                            .cornerRadius(20)
+                            .padding(.horizontal, 30)
+                            .shadow(radius: 2.0)
+                        } customize: {
+                            $0
+                                .animation(.spring())
+                                .closeOnTap(false)
+                                .closeOnTapOutside(true)
+                                .dismissCallback {
+                                    scheduleFormVM.selectionCategory = idx
+                                }
                         }
                         .tint(Color.black)
                     } else {
                         Circle()
                             .strokeBorder(Color.gray, lineWidth: 1)
                             .frame(width: 20, height: 20)
+
                         Button("카테고리 선택") {
                             showCategorySheet = true
                         }
-                        .sheet(isPresented: $showCategorySheet) {
-                            CategoryView(categoryList: $categoryList, selectionCategory: $selectionCategory)
-                                .presentationDetents([.medium])
+                        .popup(isPresented: $showCategorySheet) {
+                            CategoryView(
+                                categoryList: $scheduleFormVM.categoryList,
+                                selectionCategory: $idx
+                            )
+                            .background(Color.white)
+                            .frame(height: 450)
+                            .cornerRadius(20)
+                            .padding(.horizontal, 30)
+                            .shadow(radius: 2.0)
+                        } customize: {
+                            $0
+                                .animation(.spring())
+                                .closeOnTap(false)
+                                .closeOnTapOutside(true)
+                                .dismissCallback {
+                                    scheduleFormVM.selectionCategory = idx
+                                }
                         }
                         .tint(Color.gray)
                     }
-
                     Spacer()
                 }
                 Divider()
@@ -97,26 +121,55 @@ struct ScheduleFormView: View {
                     Text("시작일-종료일 설정")
                         .foregroundColor(.gray)
                     Spacer()
-                    Toggle(isOn: $timeOption) {
+                    Toggle(isOn: $scheduleFormVM.timeOption.animation()) {
                         Text("시간 설정")
-                            .foregroundStyle(timeOption ? Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]) : Gradient(colors: [.gray, .gray]))
+                            .foregroundStyle(scheduleFormVM.timeOption ?
+                                Gradient(colors: [Constants.gradientStart,
+                                                  Constants.gradientEnd]) :
+                                Gradient(colors: [.gray, .gray]))
                     }
                     .toggleStyle(MyToggleStyle())
                 }
 
-                DatePicker(
-                    "시작일",
-                    selection: $repeatStart,
-                    displayedComponents: timeOption ? [.date, .hourAndMinute] : [.date]
-                )
-                .datePickerStyle(.compact)
+                HStack {
+                    DatePicker(
+                        "시작일",
+                        selection: $scheduleFormVM.repeatStart,
+                        displayedComponents: [.date]
+                    )
+                    .datePickerStyle(.compact)
 
-                DatePicker(
-                    "종료일",
-                    selection: $repeatEnd,
-                    displayedComponents: timeOption ? [.date, .hourAndMinute] : [.date]
-                )
-                .datePickerStyle(.compact)
+                    if scheduleFormVM.timeOption {
+                        DatePicker(
+                            "",
+                            selection: $scheduleFormVM.repeatStart,
+                            displayedComponents: [.hourAndMinute]
+                        )
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
+                        .transition(.picker)
+                    }
+                }
+
+                HStack {
+                    DatePicker(
+                        "종료일",
+                        selection: $scheduleFormVM.repeatEnd,
+                        displayedComponents: [.date]
+                    )
+                    .datePickerStyle(.compact)
+
+                    if scheduleFormVM.timeOption {
+                        DatePicker(
+                            "",
+                            selection: $scheduleFormVM.repeatEnd,
+                            displayedComponents: [.hourAndMinute]
+                        )
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
+                        .transition(.picker)
+                    }
+                }
 
                 Divider()
             }
@@ -129,12 +182,12 @@ struct ScheduleFormView: View {
                     Text("알림 설정")
                         .foregroundColor(.gray)
                     Spacer()
-                    Toggle("", isOn: $alarmOption.animation())
+                    Toggle("", isOn: $scheduleFormVM.alarmOption.animation())
                         .toggleStyle(MyToggleStyle())
                 }
-                alarmOption ? AnyView(DatePicker(
+                scheduleFormVM.alarmOption ? AnyView(DatePicker(
                     "알람일",
-                    selection: $alarmDate,
+                    selection: $scheduleFormVM.alarmDate,
                     displayedComponents: [.date, .hourAndMinute]
                 )) : AnyView(EmptyView())
                 Divider()
@@ -147,8 +200,9 @@ struct ScheduleFormView: View {
                         .foregroundStyle(.gray)
                     Text("반복 설정")
                         .foregroundColor(.gray)
+
                     Spacer()
-                    Toggle("", isOn: $repeatOption.animation())
+                    Toggle("", isOn: $scheduleFormVM.repeatOption.animation())
                         .toggleStyle(MyToggleStyle())
                 }
                 Divider()
@@ -159,14 +213,17 @@ struct ScheduleFormView: View {
                 HStack {
                     Image(systemName: "doc")
                         .foregroundColor(.gray)
+
                     Text("메모 추가")
                         .foregroundColor(.gray)
                     Spacer()
-                    Toggle("", isOn: $memoOption.animation())
+                    Toggle("", isOn: $scheduleFormVM.memoOption.animation())
                         .toggleStyle(MyToggleStyle())
                 }
 
-                memoOption ? AnyView(TextField("메모 작성", text: $memo, axis: .vertical)) : AnyView(EmptyView())
+                scheduleFormVM.memoOption ?
+                    AnyView(TextField("메모 작성", text: $scheduleFormVM.memo, axis: .vertical)) :
+                    AnyView(EmptyView())
                 Divider()
             }
         } // VStack
@@ -176,6 +233,6 @@ struct ScheduleFormView: View {
 
 struct ScheduleFormView_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleFormView()
+        ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()))
     }
 }

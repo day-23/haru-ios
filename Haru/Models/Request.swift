@@ -26,12 +26,16 @@ struct Request: Codable {
     struct Schedule: Codable {
         var content: String
         var memo: String
-        var category: String
+        var categoryId: String?
         var alarms: [Date]
         var flag: Bool
         var repeatOption: String?
-        var `repeat`: String?
-        var repeatStart: Date?
-        var repeatEnd: Date?
+        var repeatStart: Date
+        var repeatEnd: Date
+        
+        var timeOption: Bool
+        
+        var repeatWeek: String?
+        var repeatMonth: String?
     }
 }
