@@ -120,9 +120,7 @@ struct CheckListView: View {
                                                     addViewModel
                                                         .mode = .edit
                                                     addViewModel
-                                                        .todoId =
-                                                        todo
-                                                            .id
+                                                        .todoId = todo.id
                                                 }
                                             }
 
@@ -191,6 +189,17 @@ struct CheckListView: View {
                                                 checkListViewModel: viewModel,
                                                 todo: todo
                                             )
+                                            .onTapGesture {
+                                                withAnimation {
+                                                    isModalVisible = true
+                                                    addViewModel
+                                                        .applyTodoData(todo)
+                                                    addViewModel
+                                                        .mode = .edit
+                                                    addViewModel
+                                                        .todoId = todo.id
+                                                }
+                                            }
 
                                             ForEach(todo.subTodos) { subTodo in
                                                 SubTodoView(
@@ -235,6 +244,17 @@ struct CheckListView: View {
                                                 checkListViewModel: viewModel,
                                                 todo: todo
                                             )
+                                            .onTapGesture {
+                                                withAnimation {
+                                                    isModalVisible = true
+                                                    addViewModel
+                                                        .applyTodoData(todo)
+                                                    addViewModel
+                                                        .mode = .edit
+                                                    addViewModel
+                                                        .todoId = todo.id
+                                                }
+                                            }
 
                                             ForEach(todo.subTodos) { subTodo in
                                                 SubTodoView(
@@ -281,10 +301,24 @@ struct CheckListView: View {
                                                         checkListViewModel: viewModel,
                                                         todo: todo
                                                     )
+                                                    .onTapGesture {
+                                                        withAnimation {
+                                                            isModalVisible =
+                                                                true
+                                                            addViewModel
+                                                                .applyTodoData(
+                                                                    todo
+                                                                )
+                                                            addViewModel
+                                                                .mode = .edit
+                                                            addViewModel
+                                                                .todoId = todo
+                                                                .id
+                                                        }
+                                                    }
 
                                                     ForEach(
-                                                        todo
-                                                            .subTodos
+                                                        todo.subTodos
                                                     ) { subTodo in
                                                         SubTodoView(
                                                             checkListViewModel: viewModel,
@@ -333,10 +367,19 @@ struct CheckListView: View {
                                                         checkListViewModel: viewModel,
                                                         todo: todo
                                                     )
+                                                    .onTapGesture {
+                                                        withAnimation {
+                                                            isModalVisible = true
+                                                            addViewModel.applyTodoData(
+                                                                todo
+                                                            )
+                                                            addViewModel.mode = .edit
+                                                            addViewModel.todoId = todo.id
+                                                        }
+                                                    }
 
                                                     ForEach(
-                                                        todo
-                                                            .subTodos
+                                                        todo.subTodos
                                                     ) { subTodo in
                                                         SubTodoView(
                                                             checkListViewModel: viewModel,
@@ -346,10 +389,7 @@ struct CheckListView: View {
                                                     }
                                                     .padding(
                                                         .leading,
-                                                        UIScreen.main
-                                                            .bounds
-                                                            .width *
-                                                            0.05
+                                                        UIScreen.main.bounds.width * 0.05
                                                     )
                                                 }
                                             } else {
@@ -385,10 +425,17 @@ struct CheckListView: View {
                                                         checkListViewModel: viewModel,
                                                         todo: todo
                                                     )
+                                                    .onTapGesture {
+                                                        withAnimation {
+                                                            isModalVisible = true
+                                                            addViewModel.applyTodoData(todo)
+                                                            addViewModel.mode = .edit
+                                                            addViewModel.todoId = todo.id
+                                                        }
+                                                    }
 
                                                     ForEach(
-                                                        todo
-                                                            .subTodos
+                                                        todo.subTodos
                                                     ) { subTodo in
                                                         SubTodoView(
                                                             checkListViewModel: viewModel,
