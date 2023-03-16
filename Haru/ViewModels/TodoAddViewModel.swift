@@ -101,4 +101,34 @@ final class TodoAddViewModel: ObservableObject {
     func removeSubTodo(_ index: Int) {
         subTodoList.remove(at: index)
     }
+
+    func clear() {
+        todoContent = ""
+        tag = ""
+        tagList = []
+        isTodayTodo = false
+        flag = false
+        isSelectedAlarm = false
+        alarm = .init()
+        repeatOption = .none
+        isSelectedRepeat = false
+        isSelectedEndDate = false
+        isSelectedEndDateTime = false
+        endDate = .init()
+        endDateTime = .init()
+        isSelectedRepeatEnd = false
+        repeatEnd = .init()
+        isWritedMemo = false
+        memo = ""
+        days = [
+            Day(content: "월"),
+            Day(content: "화"),
+            Day(content: "수"),
+            Day(content: "목"),
+            Day(content: "금"),
+            Day(content: "토"),
+            Day(content: "일"),
+        ]
+        subTodoList = []
+    }
 }

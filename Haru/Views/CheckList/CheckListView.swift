@@ -19,6 +19,7 @@ struct CheckListView: View {
     }
 
     @StateObject var viewModel: CheckListViewModel
+    @StateObject var addViewModel: TodoAddViewModel
     @State private var isModalVisible: Bool = false
     @State private var initialOffset: CGFloat?
     @State private var offset: CGFloat?
@@ -301,9 +302,12 @@ struct CheckListView: View {
 
                     Modal(isActive: $isModalVisible, ratio: 0.9) {
                         TodoAddView(
-                            viewModel: TodoAddViewModel(checkListViewModel: viewModel),
+                            viewModel: addViewModel,
                             isActive: $isModalVisible
                         )
+                        .onAppear {
+                            addViewModel.clear()
+                        }
                     }
                     .transition(.modal)
                     .zIndex(2)
