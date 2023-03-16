@@ -86,6 +86,12 @@ struct CheckListView: View {
                                     if let todoList = viewModel.filterTodoByFlag(), !todoList.isEmpty {
                                         ForEach(todoList) { todo in
                                             TodoView(checkListViewModel: viewModel, todo: todo)
+                                                .onTapGesture {
+                                                    withAnimation {
+                                                        isModalVisible = true
+                                                        addViewModel.applyTodoData(todo)
+                                                    }
+                                                }
 
                                             ForEach(todo.subTodos) { subTodo in
                                                 SubTodoView(checkListViewModel: viewModel, todo: todo, subTodo: subTodo)
@@ -303,11 +309,9 @@ struct CheckListView: View {
                     Modal(isActive: $isModalVisible, ratio: 0.9) {
                         TodoAddView(
                             viewModel: addViewModel,
+
                             isActive: $isModalVisible
                         )
-                        .onAppear {
-                            addViewModel.clear()
-                        }
                     }
                     .transition(.modal)
                     .zIndex(2)

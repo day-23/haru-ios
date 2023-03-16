@@ -102,6 +102,36 @@ final class TodoAddViewModel: ObservableObject {
         subTodoList.remove(at: index)
     }
 
+    func applyTodoData(_ todo: Todo) {
+        todoContent = todo.content
+        tag = ""
+        tagList = todo.tags.map { $0.content }
+        isTodayTodo = todo.todayTodo
+        flag = todo.flag
+        isSelectedAlarm = !todo.alarms.isEmpty
+        alarm = todo.alarms[0].time
+        repeatOption = todo.repeatOption != nil ? RepeatOption.allCases.filter { $0.rawValue == todo.repeatOption }[0] : .none
+        isSelectedRepeat = todo.repeatOption != .none
+        isSelectedEndDate = todo.endDate != nil
+        isSelectedEndDateTime = todo.endDateTime != nil
+        endDate = todo.endDate ?? .init()
+        endDateTime = todo.endDateTime ?? .init()
+        isSelectedRepeatEnd = todo.repeatEnd != nil
+        repeatEnd = todo.repeatEnd ?? .init()
+        isWritedMemo = !todo.memo.isEmpty
+        memo = todo.memo
+        if let todoRepeat = todo.repeat {
+            for i in 0 ..< 7 {
+                days[i].isClicked = todoRepeat[todoRepeat.index(todoRepeat.startIndex, offsetBy: i)] == "1" ? true : false
+            }
+        } else {
+            for i in 0 ..< 7 {
+                days[i].isClicked = false
+            }
+        }
+        subTodoList = todo.subTodos.map { $0.content }
+    }
+
     func clear() {
         todoContent = ""
         tag = ""
