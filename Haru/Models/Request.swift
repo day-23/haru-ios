@@ -18,7 +18,8 @@ struct Request: Codable {
         var alarms: [Date]
         var repeatOption: String?
         var repeatEnd: Date?
-        var `repeat`: String?
+        var repeatWeek: String?
+        var repeatMonth: String?
         var tags: [String]
         var subTodos: [String]
     }

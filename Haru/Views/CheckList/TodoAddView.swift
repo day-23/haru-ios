@@ -10,7 +10,7 @@ import SwiftUI
 struct TodoAddView: View {
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isActive: Bool
-    
+
     var body: some View {
         ScrollView {
             VStack {
@@ -20,8 +20,9 @@ struct TodoAddView: View {
                         .padding(.horizontal, 20)
                         .font(.title)
                         .bold()
-                    
-                    ForEach(viewModel.subTodoList.indices, id: \.self) { index in
+
+                    ForEach(viewModel.subTodoList.indices,
+                            id: \.self) { index in
                         HStack {
                             Text("∙")
                             TextField("", text: $viewModel.subTodoList[index])
@@ -35,7 +36,7 @@ struct TodoAddView: View {
                         Divider()
                     }
                     .padding(.horizontal, 30)
-                    
+
                     Button {
                         viewModel.subTodoList.append("")
                     } label: {
@@ -47,26 +48,36 @@ struct TodoAddView: View {
                     }
                     .padding(.horizontal, 30)
                     .foregroundColor(Constants.lightGray)
-                    
+
                     Divider()
                 }
                 .padding(.horizontal, 30)
-                
+
                 // Tag 입력 View
                 Group {
                     Label {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
-                                ForEach(viewModel.tagList.indices, id: \.self) { index in
-                                    TagView(Tag(id: viewModel.tagList[index].description, content: viewModel.tagList[index].description))
-                                        .onTapGesture {
-                                            viewModel.tagList.remove(at: index)
-                                        }
+                                ForEach(viewModel.tagList.indices,
+                                        id: \.self) { index in
+                                    TagView(Tag(
+                                        id: viewModel.tagList[index]
+                                            .description,
+                                        content: viewModel.tagList[index]
+                                            .description
+                                    ))
+                                    .onTapGesture {
+                                        viewModel.tagList.remove(at: index)
+                                    }
                                 }
-                                
+
                                 TextField("태그", text: $viewModel.tag)
-                                    .foregroundColor(viewModel.tagList.isEmpty ? Constants.lightGray : .black)
-                                    .onChange(of: viewModel.tag, perform: viewModel.onChangeTag)
+                                    .foregroundColor(viewModel.tagList
+                                        .isEmpty ? Constants.lightGray : .black)
+                                    .onChange(
+                                        of: viewModel.tag,
+                                        perform: viewModel.onChangeTag
+                                    )
                                     .onSubmit(viewModel.onSubmitTag)
                             }
                             .padding(1)
@@ -74,34 +85,42 @@ struct TodoAddView: View {
                     } icon: {
                         Image(systemName: "tag")
                             .padding(.trailing, 10)
-                            .foregroundColor(viewModel.tagList.isEmpty ? Constants.lightGray : .black)
+                            .foregroundColor(viewModel.tagList
+                                .isEmpty ? Constants.lightGray : .black)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
-                    
+
                     Divider()
                 }
-                
+
                 // 나의 하루에 추가
                 Group {
                     Label {
                         Toggle(isOn: $viewModel.isTodayTodo) {
                             Text("나의 하루에 추가")
                                 .frame(alignment: .leading)
-                                .foregroundColor(viewModel.isTodayTodo ? .black : Constants.lightGray)
+                                .foregroundColor(viewModel
+                                    .isTodayTodo ? .black : Constants.lightGray)
                         }
-                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                        .tint(LinearGradient(
+                            gradient: Gradient(colors: [Constants.gradientStart,
+                                                        Constants.gradientEnd]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
                     } icon: {
                         Image(systemName: "sun.max")
                             .padding(.trailing, 10)
-                            .foregroundColor(viewModel.isTodayTodo ? .black : Constants.lightGray)
+                            .foregroundColor(viewModel
+                                .isTodayTodo ? .black : Constants.lightGray)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
-                    
+
                     Divider()
                 }
-                
+
                 // 마감 설정
                 Group {
                     Label {
@@ -109,56 +128,82 @@ struct TodoAddView: View {
                             HStack {
                                 Text("마감 설정")
                                     .frame(alignment: .leading)
-                                    .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
-                                
+                                    .foregroundColor(viewModel
+                                        .isSelectedEndDate ? .black : Constants
+                                        .lightGray)
+
                                 Spacer()
-                                
+
                                 if viewModel.isSelectedEndDate {
-                                    DatePicker(selection: $viewModel.endDate, displayedComponents: [.date]) {}
+                                    DatePicker(
+                                        selection: $viewModel.endDate,
+                                        displayedComponents: [.date]
+                                    ) {}
                                         .labelsHidden()
                                         .padding(.vertical, -5)
                                 }
                             }
                         }
-                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                        .tint(LinearGradient(
+                            gradient: Gradient(colors: [Constants.gradientStart,
+                                                        Constants.gradientEnd]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
                     } icon: {
                         Image(systemName: "calendar")
                             .padding(.trailing, 10)
-                            .foregroundColor(viewModel.isSelectedEndDate ? .black : Constants.lightGray)
+                            .foregroundColor(viewModel
+                                .isSelectedEndDate ? .black : Constants
+                                .lightGray)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
-                    
+
                     if viewModel.isSelectedEndDate {
                         Label {
                             Toggle(isOn: $viewModel.isSelectedEndDateTime) {
                                 HStack {
                                     Text("마감 시간 설정")
                                         .frame(alignment: .leading)
-                                        .foregroundColor(viewModel.isSelectedEndDateTime ? .black : Constants.lightGray)
-                                    
+                                        .foregroundColor(viewModel
+                                            .isSelectedEndDateTime ? .black :
+                                            Constants.lightGray)
+
                                     Spacer()
-                                    
+
                                     if viewModel.isSelectedEndDateTime {
-                                        DatePicker(selection: $viewModel.endDateTime, displayedComponents: [.hourAndMinute]) {}
+                                        DatePicker(
+                                            selection: $viewModel.endDateTime,
+                                            displayedComponents: [
+                                                .hourAndMinute,
+                                            ]
+                                        ) {}
                                             .labelsHidden()
                                             .padding(.vertical, -5)
                                     }
                                 }
                             }
-                            .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                            .tint(LinearGradient(
+                                gradient: Gradient(colors: [Constants
+                                        .gradientStart, Constants.gradientEnd]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ))
                         } icon: {
                             Image(systemName: "clock")
                                 .padding(.trailing, 10)
-                                .foregroundColor(viewModel.isSelectedEndDateTime ? .black : Constants.lightGray)
+                                .foregroundColor(viewModel
+                                    .isSelectedEndDateTime ? .black : Constants
+                                    .lightGray)
                         }
                         .padding(.horizontal, 20)
                         .padding(.vertical, 5)
                     }
-                    
+
                     Divider()
                 }
-                
+
                 // 알림 설정
                 Group {
                     Label {
@@ -166,27 +211,35 @@ struct TodoAddView: View {
                             HStack {
                                 Text("알림 설정")
                                     .frame(alignment: .leading)
-                                    .foregroundColor(viewModel.isSelectedAlarm ? .black : Constants.lightGray)
+                                    .foregroundColor(viewModel
+                                        .isSelectedAlarm ? .black : Constants
+                                        .lightGray)
                             }
                         }
-                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                        .tint(LinearGradient(
+                            gradient: Gradient(colors: [Constants.gradientStart,
+                                                        Constants.gradientEnd]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
                     } icon: {
                         Image(systemName: "bell")
                             .padding(.trailing, 10)
-                            .foregroundColor(viewModel.isSelectedAlarm ? .black : Constants.lightGray)
+                            .foregroundColor(viewModel
+                                .isSelectedAlarm ? .black : Constants.lightGray)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
-                        
+
                     if viewModel.isSelectedAlarm {
                         DatePicker(selection: $viewModel.alarm) {}
                             .labelsHidden()
                             .padding(.vertical, 5)
                     }
-                    
+
                     Divider()
                 }
-                
+
                 // 반복 설정
                 Group {
                     Label {
@@ -194,21 +247,30 @@ struct TodoAddView: View {
                             HStack {
                                 Text("반복 설정")
                                     .frame(alignment: .leading)
-                                    .foregroundColor(viewModel.isSelectedRepeat ? .black : Constants.lightGray)
+                                    .foregroundColor(viewModel
+                                        .isSelectedRepeat ? .black : Constants
+                                        .lightGray)
                             }
                         }
-                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                        .tint(LinearGradient(
+                            gradient: Gradient(colors: [Constants.gradientStart,
+                                                        Constants.gradientEnd]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
                     } icon: {
                         Image(systemName: "repeat")
                             .padding(.trailing, 10)
-                            .foregroundColor(viewModel.isSelectedRepeat ? .black : Constants.lightGray)
+                            .foregroundColor(viewModel
+                                .isSelectedRepeat ? .black : Constants
+                                .lightGray)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
-                    
+
                     Divider()
                 }
-                
+
                 // 메모 추가
                 Group {
                     Label {
@@ -216,45 +278,71 @@ struct TodoAddView: View {
                             HStack {
                                 Text("메모 추가")
                                     .frame(alignment: .leading)
-                                    .foregroundColor(viewModel.isWritedMemo ? .black : Constants.lightGray)
+                                    .foregroundColor(viewModel
+                                        .isWritedMemo ? .black : Constants
+                                        .lightGray)
                             }
                         }
-                        .tint(LinearGradient(gradient: Gradient(colors: [Constants.gradientStart, Constants.gradientEnd]), startPoint: .leading, endPoint: .trailing))
+                        .tint(LinearGradient(
+                            gradient: Gradient(colors: [Constants.gradientStart,
+                                                        Constants.gradientEnd]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
                     } icon: {
                         Image(systemName: "note")
                             .padding(.trailing, 10)
-                            .foregroundColor(viewModel.isWritedMemo ? .black : Constants.lightGray)
+                            .foregroundColor(viewModel
+                                .isWritedMemo ? .black : Constants.lightGray)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
-                    
+
                     if viewModel.isWritedMemo {
-                        TextField("메모를 작성해주세요.", text: $viewModel.memo, axis: .vertical)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 5)
+                        TextField(
+                            "메모를 작성해주세요.",
+                            text: $viewModel.memo,
+                            axis: .vertical
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 5)
                     }
-                    
+
                     Divider()
                 }
-                
+
                 Button {
-                    viewModel.addTodo { result in
-                        switch result {
-                        case .success:
-                            withAnimation {
-                                isActive = false
+                    switch viewModel.mode {
+                    case .add:
+                        viewModel.addTodo { result in
+                            switch result {
+                            case .success:
+                                withAnimation {
+                                    isActive = false
+                                }
+                            case let .failure(failure):
+                                print("[Debug] \(failure) (TodoAddView)")
                             }
-                        case .failure(let failure):
-                            print("[Debug] \(failure) in TodoAddView")
+                        }
+                    case .edit:
+                        viewModel.updateTodo { result in
+                            switch result {
+                            case let .success(success):
+                                withAnimation {
+                                    isActive = false
+                                }
+                            case let .failure(failure):
+                                print("[Debug] \(failure) (TodoAddView)")
+                            }
                         }
                     }
                 } label: {
-                    Text("추가 하기")
+                    Text("\(viewModel.mode == .add ? "추가" : "수정")")
                         .padding(.horizontal, 20)
                         .padding(.vertical, 5)
                         .disabled(viewModel.todoContent.isEmpty)
                 }
-                
+
                 Spacer()
             }
             .onAppear {
@@ -269,6 +357,11 @@ struct TodoAddView: View {
 
 struct TodoAddView_Previews: PreviewProvider {
     static var previews: some View {
-        TodoAddView(viewModel: TodoAddViewModel(checkListViewModel: CheckListViewModel()), isActive: .constant(true))
+        TodoAddView(
+            viewModel: TodoAddViewModel(
+                checkListViewModel: CheckListViewModel()
+            ),
+            isActive: .constant(true)
+        )
     }
 }

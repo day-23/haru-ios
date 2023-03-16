@@ -12,14 +12,17 @@ struct TodoService {
     private static let baseURL = Constants.baseURL + "todo/"
 
     // Todo 생성 API 호출
-    func addTodo(_ todo: Request.Todo, completion: @escaping (Result<Todo, Error>) -> Void) {
+    func addTodo(
+        _ todo: Request.Todo,
+        completion: @escaping (Result<Todo, Error>) -> Void
+    ) {
         struct Response: Codable {
             let success: Bool
             let data: Todo
         }
 
         let headers: HTTPHeaders = [
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         ]
 
         let encoder = JSONEncoder()
@@ -41,9 +44,9 @@ struct TodoService {
             decoder: decoder
         ) { response in
             switch response.result {
-            case .success(let response):
+            case let .success(response):
                 completion(.success(response.data))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
@@ -73,15 +76,18 @@ struct TodoService {
             TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos"
         ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
-            case .success(let response):
+            case let .success(response):
                 completion(.success(response.data))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
     }
 
-    func fetchTodoListWithTag(_ tag: Tag, completion: @escaping (Result<[Todo], Error>) -> Void) {
+    func fetchTodoListWithTag(
+        _ tag: Tag,
+        completion: @escaping (Result<[Todo], Error>) -> Void
+    ) {
         struct Response: Codable {
             let success: Bool
             let data: [Todo]
@@ -93,29 +99,66 @@ struct TodoService {
         decoder.dateDecodingStrategy = .formatted(formatter)
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)"
+            TodoService
+                .baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)"
         ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
-            case .success(let response):
+            case let .success(response):
                 completion(.success(response.data))
-            case .failure(let error):
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // Todo Update
+    func updateTodo(
+        _ todoId: String,
+        _ todo: Request.Todo,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+
+        AF.request(
+            TodoService
+                .baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            method: .patch,
+            parameters: todo,
+            encoder: JSONParameterEncoder(encoder: encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
     }
 
     // Todo 중요 표시하기
-    func updateFlag(_ todoId: String, _ flag: Bool, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func updateFlag(
+        _ todoId: String,
+        _ flag: Bool,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
         let headers: HTTPHeaders = [
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         ]
 
         let params: [String: Any] = [
-            "flag": flag
+            "flag": flag,
         ]
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            TodoService
+                .baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
@@ -124,37 +167,47 @@ struct TodoService {
             switch response.result {
             case .success:
                 completion(.success(true))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
     }
 
     // Todo 삭제하기
-    func deleteTodo(_ todoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func deleteTodo(
+        _ todoId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            TodoService
+                .baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .delete
         ).response { response in
             switch response.result {
             case .success:
                 completion(.success(true))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
     }
 
     // SubTodo 삭제하기
-    func deleteSubTodo(_ todoId: String, _ subTodoId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+    func deleteSubTodo(
+        _ todoId: String,
+        _ subTodoId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)/subtodo/\(subTodoId)",
+            TodoService
+                .baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/\(todoId)/subtodo/\(subTodoId)",
             method: .delete
         ).response { response in
             switch response.result {
             case .success:
                 completion(.success(true))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }

@@ -11,6 +11,8 @@ final class TodoAddViewModel: ObservableObject {
     // MARK: - Properties
 
     private let checkListViewModel: CheckListViewModel
+    var mode: TodoAddMode
+    var todoId: String?
 
     @Published var todoContent: String = ""
     @Published var tag: String = ""
@@ -29,7 +31,7 @@ final class TodoAddViewModel: ObservableObject {
     @Published var repeatEnd: Date = .init()
     @Published var isWritedMemo: Bool = false
     @Published var memo: String = ""
-    @Published var days: [Day] = [
+    @Published var repeatWeek: [Day] = [
         Day(content: "월"),
         Day(content: "화"),
         Day(content: "수"),
@@ -51,7 +53,8 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     var selectedEndDateTime: Date? {
-        if selectedEndDate != nil && isSelectedEndDateTime { return endDateTime }
+        if selectedEndDate != nil &&
+            isSelectedEndDateTime { return endDateTime }
         return nil
     }
 
@@ -60,14 +63,15 @@ final class TodoAddViewModel: ObservableObject {
         return nil
     }
 
-    init(checkListViewModel: CheckListViewModel) {
+    init(checkListViewModel: CheckListViewModel, mode: TodoAddMode = .add) {
         self.checkListViewModel = checkListViewModel
+        self.mode = mode
     }
 
     // MARK: - Methods
 
-    func addTodo(completion: @escaping (Result<Todo, Error>) -> Void) {
-        checkListViewModel.addTodo(Request.Todo(
+    private func createTodoData() -> Request.Todo {
+        return Request.Todo(
             content: todoContent,
             memo: isWritedMemo ? memo : "",
             todayTodo: isTodayTodo,
@@ -77,19 +81,46 @@ final class TodoAddViewModel: ObservableObject {
             alarms: selectedAlarm,
             repeatOption: repeatOption == .none ? nil : repeatOption.rawValue,
             repeatEnd: selectedRepeatEnd,
-            repeat: repeatOption != .none || days.filter { day in
+            repeatWeek: repeatOption != .none || repeatWeek.filter { day in
                 day.isClicked
-            }.isEmpty ? nil : days.reduce("") { acc, day in
+            }.isEmpty ? nil : repeatWeek.reduce("") { acc, day in
                 acc + (day.isClicked ? "1" : "0")
             },
+            repeatMonth: nil, // FIXME: 입력 받고 수정하기
             tags: tagList,
-            subTodos: subTodoList.filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-        )) { result in
+            subTodos: subTodoList
+                .filter {
+                    !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                }
+        )
+    }
+
+    func addTodo(completion: @escaping (Result<Todo, Error>) -> Void) {
+        checkListViewModel.addTodo(createTodoData()) { result in
             switch result {
-            case .success(let todo):
+            case let .success(todo):
                 completion(.success(todo))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
+            }
+        }
+    }
+
+    func updateTodo(completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard let todoId = todoId else {
+            print("[Debug] todoId가 입력되지 않았습니다. (TodoAddViewModel.updateTodo())")
+            return
+        }
+
+        checkListViewModel.updateTodo(
+            todoId,
+            createTodoData()
+        ) { result in
+            switch result {
+            case let .success(success):
+                completion(.success(success))
+            case let .failure(failure):
+                completion(.failure(failure))
             }
         }
     }
@@ -131,8 +162,10 @@ final class TodoAddViewModel: ObservableObject {
         isTodayTodo = todo.todayTodo
         flag = todo.flag
         isSelectedAlarm = !todo.alarms.isEmpty
-        alarm = todo.alarms[0].time
-        repeatOption = todo.repeatOption != nil ? RepeatOption.allCases.filter { $0.rawValue == todo.repeatOption }[0] : .none
+        alarm = !todo.alarms.isEmpty ? todo.alarms[0].time : .init()
+
+        repeatOption = todo.repeatOption != nil ? RepeatOption.allCases
+            .filter { $0.rawValue == todo.repeatOption }[0] : .none
         isSelectedRepeat = todo.repeatOption != .none
         isSelectedEndDate = todo.endDate != nil
         isSelectedEndDateTime = todo.endDateTime != nil
@@ -142,13 +175,18 @@ final class TodoAddViewModel: ObservableObject {
         repeatEnd = todo.repeatEnd ?? .init()
         isWritedMemo = !todo.memo.isEmpty
         memo = todo.memo
-        if let todoRepeat = todo.repeat {
+        if let todoRepeat = todo.repeatWeek {
             for i in 0 ..< 7 {
-                days[i].isClicked = todoRepeat[todoRepeat.index(todoRepeat.startIndex, offsetBy: i)] == "1" ? true : false
+                repeatWeek[i]
+                    .isClicked =
+                    todoRepeat[todoRepeat
+                        .index(todoRepeat.startIndex, offsetBy: i)] == "1" ?
+                    true :
+                    false
             }
         } else {
             for i in 0 ..< 7 {
-                days[i].isClicked = false
+                repeatWeek[i].isClicked = false
             }
         }
         subTodoList = todo.subTodos.map { $0.content }
@@ -172,7 +210,7 @@ final class TodoAddViewModel: ObservableObject {
         repeatEnd = .init()
         isWritedMemo = false
         memo = ""
-        days = [
+        repeatWeek = [
             Day(content: "월"),
             Day(content: "화"),
             Day(content: "수"),

@@ -16,7 +16,8 @@ struct Todo: Identifiable, Codable {
     private(set) var todayTodo: Bool
     private(set) var flag: Bool
     private(set) var repeatOption: String?
-    private(set) var `repeat`: String?
+    private(set) var repeatWeek: String?
+    private(set) var repeatMonth: String?
     private(set) var alarms: [Alarm]
     private(set) var endDate: Date?
     private(set) var endDateTime: Date?
@@ -35,36 +36,4 @@ struct Todo: Identifiable, Codable {
 
 // MARK: - Extensions
 
-extension Todo {
-    mutating func setContent(_ content: String) {
-        self.content = content
-    }
-
-    mutating func setMemo(_ memo: String) -> Bool {
-        if memo.count > 500 {
-            return false
-        }
-        self.memo = memo
-        return true
-    }
-
-    mutating func setTodayTodo(_ isTodayTodo: Bool) {
-        self.todayTodo = isTodayTodo
-    }
-
-    mutating func setFlag(_ flag: Bool) {
-        self.flag = flag
-    }
-
-    mutating func setRepeatOption(_ repeatOption: String) {
-        self.repeatOption = repeatOption
-    }
-
-    mutating func setRepeat(_ repeat: String) {
-        self.repeat = `repeat`
-    }
-
-    mutating func setSubTodos(_ subTodos: [SubTodo]) {
-        self.subTodos = subTodos
-    }
-}
+extension Todo {}
