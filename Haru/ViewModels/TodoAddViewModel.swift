@@ -102,6 +102,28 @@ final class TodoAddViewModel: ObservableObject {
         subTodoList.remove(at: index)
     }
 
+    func onChangeTag(_ newValue: String) {
+        let trimTag = tag.trimmingCharacters(in: .whitespaces)
+        if !trimTag.isEmpty &&
+            tag[tag.index(tag.endIndex, offsetBy: -1)] == " "
+        {
+            if !tagList.contains(trimTag) {
+                tagList.append(trimTag)
+                tag = ""
+            }
+        }
+    }
+
+    func onSubmitTag() {
+        let trimTag = tag.trimmingCharacters(in: .whitespaces)
+        if !trimTag.isEmpty {
+            if !tagList.contains(trimTag) {
+                tagList.append(trimTag)
+                tag = ""
+            }
+        }
+    }
+
     func applyTodoData(_ todo: Todo) {
         todoContent = todo.content
         tag = ""

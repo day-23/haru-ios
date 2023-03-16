@@ -66,17 +66,8 @@ struct TodoAddView: View {
                                 
                                 TextField("태그", text: $viewModel.tag)
                                     .foregroundColor(viewModel.tagList.isEmpty ? Constants.lightGray : .black)
-                                    .onChange(of: viewModel.tag) { _ in
-                                        let tag = viewModel.tag.trimmingCharacters(in: .whitespaces)
-                                        if !tag.isEmpty &&
-                                            viewModel.tag[viewModel.tag.index(viewModel.tag.endIndex, offsetBy: -1)] == " "
-                                        {
-                                            if !viewModel.tagList.contains(tag) {
-                                                viewModel.tagList.append(tag)
-                                                viewModel.tag = ""
-                                            }
-                                        }
-                                    }
+                                    .onChange(of: viewModel.tag, perform: viewModel.onChangeTag)
+                                    .onSubmit(viewModel.onSubmitTag)
                             }
                             .padding(1)
                         }
