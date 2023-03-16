@@ -20,11 +20,10 @@ struct CalendarDateView: View {
                 HStack(spacing: 20) {
                     VStack(alignment: .leading, spacing: 10) {
                         Text(CalendarHelper.extraDate(calendarVM.monthOffest)[0])
-                            .font(.caption)
-                            .fontWeight(.semibold)
+                            .font(Font.custom(Constants.Regular, size: 20))
 
                         Text(CalendarHelper.extraDate(calendarVM.monthOffest)[1])
-                            .font(.title.bold())
+                            .font(Font.custom(Constants.Bold, size: 20))
                     } // VStack
 
                     Spacer(minLength: 0)

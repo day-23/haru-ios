@@ -103,6 +103,7 @@
 		6FE3B00D29C39390002B9CE6 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		6FE3B00E29C39390002B9CE6 /* Pretendard-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Thin.otf"; sourceTree = "<group>"; };
 		6FE3B00F29C39390002B9CE6 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
+		6FE3B01929C39679002B9CE6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6FE3FBCD29B50F1A00B6CCB9 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		6FE3FBCF29B5100A00B6CCB9 /* DateValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateValue.swift; sourceTree = "<group>"; };
 		6FE3FBD229B655CB00B6CCB9 /* Schedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schedule.swift; sourceTree = "<group>"; };
@@ -142,7 +143,8 @@
 		13AE615429B489D500C08EB1 /* Haru */ = {
 			isa = PBXGroup;
 			children = (
-				6FE3B00629C3932C002B9CE6 /* fonts */,
+				6FE3B01929C39679002B9CE6 /* Info.plist */,
+				6FE3B00629C3932C002B9CE6 /* project-fonts */,
 				13AE615529B489D500C08EB1 /* HaruApp.swift */,
 				13AE617429B48DDD00C08EB1 /* Global */,
 				13AE616429B48A5D00C08EB1 /* Models */,
@@ -266,7 +268,7 @@
 			path = Calendar;
 			sourceTree = "<group>";
 		};
-		6FE3B00629C3932C002B9CE6 /* fonts */ = {
+		6FE3B00629C3932C002B9CE6 /* project-fonts */ = {
 			isa = PBXGroup;
 			children = (
 				6FE3B00829C3938F002B9CE6 /* Pretendard-Black.otf */,
@@ -279,7 +281,7 @@
 				6FE3B00D29C39390002B9CE6 /* Pretendard-SemiBold.otf */,
 				6FE3B00E29C39390002B9CE6 /* Pretendard-Thin.otf */,
 			);
-			path = fonts;
+			path = "project-fonts";
 			sourceTree = "<group>";
 		};
 		6FE3FBD129B5C36000B6CCB9 /* Services */ = {
@@ -544,6 +546,7 @@
 				DEVELOPMENT_TEAM = 55572WP5WW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Haru/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -573,6 +576,7 @@
 				DEVELOPMENT_TEAM = 55572WP5WW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Haru/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
