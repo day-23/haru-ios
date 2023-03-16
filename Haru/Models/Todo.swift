@@ -18,6 +18,7 @@ struct Todo: Identifiable, Codable {
     private(set) var repeatOption: String?
     private(set) var repeatWeek: String?
     private(set) var repeatMonth: String?
+    private(set) var repeatYear: String?
     private(set) var alarms: [Alarm]
     private(set) var endDate: Date?
     private(set) var endDateTime: Date?

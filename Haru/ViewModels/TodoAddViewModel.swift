@@ -40,6 +40,8 @@ final class TodoAddViewModel: ObservableObject {
         Day(content: "토"),
         Day(content: "일"),
     ]
+    @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") }
+    @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") }
     @Published var subTodoList: [String] = []
 
     var selectedAlarm: [Date] {
@@ -48,6 +50,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     var selectedEndDate: Date? {
+        print(isSelectedEndDate, endDate)
         if isSelectedEndDate { return endDate }
         return nil
     }
@@ -81,12 +84,15 @@ final class TodoAddViewModel: ObservableObject {
             alarms: selectedAlarm,
             repeatOption: repeatOption == .none ? nil : repeatOption.rawValue,
             repeatEnd: selectedRepeatEnd,
-            repeatWeek: repeatOption != .none || repeatWeek.filter { day in
-                day.isClicked
-            }.isEmpty ? nil : repeatWeek.reduce("") { acc, day in
-                acc + (day.isClicked ? "1" : "0")
-            },
+            repeatWeek: repeatOption != .everyWeek ||
+                repeatOption != .everySecondWeek ||
+                repeatWeek.filter { day in
+                    day.isClicked
+                }.isEmpty ? nil : repeatWeek.reduce("") { acc, day in
+                    acc + (day.isClicked ? "1" : "0")
+                },
             repeatMonth: nil, // FIXME: 입력 받고 수정하기
+            repeatYear: nil,
             tags: tagList,
             subTodos: subTodoList
                 .filter {
@@ -133,9 +139,10 @@ final class TodoAddViewModel: ObservableObject {
         subTodoList.remove(at: index)
     }
 
-    func onChangeTag(_ newValue: String) {
+    func onChangeTag(_: String) {
         let trimTag = tag.trimmingCharacters(in: .whitespaces)
-        if !trimTag.isEmpty &&
+        if
+            !trimTag.isEmpty &&
             tag[tag.index(tag.endIndex, offsetBy: -1)] == " "
         {
             if !tagList.contains(trimTag) {
@@ -163,7 +170,6 @@ final class TodoAddViewModel: ObservableObject {
         flag = todo.flag
         isSelectedAlarm = !todo.alarms.isEmpty
         alarm = !todo.alarms.isEmpty ? todo.alarms[0].time : .init()
-
         repeatOption = todo.repeatOption != nil ? RepeatOption.allCases
             .filter { $0.rawValue == todo.repeatOption }[0] : .none
         isSelectedRepeat = todo.repeatOption != .none
@@ -177,12 +183,9 @@ final class TodoAddViewModel: ObservableObject {
         memo = todo.memo
         if let todoRepeat = todo.repeatWeek {
             for i in 0 ..< 7 {
-                repeatWeek[i]
-                    .isClicked =
-                    todoRepeat[todoRepeat
-                        .index(todoRepeat.startIndex, offsetBy: i)] == "1" ?
-                    true :
-                    false
+                repeatWeek[i].isClicked = todoRepeat[
+                    todoRepeat.index(todoRepeat.startIndex, offsetBy: i)
+                ] == "1" ? true : false
             }
         } else {
             for i in 0 ..< 7 {
@@ -219,6 +222,8 @@ final class TodoAddViewModel: ObservableObject {
             Day(content: "토"),
             Day(content: "일"),
         ]
+        repeatMonth = (1 ... 31).map { Day(content: "\($0)") }
+        repeatYear = (1 ... 12).map { Day(content: "\($0)월") }
         subTodoList = []
     }
 }

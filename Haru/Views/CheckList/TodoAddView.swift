@@ -257,8 +257,10 @@ struct TodoAddView: View {
                             }
                         }
                         .tint(LinearGradient(
-                            gradient: Gradient(colors: [Constants.gradientStart,
-                                                        Constants.gradientEnd]),
+                            gradient: Gradient(colors: [
+                                Constants.gradientStart,
+                                Constants.gradientEnd,
+                            ]),
                             startPoint: .leading,
                             endPoint: .trailing
                         ))
@@ -271,6 +273,56 @@ struct TodoAddView: View {
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
+
+                    if viewModel.isSelectedRepeat {
+                        Picker("반복 옵션", selection: $viewModel.repeatOption.animation()) {
+                            ForEach(RepeatOption.allCases, id: \.self) {
+                                Text($0.rawValue)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 5)
+                        .onChange(of: viewModel.repeatOption) { value in
+                            print(value)
+                        }
+                    }
+
+                    if viewModel.isSelectedRepeat {
+                        if viewModel.repeatOption == .everyYear {
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
+                                ForEach(viewModel.repeatYear.indices, id: \.self) { index in
+                                    DayButton(content: viewModel.repeatYear[index].content, isClicked: viewModel.repeatYear[index].isClicked) {
+                                        viewModel.repeatYear[index].isClicked.toggle()
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 5)
+                        } else if viewModel.repeatOption == .everyMonth {
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
+                                ForEach(viewModel.repeatMonth.indices, id: \.self) { index in
+                                    DayButton(content: viewModel.repeatMonth[index].content, isClicked: viewModel.repeatMonth[index].isClicked) {
+                                        viewModel.repeatMonth[index].isClicked.toggle()
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 5)
+                        } else if viewModel.repeatOption == .everySecondWeek ||
+                            viewModel.repeatOption == .everyWeek
+                        {
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
+                                ForEach(viewModel.repeatWeek.indices, id: \.self) { index in
+                                    DayButton(content: viewModel.repeatWeek[index].content, isClicked: viewModel.repeatWeek[index].isClicked) {
+                                        viewModel.repeatWeek[index].isClicked.toggle()
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 5)
+                        }
+                    }
 
                     Divider()
                 }

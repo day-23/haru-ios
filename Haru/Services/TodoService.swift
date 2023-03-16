@@ -125,6 +125,9 @@ struct TodoService {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
 
+        print(todo, "\n")
+        print(String(data: try! encoder.encode(todo), encoding: .utf8))
+
         AF.request(
             TodoService
                 .baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",

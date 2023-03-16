@@ -7,11 +7,13 @@
 
 import Foundation
 
-struct Day {
+struct Day: Identifiable {
+    var id: String
     var content: String
     var isClicked: Bool
 
     init(content: String, isClicked: Bool = false) {
+        self.id = content
         self.content = content
         self.isClicked = isClicked
     }

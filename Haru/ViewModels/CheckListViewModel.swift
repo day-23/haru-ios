@@ -80,15 +80,11 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    func fetchTodayTodoList(completion: @escaping (Result<[Todo], Error>)
-        -> Void) {}
+    func fetchTodayTodoList(completion _: @escaping (Result<[Todo], Error>) -> Void) {}
 
     func fetchTodoListWithAnyTag() {}
 
-    func fetchTodoListWithTag(
-        _ tag: Tag,
-        completion: @escaping (Result<[Todo], Error>) -> Void
-    ) {}
+    func fetchTodoListWithTag(_: Tag, completion _: @escaping (Result<[Todo], Error>) -> Void) {}
 
     func fetchTodoListWithFlag() {}
 
@@ -202,11 +198,10 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func filterTodoByTodayTodoOrTodayEndDate() -> [Todo] {
-        return todoList
-            .filter {
-                $0.todayTodo || $0.endDate?
-                    .compare(Date.now) == .orderedAscending
-            }
+        return todoList.filter {
+            $0.todayTodo || $0.endDate?
+                .compare(Date.now) == .orderedAscending
+        }
     }
 
     func filterTodoByTodayTodo() -> [Todo] {

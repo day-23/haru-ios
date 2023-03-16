@@ -23,9 +23,9 @@ struct TagService {
             method: .get
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
-            case .success(let response):
+            case let .success(response):
                 completion(.success(response.data))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }

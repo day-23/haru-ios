@@ -19,7 +19,7 @@ struct TodoView: View {
 
     let formatterWithTime: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd, hh:mm"
+        formatter.dateFormat = "yyyy-MM-dd, HH:mm"
         return formatter
     }()
 
@@ -34,11 +34,11 @@ struct TodoView: View {
                         .stroke(lineWidth: 2)
                         .foregroundColor(Color(0x000000, opacity: 0.5))
                 }
-                
+
             VStack(alignment: .leading, spacing: 3) {
                 Text(todo.content)
                     .font(.body)
-                    
+
                 if todo.tags.count > 0 ||
                     todo.endDate != nil ||
                     todo.endDateTime != nil ||
@@ -51,7 +51,7 @@ struct TodoView: View {
                         ForEach(todo.tags) { tag in
                             Text(tag.content)
                         }
-                            
+
                         if let todoDate = todo.endDate {
                             if let todoDateTime = todo.endDateTime {
                                 Text(formatterWithTime.string(from: todoDateTime))
@@ -59,7 +59,7 @@ struct TodoView: View {
                                 Text(formatter.string(from: todoDate))
                             }
                         }
-                            
+
                         if (todo.tags.count > 0 ||
                             todo.endDate != nil ||
                             todo.endDateTime != nil) &&
@@ -70,15 +70,15 @@ struct TodoView: View {
                         {
                             Text("∙")
                         }
-                            
+
                         if todo.alarms.count > 0 {
                             Image(systemName: "bell")
                         }
-                            
+
                         if todo.repeatWeek != nil || todo.repeatOption != nil {
                             Image(systemName: "repeat")
                         }
-                            
+
                         if !todo.memo.isEmpty {
                             Image(systemName: "note")
                         }
@@ -88,9 +88,9 @@ struct TodoView: View {
                 }
             }
             .padding(.leading, 10)
-                
+
             Spacer()
-                
+
             ZStack {
                 Image(systemName: todo.flag ? "star.fill" : "star")
                     .foregroundStyle(todo.flag ? LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing) : LinearGradient(gradient: Gradient(colors: [Color(0x000000, opacity: 0.4)]), startPoint: .top, endPoint: .bottom))

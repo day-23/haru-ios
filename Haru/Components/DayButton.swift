@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct DayButton: View {
-    var disabled: Bool
     var content: String
     var isClicked: Bool
     var action: () -> Void
@@ -18,9 +17,8 @@ struct DayButton: View {
             action()
         } label: {
             Text(content)
-                .padding()
-                .foregroundColor(isClicked && !disabled ? .blue : Color(0x000000, opacity: 0.3))
+                .foregroundColor(isClicked ? Constants.gradientStart : Constants.lightGray)
+                .font(.system(size: 15))
         }
-        .disabled(disabled)
     }
 }

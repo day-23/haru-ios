@@ -19,7 +19,7 @@ struct TagView: View {
             .bold()
             .padding(.vertical, 5)
             .padding(.horizontal, 10)
-            .background(Color(0xfefefe))
+            .background(Color(0xFEFEFE))
             .cornerRadius(10)
             .shadow(color: Color(0x000000, opacity: 0.7), radius: 0.5)
     }

@@ -34,15 +34,14 @@ struct CheckListView: View {
                         HStack {
                             // 중요 태그
                             Image(systemName: "star.fill")
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Constants
-                                                .gradientEnd,
-                                            Constants.gradientStart]),
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
+                                .foregroundStyle(LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Constants.gradientEnd,
+                                        Constants.gradientStart,
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
                                 .onTapGesture {
                                     viewModel.selectedTag = Tag(
                                         id: "중요",
@@ -85,16 +84,16 @@ struct CheckListView: View {
                     .foregroundColor(.white)
                     .padding()
                     .padding(.horizontal, 15)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Constants
-                                    .gradientEnd,
-                                Constants
-                                    .gradientStart]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .background(LinearGradient(
+                        gradient: Gradient(colors: [
+                            Constants
+                                .gradientEnd,
+                            Constants
+                                .gradientStart,
+                        ]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ))
                     .onTapGesture {
                         viewModel.selectedTag = Tag(id: "하루", content: "하루")
                     }
@@ -104,7 +103,8 @@ struct CheckListView: View {
                         List {
                             if viewModel.selectedTag == nil {
                                 Section {
-                                    if let todoList = viewModel
+                                    if
+                                        let todoList = viewModel
                                         .filterTodoByFlag(), !todoList.isEmpty
                                     {
                                         ForEach(todoList) { todo in
@@ -155,12 +155,12 @@ struct CheckListView: View {
                                         Image(systemName: "star.fill")
                                             .foregroundStyle(
                                                 LinearGradient(
-                                                    gradient: Gradient(
-                                                        colors: [Constants
+                                                    gradient: Gradient(colors: [
+                                                        Constants
                                                             .gradientEnd,
-                                                            Constants
-                                                                .gradientStart]
-                                                    ),
+                                                        Constants
+                                                            .gradientStart,
+                                                    ]),
                                                     startPoint: .topLeading,
                                                     endPoint: .bottomTrailing
                                                 )
@@ -180,7 +180,8 @@ struct CheckListView: View {
                                 .listRowSeparator(.hidden)
 
                                 Section {
-                                    if let todoList = viewModel
+                                    if
+                                        let todoList = viewModel
                                         .filterTodoByHasAnyTag(),
                                         !todoList.isEmpty
                                     {
@@ -235,7 +236,8 @@ struct CheckListView: View {
                                 .listRowSeparator(.hidden)
 
                                 Section {
-                                    if let todoList = viewModel
+                                    if
+                                        let todoList = viewModel
                                         .filterTodoByWithoutTag(),
                                         !todoList.isEmpty
                                     {
@@ -249,10 +251,8 @@ struct CheckListView: View {
                                                     isModalVisible = true
                                                     addViewModel
                                                         .applyTodoData(todo)
-                                                    addViewModel
-                                                        .mode = .edit
-                                                    addViewModel
-                                                        .todoId = todo.id
+                                                    addViewModel.mode = .edit
+                                                    addViewModel.todoId = todo.id
                                                 }
                                             }
 
@@ -292,8 +292,8 @@ struct CheckListView: View {
                                 if let tag = viewModel.selectedTag {
                                     if tag.content == "하루" {
                                         Section {
-                                            if let todoList = viewModel
-                                                .filterTodoByTodayTodo(),
+                                            if
+                                                let todoList = viewModel.filterTodoByTodayTodo(),
                                                 !todoList.isEmpty
                                             {
                                                 ForEach(todoList) { todo in
@@ -303,23 +303,15 @@ struct CheckListView: View {
                                                     )
                                                     .onTapGesture {
                                                         withAnimation {
-                                                            isModalVisible =
-                                                                true
+                                                            isModalVisible = true
                                                             addViewModel
-                                                                .applyTodoData(
-                                                                    todo
-                                                                )
-                                                            addViewModel
-                                                                .mode = .edit
-                                                            addViewModel
-                                                                .todoId = todo
-                                                                .id
+                                                                .applyTodoData(todo)
+                                                            addViewModel.mode = .edit
+                                                            addViewModel.todoId = todo.id
                                                         }
                                                     }
 
-                                                    ForEach(
-                                                        todo.subTodos
-                                                    ) { subTodo in
+                                                    ForEach(todo.subTodos) { subTodo in
                                                         SubTodoView(
                                                             checkListViewModel: viewModel,
                                                             todo: todo,
@@ -328,10 +320,7 @@ struct CheckListView: View {
                                                     }
                                                     .padding(
                                                         .leading,
-                                                        UIScreen.main
-                                                            .bounds
-                                                            .width *
-                                                            0.05
+                                                        UIScreen.main.bounds.width * 0.05
                                                     )
                                                 }
                                             } else {
@@ -358,7 +347,8 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
 
                                         Section {
-                                            if let todoList = viewModel
+                                            if
+                                                let todoList = viewModel
                                                 .filterTodoByTodayEndDate(),
                                                 !todoList.isEmpty
                                             {
@@ -370,17 +360,13 @@ struct CheckListView: View {
                                                     .onTapGesture {
                                                         withAnimation {
                                                             isModalVisible = true
-                                                            addViewModel.applyTodoData(
-                                                                todo
-                                                            )
+                                                            addViewModel.applyTodoData(todo)
                                                             addViewModel.mode = .edit
                                                             addViewModel.todoId = todo.id
                                                         }
                                                     }
 
-                                                    ForEach(
-                                                        todo.subTodos
-                                                    ) { subTodo in
+                                                    ForEach(todo.subTodos) { subTodo in
                                                         SubTodoView(
                                                             checkListViewModel: viewModel,
                                                             todo: todo,
@@ -416,7 +402,8 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
                                     } else {
                                         Section {
-                                            if let todoList = viewModel
+                                            if
+                                                let todoList = viewModel
                                                 .filterTodoByTag(),
                                                 !todoList.isEmpty
                                             {
@@ -434,9 +421,7 @@ struct CheckListView: View {
                                                         }
                                                     }
 
-                                                    ForEach(
-                                                        todo.subTodos
-                                                    ) { subTodo in
+                                                    ForEach(todo.subTodos) { subTodo in
                                                         SubTodoView(
                                                             checkListViewModel: viewModel,
                                                             todo: todo,
@@ -445,9 +430,7 @@ struct CheckListView: View {
                                                     }
                                                     .padding(
                                                         .leading,
-                                                        UIScreen.main
-                                                            .bounds
-                                                            .width *
+                                                        UIScreen.main.bounds.width *
                                                             0.05
                                                     )
                                                 }
@@ -461,24 +444,18 @@ struct CheckListView: View {
                                                         .padding(.leading, 20)
                                                     Spacer()
                                                 } else {
-                                                    Image(
-                                                        systemName: "star.fill"
-                                                    )
-                                                    .foregroundStyle(
-                                                        LinearGradient(
-                                                            gradient: Gradient(
-                                                                colors: [
-                                                                    Constants
-                                                                        .gradientEnd,
-                                                                    Constants
-                                                                        .gradientStart,
-                                                                ]
-                                                            ),
-                                                            startPoint: .topLeading,
-                                                            endPoint: .bottomTrailing
+                                                    Image(systemName: "star.fill")
+                                                        .foregroundStyle(
+                                                            LinearGradient(
+                                                                gradient: Gradient(colors: [
+                                                                    Constants.gradientEnd,
+                                                                    Constants.gradientStart,
+                                                                ]),
+                                                                startPoint: .topLeading,
+                                                                endPoint: .bottomTrailing
+                                                            )
                                                         )
-                                                    )
-                                                    .padding(.leading, 20)
+                                                        .padding(.leading, 20)
                                                     Spacer()
                                                 }
                                             }
@@ -509,15 +486,17 @@ struct CheckListView: View {
                         }
                         .listStyle(.inset)
                         .onPreferenceChange(OffsetKey.self) {
-                            if self.initialOffset == nil || self
+                            if
+                                self.initialOffset == nil || self
                                 .initialOffset == 0
                             {
                                 self.initialOffset = $0
                             }
                             self.offset = $0
 
-                            guard let initialOffset = self.initialOffset,
-                                  let offset = self.offset
+                            guard
+                                let initialOffset = self.initialOffset,
+                                let offset = self.offset
                             else {
                                 return
                             }
@@ -568,15 +547,15 @@ struct CheckListView: View {
                             Image(systemName: "plus")
                                 .foregroundColor(.white)
                                 .padding()
-                                .background(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Constants
-                                                .gradientStart,
-                                            Constants.gradientEnd]),
-                                        startPoint: .bottomTrailing,
-                                        endPoint: .topLeading
-                                    )
-                                )
+                                .background(LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Constants
+                                            .gradientStart,
+                                        Constants.gradientEnd,
+                                    ]),
+                                    startPoint: .bottomTrailing,
+                                    endPoint: .topLeading
+                                ))
                                 .clipShape(Circle())
                                 .frame(alignment: .center)
                         }
