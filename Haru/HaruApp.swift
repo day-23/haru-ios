@@ -5,11 +5,7 @@
 //  Created by 최정민 on 2023/03/05.
 //
 //  - Check-List Todos
-//  TODO: 완료 기능
-//  TODO: 수정 기능
-//  - In Progress
-//  TODO: 디자인 시안 적용하기
-//  TODO: Section Component 만들기
+//  !!!: - 반복 옵션에서 매년, 매달은 마감일을 기준으로 해서 계산하고, 매주, 2주마다와 같은 주가 주가되는 옵션에서는 repeat 배열을 입력받아서 계산
 
 import SwiftUI
 

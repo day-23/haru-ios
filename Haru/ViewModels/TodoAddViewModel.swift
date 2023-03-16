@@ -38,7 +38,6 @@ final class TodoAddViewModel: ObservableObject {
         Day(content: "토"),
         Day(content: "일"),
     ]
-    @Published var subTodoContent: String = ""
     @Published var subTodoList: [String] = []
 
     var selectedAlarm: [Date] {
@@ -59,10 +58,6 @@ final class TodoAddViewModel: ObservableObject {
     var selectedRepeatEnd: Date? {
         if isSelectedRepeat && isSelectedRepeatEnd { return repeatEnd }
         return nil
-    }
-
-    var disableButtons: Bool {
-        repeatOption != .none
     }
 
     init(checkListViewModel: CheckListViewModel) {
@@ -88,7 +83,7 @@ final class TodoAddViewModel: ObservableObject {
                 acc + (day.isClicked ? "1" : "0")
             },
             tags: tagList,
-            subTodos: subTodoList
+            subTodos: subTodoList.filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         )) { result in
             switch result {
             case .success(let todo):
@@ -100,8 +95,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func createSubTodo() {
-        subTodoList.append(subTodoContent)
-        subTodoContent = ""
+        subTodoList.append("")
     }
 
     func removeSubTodo(_ index: Int) {
