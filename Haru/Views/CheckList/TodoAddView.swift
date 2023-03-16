@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct TodoAddView: View {
-    @Environment(\.dismiss) var dismissAction
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isActive: Bool
     
@@ -245,6 +244,24 @@ struct TodoAddView: View {
                     }
                     
                     Divider()
+                }
+                
+                Button {
+                    viewModel.addTodo { result in
+                        switch result {
+                        case .success:
+                            withAnimation {
+                                isActive = false
+                            }
+                        case .failure(let failure):
+                            print("[Debug] \(failure) in TodoAddView")
+                        }
+                    }
+                } label: {
+                    Text("추가 하기")
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 5)
+                        .disabled(viewModel.todoContent.isEmpty)
                 }
                 
                 Spacer()
