@@ -20,8 +20,7 @@ struct CategoryView: View {
                 Spacer()
             }
             .padding()
-            .background(Gradient(colors: [Constants.gradientStart,
-                                          Constants.gradientEnd]))
+            .background(.gradation1)
             
             ScrollView {
                 VStack(alignment: .leading) {
@@ -31,9 +30,7 @@ struct CategoryView: View {
                             HStack {
                                 if selectionCategory == index {
                                     Circle()
-                                        .fill(Gradient(colors: [Constants
-                                            .gradientStart,
-                                                                Constants.gradientEnd]))
+                                        .fill(.gradation1)
                                         .overlay {
                                             Image(systemName: "checkmark")
                                                 .foregroundColor(.white)
@@ -41,7 +38,7 @@ struct CategoryView: View {
                                         .frame(width: 20, height: 20)
                                 } else {
                                     Circle()
-                                        .strokeBorder(Color.gray, lineWidth: 1)
+                                        .strokeBorder(.gray1, lineWidth: 1)
                                         .frame(width: 20, height: 20)
                                 }
                                 
@@ -62,7 +59,7 @@ struct CategoryView: View {
                                 Image(systemName: "plus")
                                 Text("카테고리 추가")
                             }
-                            .foregroundColor(.gray)
+                            .foregroundColor(.gray1)
                         }
                     }
                     .padding(.leading, 10)
@@ -73,8 +70,7 @@ struct CategoryView: View {
             
             Spacer()
             Rectangle()
-                .fill(Gradient(colors: [Constants.gradientStart,
-                                        Constants.gradientEnd]))
+                .fill(.gradation1)
                 .frame(height: 50)
         }
     }

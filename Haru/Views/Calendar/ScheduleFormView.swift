@@ -10,12 +10,11 @@ import SwiftUI
 
 struct ScheduleFormView: View {
     @ObservedObject var scheduleFormVM: ScheduleFormViewModel
-//    @Binding var categoryList: [Category]
 
     @State private var showCategorySheet: Bool = false
+    @State private var showingPopup: Bool = false
 
     @State private var idx: Int?
-    @State private var showingPopup: Bool = false
 
     var body: some View {
         VStack(spacing: 15) {
@@ -49,8 +48,7 @@ struct ScheduleFormView: View {
                 HStack {
                     if let selectIndex = scheduleFormVM.selectionCategory {
                         Circle()
-                            .fill(Gradient(colors: [Constants.gradientStart,
-                                                    Constants.gradientEnd]))
+                            .fill(.gradation1)
                             .overlay {
                                 Image(systemName: "checkmark")
                                     .foregroundColor(.white)
@@ -81,7 +79,7 @@ struct ScheduleFormView: View {
                         .tint(Color.black)
                     } else {
                         Circle()
-                            .strokeBorder(Color.gray, lineWidth: 1)
+                            .strokeBorder(.gray1, lineWidth: 1)
                             .frame(width: 20, height: 20)
 
                         Button("카테고리 선택") {
@@ -106,7 +104,7 @@ struct ScheduleFormView: View {
                                     scheduleFormVM.selectionCategory = idx
                                 }
                         }
-                        .tint(Color.gray)
+                        .tint(Color.gray1)
                     }
                     Spacer()
                 }
@@ -117,16 +115,15 @@ struct ScheduleFormView: View {
             Group {
                 HStack {
                     Image(systemName: "calendar")
-                        .foregroundColor(.gray)
+                        .foregroundColor(.gray1)
                     Text("시작일-종료일 설정")
-                        .foregroundColor(.gray)
+                        .foregroundColor(.gray1)
                     Spacer()
                     Toggle(isOn: $scheduleFormVM.timeOption.animation()) {
                         Text("시간 설정")
                             .foregroundStyle(scheduleFormVM.timeOption ?
-                                Gradient(colors: [Constants.gradientStart,
-                                                  Constants.gradientEnd]) :
-                                Gradient(colors: [.gray, .gray]))
+                                Gradient(colors: [.gradientStart1, .gradientEnd1]) : Gradient(colors: [.gray1, .gray1])
+                            )
                     }
                     .toggleStyle(MyToggleStyle())
                 }
@@ -185,11 +182,14 @@ struct ScheduleFormView: View {
                     Toggle("", isOn: $scheduleFormVM.alarmOption.animation())
                         .toggleStyle(MyToggleStyle())
                 }
-                scheduleFormVM.alarmOption ? AnyView(DatePicker(
-                    "알람일",
-                    selection: $scheduleFormVM.alarmDate,
-                    displayedComponents: [.date, .hourAndMinute]
-                )) : AnyView(EmptyView())
+
+                if scheduleFormVM.alarmOption {
+                    DatePicker(
+                        "알람일",
+                        selection: $scheduleFormVM.alarmDate,
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                }
                 Divider()
             }
 
@@ -197,9 +197,9 @@ struct ScheduleFormView: View {
             Group {
                 HStack {
                     Image(systemName: "repeat")
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(.gray1)
                     Text("반복 설정")
-                        .foregroundColor(.gray)
+                        .foregroundColor(.gray1)
 
                     Spacer()
                     Toggle("", isOn: $scheduleFormVM.repeatOption.animation())
@@ -212,18 +212,18 @@ struct ScheduleFormView: View {
             Group {
                 HStack {
                     Image(systemName: "doc")
-                        .foregroundColor(.gray)
+                        .foregroundColor(.gray1)
 
                     Text("메모 추가")
-                        .foregroundColor(.gray)
+                        .foregroundColor(.gray1)
                     Spacer()
                     Toggle("", isOn: $scheduleFormVM.memoOption.animation())
                         .toggleStyle(MyToggleStyle())
                 }
 
-                scheduleFormVM.memoOption ?
-                    AnyView(TextField("메모 작성", text: $scheduleFormVM.memo, axis: .vertical)) :
-                    AnyView(EmptyView())
+                if scheduleFormVM.memoOption {
+                    TextField("메모 작성", text: $scheduleFormVM.memo, axis: .vertical)
+                }
                 Divider()
             }
         } // VStack

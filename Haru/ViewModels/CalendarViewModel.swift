@@ -77,7 +77,6 @@ final class CalendarViewModel: ObservableObject {
         scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
             switch result {
             case .success(let success):
-                print(success.first?.repeatEnd)
                 self.scheduleList = self.scheduleService.fittingScheduleList(dateList, success)
             case .failure(let failure):
                 print("[Debug] \(failure)")
