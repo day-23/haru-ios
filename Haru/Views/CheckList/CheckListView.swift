@@ -84,12 +84,9 @@ struct CheckListView: View {
                     .foregroundColor(.white)
                     .padding()
                     .padding(.horizontal, 15)
-                    .background(LinearGradient(
-                        gradient: Gradient(colors: [Constants.gradientEnd,
-                                                    Constants.gradientStart]),
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ))
+                    .background(
+                        
+                    )
                     .onTapGesture {
                         viewModel.selectedTag = Tag(id: "하루", content: "하루")
                     }
@@ -130,7 +127,6 @@ struct CheckListView: View {
                                                 )
                                             }
                                             .padding(.leading, UIScreen.main.bounds.width * 0.05)
-                                            .moveDisabled(true)
                                         }
                                         .listRowBackground(Color.white)
                                     } else {
@@ -389,6 +385,125 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
+                                    } else if tag.content == "중요" {
+                                        Section {
+                                            if let todoList = viewModel.filterTodoByFlag(),
+                                               !todoList.isEmpty
+                                            {
+                                                ForEach(todoList) { todo in
+                                                    TodoView(
+                                                        checkListViewModel: viewModel,
+                                                        todo: todo
+                                                    ).overlay {
+                                                        NavigationLink {
+                                                            TodoAddView(viewModel: addViewModel)
+                                                                .onAppear {
+                                                                    withAnimation {
+                                                                        addViewModel.applyTodoData(todo)
+                                                                        addViewModel.mode = .edit
+                                                                        addViewModel.todoId = todo.id
+                                                                    }
+                                                                }
+                                                        } label: {
+                                                            EmptyView()
+                                                        }
+                                                        .opacity(0)
+                                                    }
+
+                                                    ForEach(todo.subTodos) { subTodo in
+                                                        SubTodoView(
+                                                            checkListViewModel: viewModel,
+                                                            todo: todo,
+                                                            subTodo: subTodo
+                                                        )
+                                                    }
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                                    .moveDisabled(true)
+                                                }
+                                                .listRowBackground(Color.white)
+                                            } else {
+                                                EmptyText()
+                                            }
+                                        } header: {
+                                            HStack {
+                                                Image(systemName: "star.fill")
+                                                    .foregroundStyle(
+                                                        LinearGradient(
+                                                            gradient: Gradient(
+                                                                colors: [Constants.gradientEnd,
+                                                                         Constants.gradientStart]),
+                                                            startPoint: .topLeading,
+                                                            endPoint: .bottomTrailing
+                                                        )
+                                                    )
+                                                    .padding(.leading, 20)
+                                                Spacer()
+                                            }
+                                            .padding(.vertical, 5)
+                                            .listRowInsets(EdgeInsets(
+                                                top: 0,
+                                                leading: 0,
+                                                bottom: 1,
+                                                trailing: 0
+                                            ))
+                                            .background(.white)
+                                        }
+                                        .listRowSeparator(.hidden)
+                                    } else if tag.content == "미분류" {
+                                        Section {
+                                            if let todoList = viewModel.filterTodoByWithoutTag(),
+                                               !todoList.isEmpty
+                                            {
+                                                ForEach(todoList) { todo in
+                                                    TodoView(
+                                                        checkListViewModel: viewModel,
+                                                        todo: todo
+                                                    ).overlay {
+                                                        NavigationLink {
+                                                            TodoAddView(viewModel: addViewModel)
+                                                                .onAppear {
+                                                                    withAnimation {
+                                                                        addViewModel.applyTodoData(todo)
+                                                                        addViewModel.mode = .edit
+                                                                        addViewModel.todoId = todo.id
+                                                                    }
+                                                                }
+                                                        } label: {
+                                                            EmptyView()
+                                                        }
+                                                        .opacity(0)
+                                                    }
+
+                                                    ForEach(todo.subTodos) { subTodo in
+                                                        SubTodoView(
+                                                            checkListViewModel: viewModel,
+                                                            todo: todo,
+                                                            subTodo: subTodo
+                                                        )
+                                                    }
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                                    .moveDisabled(true)
+                                                }
+                                                .listRowBackground(Color.white)
+                                            } else {
+                                                EmptyText()
+                                            }
+                                        } header: {
+                                            HStack {
+                                                TagView(tag)
+                                                    .padding(.leading, 20)
+                                                Spacer()
+                                            }
+                                            .padding(.vertical, 5)
+                                            .listRowInsets(EdgeInsets(
+                                                top: 0,
+                                                leading: 0,
+                                                bottom: 1,
+                                                trailing: 0
+                                            ))
+                                            .background(.white)
+                                        }
+                                        .listRowSeparator(.hidden)
                                     } else {
                                         Section {
                                             if let todoList = viewModel.filterTodoByTag(),
@@ -430,24 +545,9 @@ struct CheckListView: View {
                                             }
                                         } header: {
                                             HStack {
-                                                if tag.id != "중요" {
-                                                    TagView(tag)
-                                                        .padding(.leading, 20)
-                                                    Spacer()
-                                                } else {
-                                                    Image(systemName: "star.fill")
-                                                        .foregroundStyle(
-                                                            LinearGradient(
-                                                                gradient: Gradient(
-                                                                    colors: [Constants.gradientEnd,
-                                                                             Constants.gradientStart]),
-                                                                startPoint: .topLeading,
-                                                                endPoint: .bottomTrailing
-                                                            )
-                                                        )
-                                                        .padding(.leading, 20)
-                                                    Spacer()
-                                                }
+                                                TagView(tag)
+                                                    .padding(.leading, 20)
+                                                Spacer()
                                             }
                                             .padding(.vertical, 5)
                                             .listRowInsets(EdgeInsets(
