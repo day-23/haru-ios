@@ -74,10 +74,8 @@ struct CheckListView: View {
                     // 오늘 나의 하루 클릭시
                     HStack {
                         Text("오늘 나의 하루")
-                            .font(.system(size: 20, weight: .heavy))
-
+                            .font(.system(size: 20, weight: .bold))
                         Spacer()
-
                         Image(systemName: "chevron.right")
                             .scaleEffect(1.25)
                     }
@@ -85,7 +83,11 @@ struct CheckListView: View {
                     .padding()
                     .padding(.horizontal, 15)
                     .background(
-                        
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF), Color(0xAAD7FF)]),
+                            startPoint: .bottomLeading,
+                            endPoint: .topTrailing
+                        )
                     )
                     .onTapGesture {
                         viewModel.selectedTag = Tag(id: "하루", content: "하루")
@@ -158,6 +160,10 @@ struct CheckListView: View {
                                 }
                                 .listRowSeparator(.hidden)
 
+                                Divider()
+                                    .listRowSeparator(.hidden)
+                                    .listRowInsets(EdgeInsets())
+
                                 Section {
                                     if let todoList = viewModel.filterTodoByHasAnyTag(),
                                        !todoList.isEmpty
@@ -202,7 +208,6 @@ struct CheckListView: View {
                                             .padding(.leading, 20)
                                         Spacer()
                                     }
-                                    .padding(.vertical, 5)
                                     .listRowInsets(EdgeInsets(
                                         top: 0,
                                         leading: 0,
@@ -212,6 +217,10 @@ struct CheckListView: View {
                                     .background(.white)
                                 }
                                 .listRowSeparator(.hidden)
+
+                                Divider()
+                                    .listRowSeparator(.hidden)
+                                    .listRowInsets(EdgeInsets())
 
                                 Section {
                                     if let todoList = viewModel.filterTodoByWithoutTag(),
@@ -257,7 +266,6 @@ struct CheckListView: View {
                                             .padding(.leading, 20)
                                         Spacer()
                                     }
-                                    .padding(.vertical, 5)
                                     .listRowInsets(EdgeInsets(
                                         top: 0,
                                         leading: 0,
@@ -635,10 +643,10 @@ struct CheckListView: View {
                                 .padding()
                                 .background(LinearGradient(
                                     gradient: Gradient(
-                                        colors: [Constants.gradientStart,
-                                                 Constants.gradientEnd]),
-                                    startPoint: .bottomTrailing,
-                                    endPoint: .topLeading
+                                        colors: [Color(0xD2D7FF),
+                                                 Color(0xAAD7FF)]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
                                 ))
                                 .clipShape(Circle())
                                 .frame(alignment: .center)
