@@ -59,7 +59,7 @@ final class CheckListViewModel: ObservableObject {
                 completion(.success(todo))
             case let .failure(error):
                 print(
-                    "[Debug] \(error) in CheckListViewModel.addTodo(_ todo: Request.Todo)"
+                    "[Debug] \(error) (\(#fileID), \(#function))"
                 )
                 completion(.failure(error))
             }
@@ -114,7 +114,7 @@ final class CheckListViewModel: ObservableObject {
     ) {
         guard let index = todoList.firstIndex(where: { $0.id == todo.id })
         else {
-            print("[Debug] Todo를 찾지 못했습니다. in CheckListViewModel.updateTodo()")
+            print("[Debug] Todo를 찾지 못했습니다. (\(#fileID), \(#function))")
             return
         }
 

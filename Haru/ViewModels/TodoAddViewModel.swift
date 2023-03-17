@@ -21,7 +21,7 @@ final class TodoAddViewModel: ObservableObject {
     @Published var flag: Bool = false
     @Published var isSelectedAlarm: Bool = false
     @Published var alarm: Date = .init()
-    @Published var repeatOption: RepeatOption = .none
+    @Published var repeatOption: RepeatOption = .everyDay
     @Published var isSelectedRepeat: Bool = false
     @Published var isSelectedEndDate: Bool = false
     @Published var isSelectedEndDateTime: Bool = false
@@ -120,7 +120,7 @@ final class TodoAddViewModel: ObservableObject {
 
     func updateTodo(completion: @escaping (Result<Bool, Error>) -> Void) {
         guard let todoId = todoId else {
-            print("[Debug] todoId가 입력되지 않았습니다. (TodoAddViewModel.updateTodo())")
+            print("[Debug] todoId가 입력되지 않았습니다. (\(#fileID), \(#function))")
             return
         }
 
@@ -167,7 +167,7 @@ final class TodoAddViewModel: ObservableObject {
 
     func toggleDay(_ repeatOption: RepeatOption, index: Int) {
         switch repeatOption {
-        case .none, .everyDay:
+        case .everyDay:
             break
         case .everyWeek, .everySecondWeek:
             repeatWeek[index].isClicked.toggle()
@@ -247,8 +247,8 @@ final class TodoAddViewModel: ObservableObject {
         isSelectedAlarm = !todo.alarms.isEmpty
         alarm = !todo.alarms.isEmpty ? todo.alarms[0].time : .init()
         repeatOption = todo.repeatOption != nil ? RepeatOption.allCases
-            .filter { $0.rawValue == todo.repeatOption }[0] : .none
-        isSelectedRepeat = todo.repeatOption != .none
+            .filter { $0.rawValue == todo.repeatOption }[0] : .everyDay
+        isSelectedRepeat = todo.repeatOption != nil
         isSelectedEndDate = todo.endDate != nil
         isSelectedEndDateTime = todo.endDateTime != nil
         endDate = todo.endDate ?? .init()
@@ -271,7 +271,7 @@ final class TodoAddViewModel: ObservableObject {
         flag = false
         isSelectedAlarm = false
         alarm = .init()
-        repeatOption = .none
+        repeatOption = .everyDay
         isSelectedRepeat = false
         isSelectedEndDate = false
         isSelectedEndDateTime = false

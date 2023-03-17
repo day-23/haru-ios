@@ -285,8 +285,6 @@ struct TodoAddView: View {
                         .padding(.vertical, 5)
                         .onChange(of: viewModel.repeatOption) { _ in
                             switch viewModel.repeatOption {
-                            case .none:
-                                fallthrough
                             case .everyDay:
                                 viewModel.initRepeatWeek()
                                 viewModel.initRepeatMonth()
@@ -338,6 +336,37 @@ struct TodoAddView: View {
                             .padding(.horizontal, 20)
                             .padding(.vertical, 5)
                         }
+
+                        Label {
+                            Toggle(isOn: $viewModel.isSelectedRepeatEnd.animation()) {
+                                HStack {
+                                    Text("반복 종료일")
+                                        .frame(alignment: .leading)
+                                        .foregroundColor(viewModel
+                                            .isSelectedRepeatEnd ? .black : Constants
+                                            .lightGray)
+                                    Spacer()
+                                    if viewModel.isSelectedRepeatEnd {
+                                        DatePicker(selection: $viewModel.repeatEnd, displayedComponents: [.date]) {}
+                                            .labelsHidden()
+                                    }
+                                }
+                            }
+                            .tint(LinearGradient(
+                                gradient: Gradient(colors: [Constants.gradientStart,
+                                                            Constants.gradientEnd]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ))
+                        } icon: {
+                            Image(systemName: "calendar.badge.clock")
+                                .padding(.trailing, 10)
+                                .foregroundColor(viewModel
+                                    .isSelectedRepeatEnd ? .black : Constants
+                                    .lightGray)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 5)
                     }
 
                     Divider()
@@ -393,7 +422,7 @@ struct TodoAddView: View {
                                     isActive = false
                                 }
                             case let .failure(failure):
-                                print("[Debug] \(failure) (TodoAddView)")
+                                print("[Debug] \(failure) (\(#fileID), \(#function))")
                             }
                         }
                     case .edit:
@@ -404,7 +433,7 @@ struct TodoAddView: View {
                                     isActive = false
                                 }
                             case let .failure(failure):
-                                print("[Debug] \(failure) (TodoAddView)")
+                                print("[Debug] \(failure) (\(#fileID), \(#function))")
                             }
                         }
                     }
