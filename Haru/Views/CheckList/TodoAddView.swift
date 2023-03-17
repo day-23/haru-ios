@@ -34,9 +34,8 @@ struct TodoAddView: View {
                         }
 
                         TextField("투두 입력", text: $viewModel.todoContent)
-                            .padding(.horizontal, isModalVisible ? 25 : 12)
-                            .font(.title)
-                            .bold()
+                            .padding(.leading, isModalVisible ? 26 : 12)
+                            .font(.system(size: 24, weight: .medium))
 
                         if !isModalVisible {
                             Button {
@@ -44,15 +43,17 @@ struct TodoAddView: View {
                             } label: {
                                 Image(systemName: "trash")
                                     .foregroundColor(Color(0x000000, opacity: 0.5))
+                                    .padding(.trailing, 2)
                             }
                         }
                     }
+                    .padding(.bottom, 15)
 
-                    ForEach(viewModel.subTodoList.indices,
-                            id: \.self) { index in
+                    ForEach(viewModel.subTodoList.indices, id: \.self) { index in
                         HStack {
                             Text("∙")
                             TextField("", text: $viewModel.subTodoList[index])
+                                .font(.system(size: 14, weight: .light))
                             Button {
                                 viewModel.subTodoList.remove(at: index)
                             } label: {
@@ -60,9 +61,10 @@ struct TodoAddView: View {
                                     .foregroundStyle(Constants.lightGray)
                             }
                         }
+                        .padding(.horizontal, 30)
+
                         Divider()
                     }
-                    .padding(.horizontal, 30)
 
                     Button {
                         viewModel.subTodoList.append("")

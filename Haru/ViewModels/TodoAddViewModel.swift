@@ -32,13 +32,13 @@ final class TodoAddViewModel: ObservableObject {
     @Published var isWritedMemo: Bool = false
     @Published var memo: String = ""
     @Published var repeatWeek: [Day] = [
+        Day(content: "일"),
         Day(content: "월"),
         Day(content: "화"),
         Day(content: "수"),
         Day(content: "목"),
         Day(content: "금"),
-        Day(content: "토"),
-        Day(content: "일")
+        Day(content: "토")
     ]
     @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") }
     @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") }
@@ -81,20 +81,20 @@ final class TodoAddViewModel: ObservableObject {
             endDate: selectedEndDate,
             endDateTime: selectedEndDateTime,
             alarms: selectedAlarm,
-            repeatOption: repeatOption == .none ? nil : repeatOption.rawValue,
+            repeatOption: !isSelectedRepeat ? nil : repeatOption.rawValue,
             repeatEnd: selectedRepeatEnd,
-            repeatWeek: (repeatOption != .everyWeek && repeatOption != .everySecondWeek) ||
+            repeatWeek: !isSelectedRepeat || (repeatOption != .everyWeek && repeatOption != .everySecondWeek) ||
                 repeatWeek.filter { day in
                     day.isClicked
                 }.isEmpty ? nil : repeatWeek.reduce("") { acc, day in
                     acc + (day.isClicked ? "1" : "0")
                 },
-            repeatMonth: repeatOption != .everyMonth ||
+            repeatMonth: !isSelectedRepeat || repeatOption != .everyMonth ||
                 repeatMonth.filter { $0.isClicked }.isEmpty ?
                 nil : repeatMonth.reduce("") { acc, day in
                     acc + (day.isClicked ? "1" : "0")
                 },
-            repeatYear: repeatOption != .everyYear ||
+            repeatYear: !isSelectedRepeat || repeatOption != .everyYear ||
                 repeatYear.filter { $0.isClicked }.isEmpty ?
                 nil : repeatYear.reduce("") { acc, day in
                     acc + (day.isClicked ? "1" : "0")

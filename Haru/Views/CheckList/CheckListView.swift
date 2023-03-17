@@ -117,6 +117,7 @@ struct CheckListView: View {
                                                     checkListViewModel: viewModel,
                                                     todo: todo
                                                 )
+                                                .background(.white)
                                             }
 
                                             ForEach(todo.subTodos) { subTodo in
@@ -128,14 +129,6 @@ struct CheckListView: View {
                                             }
                                             .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                             .moveDisabled(true)
-                                        }
-                                        .onMove { source, destination in
-                                            withAnimation {
-                                                viewModel.todoList.move(
-                                                    fromOffsets: source,
-                                                    toOffset: destination
-                                                )
-                                            }
                                         }
                                     } else {
                                         EmptyText()
