@@ -36,6 +36,24 @@ extension Color {
         )
     }
 
+    init(_ hexString: String?, _ isCategory: Bool, opacity: Double = 1) {
+        if let hexString, let hex = Int(hexString.suffix(6), radix: 16) {
+            self.init(
+                red: CGFloat((hex >> 16) & 0xFF) / 255.0,
+                green: CGFloat((hex >> 8) & 0xFF) / 255.0,
+                blue: CGFloat(hex & 0xFF) / 255.0,
+                opacity: opacity
+            )
+        } else {
+            self.init(
+                red: CGFloat(170) / 255.0,
+                green: CGFloat(215) / 255.0,
+                blue: CGFloat(255) / 255.0,
+                opacity: opacity
+            )
+        }
+    }
+
     // for test
     static var random: Color {
         Color(

@@ -21,7 +21,7 @@ struct CategoryView: View {
             }
             .padding()
             .background(.gradation1)
-            
+
             ScrollView {
                 VStack(alignment: .leading) {
                     Group {
@@ -41,7 +41,10 @@ struct CategoryView: View {
                                         .strokeBorder(.gray1, lineWidth: 1)
                                         .frame(width: 20, height: 20)
                                 }
-                                
+
+                                Image(systemName: "tag.fill")
+                                    .foregroundColor(Color(category.color, true))
+
                                 Text("\(category.content)")
                                 Spacer()
                             }
@@ -51,7 +54,7 @@ struct CategoryView: View {
                             }
                             Divider()
                         }
-                        
+
                         Button {
                             print("plus category")
                         } label: {
@@ -63,11 +66,9 @@ struct CategoryView: View {
                         }
                     }
                     .padding(.leading, 10)
-                    
-                    
                 }
             }
-            
+
             Spacer()
             Rectangle()
                 .fill(.gradation1)

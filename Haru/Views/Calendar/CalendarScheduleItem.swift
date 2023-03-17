@@ -16,10 +16,18 @@ struct CalendarScheduleItem: View {
             ForEach(0 ... 4, id: \.self) { order in
                 if let value = scheduleList[order] {
                     Rectangle()
-                        .fill(.gray)
+                        .fill(Color(value.category?.color, true))
                         .frame(height: 20)
                         .cornerRadius(date == value.repeatStart.day ? 6 : 0, corners: [.topLeft, .bottomLeft])
                         .cornerRadius(date == value.repeatEnd.day ? 6 : 0, corners: [.topRight, .bottomRight])
+                        .overlay {
+                            if date == value.repeatStart.day {
+                                Text(value.content)
+                                    .font(Font.custom(Constants.Regular, size: 12))
+                                    .fixedSize(horizontal: true, vertical: false)
+                            }
+                        }
+
                 } else {
                     Spacer()
                         .frame(height: 20)

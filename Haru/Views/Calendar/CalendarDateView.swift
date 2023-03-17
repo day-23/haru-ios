@@ -28,6 +28,7 @@ struct CalendarDateView: View {
 
                     Spacer(minLength: 0)
                     Toggle("일요일 부터 시작", isOn: $calendarVM.startOnSunday)
+                        .font(Font.custom(Constants.Regular, size: 20))
 
                     Button {
                         calendarVM.subMonthOffset()
@@ -49,8 +50,7 @@ struct CalendarDateView: View {
                 HStack(spacing: 0) {
                     ForEach(calendarVM.dayList, id: \.self) { day in
                         Text(day)
-                            .font(.callout)
-                            .fontWeight(.semibold)
+                            .font(Font.custom(Constants.Regular, size: 14))
                             .frame(maxWidth: .infinity)
                     }
                 } // HStack

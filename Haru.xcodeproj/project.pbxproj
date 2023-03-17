@@ -49,6 +49,7 @@
 		6FE3B01629C39390002B9CE6 /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6FE3B00D29C39390002B9CE6 /* Pretendard-SemiBold.otf */; };
 		6FE3B01729C39390002B9CE6 /* Pretendard-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6FE3B00E29C39390002B9CE6 /* Pretendard-Thin.otf */; };
 		6FE3B01829C39390002B9CE6 /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6FE3B00F29C39390002B9CE6 /* Pretendard-Medium.otf */; };
+		6FE3B01B29C43E3D002B9CE6 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3B01A29C43E3D002B9CE6 /* Data.swift */; };
 		6FE3FBCE29B50F1A00B6CCB9 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3FBCD29B50F1A00B6CCB9 /* Date.swift */; };
 		6FE3FBD029B5100A00B6CCB9 /* DateValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3FBCF29B5100A00B6CCB9 /* DateValue.swift */; };
 		6FE3FBD329B655CB00B6CCB9 /* Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3FBD229B655CB00B6CCB9 /* Schedule.swift */; };
@@ -104,6 +105,7 @@
 		6FE3B00E29C39390002B9CE6 /* Pretendard-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Thin.otf"; sourceTree = "<group>"; };
 		6FE3B00F29C39390002B9CE6 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
 		6FE3B01929C39679002B9CE6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		6FE3B01A29C43E3D002B9CE6 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		6FE3FBCD29B50F1A00B6CCB9 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		6FE3FBCF29B5100A00B6CCB9 /* DateValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateValue.swift; sourceTree = "<group>"; };
 		6FE3FBD229B655CB00B6CCB9 /* Schedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schedule.swift; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 				6F79715E29BF74CA001B82FD /* View.swift */,
 				6FE3AFFB29C2F421002B9CE6 /* AnyTransition.swift */,
 				6FE3B00429C3895A002B9CE6 /* ShapeStyle.swift */,
+				6FE3B01A29C43E3D002B9CE6 /* Data.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -402,6 +405,7 @@
 				6FE3AFFA29C22BEE002B9CE6 /* CategoryView.swift in Sources */,
 				6F1D9DEB29B65EDF00AA9EE0 /* CalendarDateView.swift in Sources */,
 				6F9F442829B8F34600E2B890 /* Border.swift in Sources */,
+				6FE3B01B29C43E3D002B9CE6 /* Data.swift in Sources */,
 				6FE3AFF429C19E8B002B9CE6 /* ScheduleFormViewModel.swift in Sources */,
 				6F1D9DED29B65F6200AA9EE0 /* CalendarDateItem.swift in Sources */,
 				13AE617D29B498FC00C08EB1 /* RootView.swift in Sources */,

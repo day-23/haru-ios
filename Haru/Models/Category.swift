@@ -10,6 +10,7 @@ import Foundation
 struct Category: Identifiable, Codable {
     let id: String
     private(set) var content: String
+    private(set) var color: String?
 }
 
 // MARK: - Extensions
