@@ -38,7 +38,7 @@ final class TodoAddViewModel: ObservableObject {
         Day(content: "목"),
         Day(content: "금"),
         Day(content: "토"),
-        Day(content: "일"),
+        Day(content: "일")
     ]
     @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") }
     @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") }
@@ -50,7 +50,6 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     var selectedEndDate: Date? {
-        print(isSelectedEndDate, endDate)
         if isSelectedEndDate { return endDate }
         return nil
     }
@@ -84,15 +83,22 @@ final class TodoAddViewModel: ObservableObject {
             alarms: selectedAlarm,
             repeatOption: repeatOption == .none ? nil : repeatOption.rawValue,
             repeatEnd: selectedRepeatEnd,
-            repeatWeek: repeatOption != .everyWeek ||
-                repeatOption != .everySecondWeek ||
+            repeatWeek: (repeatOption != .everyWeek && repeatOption != .everySecondWeek) ||
                 repeatWeek.filter { day in
                     day.isClicked
                 }.isEmpty ? nil : repeatWeek.reduce("") { acc, day in
                     acc + (day.isClicked ? "1" : "0")
                 },
-            repeatMonth: nil, // FIXME: 입력 받고 수정하기
-            repeatYear: nil,
+            repeatMonth: repeatOption != .everyMonth ||
+                repeatMonth.filter { $0.isClicked }.isEmpty ?
+                nil : repeatMonth.reduce("") { acc, day in
+                    acc + (day.isClicked ? "1" : "0")
+                },
+            repeatYear: repeatOption != .everyYear ||
+                repeatYear.filter { $0.isClicked }.isEmpty ?
+                nil : repeatYear.reduce("") { acc, day in
+                    acc + (day.isClicked ? "1" : "0")
+                },
             tags: tagList,
             subTodos: subTodoList
                 .filter {
@@ -141,10 +147,7 @@ final class TodoAddViewModel: ObservableObject {
 
     func onChangeTag(_: String) {
         let trimTag = tag.trimmingCharacters(in: .whitespaces)
-        if
-            !trimTag.isEmpty &&
-            tag[tag.index(tag.endIndex, offsetBy: -1)] == " "
-        {
+        if !trimTag.isEmpty && tag[tag.index(tag.endIndex, offsetBy: -1)] == " " {
             if !tagList.contains(trimTag) {
                 tagList.append(trimTag)
                 tag = ""
@@ -158,6 +161,79 @@ final class TodoAddViewModel: ObservableObject {
             if !tagList.contains(trimTag) {
                 tagList.append(trimTag)
                 tag = ""
+            }
+        }
+    }
+
+    func toggleDay(_ repeatOption: RepeatOption, index: Int) {
+        switch repeatOption {
+        case .none, .everyDay:
+            break
+        case .everyWeek, .everySecondWeek:
+            repeatWeek[index].isClicked.toggle()
+        case .everyMonth:
+            repeatMonth[index].isClicked.toggle()
+        case .everyYear:
+            repeatYear[index].isClicked.toggle()
+        }
+    }
+
+    func initRepeatWeek(_ todo: Todo? = nil) {
+        if let todo = todo {
+            if let todoRepeatWeek = todo.repeatWeek {
+                for i in repeatWeek.indices {
+                    repeatWeek[i].isClicked = todoRepeatWeek[
+                        todoRepeatWeek.index(todoRepeatWeek.startIndex, offsetBy: i)
+                    ] == "0" ? false : true
+                }
+            } else {
+                for i in repeatWeek.indices {
+                    repeatWeek[i].isClicked = false
+                }
+            }
+        } else {
+            for i in repeatWeek.indices {
+                repeatWeek[i].isClicked = false
+            }
+        }
+    }
+
+    func initRepeatMonth(_ todo: Todo? = nil) {
+        if let todo = todo {
+            if let todoRepeatMonth = todo.repeatMonth {
+                for i in repeatMonth.indices {
+                    repeatMonth[i].isClicked = todoRepeatMonth[
+                        todoRepeatMonth.index(todoRepeatMonth.startIndex, offsetBy: i)
+                    ] == "0" ? false : true
+                }
+            } else {
+                for i in repeatMonth.indices {
+                    repeatMonth[i].isClicked = false
+                }
+            }
+        } else {
+            for i in repeatMonth.indices {
+                repeatMonth[i].isClicked = false
+            }
+        }
+    }
+
+    func initRepeatYear(_ todo: Todo? = nil) {
+        if let todo = todo {
+            if let todoRepeatYear = todo.repeatYear {
+                for i in repeatYear.indices {
+                    repeatYear[i].isClicked = todoRepeatYear[
+                        todoRepeatYear.index(todoRepeatYear.startIndex, offsetBy: i)
+                    ] == "0" ? false : true
+                }
+            } else {
+                for i in repeatYear.indices {
+                    repeatYear[i].isClicked = false
+                }
+            }
+        } else {
+            for i in repeatYear.indices {
+                repeatYear[i].isClicked = false
             }
         }
     }
@@ -181,17 +257,9 @@ final class TodoAddViewModel: ObservableObject {
         repeatEnd = todo.repeatEnd ?? .init()
         isWritedMemo = !todo.memo.isEmpty
         memo = todo.memo
-        if let todoRepeat = todo.repeatWeek {
-            for i in 0 ..< 7 {
-                repeatWeek[i].isClicked = todoRepeat[
-                    todoRepeat.index(todoRepeat.startIndex, offsetBy: i)
-                ] == "1" ? true : false
-            }
-        } else {
-            for i in 0 ..< 7 {
-                repeatWeek[i].isClicked = false
-            }
-        }
+        initRepeatWeek(todo)
+        initRepeatMonth(todo)
+        initRepeatYear(todo)
         subTodoList = todo.subTodos.map { $0.content }
     }
 
@@ -212,18 +280,9 @@ final class TodoAddViewModel: ObservableObject {
         isSelectedRepeatEnd = false
         repeatEnd = .init()
         isWritedMemo = false
-        memo = ""
-        repeatWeek = [
-            Day(content: "월"),
-            Day(content: "화"),
-            Day(content: "수"),
-            Day(content: "목"),
-            Day(content: "금"),
-            Day(content: "토"),
-            Day(content: "일"),
-        ]
-        repeatMonth = (1 ... 31).map { Day(content: "\($0)") }
-        repeatYear = (1 ... 12).map { Day(content: "\($0)월") }
+        initRepeatWeek()
+        initRepeatMonth()
+        initRepeatYear()
         subTodoList = []
     }
 }

@@ -283,8 +283,24 @@ struct TodoAddView: View {
                         .pickerStyle(.segmented)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 5)
-                        .onChange(of: viewModel.repeatOption) { value in
-                            print(value)
+                        .onChange(of: viewModel.repeatOption) { _ in
+                            switch viewModel.repeatOption {
+                            case .none:
+                                fallthrough
+                            case .everyDay:
+                                viewModel.initRepeatWeek()
+                                viewModel.initRepeatMonth()
+                                viewModel.initRepeatYear()
+                            case .everyWeek, .everySecondWeek:
+                                viewModel.initRepeatMonth()
+                                viewModel.initRepeatYear()
+                            case .everyMonth:
+                                viewModel.initRepeatWeek()
+                                viewModel.initRepeatYear()
+                            case .everyYear:
+                                viewModel.initRepeatWeek()
+                                viewModel.initRepeatMonth()
+                            }
                         }
                     }
 
@@ -293,7 +309,7 @@ struct TodoAddView: View {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
                                 ForEach(viewModel.repeatYear.indices, id: \.self) { index in
                                     DayButton(content: viewModel.repeatYear[index].content, isClicked: viewModel.repeatYear[index].isClicked) {
-                                        viewModel.repeatYear[index].isClicked.toggle()
+                                        viewModel.toggleDay(.everyYear, index: index)
                                     }
                                 }
                             }
@@ -303,7 +319,7 @@ struct TodoAddView: View {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
                                 ForEach(viewModel.repeatMonth.indices, id: \.self) { index in
                                     DayButton(content: viewModel.repeatMonth[index].content, isClicked: viewModel.repeatMonth[index].isClicked) {
-                                        viewModel.repeatMonth[index].isClicked.toggle()
+                                        viewModel.toggleDay(.everyMonth, index: index)
                                     }
                                 }
                             }
@@ -315,7 +331,7 @@ struct TodoAddView: View {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                                 ForEach(viewModel.repeatWeek.indices, id: \.self) { index in
                                     DayButton(content: viewModel.repeatWeek[index].content, isClicked: viewModel.repeatWeek[index].isClicked) {
-                                        viewModel.repeatWeek[index].isClicked.toggle()
+                                        viewModel.toggleDay(.everyWeek, index: index)
                                     }
                                 }
                             }
