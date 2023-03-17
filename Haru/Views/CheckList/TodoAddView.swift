@@ -8,18 +8,45 @@
 import SwiftUI
 
 struct TodoAddView: View {
+    @Environment(\.dismiss) var dismissAction
     @ObservedObject var viewModel: TodoAddViewModel
-    @Binding var isActive: Bool
+    @Binding var isModalVisible: Bool
+
+    init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
+        self.viewModel = viewModel
+        _isModalVisible = isModalVisible ?? .constant(false)
+    }
 
     var body: some View {
         ScrollView {
             VStack {
                 // Todo, SubTodo 입력 View
                 VStack(alignment: .leading) {
-                    TextField("투두 입력", text: $viewModel.todoContent)
-                        .padding(.horizontal, 20)
-                        .font(.title)
-                        .bold()
+                    HStack {
+                        if !isModalVisible {
+                            Button {
+                                // TODO: Complete API 연결
+                            } label: {
+                                Circle()
+                                    .strokeBorder(Color(0x707070), lineWidth: 1)
+                                    .frame(width: 20, height: 20)
+                            }
+                        }
+
+                        TextField("투두 입력", text: $viewModel.todoContent)
+                            .padding(.horizontal, isModalVisible ? 25 : 12)
+                            .font(.title)
+                            .bold()
+
+                        if !isModalVisible {
+                            Button {
+                                // TODO: Delete API 연결
+                            } label: {
+                                Image(systemName: "trash")
+                                    .foregroundColor(Color(0x000000, opacity: 0.5))
+                            }
+                        }
+                    }
 
                     ForEach(viewModel.subTodoList.indices,
                             id: \.self) { index in
@@ -275,7 +302,7 @@ struct TodoAddView: View {
                     .padding(.vertical, 5)
 
                     if viewModel.isSelectedRepeat {
-                        Picker("반복 옵션", selection: $viewModel.repeatOption.animation()) {
+                        Picker("", selection: $viewModel.repeatOption.animation()) {
                             ForEach(RepeatOption.allCases, id: \.self) {
                                 Text($0.rawValue)
                             }
@@ -349,6 +376,7 @@ struct TodoAddView: View {
                                     if viewModel.isSelectedRepeatEnd {
                                         DatePicker(selection: $viewModel.repeatEnd, displayedComponents: [.date]) {}
                                             .labelsHidden()
+                                            .padding(.vertical, -5)
                                     }
                                 }
                             }
@@ -419,7 +447,11 @@ struct TodoAddView: View {
                             switch result {
                             case .success:
                                 withAnimation {
-                                    isActive = false
+                                    if isModalVisible {
+                                        isModalVisible = false
+                                    } else {
+                                        dismissAction.callAsFunction()
+                                    }
                                 }
                             case let .failure(failure):
                                 print("[Debug] \(failure) (\(#fileID), \(#function))")
@@ -430,7 +462,11 @@ struct TodoAddView: View {
                             switch result {
                             case .success:
                                 withAnimation {
-                                    isActive = false
+                                    if isModalVisible {
+                                        isModalVisible = false
+                                    } else {
+                                        dismissAction.callAsFunction()
+                                    }
                                 }
                             case let .failure(failure):
                                 print("[Debug] \(failure) (\(#fileID), \(#function))")
@@ -450,8 +486,27 @@ struct TodoAddView: View {
                 UIDatePicker.appearance().minuteInterval = 5
             }
         }
+        .padding(.top, isModalVisible ? 0 : 16)
         .onDisappear {
             viewModel.clear()
+        }
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            if !isModalVisible {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    HStack {
+                        Button {
+                            dismissAction.callAsFunction()
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.black)
+                        }
+
+                        Text("나의 하루")
+                            .font(.system(size: 16))
+                    }
+                }
+            }
         }
     }
 }

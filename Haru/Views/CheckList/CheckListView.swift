@@ -85,12 +85,8 @@ struct CheckListView: View {
                     .padding()
                     .padding(.horizontal, 15)
                     .background(LinearGradient(
-                        gradient: Gradient(colors: [
-                            Constants
-                                .gradientEnd,
-                            Constants
-                                .gradientStart,
-                        ]),
+                        gradient: Gradient(colors: [Constants.gradientEnd,
+                                                    Constants.gradientStart]),
                         startPoint: .leading,
                         endPoint: .trailing
                     ))
@@ -103,25 +99,24 @@ struct CheckListView: View {
                         List {
                             if viewModel.selectedTag == nil {
                                 Section {
-                                    if
-                                        let todoList = viewModel
-                                        .filterTodoByFlag(), !todoList.isEmpty
+                                    if let todoList = viewModel.filterTodoByFlag(),
+                                       !todoList.isEmpty
                                     {
                                         ForEach(todoList) { todo in
-                                            TodoView(
-                                                checkListViewModel: viewModel,
-                                                todo: todo
-                                            )
-                                            .onTapGesture {
-                                                withAnimation {
-                                                    isModalVisible = true
-                                                    addViewModel
-                                                        .applyTodoData(todo)
-                                                    addViewModel
-                                                        .mode = .edit
-                                                    addViewModel
-                                                        .todoId = todo.id
-                                                }
+                                            NavigationLink {
+                                                TodoAddView(viewModel: addViewModel)
+                                                    .onAppear {
+                                                        withAnimation {
+                                                            addViewModel.applyTodoData(todo)
+                                                            addViewModel.mode = .edit
+                                                            addViewModel.todoId = todo.id
+                                                        }
+                                                    }
+                                            } label: {
+                                                TodoView(
+                                                    checkListViewModel: viewModel,
+                                                    todo: todo
+                                                )
                                             }
 
                                             ForEach(todo.subTodos) { subTodo in
@@ -131,20 +126,15 @@ struct CheckListView: View {
                                                     subTodo: subTodo
                                                 )
                                             }
-                                            .padding(
-                                                .leading,
-                                                UIScreen.main.bounds
-                                                    .width * 0.05
-                                            )
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                             .moveDisabled(true)
                                         }
                                         .onMove { source, destination in
                                             withAnimation {
-                                                viewModel.todoList
-                                                    .move(
-                                                        fromOffsets: source,
-                                                        toOffset: destination
-                                                    )
+                                                viewModel.todoList.move(
+                                                    fromOffsets: source,
+                                                    toOffset: destination
+                                                )
                                             }
                                         }
                                     } else {
@@ -155,12 +145,9 @@ struct CheckListView: View {
                                         Image(systemName: "star.fill")
                                             .foregroundStyle(
                                                 LinearGradient(
-                                                    gradient: Gradient(colors: [
-                                                        Constants
-                                                            .gradientEnd,
-                                                        Constants
-                                                            .gradientStart,
-                                                    ]),
+                                                    gradient: Gradient(
+                                                        colors: [Constants.gradientEnd,
+                                                                 Constants.gradientStart]),
                                                     startPoint: .topLeading,
                                                     endPoint: .bottomTrailing
                                                 )
@@ -180,26 +167,24 @@ struct CheckListView: View {
                                 .listRowSeparator(.hidden)
 
                                 Section {
-                                    if
-                                        let todoList = viewModel
-                                        .filterTodoByHasAnyTag(),
-                                        !todoList.isEmpty
+                                    if let todoList = viewModel.filterTodoByHasAnyTag(),
+                                       !todoList.isEmpty
                                     {
                                         ForEach(todoList) { todo in
-                                            TodoView(
-                                                checkListViewModel: viewModel,
-                                                todo: todo
-                                            )
-                                            .onTapGesture {
-                                                withAnimation {
-                                                    isModalVisible = true
-                                                    addViewModel
-                                                        .applyTodoData(todo)
-                                                    addViewModel
-                                                        .mode = .edit
-                                                    addViewModel
-                                                        .todoId = todo.id
-                                                }
+                                            NavigationLink {
+                                                TodoAddView(viewModel: addViewModel)
+                                                    .onAppear {
+                                                        withAnimation {
+                                                            addViewModel.applyTodoData(todo)
+                                                            addViewModel.mode = .edit
+                                                            addViewModel.todoId = todo.id
+                                                        }
+                                                    }
+                                            } label: {
+                                                TodoView(
+                                                    checkListViewModel: viewModel,
+                                                    todo: todo
+                                                )
                                             }
 
                                             ForEach(todo.subTodos) { subTodo in
@@ -209,11 +194,7 @@ struct CheckListView: View {
                                                     subTodo: subTodo
                                                 )
                                             }
-                                            .padding(
-                                                .leading,
-                                                UIScreen.main.bounds
-                                                    .width * 0.05
-                                            )
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                     } else {
                                         EmptyText()
@@ -236,24 +217,24 @@ struct CheckListView: View {
                                 .listRowSeparator(.hidden)
 
                                 Section {
-                                    if
-                                        let todoList = viewModel
-                                        .filterTodoByWithoutTag(),
-                                        !todoList.isEmpty
+                                    if let todoList = viewModel.filterTodoByWithoutTag(),
+                                       !todoList.isEmpty
                                     {
                                         ForEach(todoList) { todo in
-                                            TodoView(
-                                                checkListViewModel: viewModel,
-                                                todo: todo
-                                            )
-                                            .onTapGesture {
-                                                withAnimation {
-                                                    isModalVisible = true
-                                                    addViewModel
-                                                        .applyTodoData(todo)
-                                                    addViewModel.mode = .edit
-                                                    addViewModel.todoId = todo.id
-                                                }
+                                            NavigationLink {
+                                                TodoAddView(viewModel: addViewModel)
+                                                    .onAppear {
+                                                        withAnimation {
+                                                            addViewModel.applyTodoData(todo)
+                                                            addViewModel.mode = .edit
+                                                            addViewModel.todoId = todo.id
+                                                        }
+                                                    }
+                                            } label: {
+                                                TodoView(
+                                                    checkListViewModel: viewModel,
+                                                    todo: todo
+                                                )
                                             }
 
                                             ForEach(todo.subTodos) { subTodo in
@@ -263,11 +244,7 @@ struct CheckListView: View {
                                                     subTodo: subTodo
                                                 )
                                             }
-                                            .padding(
-                                                .leading,
-                                                UIScreen.main.bounds
-                                                    .width * 0.05
-                                            )
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                     } else {
                                         EmptyText()
@@ -292,23 +269,24 @@ struct CheckListView: View {
                                 if let tag = viewModel.selectedTag {
                                     if tag.content == "하루" {
                                         Section {
-                                            if
-                                                let todoList = viewModel.filterTodoByTodayTodo(),
-                                                !todoList.isEmpty
+                                            if let todoList = viewModel.filterTodoByTodayTodo(),
+                                               !todoList.isEmpty
                                             {
                                                 ForEach(todoList) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    )
-                                                    .onTapGesture {
-                                                        withAnimation {
-                                                            isModalVisible = true
-                                                            addViewModel
-                                                                .applyTodoData(todo)
-                                                            addViewModel.mode = .edit
-                                                            addViewModel.todoId = todo.id
-                                                        }
+                                                    NavigationLink {
+                                                        TodoAddView(viewModel: addViewModel)
+                                                            .onAppear {
+                                                                withAnimation {
+                                                                    addViewModel.applyTodoData(todo)
+                                                                    addViewModel.mode = .edit
+                                                                    addViewModel.todoId = todo.id
+                                                                }
+                                                            }
+                                                    } label: {
+                                                        TodoView(
+                                                            checkListViewModel: viewModel,
+                                                            todo: todo
+                                                        )
                                                     }
 
                                                     ForEach(todo.subTodos) { subTodo in
@@ -318,10 +296,7 @@ struct CheckListView: View {
                                                             subTodo: subTodo
                                                         )
                                                     }
-                                                    .padding(
-                                                        .leading,
-                                                        UIScreen.main.bounds.width * 0.05
-                                                    )
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                             } else {
                                                 EmptyText()
@@ -347,23 +322,24 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
 
                                         Section {
-                                            if
-                                                let todoList = viewModel
-                                                .filterTodoByTodayEndDate(),
-                                                !todoList.isEmpty
+                                            if let todoList = viewModel.filterTodoByTodayEndDate(),
+                                               !todoList.isEmpty
                                             {
                                                 ForEach(todoList) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    )
-                                                    .onTapGesture {
-                                                        withAnimation {
-                                                            isModalVisible = true
-                                                            addViewModel.applyTodoData(todo)
-                                                            addViewModel.mode = .edit
-                                                            addViewModel.todoId = todo.id
-                                                        }
+                                                    NavigationLink {
+                                                        TodoAddView(viewModel: addViewModel)
+                                                            .onAppear {
+                                                                withAnimation {
+                                                                    addViewModel.applyTodoData(todo)
+                                                                    addViewModel.mode = .edit
+                                                                    addViewModel.todoId = todo.id
+                                                                }
+                                                            }
+                                                    } label: {
+                                                        TodoView(
+                                                            checkListViewModel: viewModel,
+                                                            todo: todo
+                                                        )
                                                     }
 
                                                     ForEach(todo.subTodos) { subTodo in
@@ -373,10 +349,7 @@ struct CheckListView: View {
                                                             subTodo: subTodo
                                                         )
                                                     }
-                                                    .padding(
-                                                        .leading,
-                                                        UIScreen.main.bounds.width * 0.05
-                                                    )
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                             } else {
                                                 EmptyText()
@@ -402,23 +375,24 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
                                     } else {
                                         Section {
-                                            if
-                                                let todoList = viewModel
-                                                .filterTodoByTag(),
-                                                !todoList.isEmpty
+                                            if let todoList = viewModel.filterTodoByTag(),
+                                               !todoList.isEmpty
                                             {
                                                 ForEach(todoList) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    )
-                                                    .onTapGesture {
-                                                        withAnimation {
-                                                            isModalVisible = true
-                                                            addViewModel.applyTodoData(todo)
-                                                            addViewModel.mode = .edit
-                                                            addViewModel.todoId = todo.id
-                                                        }
+                                                    NavigationLink {
+                                                        TodoAddView(viewModel: addViewModel)
+                                                            .onAppear {
+                                                                withAnimation {
+                                                                    addViewModel.applyTodoData(todo)
+                                                                    addViewModel.mode = .edit
+                                                                    addViewModel.todoId = todo.id
+                                                                }
+                                                            }
+                                                    } label: {
+                                                        TodoView(
+                                                            checkListViewModel: viewModel,
+                                                            todo: todo
+                                                        )
                                                     }
 
                                                     ForEach(todo.subTodos) { subTodo in
@@ -428,11 +402,7 @@ struct CheckListView: View {
                                                             subTodo: subTodo
                                                         )
                                                     }
-                                                    .padding(
-                                                        .leading,
-                                                        UIScreen.main.bounds.width *
-                                                            0.05
-                                                    )
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                             } else {
                                                 EmptyText()
@@ -447,10 +417,9 @@ struct CheckListView: View {
                                                     Image(systemName: "star.fill")
                                                         .foregroundStyle(
                                                             LinearGradient(
-                                                                gradient: Gradient(colors: [
-                                                                    Constants.gradientEnd,
-                                                                    Constants.gradientStart,
-                                                                ]),
+                                                                gradient: Gradient(
+                                                                    colors: [Constants.gradientEnd,
+                                                                             Constants.gradientStart]),
                                                                 startPoint: .topLeading,
                                                                 endPoint: .bottomTrailing
                                                             )
@@ -476,9 +445,7 @@ struct CheckListView: View {
                             GeometryReader { geometry in
                                 Color.clear.preference(
                                     key: OffsetKey.self,
-                                    value: geometry
-                                        .frame(in: .global)
-                                        .minY
+                                    value: geometry.frame(in: .global).minY
                                 )
                                 .frame(height: 0)
                             }
@@ -486,17 +453,15 @@ struct CheckListView: View {
                         }
                         .listStyle(.inset)
                         .onPreferenceChange(OffsetKey.self) {
-                            if
-                                self.initialOffset == nil || self
+                            if self.initialOffset == nil || self
                                 .initialOffset == 0
                             {
                                 self.initialOffset = $0
                             }
                             self.offset = $0
 
-                            guard
-                                let initialOffset = self.initialOffset,
-                                let offset = self.offset
+                            guard let initialOffset = self.initialOffset,
+                                  let offset = self.offset
                             else {
                                 return
                             }
@@ -531,7 +496,7 @@ struct CheckListView: View {
                     Modal(isActive: $isModalVisible, ratio: 0.9) {
                         TodoAddView(
                             viewModel: addViewModel,
-                            isActive: $isModalVisible
+                            isModalVisible: $isModalVisible
                         )
                     }
                     .transition(.modal)
@@ -548,11 +513,9 @@ struct CheckListView: View {
                                 .foregroundColor(.white)
                                 .padding()
                                 .background(LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        Constants
-                                            .gradientStart,
-                                        Constants.gradientEnd,
-                                    ]),
+                                    gradient: Gradient(
+                                        colors: [Constants.gradientStart,
+                                                 Constants.gradientEnd]),
                                     startPoint: .bottomTrailing,
                                     endPoint: .topLeading
                                 ))
@@ -566,6 +529,7 @@ struct CheckListView: View {
             }
         }
         .onAppear {
+            isModalVisible = false
             viewModel.selectedTag = nil
             viewModel.fetchTodoList { _ in }
             viewModel.fetchTags { _ in }

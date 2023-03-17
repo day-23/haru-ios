@@ -14,6 +14,7 @@
 		1334334C29B5A02400F26F57 /* Tab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334334B29B5A02400F26F57 /* Tab.swift */; };
 		1334334F29B5A0AC00F26F57 /* CheckListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334334E29B5A0AC00F26F57 /* CheckListView.swift */; };
 		1334335329B5A20800F26F57 /* Todo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1334335229B5A20800F26F57 /* Todo.swift */; };
+		1358749229C479E500019BE5 /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1358749129C479E500019BE5 /* UINavigationController.swift */; };
 		137611EF29B5CB90008787BD /* TodoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611EE29B5CB90008787BD /* TodoService.swift */; };
 		137611F129B5FD1E008787BD /* CheckListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611F029B5FD1E008787BD /* CheckListViewModel.swift */; };
 		137611F329B600E9008787BD /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137611F229B600E9008787BD /* User.swift */; };
@@ -51,6 +52,7 @@
 		1334334B29B5A02400F26F57 /* Tab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
 		1334334E29B5A0AC00F26F57 /* CheckListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckListView.swift; sourceTree = "<group>"; };
 		1334335229B5A20800F26F57 /* Todo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Todo.swift; sourceTree = "<group>"; };
+		1358749129C479E500019BE5 /* UINavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationController.swift; sourceTree = "<group>"; };
 		137611EE29B5CB90008787BD /* TodoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoService.swift; sourceTree = "<group>"; };
 		137611F029B5FD1E008787BD /* CheckListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckListViewModel.swift; sourceTree = "<group>"; };
 		137611F229B600E9008787BD /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				13AE616E29B48CA100C08EB1 /* Color.swift */,
 				1376120029B64400008787BD /* AnyTransition.swift */,
 				13C2647C29BAD84400C84D1F /* Date.swift */,
+				1358749129C479E500019BE5 /* UINavigationController.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -331,6 +334,7 @@
 				1334334C29B5A02400F26F57 /* Tab.swift in Sources */,
 				13C79A1929B7436000E68E55 /* RepeatOption.swift in Sources */,
 				137611F529B6051F008787BD /* TodoLog.swift in Sources */,
+				1358749229C479E500019BE5 /* UINavigationController.swift in Sources */,
 				1310B01029BF48A800DEC17F /* SubTodoView.swift in Sources */,
 				13A15DC229B8C939003BE771 /* TodoAddViewModel.swift in Sources */,
 				13C79A1729B7047800E68E55 /* TagView.swift in Sources */,

@@ -14,12 +14,14 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             ForEach(Tab.allCases, id: \.self) { tab in
-                tab.view
-                    .tabItem {
-                        Image(systemName: tab.systemImageName)
-                        Text(tab.title)
-                    }
-                    .tag(tab)
+                NavigationView {
+                    tab.view
+                }
+                .tabItem {
+                    Image(systemName: tab.systemImageName)
+                    Text(tab.title)
+                }
+                .tag(tab)
             }
         }
         .onAppear {
@@ -28,8 +30,3 @@ struct RootView: View {
     }
 }
 
-struct RootView_Previews: PreviewProvider {
-    static var previews: some View {
-        RootView()
-    }
-}

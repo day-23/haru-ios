@@ -61,11 +61,6 @@ struct Modal<Content>: View where Content: View {
                     }
                 }
             }
-            .onAppear {
-                withAnimation {
-                    isActive = true
-                }
-            }
         }
     }
 }
