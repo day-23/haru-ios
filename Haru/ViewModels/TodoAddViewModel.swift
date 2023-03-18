@@ -284,5 +284,6 @@ final class TodoAddViewModel: ObservableObject {
         initRepeatMonth()
         initRepeatYear()
         subTodoList = []
+        memo = ""
     }
 }

@@ -277,7 +277,7 @@ struct CheckListView: View {
                                 .listRowSeparator(.hidden)
                             } else {
                                 if let tag = viewModel.selectedTag {
-                                    if tag.content == "하루" {
+                                    if tag.id == "하루" {
                                         Section {
                                             if let todoList = viewModel.filterTodoByTodayTodo(),
                                                !todoList.isEmpty
@@ -393,7 +393,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
-                                    } else if tag.content == "중요" {
+                                    } else if tag.id == "중요" {
                                         Section {
                                             if let todoList = viewModel.filterTodoByFlag(),
                                                !todoList.isEmpty
@@ -457,7 +457,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
-                                    } else if tag.content == "미분류" {
+                                    } else if tag.id == "미분류" {
                                         Section {
                                             if let todoList = viewModel.filterTodoByWithoutTag(),
                                                !todoList.isEmpty
