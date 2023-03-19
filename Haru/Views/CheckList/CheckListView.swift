@@ -586,7 +586,6 @@ struct CheckListView: View {
                         }
                         .listStyle(.inset)
                         .onPreferenceChange(OffsetKey.self) {
-                            print(self.initialOffset, self.offset)
                             if self.initialOffset == nil || self.initialOffset == 0 {
                                 self.viewIsShown = true
                                 self.initialOffset = $0

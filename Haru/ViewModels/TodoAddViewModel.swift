@@ -15,40 +15,20 @@ final class TodoAddViewModel: ObservableObject {
     var todoId: String?
 
     @Published var todoContent: String = ""
-    @Published var tag: String = ""
-    @Published var tagList: [Tag] = []
-    @Published var isTodayTodo: Bool = false
+
     @Published var flag: Bool = false
-    @Published var isSelectedAlarm: Bool = false
-    @Published var alarm: Date = .init()
-    @Published var repeatOption: RepeatOption = .everyDay
-    @Published var isSelectedRepeat: Bool = false
-    @Published var isSelectedEndDate: Bool = false
-    @Published var isSelectedEndDateTime: Bool = false
-    @Published var endDate: Date = .init()
-    @Published var endDateTime: Date = .init()
-    @Published var isSelectedRepeatEnd: Bool = false
-    @Published var repeatEnd: Date = .init()
-    @Published var isWritedMemo: Bool = false
-    @Published var memo: String = ""
-    @Published var repeatWeek: [Day] = [
-        Day(content: "일"),
-        Day(content: "월"),
-        Day(content: "화"),
-        Day(content: "수"),
-        Day(content: "목"),
-        Day(content: "금"),
-        Day(content: "토")
-    ]
-    @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") }
-    @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") }
+
     @Published var subTodoList: [SubTodo] = []
 
-    var selectedAlarm: [Date] {
-        if isSelectedAlarm { return [alarm] }
-        return []
-    }
+    @Published var tag: String = ""
+    @Published var tagList: [Tag] = []
 
+    @Published var isTodayTodo: Bool = false
+
+    @Published var endDate: Date = .init()
+    @Published var endDateTime: Date = .init()
+    @Published var isSelectedEndDate: Bool = false
+    @Published var isSelectedEndDateTime: Bool = false
     var selectedEndDate: Date? {
         if isSelectedEndDate { return endDate }
         return nil
@@ -60,10 +40,46 @@ final class TodoAddViewModel: ObservableObject {
         return nil
     }
 
+    @Published var alarm: Date = .init()
+    @Published var isSelectedAlarm: Bool = false
+    var selectedAlarm: [Date] {
+        if isSelectedAlarm { return [alarm] }
+        return []
+    }
+
+    @Published var repeatOption: RepeatOption = .everyDay
+    @Published var isSelectedRepeat: Bool = false
+    @Published var repeatEnd: Date = .init()
+    @Published var isSelectedRepeatEnd: Bool = false
+    @Published var repeatDay: String = "1"
+    @Published var repeatWeek: [Day] = [Day(content: "일"), Day(content: "월"), Day(content: "화"),
+                                        Day(content: "수"), Day(content: "목"), Day(content: "금"), Day(content: "토")]
+    @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") }
+    @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") }
     var selectedRepeatEnd: Date? {
         if isSelectedRepeat && isSelectedRepeatEnd { return repeatEnd }
         return nil
     }
+
+    var repeatValue: String? {
+        if isSelectedRepeat {
+            var value: [Day] = []
+            switch repeatOption {
+            case .everyDay:
+                return repeatDay
+            case .everyWeek, .everySecondWeek:
+                value = repeatWeek
+            case .everyMonth:
+                value = repeatMonth
+            case .everyYear:
+                value = repeatYear
+            }
+            return value.reduce("") { $0 + ($1.isClicked ? "1" : "0") }
+        }
+        return nil
+    }
+
+    @Published var memo: String = ""
 
     init(checkListViewModel: CheckListViewModel, mode: TodoAddMode = .add) {
         self.checkListViewModel = checkListViewModel
@@ -75,29 +91,15 @@ final class TodoAddViewModel: ObservableObject {
     private func createTodoData() -> Request.Todo {
         return Request.Todo(
             content: todoContent,
-            memo: isWritedMemo ? memo : "",
+            memo: memo,
             todayTodo: isTodayTodo,
             flag: flag,
             endDate: selectedEndDate,
             endDateTime: selectedEndDateTime,
             alarms: selectedAlarm,
             repeatOption: !isSelectedRepeat ? nil : repeatOption.rawValue,
+            repeatValue: repeatValue,
             repeatEnd: selectedRepeatEnd,
-            repeatWeek: !isSelectedRepeat || (repeatOption != .everyWeek && repeatOption != .everySecondWeek) ||
-                repeatWeek.filter { day in day.isClicked }.isEmpty ?
-                nil : repeatWeek.reduce("") { acc, day in
-                    acc + (day.isClicked ? "1" : "0")
-                },
-            repeatMonth: !isSelectedRepeat || repeatOption != .everyMonth ||
-                repeatMonth.filter { $0.isClicked }.isEmpty ?
-                nil : repeatMonth.reduce("") { acc, day in
-                    acc + (day.isClicked ? "1" : "0")
-                },
-            repeatYear: !isSelectedRepeat || repeatOption != .everyYear ||
-                repeatYear.filter { $0.isClicked }.isEmpty ?
-                nil : repeatYear.reduce("") { acc, day in
-                    acc + (day.isClicked ? "1" : "0")
-                },
             tags: tagList.map { $0.content },
             subTodos: subTodoList
                 .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
@@ -178,7 +180,7 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatWeek(_ todo: Todo? = nil) {
         if let todo = todo {
-            if let todoRepeatWeek = todo.repeatWeek {
+            if let todoRepeatWeek = todo.repeatValue {
                 for i in repeatWeek.indices {
                     repeatWeek[i].isClicked = todoRepeatWeek[
                         todoRepeatWeek.index(todoRepeatWeek.startIndex, offsetBy: i)
@@ -198,7 +200,7 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatMonth(_ todo: Todo? = nil) {
         if let todo = todo {
-            if let todoRepeatMonth = todo.repeatMonth {
+            if let todoRepeatMonth = todo.repeatValue {
                 for i in repeatMonth.indices {
                     repeatMonth[i].isClicked = todoRepeatMonth[
                         todoRepeatMonth.index(todoRepeatMonth.startIndex, offsetBy: i)
@@ -218,7 +220,7 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatYear(_ todo: Todo? = nil) {
         if let todo = todo {
-            if let todoRepeatYear = todo.repeatYear {
+            if let todoRepeatYear = todo.repeatValue {
                 for i in repeatYear.indices {
                     repeatYear[i].isClicked = todoRepeatYear[
                         todoRepeatYear.index(todoRepeatYear.startIndex, offsetBy: i)
@@ -238,50 +240,65 @@ final class TodoAddViewModel: ObservableObject {
 
     func applyTodoData(_ todo: Todo) {
         todoContent = todo.content
+
+        flag = todo.flag
+
+        subTodoList = todo.subTodos.map { SubTodo(id: $0.id, content: $0.content) }
+
         tag = ""
         tagList = todo.tags.map { Tag(id: $0.id, content: $0.content) }
+
         isTodayTodo = todo.todayTodo
-        flag = todo.flag
-        isSelectedAlarm = !todo.alarms.isEmpty
+
+        endDate = todo.endDate ?? .init()
+        endDateTime = todo.endDateTime ?? .init()
+        isSelectedEndDate = todo.endDate != nil
+        isSelectedEndDateTime = todo.endDateTime != nil
+
         alarm = !todo.alarms.isEmpty ? todo.alarms[0].time : .init()
+        isSelectedAlarm = !todo.alarms.isEmpty
+
         repeatOption = todo.repeatOption != nil ? RepeatOption.allCases
             .filter { $0.rawValue == todo.repeatOption }[0] : .everyDay
         isSelectedRepeat = todo.repeatOption != nil
-        isSelectedEndDate = todo.endDate != nil
-        isSelectedEndDateTime = todo.endDateTime != nil
-        endDate = todo.endDate ?? .init()
-        endDateTime = todo.endDateTime ?? .init()
-        isSelectedRepeatEnd = todo.repeatEnd != nil
         repeatEnd = todo.repeatEnd ?? .init()
-        isWritedMemo = !todo.memo.isEmpty
-        memo = todo.memo
+        isSelectedRepeatEnd = todo.repeatEnd != nil
+        repeatDay = isSelectedRepeat ? (todo.repeatValue ?? "1") : "1"
         initRepeatWeek(todo)
         initRepeatMonth(todo)
         initRepeatYear(todo)
-        subTodoList = todo.subTodos.map { SubTodo(id: $0.id, content: $0.content) }
+
+        memo = todo.memo
     }
 
     func clear() {
         todoContent = ""
+
+        flag = false
+
+        subTodoList = []
+
         tag = ""
         tagList = []
         isTodayTodo = false
-        flag = false
-        isSelectedAlarm = false
-        alarm = .init()
-        repeatOption = .everyDay
-        isSelectedRepeat = false
-        isSelectedEndDate = false
-        isSelectedEndDateTime = false
+
         endDate = .init()
         endDateTime = .init()
-        isSelectedRepeatEnd = false
+        isSelectedEndDate = false
+        isSelectedEndDateTime = false
+
+        alarm = .init()
+        isSelectedAlarm = false
+
+        repeatOption = .everyDay
+        isSelectedRepeat = false
         repeatEnd = .init()
-        isWritedMemo = false
+        isSelectedRepeatEnd = false
+        repeatDay = "1"
         initRepeatWeek()
         initRepeatMonth()
         initRepeatYear()
-        subTodoList = []
+
         memo = ""
     }
 }

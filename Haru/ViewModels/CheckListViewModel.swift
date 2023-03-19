@@ -13,6 +13,7 @@ final class CheckListViewModel: ObservableObject {
 
     private let todoService: TodoService = .init()
     private let tagService: TagService = .init()
+
     @Published var todoList: [Todo] = []
     @Published var tagList: [Tag] = []
     @Published var selectedTag: Tag? = nil
@@ -45,7 +46,7 @@ final class CheckListViewModel: ObservableObject {
                          todayTodo: todo.todayTodo,
                          flag: todo.flag,
                          repeatOption: todo.repeatOption,
-                         repeatWeek: todo.repeatWeek,
+                         repeatValue: todo.repeatValue,
                          alarms: todo.alarms,
                          endDate: todo.endDate,
                          endDateTime: todo.endDateTime,
@@ -131,7 +132,7 @@ final class CheckListViewModel: ObservableObject {
                         todayTodo: todo.todayTodo,
                         flag: !todo.flag,
                         repeatOption: todo.repeatOption,
-                        repeatWeek: todo.repeatWeek,
+                        repeatValue: todo.repeatValue,
                         alarms: todo.alarms,
                         endDate: todo.endDate,
                         endDateTime: todo.endDateTime,

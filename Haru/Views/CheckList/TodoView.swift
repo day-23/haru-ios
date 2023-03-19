@@ -43,7 +43,7 @@ struct TodoView: View {
                     todo.endDate != nil ||
                     todo.endDateTime != nil ||
                     todo.alarms.count > 0 ||
-                    todo.repeatWeek != nil ||
+                    todo.repeatValue != nil ||
                     todo.repeatOption != nil ||
                     !todo.memo.isEmpty
                 {
@@ -64,7 +64,7 @@ struct TodoView: View {
                             todo.endDate != nil ||
                             todo.endDateTime != nil) &&
                             (todo.alarms.count > 0 ||
-                                todo.repeatWeek != nil ||
+                                todo.repeatValue != nil ||
                                 todo.repeatOption != nil ||
                                 !todo.memo.isEmpty)
                         {
@@ -75,7 +75,7 @@ struct TodoView: View {
                             Image(systemName: "bell")
                         }
 
-                        if todo.repeatWeek != nil || todo.repeatOption != nil {
+                        if todo.repeatValue != nil || todo.repeatOption != nil {
                             Image(systemName: "repeat")
                         }
 

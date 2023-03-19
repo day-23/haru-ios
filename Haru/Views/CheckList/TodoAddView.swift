@@ -312,23 +312,6 @@ struct TodoAddView: View {
                         .pickerStyle(.segmented)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 5)
-                        .onChange(of: viewModel.repeatOption) { _ in
-                            switch viewModel.repeatOption {
-                            case .everyDay:
-                                viewModel.initRepeatWeek()
-                                viewModel.initRepeatMonth()
-                                viewModel.initRepeatYear()
-                            case .everyWeek, .everySecondWeek:
-                                viewModel.initRepeatMonth()
-                                viewModel.initRepeatYear()
-                            case .everyMonth:
-                                viewModel.initRepeatWeek()
-                                viewModel.initRepeatYear()
-                            case .everyYear:
-                                viewModel.initRepeatWeek()
-                                viewModel.initRepeatMonth()
-                            }
-                        }
                     }
 
                     if viewModel.isSelectedRepeat {
@@ -405,14 +388,13 @@ struct TodoAddView: View {
                 // 메모 추가
                 Group {
                     Label {
-                        Toggle(isOn: $viewModel.isWritedMemo.animation()) {
-                            HStack {
-                                Text("메모 추가")
-                                    .frame(alignment: .leading)
-                                    .foregroundColor(viewModel
-                                        .isWritedMemo ? .black : Constants
-                                        .lightGray)
-                            }
+                        HStack {
+                            Text("메모 추가")
+                                .frame(alignment: .leading)
+                                .foregroundColor(!viewModel.memo.isEmpty ?
+                                    .black : Constants.lightGray)
+
+                            Spacer()
                         }
                         .tint(LinearGradient(
                             gradient: Gradient(colors: [Constants.gradientStart,
@@ -423,21 +405,19 @@ struct TodoAddView: View {
                     } icon: {
                         Image(systemName: "note")
                             .padding(.trailing, 10)
-                            .foregroundColor(viewModel
-                                .isWritedMemo ? .black : Constants.lightGray)
+                            .foregroundColor(!viewModel.memo.isEmpty ?
+                                .black : Constants.lightGray)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 5)
 
-                    if viewModel.isWritedMemo {
-                        TextField(
-                            "메모를 작성해주세요.",
-                            text: $viewModel.memo,
-                            axis: .vertical
-                        )
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 5)
-                    }
+                    TextField(
+                        "메모를 작성해주세요.",
+                        text: $viewModel.memo,
+                        axis: .vertical
+                    )
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
 
                     Divider()
                 }
