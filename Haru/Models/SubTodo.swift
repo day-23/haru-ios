@@ -11,7 +11,7 @@ struct SubTodo: Codable, Identifiable {
     // MARK: - Properties
 
     let id: String
-    private(set) var content: String
+    var content: String
 
     // MARK: - Dates
 

@@ -52,10 +52,10 @@ struct TodoAddView: View {
                     ForEach(viewModel.subTodoList.indices, id: \.self) { index in
                         HStack {
                             Text("∙")
-                            TextField("", text: $viewModel.subTodoList[index])
+                            TextField("", text: $viewModel.subTodoList[index].content)
                                 .font(.system(size: 14, weight: .light))
                             Button {
-                                viewModel.subTodoList.remove(at: index)
+                                viewModel.removeSubTodo(index)
                             } label: {
                                 Image(systemName: "minus.circle.fill")
                                     .foregroundStyle(Constants.lightGray)
@@ -67,7 +67,7 @@ struct TodoAddView: View {
                     }
 
                     Button {
-                        viewModel.subTodoList.append("")
+                        viewModel.createSubTodo()
                     } label: {
                         Label {
                             Text("하위 항목 추가")
@@ -87,13 +87,13 @@ struct TodoAddView: View {
                     Label {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
-                                ForEach(viewModel.tagList.indices,
-                                        id: \.self) { index in
+                                ForEach(
+                                    Array(zip(viewModel.tagList.indices, viewModel.tagList)),
+                                    id: \.0
+                                ) { index, tag in
                                     TagView(Tag(
-                                        id: viewModel.tagList[index]
-                                            .description,
-                                        content: viewModel.tagList[index]
-                                            .description
+                                        id: tag.id,
+                                        content: tag.content
                                     ))
                                     .onTapGesture {
                                         viewModel.tagList.remove(at: index)

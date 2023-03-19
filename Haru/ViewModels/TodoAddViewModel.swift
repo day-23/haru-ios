@@ -16,7 +16,7 @@ final class TodoAddViewModel: ObservableObject {
 
     @Published var todoContent: String = ""
     @Published var tag: String = ""
-    @Published var tagList: [String] = []
+    @Published var tagList: [Tag] = []
     @Published var isTodayTodo: Bool = false
     @Published var flag: Bool = false
     @Published var isSelectedAlarm: Bool = false
@@ -42,7 +42,7 @@ final class TodoAddViewModel: ObservableObject {
     ]
     @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") }
     @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") }
-    @Published var subTodoList: [String] = []
+    @Published var subTodoList: [SubTodo] = []
 
     var selectedAlarm: [Date] {
         if isSelectedAlarm { return [alarm] }
@@ -84,9 +84,8 @@ final class TodoAddViewModel: ObservableObject {
             repeatOption: !isSelectedRepeat ? nil : repeatOption.rawValue,
             repeatEnd: selectedRepeatEnd,
             repeatWeek: !isSelectedRepeat || (repeatOption != .everyWeek && repeatOption != .everySecondWeek) ||
-                repeatWeek.filter { day in
-                    day.isClicked
-                }.isEmpty ? nil : repeatWeek.reduce("") { acc, day in
+                repeatWeek.filter { day in day.isClicked }.isEmpty ?
+                nil : repeatWeek.reduce("") { acc, day in
                     acc + (day.isClicked ? "1" : "0")
                 },
             repeatMonth: !isSelectedRepeat || repeatOption != .everyMonth ||
@@ -99,11 +98,10 @@ final class TodoAddViewModel: ObservableObject {
                 nil : repeatYear.reduce("") { acc, day in
                     acc + (day.isClicked ? "1" : "0")
                 },
-            tags: tagList,
+            tags: tagList.map { $0.content },
             subTodos: subTodoList
-                .filter {
-                    !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                }
+                .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+                .map { $0.content }
         )
     }
 
@@ -138,7 +136,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func createSubTodo() {
-        subTodoList.append("")
+        subTodoList.append(SubTodo(id: UUID().uuidString, content: ""))
     }
 
     func removeSubTodo(_ index: Int) {
@@ -148,8 +146,8 @@ final class TodoAddViewModel: ObservableObject {
     func onChangeTag(_: String) {
         let trimTag = tag.trimmingCharacters(in: .whitespaces)
         if !trimTag.isEmpty && tag[tag.index(tag.endIndex, offsetBy: -1)] == " " {
-            if !tagList.contains(trimTag) {
-                tagList.append(trimTag)
+            if tagList.filter({ $0.content == trimTag }).isEmpty {
+                tagList.append(Tag(id: UUID().uuidString, content: trimTag))
                 tag = ""
             }
         }
@@ -158,8 +156,8 @@ final class TodoAddViewModel: ObservableObject {
     func onSubmitTag() {
         let trimTag = tag.trimmingCharacters(in: .whitespaces)
         if !trimTag.isEmpty {
-            if !tagList.contains(trimTag) {
-                tagList.append(trimTag)
+            if tagList.filter({ $0.content == trimTag }).isEmpty {
+                tagList.append(Tag(id: UUID().uuidString, content: trimTag))
                 tag = ""
             }
         }
@@ -241,7 +239,7 @@ final class TodoAddViewModel: ObservableObject {
     func applyTodoData(_ todo: Todo) {
         todoContent = todo.content
         tag = ""
-        tagList = todo.tags.map { $0.content }
+        tagList = todo.tags.map { Tag(id: $0.id, content: $0.content) }
         isTodayTodo = todo.todayTodo
         flag = todo.flag
         isSelectedAlarm = !todo.alarms.isEmpty
@@ -260,7 +258,7 @@ final class TodoAddViewModel: ObservableObject {
         initRepeatWeek(todo)
         initRepeatMonth(todo)
         initRepeatYear(todo)
-        subTodoList = todo.subTodos.map { $0.content }
+        subTodoList = todo.subTodos.map { SubTodo(id: $0.id, content: $0.content) }
     }
 
     func clear() {

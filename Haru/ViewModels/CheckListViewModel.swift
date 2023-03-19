@@ -209,6 +209,6 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func filterTodoByTodayEndDate() -> [Todo] {
-        return todoList.filter { $0.endDate?.compare(Date.now) == .orderedSame }
+        return todoList.filter { $0.endDate?.compare(Date.now) == .orderedAscending }
     }
 }
