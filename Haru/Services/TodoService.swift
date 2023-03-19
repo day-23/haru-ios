@@ -84,6 +84,7 @@ struct TodoService {
         }
     }
 
+    // 태그가 있는 모든 Todo 목록 가져오기
     func fetchTodoListWithTag(
         _ tag: Tag,
         completion: @escaping (Result<[Todo], Error>) -> Void
@@ -99,8 +100,7 @@ struct TodoService {
         decoder.dateDecodingStrategy = .formatted(formatter)
 
         AF.request(
-            TodoService
-                .baseURL +
+            TodoService.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)"
         ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
@@ -126,8 +126,7 @@ struct TodoService {
         encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
 
         AF.request(
-            TodoService
-                .baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .patch,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: encoder),
@@ -157,8 +156,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService
-                .baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
@@ -179,8 +177,27 @@ struct TodoService {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(
-            TodoService
-                .baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            method: .delete
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // Tag 삭제하기
+    func deleteTag(
+        _ todoId: String,
+        _ tagId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/\(todoId)/tag/\(tagId)",
             method: .delete
         ).response { response in
             switch response.result {
@@ -199,8 +216,7 @@ struct TodoService {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(
-            TodoService
-                .baseURL +
+            TodoService.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(todoId)/subtodo/\(subTodoId)",
             method: .delete
         ).response { response in

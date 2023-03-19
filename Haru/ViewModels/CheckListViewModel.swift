@@ -97,6 +97,8 @@ final class CheckListViewModel: ObservableObject {
         _ todo: Request.Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        debugPrint(todo)
+
         todoService.updateTodo(todoId, todo) { result in
             switch result {
             case .success:

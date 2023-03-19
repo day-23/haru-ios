@@ -47,6 +47,7 @@ struct CheckListView: View {
                                         id: "중요",
                                         content: "중요"
                                     )
+                                    initialOffset = nil
                                 }
 
                             // 미분류 태그
@@ -56,6 +57,7 @@ struct CheckListView: View {
                                         id: "미분류",
                                         content: "미분류"
                                     )
+                                    initialOffset = nil
                                 }
 
                             // 완료 태그
@@ -65,6 +67,7 @@ struct CheckListView: View {
                                 TagView(tag)
                                     .onTapGesture {
                                         viewModel.selectedTag = tag
+                                        initialOffset = nil
                                     }
                             }
                         }
@@ -91,6 +94,7 @@ struct CheckListView: View {
                     )
                     .onTapGesture {
                         viewModel.selectedTag = Tag(id: "하루", content: "하루")
+                        initialOffset = nil
                     }
 
                     // 체크 리스트
@@ -582,10 +586,11 @@ struct CheckListView: View {
                         }
                         .listStyle(.inset)
                         .onPreferenceChange(OffsetKey.self) {
-                            if self.initialOffset == nil || self
-                                .initialOffset == 0
-                            {
+                            print(self.initialOffset, self.offset)
+                            if self.initialOffset == nil || self.initialOffset == 0 {
+                                self.viewIsShown = true
                                 self.initialOffset = $0
+                                return
                             }
                             self.offset = $0
 
