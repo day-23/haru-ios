@@ -31,7 +31,7 @@ struct RootView: View {
                     Text("Todo")
                 }
                 .tag(3)
-            Text("TimeTable SubView")
+            TimeTableMainView()
                 .tabItem {
                     Image(systemName: "calendar.day.timeline.left")
                     Text("TimeTable")
