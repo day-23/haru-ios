@@ -11,6 +11,7 @@ import SwiftUI
 final class CalendarViewModel: ObservableObject {
     // 현재 달력에 보여질 일정들만 모은 자료구조
     @Published var scheduleList: [[Int: [Schedule]]] = [[:]] // 원소 개수 == dateList의 개수
+    @Published var viewScheduleList = [[[(Int, Schedule?)]]]()
 
     @Published var startOnSunday: Bool = true
     
@@ -81,7 +82,7 @@ final class CalendarViewModel: ObservableObject {
         scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
             switch result {
             case .success(let success):
-                self.scheduleList = self.scheduleService.fittingScheduleList(dateList, success)
+                (self.scheduleList, self.viewScheduleList) = self.scheduleService.fittingScheduleList(dateList, success)
             case .failure(let failure):
                 print("[Debug] \(failure)")
             }
@@ -143,11 +144,11 @@ final class CalendarViewModel: ObservableObject {
         }
     }
     
-    // 선택된 날의 스케줄
+    // 선택된 날의 스케줄 가져오기
     func getSelectedScheduleList(_ selectedIndex: Int) -> [Schedule] {
         var result = [Schedule]()
         
-        scheduleList[selectedIndex].forEach { key, value in
+        scheduleList[selectedIndex].sorted { $0.key < $1.key }.forEach { key, value in
             result.append(contentsOf: value)
         }
         

@@ -24,7 +24,6 @@ struct Schedule: Identifiable, Codable {
     
     private(set) var alarms: [Alarm]
     
-    
     // MARK: - Dates
     
     let createdAt: Date
@@ -32,3 +31,9 @@ struct Schedule: Identifiable, Codable {
 }
 
 // MARK: - extension
+
+extension Schedule: Equatable {
+    static func == (lhs: Schedule, rhs: Schedule) -> Bool {
+        lhs.id == rhs.id
+    }
+}

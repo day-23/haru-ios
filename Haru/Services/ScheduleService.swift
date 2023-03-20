@@ -68,7 +68,7 @@ final class ScheduleService {
     func fittingScheduleList(
         _ dateList: [DateValue],
         _ scheduleList: [Schedule]
-    ) -> [[Int: [Schedule]]] {
+    ) -> ([[Int: [Schedule]]], [[[(Int, Schedule?)]]]) {
         let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
 
         // 주차별 스케줄
@@ -76,7 +76,7 @@ final class ScheduleService {
 
         var result = [[Int: [Schedule]]](repeating: [:], count: dateList.count)
 
-//        var _result = [[(Int, Schedule)]](repeating: [(Int, Schedule)](repeating: (Int, Schedule).Type, count: 7), count: 4)
+        var result_ = [[[(Int, Schedule?)]]](repeating: [[(Int, Schedule?)]](repeating: [], count: 4), count: numberOfWeeks)
 
         var splitDateList = [[Date]]() // row: 주차, col: row주차에 있는 날짜들
 
@@ -127,6 +127,23 @@ final class ScheduleService {
             }
         }
 
-        return result
+        for week in 0 ..< numberOfWeeks {
+            for order in 0 ..< 4 {
+                var prev = result[week * 7 + 0][order]?.first
+                var cnt = 1
+                for day in 1 ..< 7 {
+                    if prev == result[week * 7 + day][order]?.first {
+                        cnt += 1
+                    } else {
+                        result_[week][order].append((cnt, prev))
+                        cnt = 1
+                    }
+                    prev = result[week * 7 + day][order]?.first
+                }
+                result_[week][order].append((cnt, prev))
+            }
+        }
+
+        return (result, result_)
     }
 }
