@@ -96,15 +96,26 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func fetchTodoListByTag(tag: Tag) {
-        todoService.fetchTodoListByTag(tag: tag) { result in
-            switch result {
-            case let .success(success):
-                withAnimation {
-                    self.todoListByTag = success.todos
-                    self.todoListByCompleted = success.completedTodos
+        if tag.id == "중요" {
+            fetchTodoListByFlag()
+        } else if tag.id == "미분류" {
+            fetchTodoListWithoutTag()
+        } else if tag.id == "완료" {
+            // FIXME: - 페이지네이션 함수로 호출 해야함
+            fetchTodoListByCompletedInMain()
+        } else if tag.id == "하루" {
+            fetchTodoListByTodayTodoAndUntilToday()
+        } else {
+            todoService.fetchTodoListByTag(tag: tag) { result in
+                switch result {
+                case let .success(success):
+                    withAnimation {
+                        self.todoListByTag = success.todos
+                        self.todoListByCompleted = success.completedTodos
+                    }
+                case let .failure(failure):
+                    print("[Debug] \(failure) (\(#fileID), \(#function))")
                 }
-            case let .failure(failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function))")
             }
         }
     }
@@ -219,6 +230,29 @@ final class CheckListViewModel: ObservableObject {
             todoListWithAnyTag: todoListWithAnyTag,
             todoListWithoutTag: todoListWithoutTag,
             todoListByCompleted: todoListByCompleted
+        )
+    }
+
+    func updateOrderHaru() {
+        todoService.updateOrderHaru(
+            todoListByFlagWithToday: todoListByFlagWithToday,
+            todoListByTodayTodo: todoListByTodayTodo,
+            todoListByUntilToday: todoListByUntilToday
+        )
+    }
+
+    func updateOrderFlag() {
+        todoService.updateOrderFlag(todoListByFlag: todoListByFlag)
+    }
+
+    func updateOrderWithoutTag() {
+        todoService.updateOrderWithoutTag(todoListWithoutTag: todoListWithoutTag)
+    }
+
+    func updateOrderByTag(tagId: String) {
+        todoService.updateOrderByTag(
+            tagId: tagId,
+            todoListByTag: todoListByTag
         )
     }
 

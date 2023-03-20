@@ -375,6 +375,133 @@ struct TodoService {
         }
     }
 
+    func updateOrderHaru(
+        todoListByFlagWithToday: [Todo],
+        todoListByTodayTodo: [Todo],
+        todoListByUntilToday: [Todo]
+    ) {
+        var todoIds: [String] = []
+        todoIds = todoListByFlagWithToday.map { $0.id } +
+            todoListByTodayTodo.map { $0.id } +
+            todoListByUntilToday.map { $0.id }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: [String: Any] = [
+            "todoIds": todoIds,
+        ]
+
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/order/todos/today",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                break
+            case let .failure(error):
+                print("[Debug] \(error) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
+    func updateOrderFlag(
+        todoListByFlag: [Todo]
+    ) {
+        var todoIds: [String] = todoListByFlag.map { $0.id }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: [String: Any] = [
+            "todoIds": todoIds,
+        ]
+
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/order/todos",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                break
+            case let .failure(error):
+                print("[Debug] \(error) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
+    func updateOrderWithoutTag(
+        todoListWithoutTag: [Todo]
+    ) {
+        let todoIds: [String] = todoListWithoutTag.map { $0.id }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: [String: Any] = [
+            "todoIds": todoIds,
+        ]
+
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/order/todos",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                break
+            case let .failure(error):
+                print("[Debug] \(error) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
+    func updateOrderByTag(
+        tagId: String,
+        todoListByTag: [Todo]
+    ) {
+        let todoIds: [String] = todoListByTag.map { $0.id }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: [String: Any] = [
+            "tagId": tagId,
+            "todoIds": todoIds,
+        ]
+
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/order/todos/tag",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                break
+            case let .failure(error):
+                print("[Debug] \(error) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
     // MARK: - Todo Delete API
 
     func deleteTodo(

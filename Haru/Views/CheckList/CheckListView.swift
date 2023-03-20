@@ -138,6 +138,7 @@ struct CheckListView: View {
                                                     subTodo: subTodo
                                                 )
                                             }
+                                            .moveDisabled(true)
                                             .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                         .onMove(perform: { indexSet, index in
@@ -207,8 +208,8 @@ struct CheckListView: View {
                                                     subTodo: subTodo
                                                 )
                                             }
-                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                             .moveDisabled(true)
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                         .onMove(perform: { indexSet, index in
                                             viewModel.todoListWithAnyTag.move(fromOffsets: indexSet, toOffset: index)
@@ -267,8 +268,8 @@ struct CheckListView: View {
                                                     subTodo: subTodo
                                                 )
                                             }
-                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                             .moveDisabled(true)
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                         .onMove(perform: { indexSet, index in
                                             viewModel.todoListWithoutTag.move(fromOffsets: indexSet, toOffset: index)
@@ -296,6 +297,72 @@ struct CheckListView: View {
                             } else {
                                 if let tag = viewModel.selectedTag {
                                     if tag.id == "하루" {
+                                        Section {
+                                            if !viewModel.todoListByFlagWithToday.isEmpty {
+                                                ForEach(viewModel.todoListByFlagWithToday) { todo in
+                                                    TodoView(
+                                                        checkListViewModel: viewModel,
+                                                        todo: todo
+                                                    ).overlay {
+                                                        NavigationLink {
+                                                            TodoAddView(viewModel: addViewModel)
+                                                                .onAppear {
+                                                                    withAnimation {
+                                                                        addViewModel.applyTodoData(todo: todo)
+                                                                        addViewModel.mode = .edit
+                                                                        addViewModel.todoId = todo.id
+                                                                    }
+                                                                }
+                                                        } label: {
+                                                            EmptyView()
+                                                        }
+                                                        .opacity(0)
+                                                    }
+
+                                                    ForEach(todo.subTodos) { subTodo in
+                                                        SubTodoView(
+                                                            checkListViewModel: viewModel,
+                                                            todo: todo,
+                                                            subTodo: subTodo
+                                                        )
+                                                    }
+                                                    .moveDisabled(true)
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                                }
+                                                .onMove(perform: { indexSet, index in
+                                                    viewModel.todoListByFlagWithToday.move(fromOffsets: indexSet, toOffset: index)
+                                                    viewModel.updateOrderHaru()
+                                                })
+                                                .listRowBackground(Color.white)
+                                            } else {
+                                                EmptyText()
+                                            }
+                                        } header: {
+                                            HStack {
+                                                Image(systemName: "star.fill")
+                                                    .foregroundStyle(
+                                                        LinearGradient(
+                                                            gradient: Gradient(
+                                                                colors: [Constants.gradientEnd,
+                                                                         Constants.gradientStart]),
+                                                            startPoint: .topLeading,
+                                                            endPoint: .bottomTrailing
+                                                        )
+                                                    )
+                                                    .padding(.leading, 20)
+                                                Spacer()
+                                            }
+                                            .padding(.vertical, 5)
+                                            .listRowInsets(EdgeInsets(
+                                                top: 0,
+                                                leading: 0,
+                                                bottom: 1,
+                                                trailing: 0
+                                            ))
+                                            .background(.white)
+                                        }
+                                        .listRowSeparator(.hidden)
+
                                         Section {
                                             if !viewModel.todoListByTodayTodo.isEmpty {
                                                 ForEach(viewModel.todoListByTodayTodo) { todo in
@@ -325,9 +392,13 @@ struct CheckListView: View {
                                                             subTodo: subTodo
                                                         )
                                                     }
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                     .moveDisabled(true)
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
+                                                .onMove(perform: { indexSet, index in
+                                                    viewModel.todoListByTodayTodo.move(fromOffsets: indexSet, toOffset: index)
+                                                    viewModel.updateOrderHaru()
+                                                })
                                                 .listRowBackground(Color.white)
                                             } else {
                                                 EmptyText()
@@ -381,9 +452,13 @@ struct CheckListView: View {
                                                             subTodo: subTodo
                                                         )
                                                     }
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                     .moveDisabled(true)
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
+                                                .onMove(perform: { indexSet, index in
+                                                    viewModel.todoListByUntilToday.move(fromOffsets: indexSet, toOffset: index)
+                                                    viewModel.updateOrderHaru()
+                                                })
                                                 .listRowBackground(Color.white)
                                             } else {
                                                 EmptyText()
@@ -437,9 +512,13 @@ struct CheckListView: View {
                                                             subTodo: subTodo
                                                         )
                                                     }
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                     .moveDisabled(true)
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
+                                                .onMove(perform: { indexSet, index in
+                                                    viewModel.todoListByFlag.move(fromOffsets: indexSet, toOffset: index)
+                                                    viewModel.updateOrderFlag()
+                                                })
                                                 .listRowBackground(Color.white)
                                             } else {
                                                 EmptyText()
@@ -499,9 +578,13 @@ struct CheckListView: View {
                                                             subTodo: subTodo
                                                         )
                                                     }
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                     .moveDisabled(true)
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
+                                                .onMove(perform: { indexSet, index in
+                                                    viewModel.todoListWithoutTag.move(fromOffsets: indexSet, toOffset: index)
+                                                    viewModel.updateOrderWithoutTag()
+                                                })
                                                 .listRowBackground(Color.white)
                                             } else {
                                                 EmptyText()
@@ -552,9 +635,13 @@ struct CheckListView: View {
                                                             subTodo: subTodo
                                                         )
                                                     }
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                     .moveDisabled(true)
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
+                                                .onMove(perform: { indexSet, index in
+                                                    viewModel.todoListByTag.move(fromOffsets: indexSet, toOffset: index)
+                                                    viewModel.updateOrderByTag(tagId: tag.id)
+                                                })
                                                 .listRowBackground(Color.white)
                                             } else {
                                                 EmptyText()
