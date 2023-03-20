@@ -132,7 +132,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodayTodoList(
+    func fetchTodoListByTodayTodoAndUntilToday(
         today: Date,
         completion: @escaping (Result<(todayTodos: [Todo], endDateTodos: [Todo]), Error>) -> Void
     ) {
@@ -167,7 +167,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListWithFlagInMain(
+    func fetchTodoListByFlag(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -188,7 +188,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListWithTagInMain(
+    func fetchTodoListWithAnyTag(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -209,7 +209,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListWithoutTagInMain(
+    func fetchTodoListWithoutTag(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -219,7 +219,7 @@ struct TodoService {
 
         AF.request(
             TodoService.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/tag"
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/untag"
         ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -230,7 +230,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListWithCompletedInMain(
+    func fetchTodoListByCompletedInMain(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -240,7 +240,7 @@ struct TodoService {
 
         AF.request(
             TodoService.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/tag"
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/completed"
         ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -251,13 +251,18 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListWithTag(
+    func fetchTodoListByTag(
         tag: Tag,
-        completion: @escaping (Result<[Todo], Error>) -> Void
+        completion: @escaping (Result<(todos: [Todo], completedTodos: [Todo]), Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
-            let data: [Todo]
+            let data: Data
+
+            struct Data: Codable {
+                let todos: [Todo]
+                let completedTodos: [Todo]
+            }
         }
 
         AF.request(
@@ -266,7 +271,8 @@ struct TodoService {
         ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
             switch response.result {
             case let .success(response):
-                completion(.success(response.data))
+                let data = response.data
+                completion(.success((todos: data.todos, completedTodos: data.completedTodos)))
             case let .failure(error):
                 completion(.failure(error))
             }

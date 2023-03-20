@@ -98,14 +98,12 @@ struct CheckListView: View {
                     }
 
                     // 체크 리스트
-                    if viewModel.todoList.count > 0 {
+                    if !viewModel.isEmpty {
                         List {
                             if viewModel.selectedTag == nil {
                                 Section {
-                                    if let todoList = viewModel.filterTodoByFlag(),
-                                       !todoList.isEmpty
-                                    {
-                                        ForEach(todoList) { todo in
+                                    if !viewModel.todoListByFlag.isEmpty {
+                                        ForEach(viewModel.todoListByFlag) { todo in
                                             TodoView(
                                                 checkListViewModel: viewModel,
                                                 todo: todo
@@ -169,10 +167,8 @@ struct CheckListView: View {
                                     .listRowInsets(EdgeInsets())
 
                                 Section {
-                                    if let todoList = viewModel.filterTodoByHasAnyTag(),
-                                       !todoList.isEmpty
-                                    {
-                                        ForEach(todoList) { todo in
+                                    if !viewModel.todoListWithAnyTag.isEmpty {
+                                        ForEach(viewModel.todoListWithAnyTag) { todo in
                                             TodoView(
                                                 checkListViewModel: viewModel,
                                                 todo: todo
@@ -227,10 +223,8 @@ struct CheckListView: View {
                                     .listRowInsets(EdgeInsets())
 
                                 Section {
-                                    if let todoList = viewModel.filterTodoByWithoutTag(),
-                                       !todoList.isEmpty
-                                    {
-                                        ForEach(todoList) { todo in
+                                    if !viewModel.todoListWithoutTag.isEmpty {
+                                        ForEach(viewModel.todoListWithoutTag) { todo in
                                             TodoView(
                                                 checkListViewModel: viewModel,
                                                 todo: todo
@@ -283,10 +277,8 @@ struct CheckListView: View {
                                 if let tag = viewModel.selectedTag {
                                     if tag.id == "하루" {
                                         Section {
-                                            if let todoList = viewModel.filterTodoByTodayTodo(),
-                                               !todoList.isEmpty
-                                            {
-                                                ForEach(todoList) { todo in
+                                            if !viewModel.todoListByTodayTodo.isEmpty {
+                                                ForEach(viewModel.todoListByTodayTodo) { todo in
                                                     TodoView(
                                                         checkListViewModel: viewModel,
                                                         todo: todo
@@ -341,10 +333,8 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
 
                                         Section {
-                                            if let todoList = viewModel.filterTodoByTodayEndDate(),
-                                               !todoList.isEmpty
-                                            {
-                                                ForEach(todoList) { todo in
+                                            if !viewModel.todoListByUntilToday.isEmpty {
+                                                ForEach(viewModel.todoListByUntilToday) { todo in
                                                     TodoView(
                                                         checkListViewModel: viewModel,
                                                         todo: todo
@@ -399,10 +389,8 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
                                     } else if tag.id == "중요" {
                                         Section {
-                                            if let todoList = viewModel.filterTodoByFlag(),
-                                               !todoList.isEmpty
-                                            {
-                                                ForEach(todoList) { todo in
+                                            if !viewModel.todoListByFlag.isEmpty {
+                                                ForEach(viewModel.todoListByFlag) { todo in
                                                     TodoView(
                                                         checkListViewModel: viewModel,
                                                         todo: todo
@@ -463,10 +451,8 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
                                     } else if tag.id == "미분류" {
                                         Section {
-                                            if let todoList = viewModel.filterTodoByWithoutTag(),
-                                               !todoList.isEmpty
-                                            {
-                                                ForEach(todoList) { todo in
+                                            if !viewModel.todoListWithoutTag.isEmpty {
+                                                ForEach(viewModel.todoListWithoutTag) { todo in
                                                     TodoView(
                                                         checkListViewModel: viewModel,
                                                         todo: todo
@@ -518,10 +504,8 @@ struct CheckListView: View {
                                         .listRowSeparator(.hidden)
                                     } else {
                                         Section {
-                                            if let todoList = viewModel.filterTodoByTag(),
-                                               !todoList.isEmpty
-                                            {
-                                                ForEach(todoList) { todo in
+                                            if !viewModel.todoListByTag.isEmpty {
+                                                ForEach(viewModel.todoListByTag) { todo in
                                                     TodoView(
                                                         checkListViewModel: viewModel,
                                                         todo: todo

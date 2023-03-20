@@ -95,7 +95,7 @@ final class TodoAddViewModel: ObservableObject {
             todayTodo: isTodayTodo,
             flag: flag,
             endDate: selectedEndDate,
-            endDateTime: selectedEndDateTime,
+            isSelectedEndDateTime: isSelectedEndDateTime,
             alarms: selectedAlarm,
             repeatOption: !isSelectedRepeat ? nil : repeatOption.rawValue,
             repeatValue: repeatValue,

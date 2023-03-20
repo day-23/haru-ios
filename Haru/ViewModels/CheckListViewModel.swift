@@ -11,12 +11,44 @@ import SwiftUI
 final class CheckListViewModel: ObservableObject {
     //  MARK: - Properties
 
-    private let todoService: TodoService = .init()
     private let tagService: TagService = .init()
+    private let todoService: TodoService = .init()
 
-    @Published var todoList: [Todo] = []
+    @Published var selectedTag: Tag? = nil {
+        didSet {
+            if let tag = selectedTag {
+                if tag.id != "하루" &&
+                    tag.id != "중요" &&
+                    tag.id != "미분류" &&
+                    tag.id != "완료"
+                {
+                    withAnimation {
+                        fetchTodoListByTag(tag: tag)
+                    }
+                }
+            }
+        }
+    }
+
     @Published var tagList: [Tag] = []
-    @Published var selectedTag: Tag? = nil
+
+    @Published var todoListByTag: [Todo] = []
+    @Published var todoListByFlag: [Todo] = []
+    @Published var todoListByCompleted: [Todo] = []
+    @Published var todoListByTodayTodo: [Todo] = []
+    @Published var todoListByUntilToday: [Todo] = []
+    @Published var todoListWithAnyTag: [Todo] = []
+    @Published var todoListWithoutTag: [Todo] = []
+
+    var isEmpty: Bool {
+        return (todoListByTag.isEmpty &&
+            todoListByFlag.isEmpty &&
+            todoListByCompleted.isEmpty &&
+            todoListByTodayTodo.isEmpty &&
+            todoListByUntilToday.isEmpty &&
+            todoListWithAnyTag.isEmpty &&
+            todoListWithoutTag.isEmpty)
+    }
 
     //  MARK: - Methods
 
@@ -40,24 +72,7 @@ final class CheckListViewModel: ObservableObject {
         todoService.addTodo(todo: todo) { result in
             switch result {
             case let .success(todo):
-                self.todoList.insert(
-                    Todo(id: todo.id,
-                         content: todo.content,
-                         memo: todo.memo,
-                         todayTodo: todo.todayTodo,
-                         flag: todo.flag,
-                         repeatOption: todo.repeatOption,
-                         repeatValue: todo.repeatValue,
-                         alarms: todo.alarms,
-                         endDate: todo.endDate,
-                         endDateTime: todo.endDateTime,
-                         todoOrder: todo.todoOrder,
-                         completed: todo.completed,
-                         subTodos: todo.subTodos,
-                         tags: todo.tags,
-                         createdAt: Date()),
-                    at: 0
-                )
+                self.fetchTodoList()
                 completion(.success(todo))
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
@@ -67,29 +82,96 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func fetchTodoList() {
-        todoService.fetchTodoList { result in
+        // FIXME: - fix to Fetch All todos API
+        if let selectedTag = selectedTag {
+            fetchTodoListByTag(tag: selectedTag)
+        }
+        fetchTodoListByFlag()
+        fetchTodoListByCompletedInMain()
+        fetchTodoListByTodayTodoAndUntilToday()
+        fetchTodoListWithAnyTag()
+        fetchTodoListWithoutTag()
+    }
+
+    func fetchTodoListByTag(tag: Tag) {
+        todoService.fetchTodoListByTag(tag: tag) { result in
             switch result {
-            case let .success(todoList):
+            case let .success(success):
                 withAnimation {
-                    self.todoList = todoList
+                    self.todoListByTag = success.todos
+                    self.todoListByCompleted = success.completedTodos
                 }
-            case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function)")
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
             }
         }
     }
 
-    func fetchTodayTodoList() {}
+    func fetchTodoListByFlag() {
+        todoService.fetchTodoListByFlag { result in
+            switch result {
+            case let .success(success):
+                withAnimation {
+                    self.todoListByFlag = success
+                }
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+            }
+        }
+    }
 
-    func fetchTodoListWithAnyTag() {}
+    func fetchTodoListByCompletedInMain() {
+        todoService.fetchTodoListByCompletedInMain { result in
+            switch result {
+            case let .success(success):
+                withAnimation {
+                    self.todoListByCompleted = success
+                }
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+            }
+        }
+    }
 
-    func fetchTodoListWithTag(tag: Tag) {}
+    func fetchTodoListByTodayTodoAndUntilToday() {
+        todoService.fetchTodoListByTodayTodoAndUntilToday(today: .now) { result in
+            switch result {
+            case let .success(success):
+                withAnimation {
+                    self.todoListByTodayTodo = success.todayTodos
+                    self.todoListByUntilToday = success.endDateTodos
+                }
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function)")
+            }
+        }
+    }
 
-    func fetchTodoListWithFlag() {}
+    func fetchTodoListWithAnyTag() {
+        todoService.fetchTodoListWithAnyTag { result in
+            switch result {
+            case let .success(success):
+                withAnimation {
+                    self.todoListWithAnyTag = success
+                }
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+            }
+        }
+    }
 
-    func fetchTodoListWithoutTag() {}
-
-    func fetchTodoListWithCompleted() {}
+    func fetchTodoListWithoutTag() {
+        todoService.fetchTodoListWithAnyTag { result in
+            switch result {
+            case let .success(success):
+                withAnimation {
+                    self.todoListWithoutTag = success
+                }
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+            }
+        }
+    }
 
     func updateTodo(
         todoId: String,
@@ -112,36 +194,12 @@ final class CheckListViewModel: ObservableObject {
         todo: Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        guard let index = todoList.firstIndex(where: { $0.id == todo.id })
-        else {
-            print("[Debug] Todo를 찾지 못했습니다. (\(#fileID), \(#function))")
-            return
-        }
-
         todoService.updateFlag(todoId: todo.id,
                                flag: !todo.flag) { result in
             switch result {
             case let .success(success):
                 withAnimation(.easeOut(duration: 0.25)) {
-                    self.todoList[index] = Todo(
-                        id: todo.id,
-                        content: todo.content,
-                        memo: todo.memo,
-                        todayTodo: todo.todayTodo,
-                        flag: !todo.flag,
-                        repeatOption: todo.repeatOption,
-                        repeatValue: todo.repeatValue,
-                        alarms: todo.alarms,
-                        endDate: todo.endDate,
-                        endDateTime: todo.endDateTime,
-                        todoOrder: todo.todoOrder,
-                        completed: todo.completed,
-                        subTodos: todo.subTodos,
-                        tags: todo.tags,
-                        createdAt: todo.createdAt,
-                        updatedAt: todo.updatedAt,
-                        deletedAt: todo.deletedAt
-                    )
+                    self.fetchTodoList()
                 }
                 completion(.success(success))
             case let .failure(error):
@@ -177,39 +235,5 @@ final class CheckListViewModel: ObservableObject {
                 completion(.failure(error))
             }
         }
-    }
-
-    //  MARK: - TodoList 분류하는 함수 (API 이용 fetch가 아닙니다.) - Deprecated on 2023/03/20.
-
-    func filterTodoByTag() -> [Todo] {
-        return todoList
-            .filter { $0.tags.contains { $0.id == self.selectedTag?.id } }
-    }
-
-    func filterTodoByFlag() -> [Todo] {
-        return todoList.filter { $0.flag }
-    }
-
-    func filterTodoByHasAnyTag() -> [Todo] {
-        return todoList.filter { !$0.tags.isEmpty && !$0.flag }
-    }
-
-    func filterTodoByWithoutTag() -> [Todo] {
-        return todoList.filter { $0.tags.isEmpty && !$0.flag }
-    }
-
-    func filterTodoByTodayTodoOrTodayEndDate() -> [Todo] {
-        return todoList.filter {
-            $0.todayTodo || $0.endDate?
-                .compare(Date.now) == .orderedAscending
-        }
-    }
-
-    func filterTodoByTodayTodo() -> [Todo] {
-        return todoList.filter { $0.todayTodo }
-    }
-
-    func filterTodoByTodayEndDate() -> [Todo] {
-        return todoList.filter { $0.endDate?.compare(Date.now) == .orderedAscending }
     }
 }
