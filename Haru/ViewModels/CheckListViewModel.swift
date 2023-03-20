@@ -20,16 +20,15 @@ final class CheckListViewModel: ObservableObject {
 
     //  MARK: - Methods
 
-    func fetchTags(
-        completion: @escaping (Result<[Tag], Error>) -> Void
-    ) {
+    func fetchTags() {
         tagService.fetchTags { result in
             switch result {
             case let .success(tagList):
-                self.tagList = tagList
-                completion(.success(tagList))
+                withAnimation {
+                    self.tagList = tagList
+                }
             case let .failure(error):
-                completion(.failure(error))
+                print("[Debug]: \(error) (\(#fileID), \(#function))")
             }
         }
     }
@@ -61,35 +60,30 @@ final class CheckListViewModel: ObservableObject {
                 )
                 completion(.success(todo))
             case let .failure(error):
-                print(
-                    "[Debug] \(error) (\(#fileID), \(#function))"
-                )
+                print("[Debug] \(error) (\(#fileID), \(#function))")
                 completion(.failure(error))
             }
         }
     }
 
-    func fetchTodoList(
-        completion: @escaping (Result<[Todo], Error>) -> Void
-    ) {
+    func fetchTodoList() {
         todoService.fetchTodoList { result in
             switch result {
             case let .success(todoList):
                 withAnimation {
                     self.todoList = todoList
                 }
-                completion(.success(todoList))
             case let .failure(error):
-                completion(.failure(error))
+                print("[Debug] \(error) (\(#fileID), \(#function)")
             }
         }
     }
 
-    func fetchTodayTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {}
+    func fetchTodayTodoList() {}
 
     func fetchTodoListWithAnyTag() {}
 
-    func fetchTodoListWithTag(tag: Tag, completion: @escaping (Result<[Todo], Error>) -> Void) {}
+    func fetchTodoListWithTag(tag: Tag) {}
 
     func fetchTodoListWithFlag() {}
 
@@ -102,13 +96,11 @@ final class CheckListViewModel: ObservableObject {
         todo: Request.Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        debugPrint(todo)
-
         todoService.updateTodo(todoId: todoId,
                                todo: todo) { result in
             switch result {
             case .success:
-                self.fetchTodoList { _ in }
+                self.fetchTodoList()
                 completion(.success(true))
             case let .failure(failure):
                 completion(.failure(failure))

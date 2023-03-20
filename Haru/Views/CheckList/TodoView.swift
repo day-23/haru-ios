@@ -103,7 +103,7 @@ struct TodoView: View {
         .contextMenu {
             Button(action: {
                 checkListViewModel.deleteTodo(todo: todo) { _ in
-                    checkListViewModel.fetchTodoList { _ in }
+                    checkListViewModel.fetchTodoList()
                 }
             }, label: {
                 Label("Delete", systemImage: "trash")

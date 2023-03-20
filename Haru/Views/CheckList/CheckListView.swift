@@ -664,8 +664,8 @@ struct CheckListView: View {
         .onAppear {
             isModalVisible = false
             viewModel.selectedTag = nil
-            viewModel.fetchTodoList { _ in }
-            viewModel.fetchTags { _ in }
+            viewModel.fetchTodoList()
+            viewModel.fetchTags()
         }
     }
 }

@@ -32,7 +32,7 @@ struct SubTodoView: View {
         .contextMenu {
             Button(action: {
                 checkListViewModel.deleteSubTodo(todo: todo, subTodo: subTodo) { _ in
-                    checkListViewModel.fetchTodoList { _ in }
+                    checkListViewModel.fetchTodoList()
                 }
             }, label: {
                 Label("Delete", systemImage: "trash")
