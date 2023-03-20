@@ -43,20 +43,24 @@ struct CheckListView: View {
                                     endPoint: .bottomTrailing
                                 ))
                                 .onTapGesture {
-                                    viewModel.selectedTag = Tag(
-                                        id: "중요",
-                                        content: "중요"
-                                    )
+                                    withAnimation {
+                                        viewModel.selectedTag = Tag(
+                                            id: "중요",
+                                            content: "중요"
+                                        )
+                                    }
                                     initialOffset = nil
                                 }
 
                             // 미분류 태그
                             TagView(Tag(id: "미분류", content: "미분류"))
                                 .onTapGesture {
-                                    viewModel.selectedTag = Tag(
-                                        id: "미분류",
-                                        content: "미분류"
-                                    )
+                                    withAnimation {
+                                        viewModel.selectedTag = Tag(
+                                            id: "미분류",
+                                            content: "미분류"
+                                        )
+                                    }
                                     initialOffset = nil
                                 }
 
@@ -66,7 +70,9 @@ struct CheckListView: View {
                             ForEach(viewModel.tagList) { tag in
                                 TagView(tag)
                                     .onTapGesture {
-                                        viewModel.selectedTag = tag
+                                        withAnimation {
+                                            viewModel.selectedTag = tag
+                                        }
                                         initialOffset = nil
                                     }
                             }
@@ -93,7 +99,9 @@ struct CheckListView: View {
                         )
                     )
                     .onTapGesture {
-                        viewModel.selectedTag = Tag(id: "하루", content: "하루")
+                        withAnimation {
+                            viewModel.selectedTag = Tag(id: "하루", content: "하루")
+                        }
                         initialOffset = nil
                     }
 
@@ -132,6 +140,10 @@ struct CheckListView: View {
                                             }
                                             .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
+                                        .onMove(perform: { indexSet, index in
+                                            viewModel.todoListByFlag.move(fromOffsets: indexSet, toOffset: index)
+                                            viewModel.updateOrderMain()
+                                        })
                                         .listRowBackground(Color.white)
                                     } else {
                                         EmptyText()
@@ -198,6 +210,10 @@ struct CheckListView: View {
                                             .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                             .moveDisabled(true)
                                         }
+                                        .onMove(perform: { indexSet, index in
+                                            viewModel.todoListWithAnyTag.move(fromOffsets: indexSet, toOffset: index)
+                                            viewModel.updateOrderMain()
+                                        })
                                         .listRowBackground(Color.white)
                                     } else {
                                         EmptyText()
@@ -254,6 +270,10 @@ struct CheckListView: View {
                                             .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                             .moveDisabled(true)
                                         }
+                                        .onMove(perform: { indexSet, index in
+                                            viewModel.todoListWithoutTag.move(fromOffsets: indexSet, toOffset: index)
+                                            viewModel.updateOrderMain()
+                                        })
                                         .listRowBackground(Color.white)
                                     } else {
                                         EmptyText()

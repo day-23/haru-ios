@@ -86,7 +86,7 @@ final class TodoAddViewModel: ObservableObject {
         self.mode = mode
     }
 
-    // MARK: - Methods
+    //  MARK: - Create
 
     private func createTodoData() -> Request.Todo {
         return Request.Todo(
@@ -120,6 +120,12 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
+    func createSubTodo() {
+        subTodoList.append(SubTodo(id: UUID().uuidString, content: ""))
+    }
+
+    //  MARK: - Update
+
     func updateTodo(
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -139,14 +145,6 @@ final class TodoAddViewModel: ObservableObject {
                 completion(.failure(failure))
             }
         }
-    }
-
-    func createSubTodo() {
-        subTodoList.append(SubTodo(id: UUID().uuidString, content: ""))
-    }
-
-    func removeSubTodo(index: Int) {
-        subTodoList.remove(at: index)
     }
 
     func onChangeTag(_: String) {
@@ -273,6 +271,12 @@ final class TodoAddViewModel: ObservableObject {
         initRepeatYear(todo: todo)
 
         memo = todo.memo
+    }
+
+    //  MARK: - Remove
+
+    func removeSubTodo(index: Int) {
+        subTodoList.remove(at: index)
     }
 
     func clear() {

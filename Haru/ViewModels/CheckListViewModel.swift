@@ -22,9 +22,7 @@ final class CheckListViewModel: ObservableObject {
                     tag.id != "미분류" &&
                     tag.id != "완료"
                 {
-                    withAnimation {
-                        fetchTodoListByTag(tag: tag)
-                    }
+                    fetchTodoListByTag(tag: tag)
                 }
             }
         }
@@ -52,20 +50,7 @@ final class CheckListViewModel: ObservableObject {
             todoListWithoutTag.isEmpty)
     }
 
-    //  MARK: - Methods
-
-    func fetchTags() {
-        tagService.fetchTags { result in
-            switch result {
-            case let .success(tagList):
-                withAnimation {
-                    self.tagList = tagList
-                }
-            case let .failure(error):
-                print("[Debug]: \(error) (\(#fileID), \(#function))")
-            }
-        }
-    }
+    //  MARK: - Create
 
     func addTodo(
         todo: Request.Todo,
@@ -79,6 +64,21 @@ final class CheckListViewModel: ObservableObject {
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
                 completion(.failure(error))
+            }
+        }
+    }
+
+    //  MARK: - Read
+
+    func fetchTags() {
+        tagService.fetchTags { result in
+            switch result {
+            case let .success(tagList):
+                withAnimation {
+                    self.tagList = tagList
+                }
+            case let .failure(error):
+                print("[Debug]: \(error) (\(#fileID), \(#function))")
             }
         }
     }
@@ -164,7 +164,7 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func fetchTodoListWithoutTag() {
-        todoService.fetchTodoListWithAnyTag { result in
+        todoService.fetchTodoListWithoutTag { result in
             switch result {
             case let .success(success):
                 withAnimation {
@@ -175,6 +175,8 @@ final class CheckListViewModel: ObservableObject {
             }
         }
     }
+
+    //  MARK: - Update
 
     func updateTodo(
         todoId: String,
@@ -210,6 +212,17 @@ final class CheckListViewModel: ObservableObject {
             }
         }
     }
+
+    func updateOrderMain() {
+        todoService.updateOrderMain(
+            todoListByFlag: todoListByFlag,
+            todoListWithAnyTag: todoListWithAnyTag,
+            todoListWithoutTag: todoListWithoutTag,
+            todoListByCompleted: todoListByCompleted
+        )
+    }
+
+    // MARK: - Delete
 
     func deleteTodo(
         todo: Todo,
