@@ -53,4 +53,9 @@ struct Request: Codable {
             try container.encode(self.repeatMonth, forKey: Request.Schedule.CodingKeys.repeatMonth)
         }
     }
+    
+    struct Category: Codable {
+        var content: String
+        var color: String?
+    }
 }

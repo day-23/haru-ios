@@ -26,7 +26,7 @@ struct CalendarDateItem: View {
                         .opacity(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 1 : 0)
 
                     Text("\(value.day)")
-                        .font(.title3.bold())
+                        .font(Font.custom(Constants.Regular, size: 14))
                         .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .white : .primary)
                 }
 
@@ -38,7 +38,7 @@ struct CalendarDateItem: View {
                         .opacity(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 1 : 0)
 
                     Text("\(value.day)")
-                        .font(.title3.bold())
+                        .font(Font.custom(Constants.Regular, size: 14))
                         .foregroundColor(Color.gray)
                 }
             }

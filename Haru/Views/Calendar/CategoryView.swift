@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct CategoryView: View {
-    @Binding var categoryList: [Category]
+    @StateObject var scheduleFormVM: ScheduleFormViewModel
+
     @Binding var selectionCategory: Int?
+
+    @State var showCategoryForm: Bool = false
 
     var body: some View {
         VStack {
@@ -25,7 +28,7 @@ struct CategoryView: View {
             ScrollView {
                 VStack(alignment: .leading) {
                     Group {
-                        ForEach(Array(categoryList.enumerated()),
+                        ForEach(Array(scheduleFormVM.categoryList.enumerated()),
                                 id: \.offset) { index, category in
                             HStack {
                                 if selectionCategory == index {
@@ -55,8 +58,14 @@ struct CategoryView: View {
                             Divider()
                         }
 
+                        if showCategoryForm {
+                            CategoryFormView(scheduleFormVM: scheduleFormVM, showCategoryForm: $showCategoryForm)
+                        }
+
                         Button {
-                            print("plus category")
+                            withAnimation {
+                                showCategoryForm = true
+                            }
                         } label: {
                             HStack {
                                 Image(systemName: "plus")
@@ -77,15 +86,15 @@ struct CategoryView: View {
     }
 }
 
-struct CategoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        CategoryView(
-            categoryList: .constant([
-                Category(id: UUID().uuidString, content: "집"),
-                Category(id: UUID().uuidString, content: "학교"),
-                Category(id: UUID().uuidString, content: "친구"),
-            ]),
-            selectionCategory: .constant(nil)
-        )
-    }
-}
+// struct CategoryView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CategoryView(
+//            categoryList: .constant([
+//                Category(id: UUID().uuidString, content: "집"),
+//                Category(id: UUID().uuidString, content: "학교"),
+//                Category(id: UUID().uuidString, content: "친구"),
+//            ]),
+//            selectionCategory: .constant(nil)
+//        )
+//    }
+// }

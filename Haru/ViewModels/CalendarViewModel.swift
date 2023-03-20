@@ -10,11 +10,11 @@ import SwiftUI
 
 final class CalendarViewModel: ObservableObject {
     // 현재 달력에 보여질 일정들만 모은 자료구조
-    @Published var scheduleList: [[Int: Schedule]] = [[:]]
+    @Published var scheduleList: [[Int: [Schedule]]] = [[:]] // 원소 개수 == dateList의 개수
 
-    @Published var startOnSunday: Bool
+    @Published var startOnSunday: Bool = true
     
-    @Published var monthOffest: Int // 진짜 월과의 차이
+    @Published var monthOffest: Int = 0 // 진짜 월과의 차이
     
     @Published var selectedDate: DateValue // 터치해서 선택된 날짜
     
@@ -31,21 +31,25 @@ final class CalendarViewModel: ObservableObject {
     var startIndex: Int = 0
     var lastIndex: Int = 0
     
-    
     @Published var categoryList: [Category] = []
     
     private let scheduleService = ScheduleService()
     private let categoryService = CategoryService()
     
     init() {
-        startOnSunday = true
-        monthOffest = 0
         selectedDate = .init(day: Date().day, date: Date())
         
         setStartOnSunday(startOnSunday)
         getCategoryList()
+        
+        print("calendarVM init")
     }
 
+    func setMonthOffset(_ offset: Int) {
+        monthOffest = offset
+        getCurDateList(monthOffest, startOnSunday)
+    }
+    
     func addMonthOffset() {
         monthOffest += 1
         getCurDateList(monthOffest, startOnSunday)
@@ -73,7 +77,7 @@ final class CalendarViewModel: ObservableObject {
     }
 
     func getCurMonthSchList(_ monthOffset: Int, _ dateList: [DateValue]) {
-        scheduleList = [[Int: Schedule]](repeating: [:], count: dateList.count)
+        scheduleList = [[Int: [Schedule]]](repeating: [:], count: dateList.count)
         scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
             switch result {
             case .success(let success):
@@ -137,5 +141,16 @@ final class CalendarViewModel: ObservableObject {
                 print("[Debug] \(failure)")
             }
         }
+    }
+    
+    // 선택된 날의 스케줄
+    func getSelectedScheduleList(_ selectedIndex: Int) -> [Schedule] {
+        var result = [Schedule]()
+        
+        scheduleList[selectedIndex].forEach { key, value in
+            result.append(contentsOf: value)
+        }
+        
+        return result
     }
 }

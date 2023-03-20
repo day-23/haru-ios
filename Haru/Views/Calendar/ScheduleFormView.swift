@@ -59,7 +59,7 @@ struct ScheduleFormView: View {
                         }
                         .popup(isPresented: $showCategorySheet) {
                             CategoryView(
-                                categoryList: $scheduleFormVM.categoryList,
+                                scheduleFormVM: scheduleFormVM,
                                 selectionCategory: $idx
                             )
                             .background(Color.white)
@@ -87,7 +87,7 @@ struct ScheduleFormView: View {
                         }
                         .popup(isPresented: $showCategorySheet) {
                             CategoryView(
-                                categoryList: $scheduleFormVM.categoryList,
+                                scheduleFormVM: scheduleFormVM,
                                 selectionCategory: $idx
                             )
                             .background(Color.white)
