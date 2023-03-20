@@ -31,7 +31,7 @@ struct SubTodoView: View {
         .background(.white)
         .contextMenu {
             Button(action: {
-                checkListViewModel.deleteSubTodo(todo, subTodo) { _ in
+                checkListViewModel.deleteSubTodo(todo: todo, subTodo: subTodo) { _ in
                     checkListViewModel.fetchTodoList { _ in }
                 }
             }, label: {

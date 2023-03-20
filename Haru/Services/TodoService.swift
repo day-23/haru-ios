@@ -34,7 +34,7 @@ struct TodoService {
     // MARK: - Todo Create API
 
     func addTodo(
-        _ todo: Request.Todo,
+        todo: Request.Todo,
         completion: @escaping (Result<Todo, Error>) -> Void
     ) {
         struct Response: Codable {
@@ -67,7 +67,9 @@ struct TodoService {
 
     // MARK: - Todo Read API
 
-    func fetchTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {
+    func fetchTodoList(
+        completion: @escaping (Result<[Todo], Error>) -> Void
+    ) {
         struct Response: Codable {
             let success: Bool
             let data: [Todo]
@@ -131,7 +133,7 @@ struct TodoService {
     }
 
     func fetchTodayTodoList(
-        _ today: Date,
+        today: Date,
         completion: @escaping (Result<(todayTodos: [Todo], endDateTodos: [Todo]), Error>) -> Void
     ) {
         struct Response: Codable {
@@ -250,7 +252,7 @@ struct TodoService {
     }
 
     func fetchTodoListWithTag(
-        _ tag: Tag,
+        tag: Tag,
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -274,8 +276,8 @@ struct TodoService {
     // MARK: - Todo Update API
 
     func updateTodo(
-        _ todoId: String,
-        _ todo: Request.Todo,
+        todoId: String,
+        todo: Request.Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
@@ -299,8 +301,8 @@ struct TodoService {
     }
 
     func updateFlag(
-        _ todoId: String,
-        _ flag: Bool,
+        todoId: String,
+        flag: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
@@ -330,7 +332,7 @@ struct TodoService {
     // MARK: - Todo Delete API
 
     func deleteTodo(
-        _ todoId: String,
+        todoId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(
@@ -347,8 +349,8 @@ struct TodoService {
     }
 
     func deleteTag(
-        _ todoId: String,
-        _ tagId: String,
+        todoId: String,
+        tagId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(
@@ -366,8 +368,8 @@ struct TodoService {
     }
 
     func deleteSubTodo(
-        _ todoId: String,
-        _ subTodoId: String,
+        todoId: String,
+        subTodoId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(

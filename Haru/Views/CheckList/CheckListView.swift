@@ -114,7 +114,7 @@ struct CheckListView: View {
                                                     TodoAddView(viewModel: addViewModel)
                                                         .onAppear {
                                                             withAnimation {
-                                                                addViewModel.applyTodoData(todo)
+                                                                addViewModel.applyTodoData(todo: todo)
                                                                 addViewModel.mode = .edit
                                                                 addViewModel.todoId = todo.id
                                                             }
@@ -181,7 +181,7 @@ struct CheckListView: View {
                                                     TodoAddView(viewModel: addViewModel)
                                                         .onAppear {
                                                             withAnimation {
-                                                                addViewModel.applyTodoData(todo)
+                                                                addViewModel.applyTodoData(todo: todo)
                                                                 addViewModel.mode = .edit
                                                                 addViewModel.todoId = todo.id
                                                             }
@@ -239,7 +239,7 @@ struct CheckListView: View {
                                                     TodoAddView(viewModel: addViewModel)
                                                         .onAppear {
                                                             withAnimation {
-                                                                addViewModel.applyTodoData(todo)
+                                                                addViewModel.applyTodoData(todo: todo)
                                                                 addViewModel.mode = .edit
                                                                 addViewModel.todoId = todo.id
                                                             }
@@ -295,7 +295,7 @@ struct CheckListView: View {
                                                             TodoAddView(viewModel: addViewModel)
                                                                 .onAppear {
                                                                     withAnimation {
-                                                                        addViewModel.applyTodoData(todo)
+                                                                        addViewModel.applyTodoData(todo: todo)
                                                                         addViewModel.mode = .edit
                                                                         addViewModel.todoId = todo.id
                                                                     }
@@ -353,7 +353,7 @@ struct CheckListView: View {
                                                             TodoAddView(viewModel: addViewModel)
                                                                 .onAppear {
                                                                     withAnimation {
-                                                                        addViewModel.applyTodoData(todo)
+                                                                        addViewModel.applyTodoData(todo: todo)
                                                                         addViewModel.mode = .edit
                                                                         addViewModel.todoId = todo.id
                                                                     }
@@ -411,7 +411,7 @@ struct CheckListView: View {
                                                             TodoAddView(viewModel: addViewModel)
                                                                 .onAppear {
                                                                     withAnimation {
-                                                                        addViewModel.applyTodoData(todo)
+                                                                        addViewModel.applyTodoData(todo: todo)
                                                                         addViewModel.mode = .edit
                                                                         addViewModel.todoId = todo.id
                                                                     }
@@ -475,7 +475,7 @@ struct CheckListView: View {
                                                             TodoAddView(viewModel: addViewModel)
                                                                 .onAppear {
                                                                     withAnimation {
-                                                                        addViewModel.applyTodoData(todo)
+                                                                        addViewModel.applyTodoData(todo: todo)
                                                                         addViewModel.mode = .edit
                                                                         addViewModel.todoId = todo.id
                                                                     }
@@ -530,7 +530,7 @@ struct CheckListView: View {
                                                             TodoAddView(viewModel: addViewModel)
                                                                 .onAppear {
                                                                     withAnimation {
-                                                                        addViewModel.applyTodoData(todo)
+                                                                        addViewModel.applyTodoData(todo: todo)
                                                                         addViewModel.mode = .edit
                                                                         addViewModel.todoId = todo.id
                                                                     }

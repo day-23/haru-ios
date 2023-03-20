@@ -35,10 +35,10 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func addTodo(
-        _ todo: Request.Todo,
+        todo: Request.Todo,
         completion: @escaping (Result<Todo, Error>) -> Void
     ) {
-        todoService.addTodo(todo) { result in
+        todoService.addTodo(todo: todo) { result in
             switch result {
             case let .success(todo):
                 self.todoList.insert(
@@ -85,11 +85,11 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    func fetchTodayTodoList(completion _: @escaping (Result<[Todo], Error>) -> Void) {}
+    func fetchTodayTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {}
 
     func fetchTodoListWithAnyTag() {}
 
-    func fetchTodoListWithTag(_: Tag, completion _: @escaping (Result<[Todo], Error>) -> Void) {}
+    func fetchTodoListWithTag(tag: Tag, completion: @escaping (Result<[Todo], Error>) -> Void) {}
 
     func fetchTodoListWithFlag() {}
 
@@ -98,13 +98,14 @@ final class CheckListViewModel: ObservableObject {
     func fetchTodoListWithCompleted() {}
 
     func updateTodo(
-        _ todoId: String,
-        _ todo: Request.Todo,
+        todoId: String,
+        todo: Request.Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         debugPrint(todo)
 
-        todoService.updateTodo(todoId, todo) { result in
+        todoService.updateTodo(todoId: todoId,
+                               todo: todo) { result in
             switch result {
             case .success:
                 self.fetchTodoList { _ in }
@@ -116,7 +117,7 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func updateFlag(
-        _ todo: Todo,
+        todo: Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         guard let index = todoList.firstIndex(where: { $0.id == todo.id })
@@ -125,7 +126,8 @@ final class CheckListViewModel: ObservableObject {
             return
         }
 
-        todoService.updateFlag(todo.id, !todo.flag) { result in
+        todoService.updateFlag(todoId: todo.id,
+                               flag: !todo.flag) { result in
             switch result {
             case let .success(success):
                 withAnimation(.easeOut(duration: 0.25)) {
@@ -157,10 +159,10 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func deleteTodo(
-        _ todo: Todo,
+        todo: Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.deleteTodo(todo.id) { result in
+        todoService.deleteTodo(todoId: todo.id) { result in
             switch result {
             case let .success(success):
                 completion(.success(success))
@@ -171,11 +173,11 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func deleteSubTodo(
-        _ todo: Todo,
-        _ subTodo: SubTodo,
+        todo: Todo,
+        subTodo: SubTodo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.deleteSubTodo(todo.id, subTodo.id) { result in
+        todoService.deleteSubTodo(todoId: todo.id, subTodoId: subTodo.id) { result in
             switch result {
             case let .success(success):
                 completion(.success(success))

@@ -56,7 +56,7 @@ struct TodoAddView: View {
                             TextField("", text: $viewModel.subTodoList[index].content)
                                 .font(.system(size: 14, weight: .light))
                             Button {
-                                viewModel.removeSubTodo(index)
+                                viewModel.removeSubTodo(index: index)
                             } label: {
                                 Image(systemName: "minus.circle.fill")
                                     .foregroundStyle(Constants.lightGray)
@@ -324,7 +324,7 @@ struct TodoAddView: View {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
                                 ForEach(viewModel.repeatYear.indices, id: \.self) { index in
                                     DayButton(content: viewModel.repeatYear[index].content, isClicked: viewModel.repeatYear[index].isClicked) {
-                                        viewModel.toggleDay(.everyYear, index: index)
+                                        viewModel.toggleDay(repeatOption: .everyYear, index: index)
                                     }
                                 }
                             }
@@ -334,7 +334,7 @@ struct TodoAddView: View {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
                                 ForEach(viewModel.repeatMonth.indices, id: \.self) { index in
                                     DayButton(content: viewModel.repeatMonth[index].content, isClicked: viewModel.repeatMonth[index].isClicked) {
-                                        viewModel.toggleDay(.everyMonth, index: index)
+                                        viewModel.toggleDay(repeatOption: .everyMonth, index: index)
                                     }
                                 }
                             }
@@ -346,7 +346,7 @@ struct TodoAddView: View {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                                 ForEach(viewModel.repeatWeek.indices, id: \.self) { index in
                                     DayButton(content: viewModel.repeatWeek[index].content, isClicked: viewModel.repeatWeek[index].isClicked) {
-                                        viewModel.toggleDay(.everyWeek, index: index)
+                                        viewModel.toggleDay(repeatOption: .everyWeek, index: index)
                                     }
                                 }
                             }

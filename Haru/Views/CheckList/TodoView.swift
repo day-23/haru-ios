@@ -95,14 +95,14 @@ struct TodoView: View {
                 Image(systemName: todo.flag ? "star.fill" : "star")
                     .foregroundStyle(todo.flag ? LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing) : LinearGradient(gradient: Gradient(colors: [Color(0x000000, opacity: 0.4)]), startPoint: .top, endPoint: .bottom))
                     .onTapGesture {
-                        checkListViewModel.updateFlag(todo) { _ in }
+                        checkListViewModel.updateFlag(todo: todo) { _ in }
                     }
             }
         }
         .background(.white)
         .contextMenu {
             Button(action: {
-                checkListViewModel.deleteTodo(todo) { _ in
+                checkListViewModel.deleteTodo(todo: todo) { _ in
                     checkListViewModel.fetchTodoList { _ in }
                 }
             }, label: {

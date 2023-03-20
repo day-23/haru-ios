@@ -107,8 +107,10 @@ final class TodoAddViewModel: ObservableObject {
         )
     }
 
-    func addTodo(completion: @escaping (Result<Todo, Error>) -> Void) {
-        checkListViewModel.addTodo(createTodoData()) { result in
+    func addTodo(
+        completion: @escaping (Result<Todo, Error>) -> Void
+    ) {
+        checkListViewModel.addTodo(todo: createTodoData()) { result in
             switch result {
             case let .success(todo):
                 completion(.success(todo))
@@ -118,15 +120,17 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func updateTodo(completion: @escaping (Result<Bool, Error>) -> Void) {
+    func updateTodo(
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
         guard let todoId = todoId else {
             print("[Debug] todoId가 입력되지 않았습니다. (\(#fileID), \(#function))")
             return
         }
 
         checkListViewModel.updateTodo(
-            todoId,
-            createTodoData()
+            todoId: todoId,
+            todo: createTodoData()
         ) { result in
             switch result {
             case let .success(success):
@@ -141,7 +145,7 @@ final class TodoAddViewModel: ObservableObject {
         subTodoList.append(SubTodo(id: UUID().uuidString, content: ""))
     }
 
-    func removeSubTodo(_ index: Int) {
+    func removeSubTodo(index: Int) {
         subTodoList.remove(at: index)
     }
 
@@ -165,7 +169,7 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func toggleDay(_ repeatOption: RepeatOption, index: Int) {
+    func toggleDay(repeatOption: RepeatOption, index: Int) {
         switch repeatOption {
         case .everyDay:
             break
@@ -178,7 +182,7 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func initRepeatWeek(_ todo: Todo? = nil) {
+    func initRepeatWeek(todo: Todo? = nil) {
         if let todo = todo {
             if let todoRepeatWeek = todo.repeatValue {
                 for i in repeatWeek.indices {
@@ -198,7 +202,7 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func initRepeatMonth(_ todo: Todo? = nil) {
+    func initRepeatMonth(todo: Todo? = nil) {
         if let todo = todo {
             if let todoRepeatMonth = todo.repeatValue {
                 for i in repeatMonth.indices {
@@ -218,7 +222,7 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func initRepeatYear(_ todo: Todo? = nil) {
+    func initRepeatYear(todo: Todo? = nil) {
         if let todo = todo {
             if let todoRepeatYear = todo.repeatValue {
                 for i in repeatYear.indices {
@@ -238,7 +242,7 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func applyTodoData(_ todo: Todo) {
+    func applyTodoData(todo: Todo) {
         todoContent = todo.content
 
         flag = todo.flag
@@ -264,9 +268,9 @@ final class TodoAddViewModel: ObservableObject {
         repeatEnd = todo.repeatEnd ?? .init()
         isSelectedRepeatEnd = todo.repeatEnd != nil
         repeatDay = isSelectedRepeat ? (todo.repeatValue ?? "1") : "1"
-        initRepeatWeek(todo)
-        initRepeatMonth(todo)
-        initRepeatYear(todo)
+        initRepeatWeek(todo: todo)
+        initRepeatMonth(todo: todo)
+        initRepeatYear(todo: todo)
 
         memo = todo.memo
     }
