@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 final class CheckListViewModel: ObservableObject {
-    // MARK: - Properties
+    //  MARK: - Properties
 
     private let todoService: TodoService = .init()
     private let tagService: TagService = .init()
@@ -18,9 +18,11 @@ final class CheckListViewModel: ObservableObject {
     @Published var tagList: [Tag] = []
     @Published var selectedTag: Tag? = nil
 
-    // MARK: - Methods
+    //  MARK: - Methods
 
-    func fetchTags(completion: @escaping (Result<[Tag], Error>) -> Void) {
+    func fetchTags(
+        completion: @escaping (Result<[Tag], Error>) -> Void
+    ) {
         tagService.fetchTags { result in
             switch result {
             case let .success(tagList):
@@ -67,7 +69,9 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    func fetchTodoList(completion: @escaping (Result<[Todo], Error>) -> Void) {
+    func fetchTodoList(
+        completion: @escaping (Result<[Todo], Error>) -> Void
+    ) {
         todoService.fetchTodoList { result in
             switch result {
             case let .success(todoList):
@@ -181,7 +185,7 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    // MARK: - TodoList 분류하는 함수 (API 이용 fetch가 아닙니다.)
+    //  MARK: - TodoList 분류하는 함수 (API 이용 fetch가 아닙니다.) - Deprecated on 2023/03/20.
 
     func filterTodoByTag() -> [Todo] {
         return todoList

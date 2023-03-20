@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// TODO: Tag ScrollView 클릭시 Focus 옮기기
-
 struct TodoAddView: View {
     @Environment(\.dismiss) var dismissAction
     @ObservedObject var viewModel: TodoAddViewModel
