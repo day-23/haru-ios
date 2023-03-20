@@ -7,10 +7,13 @@
 
 import SwiftUI
 
+// TODO: Tag ScrollView 클릭시 Focus 옮기기
+
 struct TodoAddView: View {
     @Environment(\.dismiss) var dismissAction
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isModalVisible: Bool
+    @FocusState private var tagInFocus: Bool
 
     init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
         self.viewModel = viewModel
@@ -108,8 +111,12 @@ struct TodoAddView: View {
                                         perform: viewModel.onChangeTag
                                     )
                                     .onSubmit(viewModel.onSubmitTag)
+                                    .focused($tagInFocus)
                             }
                             .padding(1)
+                        }
+                        .onTapGesture {
+                            tagInFocus = true
                         }
                     } icon: {
                         Image(systemName: "tag")
