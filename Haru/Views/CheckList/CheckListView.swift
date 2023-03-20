@@ -568,6 +568,7 @@ struct CheckListView: View {
                             }
                             .listRowSeparator(.hidden)
                         }
+                        .environment(\.defaultMinListRowHeight, 48)
                         .listStyle(.inset)
                         .onPreferenceChange(OffsetKey.self) {
                             if self.initialOffset == nil || self.initialOffset == 0 {

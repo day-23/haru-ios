@@ -35,6 +35,7 @@ final class CheckListViewModel: ObservableObject {
     @Published var todoListByTag: [Todo] = []
     @Published var todoListByFlag: [Todo] = []
     @Published var todoListByCompleted: [Todo] = []
+    @Published var todoListByFlagWithToday: [Todo] = []
     @Published var todoListByTodayTodo: [Todo] = []
     @Published var todoListByUntilToday: [Todo] = []
     @Published var todoListWithAnyTag: [Todo] = []
@@ -44,6 +45,7 @@ final class CheckListViewModel: ObservableObject {
         return (todoListByTag.isEmpty &&
             todoListByFlag.isEmpty &&
             todoListByCompleted.isEmpty &&
+            todoListByFlagWithToday.isEmpty &&
             todoListByTodayTodo.isEmpty &&
             todoListByUntilToday.isEmpty &&
             todoListWithAnyTag.isEmpty &&
@@ -138,6 +140,7 @@ final class CheckListViewModel: ObservableObject {
             switch result {
             case let .success(success):
                 withAnimation {
+                    self.todoListByFlagWithToday = success.flaggedTodos
                     self.todoListByTodayTodo = success.todayTodos
                     self.todoListByUntilToday = success.endDateTodos
                 }
