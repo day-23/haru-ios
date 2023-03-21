@@ -10,6 +10,8 @@ import SwiftUI
 struct CalendarDateView: View {
     @State private var isSchModalVisible: Bool = false
     @State private var isDayModalVisible: Bool = false
+    
+    @State private var showingPopup: Bool = false
 
     @EnvironmentObject var calendarVM: CalendarViewModel
 
@@ -50,11 +52,14 @@ struct CalendarDateView: View {
                         }
                         
                         Button {
-                            print("option")
+                            showingPopup = true
                         } label: {
                             Image(systemName: "ellipsis")
                         }
-                        .tint(.gray1)
+                        .sheet(isPresented: $showingPopup) {
+                            CalendarOptionView()
+                                .environmentObject(calendarVM)
+                        }
                     }
                 } // HStack
                 .padding(.horizontal, 20)
@@ -105,7 +110,10 @@ struct CalendarDateView: View {
             } // VStack
 
             // 일정 추가 버튼
-            Button {} label: {
+            Button {
+                calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
+                isSchModalVisible = true
+            } label: {
                 Image("plusButton")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -126,7 +134,7 @@ struct CalendarDateView: View {
 
                 Modal(isActive: $isSchModalVisible, ratio: 0.9) {
                     ScheduleFormView(
-                        scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM)
+                        scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM), isSchModalVisible: $isSchModalVisible
                     )
                 }
                 .zIndex(2)

@@ -41,7 +41,6 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.repeatStart = selectionList.first?.date ?? Date()
         self.repeatEnd = selectionList.last?.date ?? Date()
-//        self.categoryList = calendarVM.categoryList
     }
     
     /**
@@ -53,8 +52,7 @@ final class ScheduleFormViewModel: ObservableObject {
         scheduleFormService.addSchedule(schedule) { result in
             switch result {
             case .success(let success):
-                print(success.repeatStart)
-                print(success.repeatEnd)
+                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -67,7 +65,7 @@ final class ScheduleFormViewModel: ObservableObject {
     func addCategory(_ content: String, _ color: String?) {
         let category = Request.Category(content: content, color: color != nil ? "#" + color! : nil)
         
-        calendarVM.categoryList.append(Category(id: UUID().uuidString, content: content, color: color))
+        calendarVM.categoryList.append(Category(id: UUID().uuidString, content: content, color: color, isSelected: true))
         let index = categoryList.endIndex - 1
         
         categoryService.addCategory(category) { result in

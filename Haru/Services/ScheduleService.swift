@@ -48,7 +48,7 @@ final class ScheduleService {
         ]
 
         AF.request(
-            ScheduleService.baseURL + Global.shared.user!.id + "/schedules/date",
+            ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.queryString,
@@ -85,14 +85,18 @@ final class ScheduleService {
         }
 
         for schedule in scheduleList {
-            for (week, dates) in splitDateList.enumerated() {
-                if schedule.repeatEnd < dates[0] {
-                    break
+            // 카테고리 필터링
+            if let category = schedule.category, category.isSelected {
+                for (week, dates) in splitDateList.enumerated() {
+                    // 구간 필터링
+                    if schedule.repeatEnd < dates[0] {
+                        break
+                    }
+                    if schedule.repeatStart >= dates[1] {
+                        continue
+                    }
+                    weeksOfScheduleList[week].append(schedule)
                 }
-                if schedule.repeatStart >= dates[1] {
-                    continue
-                }
-                weeksOfScheduleList[week].append(schedule)
             }
         }
 

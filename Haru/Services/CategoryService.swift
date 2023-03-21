@@ -25,7 +25,7 @@ final class CategoryService {
         ]
         
         AF.request(
-            CategoryService.baseURL + Global.shared.user!.id + "/categories",
+            CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/categories",
             method: .get,
             headers: headers
         )
@@ -41,7 +41,7 @@ final class CategoryService {
     }
     
     /**
-     * TODO: 카테고리 목록 추가하기
+     * 카테고리 추가하기
      */
     func addCategory(_ category: Request.Category, _ completion: @escaping (Result<Category, Error>) -> Void) {
         struct Response: Codable {
@@ -54,7 +54,7 @@ final class CategoryService {
         ]
         
         AF.request(
-            CategoryService.baseURL + Global.shared.user!.id,
+            CategoryService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: category,
             encoder: JSONParameterEncoder(),
@@ -63,6 +63,41 @@ final class CategoryService {
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    /**
+     * 카테고리 수정하기 (전체)
+     */
+    func updateAllCategoyList(categoryIds: [String], isSelected: [Bool], _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        struct Response: Codable {
+            let success: Bool
+        }
+        
+        struct Request: Codable {
+            let categoryIds: [String]
+            let isSelected: [Bool]
+        }
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        let requestBody = Request(categoryIds: categoryIds, isSelected: isSelected)
+        
+        AF.request(
+            CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/order/categories",
+            method: .patch,
+            parameters: requestBody,
+            encoder: JSONParameterEncoder(),
+            headers: headers
+        ).responseDecodable(of: Response.self) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.success))
             case let .failure(error):
                 completion(.failure(error))
             }

@@ -11,6 +11,8 @@ import SwiftUI
 struct ScheduleFormView: View {
     @ObservedObject var scheduleFormVM: ScheduleFormViewModel
 
+    @Binding var isSchModalVisible: Bool
+    
     @State private var showCategorySheet: Bool = false
     @State private var showingPopup: Bool = false
 
@@ -18,24 +20,6 @@ struct ScheduleFormView: View {
 
     var body: some View {
         VStack(spacing: 15) {
-            HStack {
-                Button {
-                    print("close")
-                } label: {
-                    Image(systemName: "multiply")
-                }
-
-                Spacer()
-
-                Button {
-                    // TODO: 일정의 종료 시간이 일정의 시작 시간보다 빠르면 toast 알림창
-                    scheduleFormVM.addSchedule()
-                    print("complete")
-                } label: {
-                    Image(systemName: "checkmark")
-                }
-            }
-
             // 일정 입력
             Group {
                 TextField("일정 입력", text: $scheduleFormVM.content)
@@ -226,6 +210,14 @@ struct ScheduleFormView: View {
                 }
                 Divider()
             }
+
+            Button {
+                // TODO: 일정의 종료 시간이 일정의 시작 시간보다 빠르면 toast 알림창
+                scheduleFormVM.addSchedule()
+                isSchModalVisible = false
+            } label: {
+                Text("추가")
+            }
         } // VStack
         .padding(.horizontal)
     }
@@ -233,6 +225,6 @@ struct ScheduleFormView: View {
 
 struct ScheduleFormView_Previews: PreviewProvider {
     static var previews: some View {
-        ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()))
+        ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()), isSchModalVisible: .constant(true))
     }
 }

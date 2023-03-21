@@ -76,10 +76,10 @@ final class CalendarViewModel: ObservableObject {
         
         numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
         
-        getCurMonthSchList(monthOffset, dateList)
+        getCurMonthSchList(dateList)
     }
 
-    func getCurMonthSchList(_ monthOffset: Int, _ dateList: [DateValue]) {
+    func getCurMonthSchList(_ dateList: [DateValue]) {
         scheduleList = [[Int: [Schedule]]](repeating: [:], count: dateList.count)
         viewScheduleList = [[[(Int, Schedule?)]]](repeating: [[(Int, Schedule?)]](repeating: [], count: 4), count: numberOfWeeks)
         
@@ -157,5 +157,27 @@ final class CalendarViewModel: ObservableObject {
         }
         
         selectedScheduleList = result
+    }
+    
+    // 카테고리 업데이트 (전체)
+    func setAllCategoryList() {
+        // TODO: 카테고리 수정시에 fittingSchedule 함수 호출하기 (코드가 꼬일 문제 있음)
+        var categoryIds: [String] = []
+        var isSelected: [Bool] = []
+        
+        categoryList.forEach { category in
+            categoryIds.append(category.id)
+            isSelected.append(category.isSelected)
+        }
+        
+        categoryService.updateAllCategoyList(categoryIds: categoryIds, isSelected: isSelected) { result in
+            switch result {
+            case .success:
+                self.getCategoryList()
+                self.getCurMonthSchList(self.dateList)
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#file) \(#fileID) \(#filePath)")
+            }
+        }
     }
 }

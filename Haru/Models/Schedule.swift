@@ -13,8 +13,7 @@ struct Schedule: Identifiable, Codable {
     private(set) var memo: String
     private(set) var flag: Bool
     private(set) var repeatOption: String?
-    private(set) var repeatWeek: String?
-    private(set) var repeatMonth: String?
+    private(set) var repeatValue: String?
     private(set) var repeatStart: Date
     private(set) var repeatEnd: Date
     
@@ -27,7 +26,8 @@ struct Schedule: Identifiable, Codable {
     // MARK: - Dates
     
     let createdAt: Date
-    let updatedAt: Date?
+    private(set) var updatedAt: Date?
+    private(set) var deletedAt: Date?
 }
 
 // MARK: - extension
