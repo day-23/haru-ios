@@ -8,38 +8,32 @@
 import SwiftUI
 
 struct CalendarScheduleItem: View {
-    @Binding var scheduleList: [Int: [Schedule]]
-    var date: Int
+    @Binding var scheduleList: [(Int, Schedule?)]
+    var cellWidth: CGFloat
 
     var body: some View {
-        VStack(spacing: 3) {
-            ForEach(0 ..< 4, id: \.self) { order in
-                if let value = scheduleList[order]?.first {
-                    Rectangle()
-                        .fill(Color(value.category?.color, true))
-                        .frame(height: 20)
-                        .cornerRadius(date == value.repeatStart.day ? 6 : 0, corners: [.topLeft, .bottomLeft])
-                        .cornerRadius(date == value.repeatEnd.day ? 6 : 0, corners: [.topRight, .bottomRight])
-                        .overlay {
-                            if date == value.repeatStart.day {
-                                Text(value.content)
-                                    .font(Font.custom(Constants.Regular, size: 12))
-                                    .fixedSize(horizontal: true, vertical: false)
-                            }
-                        }
-
+        HStack(spacing: 0) {
+            ForEach(scheduleList.indices, id: \.self) { index in
+                if let schedule = scheduleList[index].1 {
+                    Text("\(schedule.content)")
+                        .font(Font.custom(Constants.Regular, size: 12))
+                        .padding(4)
+                        .frame(width: cellWidth * CGFloat(scheduleList[index].0), alignment: .leading)
+                        .background(Color(schedule.category?.color, true))
+                        .cornerRadius(10)
                 } else {
-                    Spacer()
-                        .frame(height: 20)
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(width: cellWidth * CGFloat(scheduleList[index].0))
                 }
             }
         }
     }
 }
 
-//struct CalendarScheduleItem_Previews: PreviewProvider {
+// struct CalendarScheduleItem_Previews: PreviewProvider {
 //    static var vm: CalendarViewModel = .init()
 //    static var previews: some View {
 //        CalendarScheduleItem(scheduleList: .constant(vm.scheduleList[0]), date: Date().day)
 //    }
-//}
+// }

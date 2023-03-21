@@ -79,6 +79,8 @@ final class CalendarViewModel: ObservableObject {
 
     func getCurMonthSchList(_ monthOffset: Int, _ dateList: [DateValue]) {
         scheduleList = [[Int: [Schedule]]](repeating: [:], count: dateList.count)
+        viewScheduleList = [[[(Int, Schedule?)]]](repeating: [[(Int, Schedule?)]](repeating: [], count: 4), count: numberOfWeeks)
+        
         scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
             switch result {
             case .success(let success):

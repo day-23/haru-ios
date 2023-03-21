@@ -13,7 +13,7 @@ struct CalendarDateView: View {
 
     @ObservedObject var calendarVM: CalendarViewModel
     
-    @State private var selectedSchedule: [Schedule] = []
+    @State private var selectedScheduleList: [Schedule] = []
 
     var body: some View {
         ZStack {
@@ -71,9 +71,6 @@ struct CalendarDateView: View {
                         }
                     } // HStack
                     
-                    // Dates ...
-                    let dateColumns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
-                    
                     GeometryReader { proxy in
                         
                         // MARK: - Gesture 분리를 위함
@@ -97,40 +94,15 @@ struct CalendarDateView: View {
                         
                         let combined = longPress.sequenced(before: drag)
                         
-                        Group {
-                            LazyVGrid(columns: dateColumns, spacing: 0) {
-                                ForEach(0 ..< calendarVM.dateList.count, id: \.self) { index in
-                                    VStack(spacing: 0) {
-                                        CalendarDateItem(
-                                            selectionSet: $calendarVM.selectionSet,
-                                            value: calendarVM.dateList[index]
-                                        )
-                                        
-                                        CalendarScheduleItem(
-                                            scheduleList: $calendarVM.scheduleList[index],
-                                            date: calendarVM.dateList[index].day
-                                        )
-                                        Spacer()
-                                    }
-                                    .frame(
-                                        width: proxy.size.width / 7,
-                                        height: proxy.size.height / CGFloat(calendarVM.numberOfWeeks),
-                                        alignment: .top
-                                    )
-                                    .background(calendarVM.selectionSet
-                                        .contains(calendarVM.dateList[index]) ? .cyan : .white)
-                                    .border(width: 0.5, edges: [.top], color: Color(0xD3D3D3))
-                                    .onTapGesture {
-                                        calendarVM.selectedDate = calendarVM.dateList[index]
-                                        selectedSchedule = calendarVM.getSelectedScheduleList(index)
-                                        isDayModalVisible = true
-                                    }
-                                }
-                            }
-                        } // Group
+                        CalendarWeekView(
+                            calendarVM: calendarVM, selectedScheduleList: $selectedScheduleList,
+                            isDayModalVisible: $isDayModalVisible,
+                            cellHeight: proxy.size.height / CGFloat(calendarVM.numberOfWeeks),
+                            cellWidhth: proxy.size.width / 7
+                        )
                         .gesture(combined)
                     } // GeometryReader
-                }
+                } // Group
                 .padding(.horizontal)
             } // VStack
 
@@ -180,7 +152,7 @@ struct CalendarDateView: View {
                         )
                         
                         List {
-                            ForEach(selectedSchedule) { sch in
+                            ForEach(selectedScheduleList) { sch in
                                 Text(sch.content)
                             }
                         }
@@ -196,7 +168,7 @@ struct CalendarDateView: View {
         }
         .onChange(of: isDayModalVisible) { _ in
             if !isDayModalVisible {
-                selectedSchedule.removeAll()
+                selectedScheduleList.removeAll()
             }
         }
         .onChange(of: calendarVM.startOnSunday) { newValue in
