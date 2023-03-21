@@ -502,6 +502,57 @@ struct TodoService {
         }
     }
 
+    func completeTodo(
+        todoId: String
+    ) {
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)",
+            method: .patch
+        ).response { response in
+            switch response.result {
+            case .success:
+                break
+            case let .failure(error):
+                print("[Debug] \(error) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
+    func completeSubTodo(
+        subTodoId: String
+    ) {
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/complete/subtodo/\(subTodoId)",
+            method: .patch
+        ).response { response in
+            switch response.result {
+            case .success:
+                break
+            case let .failure(error):
+                print("[Debug] \(error) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
+    func completeTodoWithRepeat(
+        todo: Todo
+    ) {
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todo.id)/repeat",
+            method: .patch
+        ).response { response in
+            switch response.result {
+            case .success:
+                break
+            case let .failure(error):
+                print("[Debug] \(error) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
     // MARK: - Todo Delete API
 
     func deleteTodo(

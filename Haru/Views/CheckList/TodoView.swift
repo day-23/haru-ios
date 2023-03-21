@@ -34,6 +34,7 @@ struct TodoView: View {
                         .stroke(lineWidth: 2)
                         .foregroundColor(Color(0x000000, opacity: 0.5))
                 }
+                .onTapGesture {}
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(todo.content)
