@@ -102,7 +102,7 @@ struct TodoView: View {
         .background(.white)
         .contextMenu {
             Button(action: {
-                checkListViewModel.deleteTodo(todo: todo) { _ in
+                checkListViewModel.deleteTodo(todoId: todo.id) { _ in
                     checkListViewModel.fetchTodoList()
                 }
             }, label: {

@@ -40,7 +40,14 @@ struct TodoAddView: View {
 
                         if !isModalVisible {
                             Button {
-                                // TODO: Delete API 연결
+                                viewModel.deleteTodo { result in
+                                    switch result {
+                                    case .success:
+                                        dismissAction.callAsFunction()
+                                    case let .failure(failure):
+                                        print("[Debug] Todo 삭제 실패, (\(failure)) (\(#fileID), \(#function))")
+                                    }
+                                }
                             } label: {
                                 Image(systemName: "trash")
                                     .foregroundColor(Color(0x000000, opacity: 0.5))

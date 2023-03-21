@@ -275,6 +275,22 @@ final class TodoAddViewModel: ObservableObject {
 
     //  MARK: - Remove
 
+    func deleteTodo(completion: @escaping (Result<Bool, Error>) -> Void) {
+        guard let todoId = todoId else {
+            print("[Debug] todoID가 없습니다. (\(#fileID), \(#function))")
+            return
+        }
+
+        checkListViewModel.deleteTodo(todoId: todoId) { result in
+            switch result {
+            case let .success(success):
+                completion(.success(true))
+            case let .failure(failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
     func removeSubTodo(index: Int) {
         subTodoList.remove(at: index)
     }

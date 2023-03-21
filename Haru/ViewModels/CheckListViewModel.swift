@@ -259,10 +259,10 @@ final class CheckListViewModel: ObservableObject {
     // MARK: - Delete
 
     func deleteTodo(
-        todo: Todo,
+        todoId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.deleteTodo(todoId: todo.id) { result in
+        todoService.deleteTodo(todoId: todoId) { result in
             switch result {
             case let .success(success):
                 completion(.success(success))
@@ -273,11 +273,11 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func deleteSubTodo(
-        todo: Todo,
-        subTodo: SubTodo,
+        todoId: String,
+        subTodoId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.deleteSubTodo(todoId: todo.id, subTodoId: subTodo.id) { result in
+        todoService.deleteSubTodo(todoId: todoId, subTodoId: subTodoId) { result in
             switch result {
             case let .success(success):
                 completion(.success(success))

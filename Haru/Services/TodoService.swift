@@ -325,7 +325,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/flag/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
@@ -413,7 +413,7 @@ struct TodoService {
     func updateOrderFlag(
         todoListByFlag: [Todo]
     ) {
-        var todoIds: [String] = todoListByFlag.map { $0.id }
+        let todoIds: [String] = todoListByFlag.map { $0.id }
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
