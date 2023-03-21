@@ -66,7 +66,17 @@ struct CheckListView: View {
 
                             // 완료 태그
                             TagView(Tag(id: "완료", content: "완료"))
+                                .onTapGesture {
+                                    withAnimation {
+                                        viewModel.selectedTag = Tag(
+                                            id: "완료",
+                                            content: "완료"
+                                        )
+                                    }
+                                    initialOffset = nil
+                                }
 
+                            // 태그 리스트들
                             ForEach(viewModel.tagList) { tag in
                                 TagView(tag)
                                     .onTapGesture {
@@ -643,6 +653,64 @@ struct CheckListView: View {
                                                 }
                                                 .onMove(perform: { indexSet, index in
                                                     viewModel.todoListWithoutTag.move(fromOffsets: indexSet, toOffset: index)
+                                                    viewModel.updateOrderWithoutTag()
+                                                })
+                                                .listRowBackground(Color.white)
+                                            } else {
+                                                EmptyText()
+                                            }
+                                        } header: {
+                                            HStack {
+                                                TagView(tag)
+                                                    .padding(.leading, 20)
+                                                Spacer()
+                                            }
+                                            .padding(.vertical, 5)
+                                            .listRowInsets(EdgeInsets(
+                                                top: 0,
+                                                leading: 0,
+                                                bottom: 1,
+                                                trailing: 0
+                                            ))
+                                            .background(.white)
+                                        }
+                                        .listRowSeparator(.hidden)
+                                    } else if tag.id == "완료" {
+                                        // FIXME: - 추후에 페이지네이션 함수로 교체 해야함
+                                        Section {
+                                            if !viewModel.todoListByCompleted.isEmpty {
+                                                ForEach(viewModel.todoListByCompleted) { todo in
+                                                    TodoView(
+                                                        checkListViewModel: viewModel,
+                                                        todo: todo
+                                                    ).overlay {
+                                                        NavigationLink {
+                                                            TodoAddView(viewModel: addViewModel)
+                                                                .onAppear {
+                                                                    withAnimation {
+                                                                        addViewModel.applyTodoData(todo: todo)
+                                                                        addViewModel.mode = .edit
+                                                                        addViewModel.todoId = todo.id
+                                                                    }
+                                                                }
+                                                        } label: {
+                                                            EmptyView()
+                                                        }
+                                                        .opacity(0)
+                                                    }
+
+                                                    ForEach(todo.subTodos) { subTodo in
+                                                        SubTodoView(
+                                                            checkListViewModel: viewModel,
+                                                            todo: todo,
+                                                            subTodo: subTodo
+                                                        )
+                                                    }
+                                                    .moveDisabled(true)
+                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                                }
+                                                .onMove(perform: { indexSet, index in
+                                                    viewModel.todoListByCompleted.move(fromOffsets: indexSet, toOffset: index)
                                                     viewModel.updateOrderWithoutTag()
                                                 })
                                                 .listRowBackground(Color.white)
