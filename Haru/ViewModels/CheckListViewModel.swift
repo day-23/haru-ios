@@ -254,6 +254,23 @@ final class CheckListViewModel: ObservableObject {
         )
     }
 
+    func completeTodo(
+        todoId: String,
+        completed: Bool,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.completeTodo(todoId: todoId,
+                                 completed: completed) { result in
+            switch result {
+            case let .success(success):
+                completion(.success(success))
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                completion(.failure(failure))
+            }
+        }
+    }
+
     func completeSubTodo(
         subTodoId: String,
         completed: Bool,

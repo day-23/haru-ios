@@ -24,7 +24,7 @@ struct Todo: Identifiable, Codable {
     private(set) var todoOrder: Int?
     private(set) var todayTodoOrder: Int?
     private(set) var nextSubTodoOrder: Int?
-    private(set) var completed: Bool?
+    private(set) var completed: Bool
     var subTodos: [SubTodo]
     private(set) var tags: [Tag]
 

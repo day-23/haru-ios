@@ -507,10 +507,21 @@ struct TodoService {
         completed: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: [String: Any] = [
+            "completed": completed,
+        ]
+
         AF.request(
             TodoService.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)",
-            method: .patch
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:

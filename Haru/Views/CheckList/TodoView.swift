@@ -26,15 +26,21 @@ struct TodoView: View {
     var body: some View {
         // Todo Item
         HStack {
-            Circle()
-                .foregroundColor(.white)
-                .frame(width: 20, height: 20)
-                .overlay {
-                    Circle()
-                        .stroke(lineWidth: 2)
-                        .foregroundColor(Color(0x000000, opacity: 0.5))
+            CompleteButton(isClicked: todo.completed)
+                .onTapGesture {
+                    if todo.repeatOption == nil {
+                        checkListViewModel.completeTodo(todoId: todo.id, completed: !todo.completed) { result in
+                            switch result {
+                            case .success:
+                                checkListViewModel.fetchTodoList()
+                            case .failure(let failure):
+                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
+                    } else {
+                        // TODO: 반복 할 일 완료 넘겨주기
+                    }
                 }
-                .onTapGesture {}
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(todo.content)
@@ -88,7 +94,6 @@ struct TodoView: View {
                     .foregroundColor(Color(0x000000, opacity: 0.5))
                 }
             }
-            .padding(.leading, 10)
 
             Spacer()
 
