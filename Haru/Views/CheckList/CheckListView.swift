@@ -294,6 +294,66 @@ struct CheckListView: View {
                                     .background(.white)
                                 }
                                 .listRowSeparator(.hidden)
+
+                                Divider()
+                                    .listRowSeparator(.hidden)
+                                    .listRowInsets(EdgeInsets())
+
+                                Section {
+                                    if !viewModel.todoListByCompleted.isEmpty {
+                                        ForEach(viewModel.todoListByCompleted) { todo in
+                                            TodoView(
+                                                checkListViewModel: viewModel,
+                                                todo: todo
+                                            ).overlay {
+                                                NavigationLink {
+                                                    TodoAddView(viewModel: addViewModel)
+                                                        .onAppear {
+                                                            withAnimation {
+                                                                addViewModel.applyTodoData(todo: todo)
+                                                                addViewModel.mode = .edit
+                                                                addViewModel.todoId = todo.id
+                                                            }
+                                                        }
+                                                } label: {
+                                                    EmptyView()
+                                                }
+                                                .opacity(0)
+                                            }
+
+                                            ForEach(todo.subTodos) { subTodo in
+                                                SubTodoView(
+                                                    checkListViewModel: viewModel,
+                                                    todo: todo,
+                                                    subTodo: subTodo
+                                                )
+                                            }
+                                            .moveDisabled(true)
+                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
+                                        }
+                                        .onMove(perform: { indexSet, index in
+                                            viewModel.todoListByCompleted.move(fromOffsets: indexSet, toOffset: index)
+                                            viewModel.updateOrderMain()
+                                        })
+                                        .listRowBackground(Color.white)
+                                    } else {
+                                        EmptyText()
+                                    }
+                                } header: {
+                                    HStack {
+                                        TagView(Tag(id: "완료", content: "완료"))
+                                            .padding(.leading, 20)
+                                        Spacer()
+                                    }
+                                    .listRowInsets(EdgeInsets(
+                                        top: 0,
+                                        leading: 0,
+                                        bottom: 1,
+                                        trailing: 0
+                                    ))
+                                    .background(.white)
+                                }
+                                .listRowSeparator(.hidden)
                             } else {
                                 if let tag = viewModel.selectedTag {
                                     if tag.id == "하루" {
