@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct CalendarWeekView: View {
-    @StateObject var calendarVM: CalendarViewModel
+    @EnvironmentObject var calendarVM: CalendarViewModel
 
-    @Binding var selectedScheduleList: [Schedule]
     @Binding var isDayModalVisible: Bool
 
     var cellHeight: CGFloat
@@ -27,7 +26,7 @@ struct CalendarWeekView: View {
                                 CalendarDateItem(selectionSet: $calendarVM.selectionSet, value: calendarVM.dateList[week * 7 + day], cellHeight: cellHeight, cellWidhth: cellWidhth)
                                     .onTapGesture {
                                         calendarVM.selectedDate = calendarVM.dateList[week * 7 + day]
-                                        selectedScheduleList = calendarVM.getSelectedScheduleList(week * 7 + day)
+                                        calendarVM.getSelectedScheduleList(week * 7 + day)
                                         isDayModalVisible = true
                                     }
                             }
@@ -49,6 +48,7 @@ struct CalendarWeekView: View {
 
 struct CalendarWeekView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarWeekView(calendarVM: CalendarViewModel(), selectedScheduleList: .constant([]), isDayModalVisible: .constant(false), cellHeight: 120, cellWidhth: UIScreen.main.bounds.width / 7)
+        CalendarWeekView(isDayModalVisible: .constant(false), cellHeight: 120, cellWidhth: UIScreen.main.bounds.width / 7)
+            .environmentObject(CalendarViewModel())
     }
 }

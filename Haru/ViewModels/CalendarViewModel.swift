@@ -9,21 +9,21 @@ import Foundation
 import SwiftUI
 
 final class CalendarViewModel: ObservableObject {
-    // 현재 달력에 보여질 일정들만 모은 자료구조
     @Published var scheduleList: [[Int: [Schedule]]] = [[:]] // 원소 개수 == dateList의 개수
-    @Published var viewScheduleList = [[[(Int, Schedule?)]]]()
+    @Published var viewScheduleList = [[[(Int, Schedule?)]]]() // 뷰에 보여주기 위한 일정 리스트
 
     @Published var startOnSunday: Bool = true
     
     @Published var monthOffest: Int = 0 // 진짜 월과의 차이
     
     @Published var selectedDate: DateValue // 터치해서 선택된 날짜
+    @Published var selectedScheduleList: [Schedule] = [] // 터치해서 선택된 날짜에 있는 일정 리스트
     
     @Published var selectionSet: Set<DateValue> = [] // 드래그해서 선택된 날짜(들)
 
     @Published var dateList: [DateValue] = [] // 달력에 표시할 날짜들
     
-    @Published var numberOfWeeks: Int = 0
+    @Published var numberOfWeeks: Int = 0 // 달력에 표시된 주차
     
     @Published var dayList: [String] = [] // 달력에 표시할 요일
     
@@ -34,6 +34,8 @@ final class CalendarViewModel: ObservableObject {
     
     @Published var categoryList: [Category] = []
     
+    // MARK: - Service
+
     private let scheduleService = ScheduleService()
     private let categoryService = CategoryService()
     
@@ -147,13 +149,13 @@ final class CalendarViewModel: ObservableObject {
     }
     
     // 선택된 날의 스케줄 가져오기
-    func getSelectedScheduleList(_ selectedIndex: Int) -> [Schedule] {
+    func getSelectedScheduleList(_ selectedIndex: Int) {
         var result = [Schedule]()
         
         scheduleList[selectedIndex].sorted { $0.key < $1.key }.forEach { key, value in
             result.append(contentsOf: value)
         }
         
-        return result
+        selectedScheduleList = result
     }
 }

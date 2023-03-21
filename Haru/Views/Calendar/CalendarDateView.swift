@@ -11,9 +11,7 @@ struct CalendarDateView: View {
     @State private var isSchModalVisible: Bool = false
     @State private var isDayModalVisible: Bool = false
 
-    @ObservedObject var calendarVM: CalendarViewModel
-    
-    @State private var selectedScheduleList: [Schedule] = []
+    @EnvironmentObject var calendarVM: CalendarViewModel
 
     var body: some View {
         ZStack {
@@ -95,11 +93,11 @@ struct CalendarDateView: View {
                         let combined = longPress.sequenced(before: drag)
                         
                         CalendarWeekView(
-                            calendarVM: calendarVM, selectedScheduleList: $selectedScheduleList,
                             isDayModalVisible: $isDayModalVisible,
                             cellHeight: proxy.size.height / CGFloat(calendarVM.numberOfWeeks),
                             cellWidhth: proxy.size.width / 7
                         )
+                        .environmentObject(calendarVM)
                         .gesture(combined)
                     } // GeometryReader
                 } // Group
@@ -152,7 +150,7 @@ struct CalendarDateView: View {
                         )
                         
                         List {
-                            ForEach(selectedScheduleList) { sch in
+                            ForEach(calendarVM.selectedScheduleList) { sch in
                                 Text(sch.content)
                             }
                         }
@@ -166,11 +164,6 @@ struct CalendarDateView: View {
                 calendarVM.selectionSet.removeAll()
             }
         }
-        .onChange(of: isDayModalVisible) { _ in
-            if !isDayModalVisible {
-                selectedScheduleList.removeAll()
-            }
-        }
         .onChange(of: calendarVM.startOnSunday) { newValue in
             calendarVM.setStartOnSunday(newValue)
         }
@@ -179,6 +172,7 @@ struct CalendarDateView: View {
 
 struct CalendarDateView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDateView(calendarVM: CalendarViewModel())
+        CalendarDateView()
+            .environmentObject(CalendarViewModel())
     }
 }
