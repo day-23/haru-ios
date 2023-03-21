@@ -81,6 +81,30 @@ final class TodoAddViewModel: ObservableObject {
 
     @Published var memo: String = ""
 
+    var isFieldEmpty: Bool {
+        if isSelectedRepeat {
+            switch repeatOption {
+            case .everyDay:
+                if repeatDay.isEmpty {
+                    return true
+                }
+            case .everyWeek, .everySecondWeek:
+                if repeatWeek.filter({ $0.isClicked }).isEmpty {
+                    return true
+                }
+            case .everyMonth:
+                if repeatMonth.filter({ $0.isClicked }).isEmpty {
+                    return true
+                }
+            case .everyYear:
+                if repeatYear.filter({ $0.isClicked }).isEmpty {
+                    return true
+                }
+            }
+        }
+        return todoContent.isEmpty
+    }
+
     init(checkListViewModel: CheckListViewModel, mode: TodoAddMode = .add) {
         self.checkListViewModel = checkListViewModel
         self.mode = mode
@@ -268,8 +292,10 @@ final class TodoAddViewModel: ObservableObject {
         alarm = !todo.alarms.isEmpty ? todo.alarms[0].time : .init()
         isSelectedAlarm = !todo.alarms.isEmpty
 
-        repeatOption = todo.repeatOption != nil ? RepeatOption.allCases
-            .filter { $0.rawValue == todo.repeatOption }[0] : .everyDay
+        repeatOption = .everyDay
+        if let option = RepeatOption.allCases.first(where: { $0.rawValue == todo.repeatOption }) {
+            repeatOption = option
+        }
         isSelectedRepeat = todo.repeatOption != nil
         repeatEnd = todo.repeatEnd ?? .init()
         isSelectedRepeatEnd = todo.repeatEnd != nil

@@ -24,12 +24,15 @@ struct TodoView: View {
     }()
 
     var body: some View {
-        // Todo Item
+        //  Todo Item
         HStack {
             CompleteButton(isClicked: todo.completed)
                 .onTapGesture {
-                    if todo.repeatOption == nil {
-                        checkListViewModel.completeTodo(todoId: todo.id, completed: !todo.completed) { result in
+                    if todo.repeatOption == nil &&
+                        todo.repeatValue == nil
+                    {
+                        checkListViewModel.completeTodo(todoId: todo.id,
+                                                        completed: !todo.completed) { result in
                             switch result {
                             case .success:
                                 checkListViewModel.fetchTodoList()
@@ -37,14 +40,30 @@ struct TodoView: View {
                                 print("[Debug] \(failure) (\(#fileID), \(#function))")
                             }
                         }
+                        return
+                    }
+
+                    //  TODO: 반복 할 일 완료 넘겨주기, 만약 반복이 끝났다면 endDate = null
+                    guard let nextEndDate = todo.nextEndDate() else { return }
+
+                    guard let repeatEnd = todo.repeatEnd else {
+                        // 무한히 반복하는 할 일
+
+                        return
+                    }
+
+                    if nextEndDate.compare(repeatEnd) == .orderedAscending {
+                        // 반복이 끝나지 않았음
+
                     } else {
-                        // TODO: 반복 할 일 완료 넘겨주기
+                        // 반복이 끝났음
                     }
                 }
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(todo.content)
                     .font(.body)
+                    .strikethrough(todo.completed)
 
                 if todo.tags.count > 0 ||
                     todo.endDate != nil ||

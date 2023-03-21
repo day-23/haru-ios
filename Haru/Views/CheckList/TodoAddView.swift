@@ -210,18 +210,14 @@ struct TodoAddView: View {
                                             .frame(alignment: .leading)
                                             .foregroundColor(viewModel
                                                 .isSelectedEndDateTime ?
-                                                .black :
-                                                Constants.lightGray)
+                                                .black : Constants.lightGray)
 
                                         Spacer()
 
                                         if viewModel.isSelectedEndDateTime {
                                             DatePicker(
-                                                selection: $viewModel
-                                                    .endDateTime,
-                                                displayedComponents: [
-                                                    .hourAndMinute,
-                                                ]
+                                                selection: $viewModel.endDateTime,
+                                                displayedComponents: [.hourAndMinute]
                                             ) {}
                                                 .labelsHidden()
                                                 .padding(.vertical, -5)
@@ -471,7 +467,7 @@ struct TodoAddView: View {
                     Text("\(viewModel.mode == .add ? "추가" : "수정")")
                         .padding(.horizontal, 20)
                         .padding(.vertical, 5)
-                        .disabled(viewModel.todoContent.isEmpty)
+                        .disabled(viewModel.isFieldEmpty)
                 }
 
                 Spacer()
