@@ -109,7 +109,7 @@ final class CheckListViewModel: ObservableObject {
             todoService.fetchTodoListByTag(tag: tag) { result in
                 switch result {
                 case let .success(success):
-                    withAnimation {
+                    withAnimation(.easeInOut(duration: 0.2)) {
                         self.todoListByTag = success.todos
                         self.todoListByCompleted = success.completedTodos
                     }
@@ -124,7 +124,7 @@ final class CheckListViewModel: ObservableObject {
         todoService.fetchTodoListByFlag { result in
             switch result {
             case let .success(success):
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     self.todoListByFlag = success
                 }
             case let .failure(failure):
@@ -137,7 +137,7 @@ final class CheckListViewModel: ObservableObject {
         todoService.fetchTodoListByCompletedInMain { result in
             switch result {
             case let .success(success):
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     self.todoListByCompleted = success
                 }
             case let .failure(failure):
@@ -150,7 +150,7 @@ final class CheckListViewModel: ObservableObject {
         todoService.fetchTodoListByTodayTodoAndUntilToday(today: .now) { result in
             switch result {
             case let .success(success):
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     self.todoListByFlagWithToday = success.flaggedTodos
                     self.todoListByTodayTodo = success.todayTodos
                     self.todoListByUntilToday = success.endDateTodos
@@ -165,7 +165,7 @@ final class CheckListViewModel: ObservableObject {
         todoService.fetchTodoListWithAnyTag { result in
             switch result {
             case let .success(success):
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     self.todoListWithAnyTag = success
                 }
             case let .failure(failure):
@@ -178,7 +178,7 @@ final class CheckListViewModel: ObservableObject {
         todoService.fetchTodoListWithoutTag { result in
             switch result {
             case let .success(success):
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     self.todoListWithoutTag = success
                 }
             case let .failure(failure):
@@ -214,9 +214,7 @@ final class CheckListViewModel: ObservableObject {
                                flag: !todo.flag) { result in
             switch result {
             case let .success(success):
-                withAnimation(.easeOut(duration: 0.25)) {
-                    self.fetchTodoList()
-                }
+                self.fetchTodoList()
                 completion(.success(success))
             case let .failure(error):
                 completion(.failure(error))
@@ -254,6 +252,23 @@ final class CheckListViewModel: ObservableObject {
             tagId: tagId,
             todoListByTag: todoListByTag
         )
+    }
+
+    func completeSubTodo(
+        subTodoId: String,
+        completed: Bool,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.completeSubTodo(subTodoId: subTodoId,
+                                    completed: completed) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                completion(.failure(failure))
+            }
+        }
     }
 
     // MARK: - Delete

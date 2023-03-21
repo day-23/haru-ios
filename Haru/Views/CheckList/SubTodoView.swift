@@ -14,17 +14,21 @@ struct SubTodoView: View {
 
     var body: some View {
         HStack {
-            Circle()
-                .foregroundColor(.white)
-                .frame(width: 20, height: 20)
-                .overlay {
-                    Circle()
-                        .stroke(lineWidth: 2)
-                        .foregroundColor(Color(0x000000, opacity: 0.5))
+            CompleteButton(isClicked: subTodo.completed)
+                .onTapGesture {
+                    checkListViewModel.completeSubTodo(subTodoId: subTodo.id,
+                                                       completed: !subTodo.completed) { result in
+                        switch result {
+                        case .success:
+                            checkListViewModel.fetchTodoList()
+                        case .failure(let failure):
+                            print("[Debug] \(failure) (\(#fileID), \(#function))")
+                        }
+                    }
                 }
 
             Text(subTodo.content)
-                .padding(.leading, 10)
+                .strikethrough(subTodo.completed)
 
             Spacer()
         }

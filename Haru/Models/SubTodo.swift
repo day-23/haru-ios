@@ -12,6 +12,8 @@ struct SubTodo: Codable, Identifiable {
 
     let id: String
     var content: String
+    var subTodoOrder: Int
+    var completed: Bool
 
     // MARK: - Dates
 

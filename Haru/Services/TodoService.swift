@@ -503,7 +503,9 @@ struct TodoService {
     }
 
     func completeTodo(
-        todoId: String
+        todoId: String,
+        completed: Bool,
+        completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(
             TodoService.baseURL +
@@ -512,43 +514,92 @@ struct TodoService {
         ).response { response in
             switch response.result {
             case .success:
-                break
+                fetchTodoList { result in
+                    switch result {
+                    case .success:
+                        completion(.success(true))
+                    case let .failure(failure):
+                        print("[Debug] 완료 후 Todo 불러오기에 실패했습니다. \(failure), (\(#fileID), \(#function))")
+                        completion(.failure(failure))
+                    }
+                }
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
+                completion(.failure(error))
             }
         }
     }
 
     func completeSubTodo(
-        subTodoId: String
+        subTodoId: String,
+        completed: Bool,
+        completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: [String: Any] = [
+            "completed": completed,
+        ]
+
         AF.request(
             TodoService.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/complete/subtodo/\(subTodoId)",
-            method: .patch
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
-                break
+                fetchTodoList { result in
+                    switch result {
+                    case .success:
+                        completion(.success(true))
+                    case let .failure(failure):
+                        print("[Debug] 완료 후 Todo 불러오기에 실패했습니다. \(failure), (\(#fileID), \(#function))")
+                        completion(.failure(failure))
+                    }
+                }
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
+                completion(.failure(error))
             }
         }
     }
 
     func completeTodoWithRepeat(
-        todo: Todo
+        todoId: String,
+        todo: Request.Todo,
+        completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
         AF.request(
             TodoService.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todo.id)/repeat",
-            method: .patch
+                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)/repeat",
+            method: .patch,
+            parameters: todo,
+            encoder: JSONParameterEncoder(encoder: TodoService.encoder),
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
-                break
+                fetchTodoList { result in
+                    switch result {
+                    case .success:
+                        completion(.success(true))
+                    case let .failure(failure):
+                        print("[Debug] 완료 후 Todo 불러오기에 실패했습니다. \(failure), (\(#fileID), \(#function))")
+                        completion(.failure(failure))
+                    }
+                }
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
+                completion(.failure(error))
             }
         }
     }

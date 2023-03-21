@@ -121,7 +121,10 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func createSubTodo() {
-        subTodoList.append(SubTodo(id: UUID().uuidString, content: ""))
+        subTodoList.append(SubTodo(id: UUID().uuidString,
+                                   content: "",
+                                   subTodoOrder: -1,
+                                   completed: false))
     }
 
     //  MARK: - Update
@@ -245,7 +248,12 @@ final class TodoAddViewModel: ObservableObject {
 
         flag = todo.flag
 
-        subTodoList = todo.subTodos.map { SubTodo(id: $0.id, content: $0.content) }
+        subTodoList = todo.subTodos.map {
+            SubTodo(id: $0.id,
+                    content: $0.content,
+                    subTodoOrder: $0.subTodoOrder,
+                    completed: $0.completed)
+        }
 
         tag = ""
         tagList = todo.tags.map { Tag(id: $0.id, content: $0.content) }
@@ -283,7 +291,7 @@ final class TodoAddViewModel: ObservableObject {
 
         checkListViewModel.deleteTodo(todoId: todoId) { result in
             switch result {
-            case let .success(success):
+            case .success:
                 completion(.success(true))
             case let .failure(failure):
                 completion(.failure(failure))
