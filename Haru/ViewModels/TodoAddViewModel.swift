@@ -27,7 +27,14 @@ final class TodoAddViewModel: ObservableObject {
 
     @Published var endDate: Date = .init()
     @Published var endDateTime: Date = .init()
-    @Published var isSelectedEndDate: Bool = false
+    @Published var isSelectedEndDate: Bool = false {
+        didSet {
+            if !isSelectedEndDate && isSelectedRepeat {
+                isSelectedRepeat = false
+            }
+        }
+    }
+
     @Published var isSelectedEndDateTime: Bool = false
     var selectedEndDate: Date? {
         if isSelectedEndDate { return endDate }
@@ -69,7 +76,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     var repeatValue: String? {
-        if isSelectedRepeat {
+        if isSelectedEndDate && isSelectedRepeat {
             var value: [Day] = []
             switch repeatOption {
             case .everyDay:
