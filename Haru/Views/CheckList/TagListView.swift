@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct TagListView: View {
-    var viewModel: CheckListViewModel
-    var action: (Tag) -> Void
+    let viewModel: CheckListViewModel
+    let action: (Tag) -> Void
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {

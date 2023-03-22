@@ -28,32 +28,10 @@ struct CheckListView: View {
                         initialOffset = nil
                     }
 
-                    //  오늘 나의 하루 클릭시
-                    HStack {
-                        Image("today-todo")
-                            .padding(.vertical, 12)
-                            .padding(.leading, 20)
-                            .padding(.trailing, 12)
-                            .tint(.white)
-                        Text("오늘 나의 하루")
-                            .font(.system(size: 20, weight: .bold))
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .frame(width: 28, height: 28)
-                            .padding(.trailing, 20)
-                    }
-                    .frame(height: 52)
-                    .foregroundColor(.white)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF), Color(0xAAD7FF)]),
-                            startPoint: .bottomLeading,
-                            endPoint: .topTrailing
-                        )
-                    )
-                    .onTapGesture {
+                    //  오늘 나의 하루
+                    HaruView { tag in
                         withAnimation {
-                            viewModel.selectedTag = Tag(id: "하루", content: "하루")
+                            viewModel.selectedTag = tag
                         }
                         initialOffset = nil
                     }
