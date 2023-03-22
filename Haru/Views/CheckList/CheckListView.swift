@@ -9,15 +9,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct CheckListView: View {
-    struct EmptyText: View {
-        var body: some View {
-            Text("모든 할 일을 마쳤습니다!")
-                .font(.footnote)
-                .foregroundColor(Color(0x000000, opacity: 0.5))
-                .padding(.leading, 34)
-        }
-    }
-
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
     @State private var isModalVisible: Bool = false
@@ -116,672 +107,149 @@ struct CheckListView: View {
                     if !viewModel.isEmpty {
                         List {
                             if viewModel.selectedTag == nil {
-                                Section {
-                                    if !viewModel.todoListByFlag.isEmpty {
-                                        ForEach(viewModel.todoListByFlag) { todo in
-                                            TodoView(
-                                                checkListViewModel: viewModel,
-                                                todo: todo
-                                            ).overlay {
-                                                NavigationLink {
-                                                    TodoAddView(viewModel: addViewModel)
-                                                        .onAppear {
-                                                            withAnimation {
-                                                                addViewModel.applyTodoData(todo: todo)
-                                                                addViewModel.mode = .edit
-                                                                addViewModel.todoId = todo.id
-                                                            }
-                                                        }
-                                                } label: {
-                                                    EmptyView()
-                                                }
-                                                .opacity(0)
-                                            }
-
-                                            if todo.isShowingSubTodo {
-                                                ForEach(todo.subTodos) { subTodo in
-                                                    SubTodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo,
-                                                        subTodo: subTodo
-                                                    )
-                                                }
-                                                .moveDisabled(true)
-                                            }
-                                        }
-                                        .onMove(perform: { indexSet, index in
-                                            viewModel.todoListByFlag.move(fromOffsets: indexSet, toOffset: index)
-                                            viewModel.updateOrderMain()
-                                        })
-                                        .listRowBackground(Color.white)
-                                    } else {
-                                        EmptyText()
-                                    }
+                                ListSectionView(
+                                    checkListViewModel: viewModel,
+                                    todoAddViewModel: addViewModel,
+                                    todoList: $viewModel.todoListByFlag
+                                ) {
+                                    viewModel.updateOrderMain()
                                 } header: {
-                                    HStack {
-                                        StarButton(isClicked: true)
-                                            .padding(.leading, 29)
-                                        Spacer()
-                                    }
-                                    .listRowInsets(EdgeInsets(
-                                        top: 0,
-                                        leading: 0,
-                                        bottom: 1,
-                                        trailing: 0
-                                    ))
-                                    .background(.white)
+                                    StarButton(isClicked: true)
+                                        .padding(.leading, 29)
                                 }
-                                .listRowSeparator(.hidden)
-                                .listRowInsets(EdgeInsets())
 
                                 Divider()
                                     .listRowSeparator(.hidden)
                                     .listRowInsets(EdgeInsets())
 
-                                Section {
-                                    if !viewModel.todoListWithAnyTag.isEmpty {
-                                        ForEach(viewModel.todoListWithAnyTag) { todo in
-                                            TodoView(
-                                                checkListViewModel: viewModel,
-                                                todo: todo
-                                            ).overlay {
-                                                NavigationLink {
-                                                    TodoAddView(viewModel: addViewModel)
-                                                        .onAppear {
-                                                            withAnimation {
-                                                                addViewModel.applyTodoData(todo: todo)
-                                                                addViewModel.mode = .edit
-                                                                addViewModel.todoId = todo.id
-                                                            }
-                                                        }
-                                                } label: {
-                                                    EmptyView()
-                                                }
-                                                .opacity(0)
-                                            }
-
-                                            if todo.isShowingSubTodo {
-                                                ForEach(todo.subTodos) { subTodo in
-                                                    SubTodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo,
-                                                        subTodo: subTodo
-                                                    )
-                                                }
-                                                .moveDisabled(true)
-                                            }
-                                        }
-                                        .onMove(perform: { indexSet, index in
-                                            viewModel.todoListWithAnyTag.move(fromOffsets: indexSet, toOffset: index)
-                                            viewModel.updateOrderMain()
-                                        })
-                                        .listRowBackground(Color.white)
-                                    } else {
-                                        EmptyText()
-                                    }
+                                ListSectionView(
+                                    checkListViewModel: viewModel,
+                                    todoAddViewModel: addViewModel,
+                                    todoList: $viewModel.todoListWithAnyTag
+                                ) {
+                                    viewModel.updateOrderMain()
                                 } header: {
-                                    HStack {
-                                        TagView(Tag(id: "분류됨", content: "분류됨"))
-                                            .padding(.leading, 21)
-                                        Spacer()
-                                    }
-                                    .listRowInsets(EdgeInsets(
-                                        top: 0,
-                                        leading: 0,
-                                        bottom: 1,
-                                        trailing: 0
-                                    ))
-                                    .background(.white)
+                                    TagView(Tag(id: "분류됨", content: "분류됨"))
+                                        .padding(.leading, 21)
                                 }
-                                .listRowSeparator(.hidden)
-                                .listRowInsets(EdgeInsets())
 
                                 Divider()
                                     .listRowSeparator(.hidden)
                                     .listRowInsets(EdgeInsets())
 
-                                Section {
-                                    if !viewModel.todoListWithoutTag.isEmpty {
-                                        ForEach(viewModel.todoListWithoutTag) { todo in
-                                            TodoView(
-                                                checkListViewModel: viewModel,
-                                                todo: todo
-                                            ).overlay {
-                                                NavigationLink {
-                                                    TodoAddView(viewModel: addViewModel)
-                                                        .onAppear {
-                                                            withAnimation {
-                                                                addViewModel.applyTodoData(todo: todo)
-                                                                addViewModel.mode = .edit
-                                                                addViewModel.todoId = todo.id
-                                                            }
-                                                        }
-                                                } label: {
-                                                    EmptyView()
-                                                }
-                                                .opacity(0)
-                                            }
-
-                                            if todo.isShowingSubTodo {
-                                                ForEach(todo.subTodos) { subTodo in
-                                                    SubTodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo,
-                                                        subTodo: subTodo
-                                                    )
-                                                }
-                                                .moveDisabled(true)
-                                            }
-                                        }
-                                        .onMove(perform: { indexSet, index in
-                                            viewModel.todoListWithoutTag.move(fromOffsets: indexSet, toOffset: index)
-                                            viewModel.updateOrderMain()
-                                        })
-                                        .listRowBackground(Color.white)
-                                    } else {
-                                        EmptyText()
-                                    }
+                                ListSectionView(
+                                    checkListViewModel: viewModel,
+                                    todoAddViewModel: addViewModel,
+                                    todoList: $viewModel.todoListWithoutTag
+                                ) {
+                                    viewModel.updateOrderMain()
                                 } header: {
-                                    HStack {
-                                        TagView(Tag(id: "미분류", content: "미분류"))
-                                            .padding(.leading, 21)
-                                        Spacer()
-                                    }
-                                    .listRowInsets(EdgeInsets(
-                                        top: 0,
-                                        leading: 0,
-                                        bottom: 1,
-                                        trailing: 0
-                                    ))
-                                    .background(.white)
+                                    TagView(Tag(id: "미분류", content: "미분류"))
+                                        .padding(.leading, 21)
                                 }
-                                .listRowSeparator(.hidden)
-                                .listRowInsets(EdgeInsets())
 
                                 Divider()
                                     .listRowSeparator(.hidden)
                                     .listRowInsets(EdgeInsets())
 
-                                Section {
-                                    if !viewModel.todoListByCompleted.isEmpty {
-                                        ForEach(viewModel.todoListByCompleted) { todo in
-                                            TodoView(
-                                                checkListViewModel: viewModel,
-                                                todo: todo
-                                            ).overlay {
-                                                NavigationLink {
-                                                    TodoAddView(viewModel: addViewModel)
-                                                        .onAppear {
-                                                            withAnimation {
-                                                                addViewModel.applyTodoData(todo: todo)
-                                                                addViewModel.mode = .edit
-                                                                addViewModel.todoId = todo.id
-                                                            }
-                                                        }
-                                                } label: {
-                                                    EmptyView()
-                                                }
-                                                .opacity(0)
-                                            }
-
-                                            if todo.isShowingSubTodo {
-                                                ForEach(todo.subTodos) { subTodo in
-                                                    SubTodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo,
-                                                        subTodo: subTodo
-                                                    )
-                                                }
-                                                .moveDisabled(true)
-                                            }
-                                        }
-                                        .onMove(perform: { indexSet, index in
-                                            viewModel.todoListByCompleted.move(fromOffsets: indexSet, toOffset: index)
-                                            viewModel.updateOrderMain()
-                                        })
-                                        .listRowBackground(Color.white)
-                                    } else {
-                                        EmptyText()
-                                    }
+                                ListSectionView(
+                                    checkListViewModel: viewModel,
+                                    todoAddViewModel: addViewModel,
+                                    todoList: $viewModel.todoListByCompleted
+                                ) {
+                                    viewModel.updateOrderMain()
                                 } header: {
-                                    HStack {
-                                        TagView(Tag(id: "완료", content: "완료"))
-                                            .padding(.leading, 21)
-                                        Spacer()
-                                    }
-                                    .listRowInsets(EdgeInsets(
-                                        top: 0,
-                                        leading: 0,
-                                        bottom: 1,
-                                        trailing: 0
-                                    ))
-                                    .background(.white)
+                                    TagView(Tag(id: "완료", content: "완료"))
+                                        .padding(.leading, 21)
                                 }
-                                .listRowSeparator(.hidden)
-                                .listRowInsets(EdgeInsets())
-
                             } else {
                                 if let tag = viewModel.selectedTag {
                                     if tag.id == "하루" {
-                                        Section {
-                                            if !viewModel.todoListByFlagWithToday.isEmpty {
-                                                ForEach(viewModel.todoListByFlagWithToday) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    ).overlay {
-                                                        NavigationLink {
-                                                            TodoAddView(viewModel: addViewModel)
-                                                                .onAppear {
-                                                                    withAnimation {
-                                                                        addViewModel.applyTodoData(todo: todo)
-                                                                        addViewModel.mode = .edit
-                                                                        addViewModel.todoId = todo.id
-                                                                    }
-                                                                }
-                                                        } label: {
-                                                            EmptyView()
-                                                        }
-                                                        .opacity(0)
-                                                    }
-
-                                                    if todo.isShowingSubTodo {
-                                                        ForEach(todo.subTodos) { subTodo in
-                                                            SubTodoView(
-                                                                checkListViewModel: viewModel,
-                                                                todo: todo,
-                                                                subTodo: subTodo
-                                                            )
-                                                        }
-                                                        .moveDisabled(true)
-                                                    }
-                                                }
-                                                .onMove(perform: { indexSet, index in
-                                                    viewModel.todoListByFlagWithToday.move(fromOffsets: indexSet, toOffset: index)
-                                                    viewModel.updateOrderHaru()
-                                                })
-                                                .listRowBackground(Color.white)
-                                            } else {
-                                                EmptyText()
-                                            }
+                                        ListSectionView(
+                                            checkListViewModel: viewModel,
+                                            todoAddViewModel: addViewModel,
+                                            todoList: $viewModel.todoListByFlagWithToday
+                                        ) {
+                                            viewModel.updateOrderHaru()
                                         } header: {
-                                            HStack {
-                                                StarButton(isClicked: true)
-                                                    .padding(.leading, 29)
-                                                Spacer()
-                                            }
-                                            .padding(.vertical, 5)
-                                            .listRowInsets(EdgeInsets(
-                                                top: 0,
-                                                leading: 0,
-                                                bottom: 1,
-                                                trailing: 0
-                                            ))
-                                            .background(.white)
+                                            StarButton(isClicked: true)
+                                                .padding(.leading, 29)
                                         }
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(EdgeInsets())
 
-                                        Section {
-                                            if !viewModel.todoListByTodayTodo.isEmpty {
-                                                ForEach(viewModel.todoListByTodayTodo) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    ).overlay {
-                                                        NavigationLink {
-                                                            TodoAddView(viewModel: addViewModel)
-                                                                .onAppear {
-                                                                    withAnimation {
-                                                                        addViewModel.applyTodoData(todo: todo)
-                                                                        addViewModel.mode = .edit
-                                                                        addViewModel.todoId = todo.id
-                                                                    }
-                                                                }
-                                                        } label: {
-                                                            EmptyView()
-                                                        }
-                                                        .opacity(0)
-                                                    }
+                                        Divider()
+                                            .listRowSeparator(.hidden)
+                                            .listRowInsets(EdgeInsets())
 
-                                                    if todo.isShowingSubTodo {
-                                                        ForEach(todo.subTodos) { subTodo in
-                                                            SubTodoView(
-                                                                checkListViewModel: viewModel,
-                                                                todo: todo,
-                                                                subTodo: subTodo
-                                                            )
-                                                        }
-                                                        .moveDisabled(true)
-                                                    }
-                                                }
-                                                .onMove(perform: { indexSet, index in
-                                                    viewModel.todoListByTodayTodo.move(fromOffsets: indexSet, toOffset: index)
-                                                    viewModel.updateOrderHaru()
-                                                })
-                                                .listRowBackground(Color.white)
-                                            } else {
-                                                EmptyText()
-                                            }
+                                        ListSectionView(
+                                            checkListViewModel: viewModel,
+                                            todoAddViewModel: addViewModel,
+                                            todoList: $viewModel.todoListByTodayTodo
+                                        ) {
+                                            viewModel.updateOrderHaru()
                                         } header: {
-                                            HStack {
-                                                TagView(Tag(
-                                                    id: "오늘 할 일",
-                                                    content: "오늘 할 일"
-                                                ))
+                                            TagView(Tag(id: "오늘 할 일", content: "오늘 할 일"))
                                                 .padding(.leading, 21)
-                                                Spacer()
-                                            }
-                                            .padding(.vertical, 5)
-                                            .listRowInsets(EdgeInsets(
-                                                top: 0,
-                                                leading: 0,
-                                                bottom: 1,
-                                                trailing: 0
-                                            ))
-                                            .background(.white)
                                         }
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(EdgeInsets())
 
-                                        Section {
-                                            if !viewModel.todoListByUntilToday.isEmpty {
-                                                ForEach(viewModel.todoListByUntilToday) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    ).overlay {
-                                                        NavigationLink {
-                                                            TodoAddView(viewModel: addViewModel)
-                                                                .onAppear {
-                                                                    withAnimation {
-                                                                        addViewModel.applyTodoData(todo: todo)
-                                                                        addViewModel.mode = .edit
-                                                                        addViewModel.todoId = todo.id
-                                                                    }
-                                                                }
-                                                        } label: {
-                                                            EmptyView()
-                                                        }
-                                                        .opacity(0)
-                                                    }
+                                        Divider()
+                                            .listRowSeparator(.hidden)
+                                            .listRowInsets(EdgeInsets())
 
-                                                    if todo.isShowingSubTodo {
-                                                        ForEach(todo.subTodos) { subTodo in
-                                                            SubTodoView(
-                                                                checkListViewModel: viewModel,
-                                                                todo: todo,
-                                                                subTodo: subTodo
-                                                            )
-                                                        }
-                                                        .moveDisabled(true)
-                                                    }
-                                                }
-                                                .onMove(perform: { indexSet, index in
-                                                    viewModel.todoListByUntilToday.move(fromOffsets: indexSet, toOffset: index)
-                                                    viewModel.updateOrderHaru()
-                                                })
-                                                .listRowBackground(Color.white)
-                                            } else {
-                                                EmptyText()
-                                            }
+                                        ListSectionView(
+                                            checkListViewModel: viewModel,
+                                            todoAddViewModel: addViewModel,
+                                            todoList: $viewModel.todoListByUntilToday
+                                        ) {
+                                            viewModel.updateOrderHaru()
                                         } header: {
-                                            HStack {
-                                                TagView(Tag(
-                                                    id: "오늘까지",
-                                                    content: "오늘까지"
-                                                ))
+                                            TagView(Tag(id: "오늘까지", content: "오늘까지"))
                                                 .padding(.leading, 21)
-                                                Spacer()
-                                            }
-                                            .padding(.vertical, 5)
-                                            .listRowInsets(EdgeInsets(
-                                                top: 0,
-                                                leading: 0,
-                                                bottom: 1,
-                                                trailing: 0
-                                            ))
-                                            .background(.white)
                                         }
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(EdgeInsets())
                                     } else if tag.id == "중요" {
-                                        Section {
-                                            if !viewModel.todoListByFlag.isEmpty {
-                                                ForEach(viewModel.todoListByFlag) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    ).overlay {
-                                                        NavigationLink {
-                                                            TodoAddView(viewModel: addViewModel)
-                                                                .onAppear {
-                                                                    withAnimation {
-                                                                        addViewModel.applyTodoData(todo: todo)
-                                                                        addViewModel.mode = .edit
-                                                                        addViewModel.todoId = todo.id
-                                                                    }
-                                                                }
-                                                        } label: {
-                                                            EmptyView()
-                                                        }
-                                                        .opacity(0)
-                                                    }
-
-                                                    if todo.isShowingSubTodo {
-                                                        ForEach(todo.subTodos) { subTodo in
-                                                            SubTodoView(
-                                                                checkListViewModel: viewModel,
-                                                                todo: todo,
-                                                                subTodo: subTodo
-                                                            )
-                                                        }
-                                                        .moveDisabled(true)
-                                                    }
-                                                }
-                                                .onMove(perform: { indexSet, index in
-                                                    viewModel.todoListByFlag.move(fromOffsets: indexSet, toOffset: index)
-                                                    viewModel.updateOrderFlag()
-                                                })
-                                                .listRowBackground(Color.white)
-                                            } else {
-                                                EmptyText()
-                                            }
+                                        ListSectionView(
+                                            checkListViewModel: viewModel,
+                                            todoAddViewModel: addViewModel,
+                                            todoList: $viewModel.todoListByFlag
+                                        ) {
+                                            viewModel.updateOrderFlag()
                                         } header: {
-                                            HStack {
-                                                StarButton(isClicked: true)
-                                                    .padding(.leading, 29)
-                                                Spacer()
-                                            }
-                                            .padding(.vertical, 5)
-                                            .listRowInsets(EdgeInsets(
-                                                top: 0,
-                                                leading: 0,
-                                                bottom: 1,
-                                                trailing: 0
-                                            ))
-                                            .background(.white)
+                                            StarButton(isClicked: true)
+                                                .padding(.leading, 29)
                                         }
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(EdgeInsets())
                                     } else if tag.id == "미분류" {
-                                        Section {
-                                            if !viewModel.todoListWithoutTag.isEmpty {
-                                                ForEach(viewModel.todoListWithoutTag) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    ).overlay {
-                                                        NavigationLink {
-                                                            TodoAddView(viewModel: addViewModel)
-                                                                .onAppear {
-                                                                    withAnimation {
-                                                                        addViewModel.applyTodoData(todo: todo)
-                                                                        addViewModel.mode = .edit
-                                                                        addViewModel.todoId = todo.id
-                                                                    }
-                                                                }
-                                                        } label: {
-                                                            EmptyView()
-                                                        }
-                                                        .opacity(0)
-                                                    }
-
-                                                    if todo.isShowingSubTodo {
-                                                        ForEach(todo.subTodos) { subTodo in
-                                                            SubTodoView(
-                                                                checkListViewModel: viewModel,
-                                                                todo: todo,
-                                                                subTodo: subTodo
-                                                            )
-                                                        }
-                                                        .moveDisabled(true)
-                                                    }
-                                                }
-                                                .onMove(perform: { indexSet, index in
-                                                    viewModel.todoListWithoutTag.move(fromOffsets: indexSet, toOffset: index)
-                                                    viewModel.updateOrderWithoutTag()
-                                                })
-                                                .listRowBackground(Color.white)
-                                            } else {
-                                                EmptyText()
-                                            }
+                                        ListSectionView(
+                                            checkListViewModel: viewModel,
+                                            todoAddViewModel: addViewModel,
+                                            todoList: $viewModel.todoListWithoutTag
+                                        ) {
+                                            viewModel.updateOrderWithoutTag()
                                         } header: {
-                                            HStack {
-                                                TagView(tag)
-                                                    .padding(.leading, 21)
-                                                Spacer()
-                                            }
-                                            .padding(.vertical, 5)
-                                            .listRowInsets(EdgeInsets(
-                                                top: 0,
-                                                leading: 0,
-                                                bottom: 1,
-                                                trailing: 0
-                                            ))
-                                            .background(.white)
+                                            TagView(tag)
+                                                .padding(.leading, 21)
                                         }
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(EdgeInsets())
                                     } else if tag.id == "완료" {
                                         //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
-                                        Section {
-                                            if !viewModel.todoListByCompleted.isEmpty {
-                                                ForEach(viewModel.todoListByCompleted) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    ).overlay {
-                                                        NavigationLink {
-                                                            TodoAddView(viewModel: addViewModel)
-                                                                .onAppear {
-                                                                    withAnimation {
-                                                                        addViewModel.applyTodoData(todo: todo)
-                                                                        addViewModel.mode = .edit
-                                                                        addViewModel.todoId = todo.id
-                                                                    }
-                                                                }
-                                                        } label: {
-                                                            EmptyView()
-                                                        }
-                                                        .opacity(0)
-                                                    }
-
-                                                    if todo.isShowingSubTodo {
-                                                        ForEach(todo.subTodos) { subTodo in
-                                                            SubTodoView(
-                                                                checkListViewModel: viewModel,
-                                                                todo: todo,
-                                                                subTodo: subTodo
-                                                            )
-                                                        }
-                                                        .moveDisabled(true)
-                                                    }
-                                                }
-                                                .onMove(perform: { indexSet, index in
-                                                    viewModel.todoListByCompleted.move(fromOffsets: indexSet, toOffset: index)
-                                                    viewModel.updateOrderWithoutTag()
-                                                })
-                                                .listRowBackground(Color.white)
-                                            } else {
-                                                EmptyText()
-                                            }
+                                        ListSectionView(
+                                            checkListViewModel: viewModel,
+                                            todoAddViewModel: addViewModel,
+                                            todoList: $viewModel.todoListByCompleted
+                                        ) {
+                                            viewModel.updateOrderWithoutTag()
                                         } header: {
-                                            HStack {
-                                                TagView(tag)
-                                                    .padding(.leading, 21)
-                                                Spacer()
-                                            }
-                                            .padding(.vertical, 5)
-                                            .listRowInsets(EdgeInsets(
-                                                top: 0,
-                                                leading: 0,
-                                                bottom: 1,
-                                                trailing: 0
-                                            ))
-                                            .background(.white)
+                                            TagView(tag)
+                                                .padding(.leading, 21)
                                         }
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(EdgeInsets())
                                     } else {
-                                        Section {
-                                            if !viewModel.todoListByTag.isEmpty {
-                                                ForEach(viewModel.todoListByTag) { todo in
-                                                    TodoView(
-                                                        checkListViewModel: viewModel,
-                                                        todo: todo
-                                                    ).overlay {
-                                                        NavigationLink {
-                                                            TodoAddView(viewModel: addViewModel)
-                                                                .onAppear {
-                                                                    withAnimation {
-                                                                        addViewModel.applyTodoData(todo: todo)
-                                                                        addViewModel.mode = .edit
-                                                                        addViewModel.todoId = todo.id
-                                                                    }
-                                                                }
-                                                        } label: {
-                                                            EmptyView()
-                                                        }
-                                                        .opacity(0)
-                                                    }
-
-                                                    if todo.isShowingSubTodo {
-                                                        ForEach(todo.subTodos) { subTodo in
-                                                            SubTodoView(
-                                                                checkListViewModel: viewModel,
-                                                                todo: todo,
-                                                                subTodo: subTodo
-                                                            )
-                                                        }
-                                                        .moveDisabled(true)
-                                                    }
-                                                }
-                                                .onMove(perform: { indexSet, index in
-                                                    viewModel.todoListByTag.move(fromOffsets: indexSet, toOffset: index)
-                                                    viewModel.updateOrderByTag(tagId: tag.id)
-                                                })
-                                                .listRowBackground(Color.white)
-                                            } else {
-                                                EmptyText()
-                                            }
+                                        ListSectionView(
+                                            checkListViewModel: viewModel,
+                                            todoAddViewModel: addViewModel,
+                                            todoList: $viewModel.todoListByTag
+                                        ) {
+                                            viewModel.updateOrderByTag(tagId: tag.id)
                                         } header: {
-                                            HStack {
-                                                TagView(tag)
-                                                    .padding(.leading, 21)
-                                                Spacer()
-                                            }
-                                            .padding(.vertical, 5)
-                                            .listRowInsets(EdgeInsets(
-                                                top: 0,
-                                                leading: 0,
-                                                bottom: 1,
-                                                trailing: 0
-                                            ))
-                                            .background(.white)
+                                            TagView(tag)
+                                                .padding(.leading, 21)
                                         }
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(EdgeInsets())
                                     }
                                 }
                             }

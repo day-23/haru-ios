@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Todo: Identifiable, Codable {
+struct Todo: Identifiable, Equatable, Codable {
     //  MARK: - Properties
 
     let id: String
@@ -95,6 +95,10 @@ struct Todo: Identifiable, Codable {
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
         self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+    }
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 

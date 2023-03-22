@@ -99,13 +99,11 @@ struct TodoAddView: View {
                                     Array(zip(viewModel.tagList.indices, viewModel.tagList)),
                                     id: \.0
                                 ) { index, tag in
-                                    TagView(Tag(
-                                        id: tag.id,
-                                        content: tag.content
-                                    ))
-                                    .onTapGesture {
-                                        viewModel.tagList.remove(at: index)
-                                    }
+                                    TagView(Tag(id: tag.id,
+                                                content: tag.content))
+                                        .onTapGesture {
+                                            viewModel.tagList.remove(at: index)
+                                        }
                                 }
 
                                 TextField("태그", text: $viewModel.tag)

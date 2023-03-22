@@ -295,11 +295,6 @@ struct TodoService {
             "Content-Type": "application/json",
         ]
 
-        //  FIXME: 서버에서 수정된 데이터를 처리하지 못하는 것처럼 보임.
-        print(HTTPMethod.put)
-        print(TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)")
-        print(String(data: try! TodoService.encoder.encode(todo), encoding: .utf8)!)
-
         AF.request(
             TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .put,
