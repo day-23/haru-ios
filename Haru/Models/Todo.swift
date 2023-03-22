@@ -134,17 +134,23 @@ extension Todo {
             let pattern = repeatValue.map { $0 == "1" ? true : false }
 
             //  pattern 인덱스가 0~11인데, 아래의 반환값은 1~12이므로 다음 달을 가르키게 됨
-            var index = calendar.component(.month, from: endDate)
-            let startIndex = index - 1
+            var index = calendar.component(.month, from: endDate) % 12
+            if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
+                nextEndDate = next
+            } else {
+                return nil
+            }
+            let startIndex = index
+
             while !pattern[index] {
                 if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
                     nextEndDate = next
-                    index += 1
+                    index = (index + 1) % 12
                 } else {
                     return nil
                 }
 
-                if startIndex == index % 12 {
+                if startIndex == index {
                     return nil
                 }
             }
