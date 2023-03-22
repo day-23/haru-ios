@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CategoryFormView: View {
-    @StateObject var scheduleFormVM: ScheduleFormViewModel
+    @EnvironmentObject var scheduleFormVM: ScheduleFormViewModel
 
     @State var categoryContent: String = ""
     @State var categoryColor: Color = .gradientStart1
@@ -38,7 +38,6 @@ struct CategoryFormView: View {
             }
             Button {
                 scheduleFormVM.addCategory(categoryContent, categoryColor.toHex())
-
                 showCategoryForm = false
             } label: {
                 Text("완료")

@@ -9,14 +9,14 @@ import PopupView
 import SwiftUI
 
 struct ScheduleFormView: View {
-    @ObservedObject var scheduleFormVM: ScheduleFormViewModel
+    @StateObject var scheduleFormVM: ScheduleFormViewModel
 
     @Binding var isSchModalVisible: Bool
-    
+
     @State private var showCategorySheet: Bool = false
     @State private var showingPopup: Bool = false
 
-    @State private var idx: Int?
+    @State private var selectedIdx: Int?
 
     var body: some View {
         VStack(spacing: 15) {
@@ -42,22 +42,20 @@ struct ScheduleFormView: View {
                             showCategorySheet = true
                         }
                         .popup(isPresented: $showCategorySheet) {
-                            CategoryView(
-                                scheduleFormVM: scheduleFormVM,
-                                selectionCategory: $idx
-                            )
-                            .background(Color.white)
-                            .frame(height: 450)
-                            .cornerRadius(20)
-                            .padding(.horizontal, 30)
-                            .shadow(radius: 2.0)
+                            CategoryView(selectedIdx: $selectedIdx)
+                                .environmentObject(scheduleFormVM)
+                                .background(Color.white)
+                                .frame(height: 450)
+                                .cornerRadius(20)
+                                .padding(.horizontal, 30)
+                                .shadow(radius: 2.0)
                         } customize: {
                             $0
                                 .animation(.spring())
                                 .closeOnTap(false)
                                 .closeOnTapOutside(true)
                                 .dismissCallback {
-                                    scheduleFormVM.selectionCategory = idx
+                                    scheduleFormVM.selectionCategory = selectedIdx
                                 }
                         }
                         .tint(Color.black)
@@ -70,22 +68,20 @@ struct ScheduleFormView: View {
                             showCategorySheet = true
                         }
                         .popup(isPresented: $showCategorySheet) {
-                            CategoryView(
-                                scheduleFormVM: scheduleFormVM,
-                                selectionCategory: $idx
-                            )
-                            .background(Color.white)
-                            .frame(height: 450)
-                            .cornerRadius(20)
-                            .padding(.horizontal, 30)
-                            .shadow(radius: 2.0)
+                            CategoryView(selectedIdx: $selectedIdx)
+                                .environmentObject(scheduleFormVM)
+                                .background(Color.white)
+                                .frame(height: 450)
+                                .cornerRadius(20)
+                                .padding(.horizontal, 30)
+                                .shadow(radius: 2.0)
                         } customize: {
                             $0
                                 .animation(.spring())
                                 .closeOnTap(false)
                                 .closeOnTapOutside(true)
                                 .dismissCallback {
-                                    scheduleFormVM.selectionCategory = idx
+                                    scheduleFormVM.selectionCategory = selectedIdx
                                 }
                         }
                         .tint(Color.gray1)

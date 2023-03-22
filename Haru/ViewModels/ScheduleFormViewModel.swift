@@ -41,6 +41,8 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.repeatStart = selectionList.first?.date ?? Date()
         self.repeatEnd = selectionList.last?.date ?? Date()
+        
+        print("scheduleVM init")
     }
     
     /**
@@ -52,6 +54,7 @@ final class ScheduleFormViewModel: ObservableObject {
         scheduleFormService.addSchedule(schedule) { result in
             switch result {
             case .success(let success):
+                // TODO: 추가된 일정을 로컬에서 가지고 있을 수 있나? (반복 일정의 경우 생각해볼 것)
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")

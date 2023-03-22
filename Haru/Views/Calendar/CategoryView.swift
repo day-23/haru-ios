@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct CategoryView: View {
-    @StateObject var scheduleFormVM: ScheduleFormViewModel
+    @EnvironmentObject var scheduleFormVM: ScheduleFormViewModel
 
-    @Binding var selectionCategory: Int?
-
+    @Binding var selectedIdx: Int?
+    
     @State var showCategoryForm: Bool = false
 
     var body: some View {
@@ -31,7 +31,7 @@ struct CategoryView: View {
                         ForEach(Array(scheduleFormVM.categoryList.enumerated()),
                                 id: \.offset) { index, category in
                             HStack {
-                                if selectionCategory == index {
+                                if selectedIdx == index {
                                     Circle()
                                         .fill(.gradation1)
                                         .overlay {
@@ -53,13 +53,14 @@ struct CategoryView: View {
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                self.selectionCategory = index
+                                self.selectedIdx = index
                             }
                             Divider()
                         }
 
                         if showCategoryForm {
-                            CategoryFormView(scheduleFormVM: scheduleFormVM, showCategoryForm: $showCategoryForm)
+                            CategoryFormView(showCategoryForm: $showCategoryForm)
+                                .environmentObject(scheduleFormVM)
                         }
 
                         Button {
