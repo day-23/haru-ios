@@ -19,7 +19,7 @@ struct User {
 //    private(set) var deletedAt: Date?
 }
 
-// MARK: - Extensions
+//  MARK: - Extensions
 
 extension User {
 //    mutating func changeEmail(_ email: String) {

@@ -21,12 +21,12 @@ struct TodoAddView: View {
     var body: some View {
         ScrollView {
             VStack {
-                // Todo, SubTodo 입력 View
+                //  Todo, SubTodo 입력 View
                 VStack(alignment: .leading) {
                     HStack {
                         if !isModalVisible {
                             Button {
-                                // TODO: Complete API 연결
+                                //  TODO: Complete API 연결
                             } label: {
                                 Circle()
                                     .strokeBorder(Color(0x707070), lineWidth: 1)
@@ -90,7 +90,7 @@ struct TodoAddView: View {
                 }
                 .padding(.horizontal, 30)
 
-                // Tag 입력 View
+                //  Tag 입력 View
                 Group {
                     Label {
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -135,7 +135,7 @@ struct TodoAddView: View {
                     Divider()
                 }
 
-                // 나의 하루에 추가
+                //  나의 하루에 추가
                 Group {
                     Label {
                         Toggle(isOn: $viewModel.isTodayTodo.animation()) {
@@ -162,7 +162,7 @@ struct TodoAddView: View {
                     Divider()
                 }
 
-                // 마감 설정
+                //  마감 설정
                 Group {
                     Label {
                         Toggle(isOn: $viewModel.isSelectedEndDate.animation()) {
@@ -245,7 +245,7 @@ struct TodoAddView: View {
                     Divider()
                 }
 
-                // 알림 설정
+                //  알림 설정
                 Group {
                     Label {
                         Toggle(isOn: $viewModel.isSelectedAlarm.animation()) {
@@ -281,7 +281,7 @@ struct TodoAddView: View {
                     Divider()
                 }
 
-                // 반복 설정
+                //  반복 설정
                 Group {
                     Label {
                         Toggle(isOn: $viewModel.isSelectedRepeat.animation()) {
@@ -393,7 +393,7 @@ struct TodoAddView: View {
                     Divider()
                 }
 
-                // 메모 추가
+                //  메모 추가
                 Group {
                     Label {
                         HStack {

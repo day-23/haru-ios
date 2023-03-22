@@ -11,7 +11,7 @@ import Foundation
 struct TagService {
     private static let baseURL = Constants.baseURL + "tag/"
 
-    // Tags 가져오기
+    //  Tags 가져오기
     func fetchTags(completion: @escaping (Result<[Tag], Error>) -> Void) {
         struct Response: Codable {
             let success: Bool

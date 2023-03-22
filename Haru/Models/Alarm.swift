@@ -8,7 +8,7 @@
 import Foundation
 
 struct Alarm: Identifiable, Codable {
-    // MARK: - Properties
+    //  MARK: - Properties
 
     let id: String
     private(set) var time: Date

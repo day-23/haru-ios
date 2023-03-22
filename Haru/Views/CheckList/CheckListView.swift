@@ -29,10 +29,10 @@ struct CheckListView: View {
         GeometryReader { geometry in
             ZStack(alignment: .bottomTrailing) {
                 VStack {
-                    // 태그 리스트
+                    //  태그 리스트
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            // 중요 태그
+                            //  중요 태그
                             Image(systemName: "star.fill")
                                 .foregroundStyle(LinearGradient(
                                     gradient: Gradient(colors: [
@@ -52,7 +52,7 @@ struct CheckListView: View {
                                     initialOffset = nil
                                 }
 
-                            // 미분류 태그
+                            //  미분류 태그
                             TagView(Tag(id: "미분류", content: "미분류"))
                                 .onTapGesture {
                                     withAnimation {
@@ -64,7 +64,7 @@ struct CheckListView: View {
                                     initialOffset = nil
                                 }
 
-                            // 완료 태그
+                            //  완료 태그
                             TagView(Tag(id: "완료", content: "완료"))
                                 .onTapGesture {
                                     withAnimation {
@@ -76,7 +76,7 @@ struct CheckListView: View {
                                     initialOffset = nil
                                 }
 
-                            // 태그 리스트들
+                            //  태그 리스트들
                             ForEach(viewModel.tagList) { tag in
                                 TagView(tag)
                                     .onTapGesture {
@@ -90,7 +90,7 @@ struct CheckListView: View {
                         .padding()
                     }
 
-                    // 오늘 나의 하루 클릭시
+                    //  오늘 나의 하루 클릭시
                     HStack {
                         Text("오늘 나의 하루")
                             .font(.system(size: 20, weight: .bold))
@@ -115,7 +115,7 @@ struct CheckListView: View {
                         initialOffset = nil
                     }
 
-                    // 체크 리스트
+                    //  체크 리스트
                     if !viewModel.isEmpty {
                         List {
                             if viewModel.selectedTag == nil {
@@ -676,7 +676,7 @@ struct CheckListView: View {
                                         }
                                         .listRowSeparator(.hidden)
                                     } else if tag.id == "완료" {
-                                        // FIXME: - 추후에 페이지네이션 함수로 교체 해야함
+                                        //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
                                         Section {
                                             if !viewModel.todoListByCompleted.isEmpty {
                                                 ForEach(viewModel.todoListByCompleted) { todo in

@@ -47,7 +47,7 @@ struct TodoView: View {
                     guard let nextEndDate = todo.nextEndDate() else { return }
 
                     guard let repeatEnd = todo.repeatEnd else {
-                        // 무한히 반복하는 할 일
+                        //  무한히 반복하는 할 일
                         let data = Request.Todo(
                             content: todo.content,
                             memo: todo.memo,
@@ -75,7 +75,7 @@ struct TodoView: View {
                     }
 
                     if nextEndDate.compare(repeatEnd) == .orderedAscending {
-                        // 반복이 끝나지 않았음
+                        //  반복이 끝나지 않았음
                         let data = Request.Todo(
                             content: todo.content,
                             memo: todo.memo,
@@ -100,7 +100,7 @@ struct TodoView: View {
                             }
                         }
                     } else {
-                        // 반복이 끝났음
+                        //  반복이 끝났음
                         let data = Request.Todo(
                             content: todo.content,
                             memo: todo.memo,

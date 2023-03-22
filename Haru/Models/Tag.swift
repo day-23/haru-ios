@@ -8,12 +8,12 @@
 import Foundation
 
 struct Tag: Codable, Identifiable {
-    // MARK: - Properties
+    //  MARK: - Properties
 
     let id: String
     private(set) var content: String
 
-    // MARK: - Dates Properties
+    //  MARK: - Dates Properties
 
 //    let createdAt: Date
 //    private(set) var updatedAt: Date

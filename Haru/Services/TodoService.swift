@@ -9,7 +9,7 @@ import Alamofire
 import Foundation
 
 struct TodoService {
-    // MARK: - Properties
+    //  MARK: - Properties
 
     private static let baseURL = Constants.baseURL + "todo/"
 
@@ -31,7 +31,7 @@ struct TodoService {
         return encoder
     }()
 
-    // MARK: - Todo Create API
+    //  MARK: - Todo Create API
 
     func addTodo(
         todo: Request.Todo,
@@ -65,7 +65,7 @@ struct TodoService {
         }
     }
 
-    // MARK: - Todo Read API
+    //  MARK: - Todo Read API
 
     func fetchTodoList(
         completion: @escaping (Result<[Todo], Error>) -> Void
@@ -284,7 +284,7 @@ struct TodoService {
         }
     }
 
-    // MARK: - Todo Update API
+    //  MARK: - Todo Update API
 
     func updateTodo(
         todoId: String,
@@ -295,7 +295,7 @@ struct TodoService {
             "Content-Type": "application/json",
         ]
 
-        // FIXME: 서버에서 수정된 데이터를 처리하지 못하는 것처럼 보임.
+        //  FIXME: 서버에서 수정된 데이터를 처리하지 못하는 것처럼 보임.
         print(HTTPMethod.put)
         print(TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)")
         print(String(data: try! TodoService.encoder.encode(todo), encoding: .utf8)!)
@@ -620,7 +620,7 @@ struct TodoService {
         }
     }
 
-    // MARK: - Todo Delete API
+    //  MARK: - Todo Delete API
 
     func deleteTodo(
         todoId: String,

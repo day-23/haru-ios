@@ -84,7 +84,7 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func fetchTodoList() {
-        // FIXME: - fix to Fetch All todos API
+        //  FIXME: - fix to Fetch All todos API
         if let selectedTag = selectedTag {
             fetchTodoListByTag(tag: selectedTag)
         }
@@ -101,7 +101,7 @@ final class CheckListViewModel: ObservableObject {
         } else if tag.id == "미분류" {
             fetchTodoListWithoutTag()
         } else if tag.id == "완료" {
-            // FIXME: - 페이지네이션 함수로 호출 해야함
+            //  FIXME: - 페이지네이션 함수로 호출 해야함
             fetchTodoListByCompletedInMain()
         } else if tag.id == "하루" {
             fetchTodoListByTodayTodoAndUntilToday()
@@ -305,7 +305,7 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Delete
+    //  MARK: - Delete
 
     func deleteTodo(
         todoId: String,
