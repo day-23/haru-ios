@@ -34,7 +34,8 @@ struct CalendarWeekView: View {
                         VStack(spacing: 2) {
                             Spacer().frame(height: 24)
                             ForEach(0 ..< 4, id: \.self) { order in
-                                CalendarScheduleItem(scheduleList: $calendarVM.viewScheduleList[week][order], cellWidth: cellWidhth)
+//                                CalendarScheduleItem(scheduleList: $calendarVM.viewScheduleList[week][order], cellWidth: cellWidhth)
+                                CalendarScheduleItem(productivityList: $calendarVM.viewProductivityList[week][order], cellWidth: cellWidhth)
                             }
                         }
                         .frame(width: cellWidhth * 7, height: cellHeight, alignment: .top)

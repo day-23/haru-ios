@@ -84,13 +84,12 @@ final class CalendarViewModel: ObservableObject {
     }
 
     func getCurMonthSchList(_ dateList: [DateValue]) {
-        scheduleList = [[Int: [Schedule]]](repeating: [:], count: dateList.count)
-        viewScheduleList = [[[(Int, Schedule?)]]](repeating: [[(Int, Schedule?)]](repeating: [], count: 4), count: numberOfWeeks)
+        productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
+        viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: 4), count: numberOfWeeks)
         
         scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
             switch result {
             case .success(let success):
-//                (self.scheduleList, self.viewScheduleList) = self.scheduleService.fittingScheduleList(dateList, success)
                 (self.productivityList, self.viewProductivityList) = self.calendarService.fittingCalendar(dateList: dateList, scheduleList: success, todoList: [])
             case .failure(let failure):
                 print("[Debug] \(failure)")
