@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum RepeatError: Error {
+    case invalid
+    case calculation
+}
+
 enum RepeatOption: String, CaseIterable {
     case everyDay = "매일"
     case everyWeek = "매주"

@@ -7,7 +7,4 @@
 
 import Foundation
 
-enum TodoRepeatError: Error {
-    case invalid
-    case calculation
-}
+

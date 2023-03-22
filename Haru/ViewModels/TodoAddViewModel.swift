@@ -29,6 +29,7 @@ final class TodoAddViewModel: ObservableObject {
     @Published var endDateTime: Date = .init()
     @Published var isSelectedEndDate: Bool = false {
         didSet {
+            endDate = .init()
             if !isSelectedEndDate && isSelectedRepeat {
                 isSelectedRepeat = false
             }
@@ -65,11 +66,109 @@ final class TodoAddViewModel: ObservableObject {
 
     @Published var repeatEnd: Date = .init()
     @Published var isSelectedRepeatEnd: Bool = false
-    @Published var repeatDay: String = "1"
+    @Published var repeatDay: String = "1" {
+        didSet {
+            guard let interval = Int(repeatDay) else { return }
+
+            let day = 60 * 60 * 24
+            endDate = Date.now.addingTimeInterval(TimeInterval(day * interval))
+        }
+    }
+
     @Published var repeatWeek: [Day] = [Day(content: "일"), Day(content: "월"), Day(content: "화"),
                                         Day(content: "수"), Day(content: "목"), Day(content: "금"), Day(content: "토")]
-    @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") }
-    @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") }
+    {
+        didSet {
+            var nextEndDate = Date()
+            let day = 60 * 60 * 24
+            let calendar = Calendar.current
+            let pattern = repeatWeek.map { $0.isClicked ? true : false }
+
+            if pattern.filter({ $0 }).isEmpty {
+                return
+            }
+
+            var index = (calendar.component(.weekday, from: nextEndDate) - 1) % 7
+            if repeatOption == .everyWeek {
+                while !pattern[index] {
+                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+                    index = (index + 1) % 7
+                }
+            } else if repeatOption == .everySecondWeek {
+                if index == 0 {
+                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
+                }
+
+                while !pattern[index] {
+                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+                    index = (index + 1) % 7
+
+                    if index == 0 {
+                        nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
+                    }
+                }
+            }
+
+            endDate = nextEndDate
+        }
+    }
+
+    @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") } {
+        didSet {
+            var nextEndDate = Date()
+            let day = 60 * 60 * 24
+            let calendar = Calendar.current
+            let pattern = repeatMonth.map { $0.isClicked ? true : false }
+
+            if pattern.filter({ $0 }).isEmpty {
+                return
+            }
+
+            let year = calendar.component(.year, from: nextEndDate)
+            let month = calendar.component(.month, from: nextEndDate)
+
+            let dateComponents = DateComponents(year: year, month: month)
+            guard let dateInMonth = calendar.date(from: dateComponents),
+                  let range = calendar.range(of: .day, in: .month, for: dateInMonth)
+            else {
+                return
+            }
+
+            let upperBound = range.upperBound - 1
+            var index = (calendar.component(.day, from: nextEndDate) - 1) % upperBound
+            while !pattern[index] {
+                nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+                index = (index + 1) % upperBound
+            }
+
+            endDate = nextEndDate
+        }
+    }
+
+    @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") } {
+        didSet {
+            var nextEndDate = Date()
+            let calendar = Calendar.current
+            let pattern = repeatYear.map { $0.isClicked ? true : false }
+
+            if pattern.filter({ $0 }).isEmpty {
+                return
+            }
+
+            var index = (calendar.component(.month, from: nextEndDate) - 1) % 12
+            while !pattern[index] {
+                if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
+                    nextEndDate = next
+                    index = (index + 1) % 12
+                } else {
+                    return
+                }
+            }
+
+            endDate = nextEndDate
+        }
+    }
+
     var selectedRepeatEnd: Date? {
         if isSelectedRepeat && isSelectedRepeatEnd { return repeatEnd }
         return nil

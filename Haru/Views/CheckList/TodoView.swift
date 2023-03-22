@@ -98,9 +98,9 @@ struct TodoView: View {
                         }
                     } catch {
                         switch error {
-                        case TodoRepeatError.invalid:
+                        case RepeatError.invalid:
                             print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
-                        case TodoRepeatError.calculation:
+                        case RepeatError.calculation:
                             print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
                         default:
                             print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")

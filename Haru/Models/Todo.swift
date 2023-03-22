@@ -47,7 +47,7 @@ extension Todo {
               let repeatValue = repeatValue,
               let endDate = endDate
         else {
-            throw TodoRepeatError.invalid
+            throw RepeatError.invalid
         }
 
         let day = 60 * 60 * 24
@@ -57,7 +57,7 @@ extension Todo {
 
         switch repeatOption {
         case RepeatOption.everyDay.rawValue:
-            guard let interval = Int(repeatValue) else { return nil }
+            guard let interval = Int(repeatValue) else { throw RepeatError.invalid }
             nextEndDate = nextEndDate.addingTimeInterval(
                 TimeInterval(day * interval)
             )
@@ -75,7 +75,7 @@ extension Todo {
 
                 // 한바퀴 돌아서 다시 돌아왔다는 것은 올바르지 않은 입력이다.
                 if startIndex == index {
-                    throw TodoRepeatError.invalid
+                    throw RepeatError.invalid
                 }
             }
         case RepeatOption.everySecondWeek.rawValue:
@@ -96,7 +96,7 @@ extension Todo {
 
                 //  한 바퀴 돌아서 돌아왔다는 것은, 올바르지 않은 입력이다.
                 if startIndex == index {
-                    throw TodoRepeatError.invalid
+                    throw RepeatError.invalid
                 }
 
                 //  다음 주로 날짜가 바뀌었고 지금까지 일치하지 않았으므로
@@ -113,7 +113,7 @@ extension Todo {
             guard let dateInMonth = calendar.date(from: dateComponents),
                   let range = calendar.range(of: .day, in: .month, for: dateInMonth)
             else {
-                throw TodoRepeatError.calculation
+                throw RepeatError.calculation
             }
 
             let pattern = repeatValue.map { $0 == "1" ? true : false }
@@ -129,7 +129,7 @@ extension Todo {
                 index = (index + 1) % upperBound
 
                 if index == startIndex {
-                    throw TodoRepeatError.invalid
+                    throw RepeatError.invalid
                 }
             }
         case RepeatOption.everyYear.rawValue:
@@ -140,7 +140,7 @@ extension Todo {
             if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
                 nextEndDate = next
             } else {
-                throw TodoRepeatError.calculation
+                throw RepeatError.calculation
             }
             let startIndex = index
 
@@ -149,15 +149,15 @@ extension Todo {
                     nextEndDate = next
                     index = (index + 1) % 12
                 } else {
-                    throw TodoRepeatError.calculation
+                    throw RepeatError.calculation
                 }
 
                 if startIndex == index {
-                    throw TodoRepeatError.invalid
+                    throw RepeatError.invalid
                 }
             }
         default:
-            throw TodoRepeatError.invalid
+            throw RepeatError.invalid
         }
 
         guard let repeatEnd = repeatEnd else {
