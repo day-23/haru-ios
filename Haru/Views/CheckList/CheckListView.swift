@@ -21,7 +21,7 @@ struct CheckListView: View {
             ZStack(alignment: .bottomTrailing) {
                 VStack {
                     //  태그 리스트
-                    TagList(viewModel: viewModel) { tag in
+                    TagListView(viewModel: viewModel) { tag in
                         withAnimation {
                             viewModel.selectedTag = tag
                         }

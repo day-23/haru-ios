@@ -1,5 +1,5 @@
 //
-//  TagList.swift
+//  TagListView.swift
 //  Haru
 //
 //  Created by 최정민 on 2023/03/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TagList: View {
+struct TagListView: View {
     var viewModel: CheckListViewModel
     var action: (Tag) -> Void
 
