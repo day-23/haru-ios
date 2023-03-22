@@ -367,7 +367,11 @@ struct TodoAddView: View {
                                             .lightGray)
                                     Spacer()
                                     if viewModel.isSelectedRepeatEnd {
-                                        DatePicker(selection: $viewModel.repeatEnd, displayedComponents: [.date]) {}
+                                        DatePicker(
+                                            selection: $viewModel.repeatEnd,
+                                            in: viewModel.endDate...,
+                                            displayedComponents: [.date]
+                                        ) {}
                                             .labelsHidden()
                                             .padding(.vertical, -5)
                                     }

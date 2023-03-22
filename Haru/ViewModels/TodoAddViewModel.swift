@@ -48,7 +48,14 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     @Published var repeatOption: RepeatOption = .everyDay
-    @Published var isSelectedRepeat: Bool = false
+    @Published var isSelectedRepeat: Bool = false {
+        didSet {
+            if isSelectedRepeat && !isSelectedEndDate {
+                isSelectedEndDate = true
+            }
+        }
+    }
+
     @Published var repeatEnd: Date = .init()
     @Published var isSelectedRepeatEnd: Bool = false
     @Published var repeatDay: String = "1"
@@ -121,9 +128,9 @@ final class TodoAddViewModel: ObservableObject {
             endDate: selectedEndDate,
             isSelectedEndDateTime: isSelectedEndDateTime,
             alarms: selectedAlarm,
-            repeatOption: !isSelectedRepeat ? nil : repeatOption.rawValue,
-            repeatValue: repeatValue,
-            repeatEnd: selectedRepeatEnd,
+            repeatOption: !isSelectedEndDate || !isSelectedRepeat ? nil : repeatOption.rawValue,
+            repeatValue: !isSelectedEndDate || !isSelectedRepeat ? nil : repeatValue,
+            repeatEnd: !isSelectedEndDate || !isSelectedRepeat ? nil : selectedRepeatEnd,
             tags: tagList.map { $0.content },
             subTodos: subTodoList
                 .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
