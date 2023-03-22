@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1301D32929CAE280003B3848 /* TodoRepeatError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D32829CAE280003B3848 /* TodoRepeatError.swift */; };
 		1310B00C29BF109A00DEC17F /* TagService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00B29BF109A00DEC17F /* TagService.swift */; };
 		1310B00E29BF2FA700DEC17F /* Alarm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00D29BF2FA700DEC17F /* Alarm.swift */; };
 		1310B01029BF48A800DEC17F /* SubTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00F29BF48A700DEC17F /* SubTodoView.swift */; };
@@ -46,6 +47,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1301D32829CAE280003B3848 /* TodoRepeatError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoRepeatError.swift; sourceTree = "<group>"; };
 		1310B00B29BF109A00DEC17F /* TagService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagService.swift; sourceTree = "<group>"; };
 		1310B00D29BF2FA700DEC17F /* Alarm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alarm.swift; sourceTree = "<group>"; };
 		1310B00F29BF48A700DEC17F /* SubTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubTodoView.swift; sourceTree = "<group>"; };
@@ -101,6 +103,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1301D32729CAE265003B3848 /* ErrorType */ = {
+			isa = PBXGroup;
+			children = (
+				1301D32829CAE280003B3848 /* TodoRepeatError.swift */,
+			);
+			path = ErrorType;
+			sourceTree = "<group>";
+		};
 		1334334D29B5A04500F26F57 /* CheckList */ = {
 			isa = PBXGroup;
 			children = (
@@ -226,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				13AE617829B48E4D00C08EB1 /* README.md */,
+				1301D32729CAE265003B3848 /* ErrorType */,
 				13AE617129B48D2300C08EB1 /* Calendar.swift */,
 				1334334B29B5A02400F26F57 /* Tab.swift */,
 				13C79A1829B7436000E68E55 /* RepeatOption.swift */,
@@ -333,6 +344,7 @@
 				137D670429C2084C0010C8B3 /* TodoAddView.swift in Sources */,
 				13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */,
 				1310B00C29BF109A00DEC17F /* TagService.swift in Sources */,
+				1301D32929CAE280003B3848 /* TodoRepeatError.swift in Sources */,
 				137611F129B5FD1E008787BD /* CheckListViewModel.swift in Sources */,
 				1334334C29B5A02400F26F57 /* Tab.swift in Sources */,
 				13C79A1929B7436000E68E55 /* RepeatOption.swift in Sources */,
