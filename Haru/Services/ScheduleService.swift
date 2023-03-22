@@ -10,7 +10,7 @@ import Foundation
 
 final class ScheduleService {
     private static let baseURL = Constants.baseURL + "schedule/"
-    
+
     /**
      * 현재 선택된 달을 기준으로 이전 달, (선택된) 현재 달, 다음 달의 스케줄 데이터 가져오기
      */
@@ -65,7 +65,7 @@ final class ScheduleService {
             }
         }
     }
-    
+
     /**
      * 일정 추가하기
      */
@@ -96,30 +96,28 @@ final class ScheduleService {
         )
         .responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
-            case .success(let response):
+            case let .success(response):
                 completion(.success(response.data))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
     }
-    
 
     /**
-     *  일정을 달력에 맞게 맞추기
+     *  달력에 표시될 일정 만드는 함수
      */
     func fittingScheduleList(
         _ dateList: [DateValue],
-        _ scheduleList: [Schedule]
-    ) -> ([[Int: [Schedule]]], [[[(Int, Schedule?)]]]) {
+        _ scheduleList: [Schedule],
+        _ prodCnt: Int,
+        result: inout [[Int: [Productivity]]],
+        result_: inout [[[(Int, Productivity?)]]]
+    ) {
         let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
 
         // 주차별 스케줄
         var weeksOfScheduleList = [[Schedule]](repeating: [], count: numberOfWeeks)
-
-        var result = [[Int: [Schedule]]](repeating: [:], count: dateList.count)
-
-        var result_ = [[[(Int, Schedule?)]]](repeating: [[(Int, Schedule?)]](repeating: [], count: 4), count: numberOfWeeks)
 
         var splitDateList = [[Date]]() // row: 주차, col: row주차에 있는 날짜들
 
@@ -145,7 +143,7 @@ final class ScheduleService {
 
         for (week, weekOfSchedules) in weeksOfScheduleList.enumerated() {
             // 주 단위
-            var orders = Array(repeating: Array(repeating: true, count: 5), count: 7)
+            var orders = Array(repeating: Array(repeating: true, count: prodCnt + 1), count: 7)
             for schedule in weekOfSchedules {
                 var order = 0
                 var isFirst = true
@@ -160,7 +158,7 @@ final class ScheduleService {
                     {
                         if isFirst {
                             var i = 0
-                            while i < 4, !orders[index][i] {
+                            while i < prodCnt, !orders[index][i] {
                                 i += 1
                             }
                             order = i
@@ -179,7 +177,7 @@ final class ScheduleService {
                 var prev = result[week * 7 + 0][order]?.first
                 var cnt = 1
                 for day in 1 ..< 7 {
-                    if prev == result[week * 7 + day][order]?.first {
+                    if let prev, let prod = result[week * 7 + day][order]?.first, prev.isEqualTo(prod) {
                         cnt += 1
                     } else {
                         result_[week][order].append((cnt, prev))
@@ -190,7 +188,5 @@ final class ScheduleService {
                 result_[week][order].append((cnt, prev))
             }
         }
-
-        return (result, result_)
     }
 }

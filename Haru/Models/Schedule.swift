@@ -16,15 +16,15 @@ struct Schedule: Identifiable, Codable {
     private(set) var repeatValue: String?
     private(set) var repeatStart: Date
     private(set) var repeatEnd: Date
-    
+
     private(set) var timeOption: Bool
-            
+
     private(set) var category: Category?
-    
+
     private(set) var alarms: [Alarm]
-    
+
     // MARK: - Dates
-    
+
     let createdAt: Date
     private(set) var updatedAt: Date?
     private(set) var deletedAt: Date?
@@ -32,7 +32,7 @@ struct Schedule: Identifiable, Codable {
 
 // MARK: - extension
 
-extension Schedule: Equatable {
+extension Schedule: Productivity, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
         lhs.id == rhs.id
     }

@@ -11,7 +11,10 @@ import SwiftUI
 final class CalendarViewModel: ObservableObject {
     @Published var scheduleList: [[Int: [Schedule]]] = [[:]] // 원소 개수 == dateList의 개수
     @Published var viewScheduleList = [[[(Int, Schedule?)]]]() // 뷰에 보여주기 위한 일정 리스트
-
+    
+    @Published var productivityList: [[Int: [Productivity]]] = [[:]] // 원소 개수 == dateList의 개수
+    @Published var viewProductivityList = [[[(Int, Productivity?)]]]() // 뷰에 보여주기 위한 일정 리스트
+    
     @Published var startOnSunday: Bool = true
     
     @Published var monthOffest: Int = 0 // 진짜 월과의 차이
@@ -38,6 +41,7 @@ final class CalendarViewModel: ObservableObject {
 
     private let scheduleService = ScheduleService()
     private let categoryService = CategoryService()
+    private let calendarService = CalendarService()
     
     init() {
         selectedDate = .init(day: Date().day, date: Date())
@@ -86,7 +90,8 @@ final class CalendarViewModel: ObservableObject {
         scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
             switch result {
             case .success(let success):
-                (self.scheduleList, self.viewScheduleList) = self.scheduleService.fittingScheduleList(dateList, success)
+//                (self.scheduleList, self.viewScheduleList) = self.scheduleService.fittingScheduleList(dateList, success)
+                (self.productivityList, self.viewProductivityList) = self.calendarService.fittingCalendar(dateList: dateList, scheduleList: success, todoList: [])
             case .failure(let failure):
                 print("[Debug] \(failure)")
             }
