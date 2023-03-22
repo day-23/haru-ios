@@ -16,33 +16,26 @@ struct CalendarDateItem: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // TODO: 코드 다듬기
             Spacer()
-                .frame(height: 1)
+                .frame(height: 2)
 
-            if !value.isPrevDate, !value.isNextDate {
-                ZStack {
-                    Circle()
-                        .fill(.black)
-                        .frame(width: 24, height: 24)
-                        .opacity(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 1 : 0)
-
-                    Text("\(value.day)")
-                        .font(Font.custom(Constants.Regular, size: 14))
-                        .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .white : .primary)
-                }
-
-            } else {
-                ZStack {
-                    Circle()
-                        .fill(.black)
-                        .frame(width: 24, height: 24)
-                        .opacity(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 1 : 0)
+            ZStack {
+                Group {
+                    if CalendarHelper.isSameDay(date1: value.date, date2: Date()) {
+                        Circle()
+                            .strokeBorder(.gradation1, lineWidth: 2)
+                            .frame(width: 24, height: 24)
+                    } else {
+                        Circle()
+                            .fill(.clear)
+                            .frame(width: 24, height: 24)
+                    }
 
                     Text("\(value.day)")
                         .font(Font.custom(Constants.Regular, size: 14))
-                        .foregroundColor(Color.gray)
+                        .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .blue : .primary)
                 }
+                .opacity(!value.isNextDate && !value.isPrevDate ? 1 : 0.5)
             }
 
             Spacer()

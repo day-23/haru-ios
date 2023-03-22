@@ -10,6 +10,7 @@ import Foundation
 
 final class ScheduleService {
     private static let baseURL = Constants.baseURL + "schedule/"
+    
     /**
      * 현재 선택된 달을 기준으로 이전 달, (선택된) 현재 달, 다음 달의 스케줄 데이터 가져오기
      */
@@ -64,7 +65,49 @@ final class ScheduleService {
             }
         }
     }
+    
+    /**
+     * 일정 추가하기
+     */
+    func addSchedule(_ schedule: Request.Schedule, _ completion: @escaping (Result<Schedule, Error>) -> Void) {
+        struct Response: Codable {
+            let success: Bool
+            let data: Schedule
+        }
 
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(formatter)
+
+        AF.request(
+            ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown"),
+            method: .post,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: encoder),
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: decoder) { response in
+            switch response.result {
+            case .success(let response):
+                completion(.success(response.data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+
+    /**
+     *  일정을 달력에 맞게 맞추기
+     */
     func fittingScheduleList(
         _ dateList: [DateValue],
         _ scheduleList: [Schedule]

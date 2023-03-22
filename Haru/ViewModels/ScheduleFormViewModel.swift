@@ -32,7 +32,7 @@ final class ScheduleFormViewModel: ObservableObject {
     }
     
     private var calendarVM: CalendarViewModel
-    private var scheduleFormService: ScheduleFormService = .init()
+    private var scheduleService: ScheduleService = .init()
     private var categoryService: CategoryService = .init()
 
     init(calendarVM: CalendarViewModel) {
@@ -51,9 +51,9 @@ final class ScheduleFormViewModel: ObservableObject {
     func addSchedule() {
         let schedule = Request.Schedule(content: content, memo: memo, categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil, alarms: selectedAlarm, flag: false, repeatStart: repeatStart, repeatEnd: repeatEnd, timeOption: timeOption)
          
-        scheduleFormService.addSchedule(schedule) { result in
+        scheduleService.addSchedule(schedule) { result in
             switch result {
-            case .success(let success):
+            case .success(_):
                 // TODO: 추가된 일정을 로컬에서 가지고 있을 수 있나? (반복 일정의 경우 생각해볼 것)
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
             case .failure(let failure):
