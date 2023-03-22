@@ -305,6 +305,64 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
+    func toggleTodo(todoId: String) {
+        if let index = todoListByTag.firstIndex(where: { $0.id == todoId }) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                todoListByTag[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByFlag.firstIndex(where: { $0.id == todoId }) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                todoListByFlag[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByCompleted.firstIndex(where: { $0.id == todoId }) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                todoListByCompleted[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByFlagWithToday.firstIndex(where: { $0.id == todoId }) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                todoListByFlagWithToday[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByTodayTodo.firstIndex(where: { $0.id == todoId }) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                todoListByTodayTodo[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByUntilToday.firstIndex(where: { $0.id == todoId }) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                todoListByUntilToday[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+
+        if let index = todoListWithAnyTag.firstIndex(where: { $0.id == todoId }) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                todoListWithAnyTag[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+
+        if let index = todoListWithoutTag.firstIndex(where: { $0.id == todoId }) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                todoListWithoutTag[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+    }
+
     //  MARK: - Delete
 
     func deleteTodo(

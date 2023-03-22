@@ -492,8 +492,8 @@ struct TodoAddView: View {
                         Button {
                             dismissAction.callAsFunction()
                         } label: {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(.black)
+                            Image("back-button")
+                                .frame(width: 28, height: 28)
                         }
 
                         Text("나의 하루")

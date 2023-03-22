@@ -14,7 +14,7 @@ struct CheckListView: View {
             Text("모든 할 일을 마쳤습니다!")
                 .font(.footnote)
                 .foregroundColor(Color(0x000000, opacity: 0.5))
-                .padding(.leading)
+                .padding(.leading, 34)
         }
     }
 
@@ -33,15 +33,7 @@ struct CheckListView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             //  중요 태그
-                            Image(systemName: "star.fill")
-                                .foregroundStyle(LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        Constants.gradientEnd,
-                                        Constants.gradientStart,
-                                    ]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ))
+                            StarButton(isClicked: true)
                                 .onTapGesture {
                                     withAnimation {
                                         viewModel.selectedTag = Tag(
@@ -87,20 +79,25 @@ struct CheckListView: View {
                                     }
                             }
                         }
-                        .padding()
+                        .padding(.horizontal, 20)
                     }
 
                     //  오늘 나의 하루 클릭시
                     HStack {
+                        Image("today-todo")
+                            .padding(.vertical, 12)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 12)
+                            .tint(.white)
                         Text("오늘 나의 하루")
                             .font(.system(size: 20, weight: .bold))
                         Spacer()
                         Image(systemName: "chevron.right")
-                            .scaleEffect(1.25)
+                            .frame(width: 28, height: 28)
+                            .padding(.trailing, 20)
                     }
+                    .frame(height: 52)
                     .foregroundColor(.white)
-                    .padding()
-                    .padding(.horizontal, 15)
                     .background(
                         LinearGradient(
                             gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF), Color(0xAAD7FF)]),
@@ -141,15 +138,16 @@ struct CheckListView: View {
                                                 .opacity(0)
                                             }
 
-                                            ForEach(todo.subTodos) { subTodo in
-                                                SubTodoView(
-                                                    checkListViewModel: viewModel,
-                                                    todo: todo,
-                                                    subTodo: subTodo
-                                                )
+                                            if todo.isShowingSubTodo {
+                                                ForEach(todo.subTodos) { subTodo in
+                                                    SubTodoView(
+                                                        checkListViewModel: viewModel,
+                                                        todo: todo,
+                                                        subTodo: subTodo
+                                                    )
+                                                }
+                                                .moveDisabled(true)
                                             }
-                                            .moveDisabled(true)
-                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                         .onMove(perform: { indexSet, index in
                                             viewModel.todoListByFlag.move(fromOffsets: indexSet, toOffset: index)
@@ -161,20 +159,10 @@ struct CheckListView: View {
                                     }
                                 } header: {
                                     HStack {
-                                        Image(systemName: "star.fill")
-                                            .foregroundStyle(
-                                                LinearGradient(
-                                                    gradient: Gradient(
-                                                        colors: [Constants.gradientEnd,
-                                                                 Constants.gradientStart]),
-                                                    startPoint: .topLeading,
-                                                    endPoint: .bottomTrailing
-                                                )
-                                            )
-                                            .padding(.leading, 20)
+                                        StarButton(isClicked: true)
+                                            .padding(.leading, 29)
                                         Spacer()
                                     }
-                                    .padding(.vertical, 5)
                                     .listRowInsets(EdgeInsets(
                                         top: 0,
                                         leading: 0,
@@ -184,6 +172,7 @@ struct CheckListView: View {
                                     .background(.white)
                                 }
                                 .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets())
 
                                 Divider()
                                     .listRowSeparator(.hidden)
@@ -211,15 +200,16 @@ struct CheckListView: View {
                                                 .opacity(0)
                                             }
 
-                                            ForEach(todo.subTodos) { subTodo in
-                                                SubTodoView(
-                                                    checkListViewModel: viewModel,
-                                                    todo: todo,
-                                                    subTodo: subTodo
-                                                )
+                                            if todo.isShowingSubTodo {
+                                                ForEach(todo.subTodos) { subTodo in
+                                                    SubTodoView(
+                                                        checkListViewModel: viewModel,
+                                                        todo: todo,
+                                                        subTodo: subTodo
+                                                    )
+                                                }
+                                                .moveDisabled(true)
                                             }
-                                            .moveDisabled(true)
-                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                         .onMove(perform: { indexSet, index in
                                             viewModel.todoListWithAnyTag.move(fromOffsets: indexSet, toOffset: index)
@@ -232,7 +222,7 @@ struct CheckListView: View {
                                 } header: {
                                     HStack {
                                         TagView(Tag(id: "분류됨", content: "분류됨"))
-                                            .padding(.leading, 20)
+                                            .padding(.leading, 21)
                                         Spacer()
                                     }
                                     .listRowInsets(EdgeInsets(
@@ -244,6 +234,7 @@ struct CheckListView: View {
                                     .background(.white)
                                 }
                                 .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets())
 
                                 Divider()
                                     .listRowSeparator(.hidden)
@@ -271,15 +262,16 @@ struct CheckListView: View {
                                                 .opacity(0)
                                             }
 
-                                            ForEach(todo.subTodos) { subTodo in
-                                                SubTodoView(
-                                                    checkListViewModel: viewModel,
-                                                    todo: todo,
-                                                    subTodo: subTodo
-                                                )
+                                            if todo.isShowingSubTodo {
+                                                ForEach(todo.subTodos) { subTodo in
+                                                    SubTodoView(
+                                                        checkListViewModel: viewModel,
+                                                        todo: todo,
+                                                        subTodo: subTodo
+                                                    )
+                                                }
+                                                .moveDisabled(true)
                                             }
-                                            .moveDisabled(true)
-                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                         .onMove(perform: { indexSet, index in
                                             viewModel.todoListWithoutTag.move(fromOffsets: indexSet, toOffset: index)
@@ -292,7 +284,7 @@ struct CheckListView: View {
                                 } header: {
                                     HStack {
                                         TagView(Tag(id: "미분류", content: "미분류"))
-                                            .padding(.leading, 20)
+                                            .padding(.leading, 21)
                                         Spacer()
                                     }
                                     .listRowInsets(EdgeInsets(
@@ -304,6 +296,7 @@ struct CheckListView: View {
                                     .background(.white)
                                 }
                                 .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets())
 
                                 Divider()
                                     .listRowSeparator(.hidden)
@@ -331,15 +324,16 @@ struct CheckListView: View {
                                                 .opacity(0)
                                             }
 
-                                            ForEach(todo.subTodos) { subTodo in
-                                                SubTodoView(
-                                                    checkListViewModel: viewModel,
-                                                    todo: todo,
-                                                    subTodo: subTodo
-                                                )
+                                            if todo.isShowingSubTodo {
+                                                ForEach(todo.subTodos) { subTodo in
+                                                    SubTodoView(
+                                                        checkListViewModel: viewModel,
+                                                        todo: todo,
+                                                        subTodo: subTodo
+                                                    )
+                                                }
+                                                .moveDisabled(true)
                                             }
-                                            .moveDisabled(true)
-                                            .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                         }
                                         .onMove(perform: { indexSet, index in
                                             viewModel.todoListByCompleted.move(fromOffsets: indexSet, toOffset: index)
@@ -352,7 +346,7 @@ struct CheckListView: View {
                                 } header: {
                                     HStack {
                                         TagView(Tag(id: "완료", content: "완료"))
-                                            .padding(.leading, 20)
+                                            .padding(.leading, 21)
                                         Spacer()
                                     }
                                     .listRowInsets(EdgeInsets(
@@ -364,6 +358,8 @@ struct CheckListView: View {
                                     .background(.white)
                                 }
                                 .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets())
+
                             } else {
                                 if let tag = viewModel.selectedTag {
                                     if tag.id == "하루" {
@@ -389,15 +385,16 @@ struct CheckListView: View {
                                                         .opacity(0)
                                                     }
 
-                                                    ForEach(todo.subTodos) { subTodo in
-                                                        SubTodoView(
-                                                            checkListViewModel: viewModel,
-                                                            todo: todo,
-                                                            subTodo: subTodo
-                                                        )
+                                                    if todo.isShowingSubTodo {
+                                                        ForEach(todo.subTodos) { subTodo in
+                                                            SubTodoView(
+                                                                checkListViewModel: viewModel,
+                                                                todo: todo,
+                                                                subTodo: subTodo
+                                                            )
+                                                        }
+                                                        .moveDisabled(true)
                                                     }
-                                                    .moveDisabled(true)
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                                 .onMove(perform: { indexSet, index in
                                                     viewModel.todoListByFlagWithToday.move(fromOffsets: indexSet, toOffset: index)
@@ -409,17 +406,8 @@ struct CheckListView: View {
                                             }
                                         } header: {
                                             HStack {
-                                                Image(systemName: "star.fill")
-                                                    .foregroundStyle(
-                                                        LinearGradient(
-                                                            gradient: Gradient(
-                                                                colors: [Constants.gradientEnd,
-                                                                         Constants.gradientStart]),
-                                                            startPoint: .topLeading,
-                                                            endPoint: .bottomTrailing
-                                                        )
-                                                    )
-                                                    .padding(.leading, 20)
+                                                StarButton(isClicked: true)
+                                                    .padding(.leading, 29)
                                                 Spacer()
                                             }
                                             .padding(.vertical, 5)
@@ -432,6 +420,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets())
 
                                         Section {
                                             if !viewModel.todoListByTodayTodo.isEmpty {
@@ -455,15 +444,16 @@ struct CheckListView: View {
                                                         .opacity(0)
                                                     }
 
-                                                    ForEach(todo.subTodos) { subTodo in
-                                                        SubTodoView(
-                                                            checkListViewModel: viewModel,
-                                                            todo: todo,
-                                                            subTodo: subTodo
-                                                        )
+                                                    if todo.isShowingSubTodo {
+                                                        ForEach(todo.subTodos) { subTodo in
+                                                            SubTodoView(
+                                                                checkListViewModel: viewModel,
+                                                                todo: todo,
+                                                                subTodo: subTodo
+                                                            )
+                                                        }
+                                                        .moveDisabled(true)
                                                     }
-                                                    .moveDisabled(true)
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                                 .onMove(perform: { indexSet, index in
                                                     viewModel.todoListByTodayTodo.move(fromOffsets: indexSet, toOffset: index)
@@ -479,7 +469,7 @@ struct CheckListView: View {
                                                     id: "오늘 할 일",
                                                     content: "오늘 할 일"
                                                 ))
-                                                .padding(.leading, 20)
+                                                .padding(.leading, 21)
                                                 Spacer()
                                             }
                                             .padding(.vertical, 5)
@@ -492,6 +482,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets())
 
                                         Section {
                                             if !viewModel.todoListByUntilToday.isEmpty {
@@ -515,15 +506,16 @@ struct CheckListView: View {
                                                         .opacity(0)
                                                     }
 
-                                                    ForEach(todo.subTodos) { subTodo in
-                                                        SubTodoView(
-                                                            checkListViewModel: viewModel,
-                                                            todo: todo,
-                                                            subTodo: subTodo
-                                                        )
+                                                    if todo.isShowingSubTodo {
+                                                        ForEach(todo.subTodos) { subTodo in
+                                                            SubTodoView(
+                                                                checkListViewModel: viewModel,
+                                                                todo: todo,
+                                                                subTodo: subTodo
+                                                            )
+                                                        }
+                                                        .moveDisabled(true)
                                                     }
-                                                    .moveDisabled(true)
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                                 .onMove(perform: { indexSet, index in
                                                     viewModel.todoListByUntilToday.move(fromOffsets: indexSet, toOffset: index)
@@ -539,7 +531,7 @@ struct CheckListView: View {
                                                     id: "오늘까지",
                                                     content: "오늘까지"
                                                 ))
-                                                .padding(.leading, 20)
+                                                .padding(.leading, 21)
                                                 Spacer()
                                             }
                                             .padding(.vertical, 5)
@@ -552,6 +544,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets())
                                     } else if tag.id == "중요" {
                                         Section {
                                             if !viewModel.todoListByFlag.isEmpty {
@@ -575,15 +568,16 @@ struct CheckListView: View {
                                                         .opacity(0)
                                                     }
 
-                                                    ForEach(todo.subTodos) { subTodo in
-                                                        SubTodoView(
-                                                            checkListViewModel: viewModel,
-                                                            todo: todo,
-                                                            subTodo: subTodo
-                                                        )
+                                                    if todo.isShowingSubTodo {
+                                                        ForEach(todo.subTodos) { subTodo in
+                                                            SubTodoView(
+                                                                checkListViewModel: viewModel,
+                                                                todo: todo,
+                                                                subTodo: subTodo
+                                                            )
+                                                        }
+                                                        .moveDisabled(true)
                                                     }
-                                                    .moveDisabled(true)
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                                 .onMove(perform: { indexSet, index in
                                                     viewModel.todoListByFlag.move(fromOffsets: indexSet, toOffset: index)
@@ -595,17 +589,8 @@ struct CheckListView: View {
                                             }
                                         } header: {
                                             HStack {
-                                                Image(systemName: "star.fill")
-                                                    .foregroundStyle(
-                                                        LinearGradient(
-                                                            gradient: Gradient(
-                                                                colors: [Constants.gradientEnd,
-                                                                         Constants.gradientStart]),
-                                                            startPoint: .topLeading,
-                                                            endPoint: .bottomTrailing
-                                                        )
-                                                    )
-                                                    .padding(.leading, 20)
+                                                StarButton(isClicked: true)
+                                                    .padding(.leading, 29)
                                                 Spacer()
                                             }
                                             .padding(.vertical, 5)
@@ -618,6 +603,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets())
                                     } else if tag.id == "미분류" {
                                         Section {
                                             if !viewModel.todoListWithoutTag.isEmpty {
@@ -641,15 +627,16 @@ struct CheckListView: View {
                                                         .opacity(0)
                                                     }
 
-                                                    ForEach(todo.subTodos) { subTodo in
-                                                        SubTodoView(
-                                                            checkListViewModel: viewModel,
-                                                            todo: todo,
-                                                            subTodo: subTodo
-                                                        )
+                                                    if todo.isShowingSubTodo {
+                                                        ForEach(todo.subTodos) { subTodo in
+                                                            SubTodoView(
+                                                                checkListViewModel: viewModel,
+                                                                todo: todo,
+                                                                subTodo: subTodo
+                                                            )
+                                                        }
+                                                        .moveDisabled(true)
                                                     }
-                                                    .moveDisabled(true)
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                                 .onMove(perform: { indexSet, index in
                                                     viewModel.todoListWithoutTag.move(fromOffsets: indexSet, toOffset: index)
@@ -662,7 +649,7 @@ struct CheckListView: View {
                                         } header: {
                                             HStack {
                                                 TagView(tag)
-                                                    .padding(.leading, 20)
+                                                    .padding(.leading, 21)
                                                 Spacer()
                                             }
                                             .padding(.vertical, 5)
@@ -675,6 +662,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets())
                                     } else if tag.id == "완료" {
                                         //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
                                         Section {
@@ -699,15 +687,16 @@ struct CheckListView: View {
                                                         .opacity(0)
                                                     }
 
-                                                    ForEach(todo.subTodos) { subTodo in
-                                                        SubTodoView(
-                                                            checkListViewModel: viewModel,
-                                                            todo: todo,
-                                                            subTodo: subTodo
-                                                        )
+                                                    if todo.isShowingSubTodo {
+                                                        ForEach(todo.subTodos) { subTodo in
+                                                            SubTodoView(
+                                                                checkListViewModel: viewModel,
+                                                                todo: todo,
+                                                                subTodo: subTodo
+                                                            )
+                                                        }
+                                                        .moveDisabled(true)
                                                     }
-                                                    .moveDisabled(true)
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                                 .onMove(perform: { indexSet, index in
                                                     viewModel.todoListByCompleted.move(fromOffsets: indexSet, toOffset: index)
@@ -720,7 +709,7 @@ struct CheckListView: View {
                                         } header: {
                                             HStack {
                                                 TagView(tag)
-                                                    .padding(.leading, 20)
+                                                    .padding(.leading, 21)
                                                 Spacer()
                                             }
                                             .padding(.vertical, 5)
@@ -733,6 +722,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets())
                                     } else {
                                         Section {
                                             if !viewModel.todoListByTag.isEmpty {
@@ -756,15 +746,16 @@ struct CheckListView: View {
                                                         .opacity(0)
                                                     }
 
-                                                    ForEach(todo.subTodos) { subTodo in
-                                                        SubTodoView(
-                                                            checkListViewModel: viewModel,
-                                                            todo: todo,
-                                                            subTodo: subTodo
-                                                        )
+                                                    if todo.isShowingSubTodo {
+                                                        ForEach(todo.subTodos) { subTodo in
+                                                            SubTodoView(
+                                                                checkListViewModel: viewModel,
+                                                                todo: todo,
+                                                                subTodo: subTodo
+                                                            )
+                                                        }
+                                                        .moveDisabled(true)
                                                     }
-                                                    .moveDisabled(true)
-                                                    .padding(.leading, UIScreen.main.bounds.width * 0.05)
                                                 }
                                                 .onMove(perform: { indexSet, index in
                                                     viewModel.todoListByTag.move(fromOffsets: indexSet, toOffset: index)
@@ -777,7 +768,7 @@ struct CheckListView: View {
                                         } header: {
                                             HStack {
                                                 TagView(tag)
-                                                    .padding(.leading, 20)
+                                                    .padding(.leading, 21)
                                                 Spacer()
                                             }
                                             .padding(.vertical, 5)
@@ -790,6 +781,7 @@ struct CheckListView: View {
                                             .background(.white)
                                         }
                                         .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets())
                                     }
                                 }
                             }
@@ -862,21 +854,9 @@ struct CheckListView: View {
                                 addViewModel.mode = .add
                             }
                         } label: {
-                            Image(systemName: "plus")
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(LinearGradient(
-                                    gradient: Gradient(
-                                        colors: [Color(0xD2D7FF),
-                                                 Color(0xAAD7FF)]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ))
-                                .clipShape(Circle())
-                                .frame(alignment: .center)
+                            Image("add-button")
                         }
                         .zIndex(5)
-                        .padding()
                     }
                 }
             }

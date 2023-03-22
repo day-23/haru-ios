@@ -322,6 +322,12 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatWeek(todo: Todo? = nil) {
         if let todo = todo {
+            if todo.repeatOption != RepeatOption.everyWeek.rawValue ||
+                todo.repeatOption != RepeatOption.everyWeek.rawValue
+            {
+                return
+            }
+
             if let todoRepeatWeek = todo.repeatValue {
                 for i in repeatWeek.indices {
                     repeatWeek[i].isClicked = todoRepeatWeek[
@@ -342,6 +348,10 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatMonth(todo: Todo? = nil) {
         if let todo = todo {
+            if todo.repeatOption != RepeatOption.everyMonth.rawValue {
+                return
+            }
+
             if let todoRepeatMonth = todo.repeatValue {
                 for i in repeatMonth.indices {
                     repeatMonth[i].isClicked = todoRepeatMonth[
@@ -362,6 +372,10 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatYear(todo: Todo? = nil) {
         if let todo = todo {
+            if todo.repeatOption != RepeatOption.everyYear.rawValue {
+                return
+            }
+
             if let todoRepeatYear = todo.repeatValue {
                 for i in repeatYear.indices {
                     repeatYear[i].isClicked = todoRepeatYear[
@@ -412,7 +426,9 @@ final class TodoAddViewModel: ObservableObject {
         isSelectedRepeat = todo.repeatOption != nil
         repeatEnd = todo.repeatEnd ?? .init()
         isSelectedRepeatEnd = todo.repeatEnd != nil
-        repeatDay = isSelectedRepeat ? (todo.repeatValue ?? "1") : "1"
+        repeatDay = isSelectedRepeat &&
+            todo.repeatOption == RepeatOption.everyDay.rawValue
+            ? (todo.repeatValue ?? "1") : "1"
         initRepeatWeek(todo: todo)
         initRepeatMonth(todo: todo)
         initRepeatYear(todo: todo)

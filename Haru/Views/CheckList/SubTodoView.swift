@@ -26,12 +26,16 @@ struct SubTodoView: View {
                         }
                     }
                 }
+                .padding(.trailing, 14)
 
             Text(subTodo.content)
+                .font(.system(size: 14, weight: .bold))
                 .strikethrough(subTodo.completed)
 
             Spacer()
         }
+        .padding(.leading, 54)
+        .padding(.trailing, 20)
         .background(.white)
         .contextMenu {
             Button(action: {

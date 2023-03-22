@@ -11,25 +11,48 @@ struct TodoView: View {
     var checkListViewModel: CheckListViewModel
     var todo: Todo
 
+    private var tagString: String {
+        var res = ""
+        for (i, tag) in zip(todo.tags.indices, todo.tags) {
+            if tag.content.count + res.count <= 10 {
+                res = "\(res) \(tag.content)"
+            } else {
+                res = "\(res)  +\(todo.tags.count - i)"
+            }
+        }
+        res = "\(res)  "
+        return res
+    }
+
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.dateFormat = "M월 d일 까지"
         return formatter
     }()
 
     let formatterWithTime: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd, HH:mm"
+        formatter.dateFormat = "M월 d일 HH:mm 까지"
         return formatter
     }()
 
     var body: some View {
         //  Todo Item
-        HStack {
+        HStack(spacing: 0) {
+            if !todo.subTodos.isEmpty {
+                // TODO: - Toggle Todo에 있는 데이터 이용하여 변경하기
+                Image("toggle")
+                    .frame(width: 20, height: 20)
+                    .rotationEffect(Angle(degrees: todo.isShowingSubTodo ? 90 : 0))
+                    .onTapGesture {
+                        checkListViewModel.toggleTodo(todoId: todo.id)
+                    }
+            }
+
             CompleteButton(isClicked: todo.completed)
                 .onTapGesture {
-                    if todo.repeatOption == nil &&
-                        todo.repeatValue == nil
+                    if (todo.repeatOption == nil &&
+                        todo.repeatValue == nil) || todo.completed
                     {
                         checkListViewModel.completeTodo(todoId: todo.id,
                                                         completed: !todo.completed) { result in
@@ -107,24 +130,24 @@ struct TodoView: View {
                         }
                     }
                 }
+                .padding(.trailing, 14)
 
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(todo.content)
-                    .font(.body)
+                    .font(.system(size: 14, weight: .bold))
                     .strikethrough(todo.completed)
 
                 if todo.tags.count > 0 ||
                     todo.endDate != nil ||
                     todo.endDateTime != nil ||
+                    todo.todayTodo ||
                     todo.alarms.count > 0 ||
                     todo.repeatValue != nil ||
                     todo.repeatOption != nil ||
                     !todo.memo.isEmpty
                 {
-                    HStack {
-                        ForEach(todo.tags) { tag in
-                            Text(tag.content)
-                        }
+                    HStack(spacing: 0) {
+                        Text(tagString)
 
                         if let todoDate = todo.endDate {
                             if let todoDateTime = todo.endDateTime {
@@ -138,40 +161,45 @@ struct TodoView: View {
                             todo.endDate != nil ||
                             todo.endDateTime != nil) &&
                             (todo.alarms.count > 0 ||
+                                todo.todayTodo ||
                                 todo.repeatValue != nil ||
                                 todo.repeatOption != nil ||
                                 !todo.memo.isEmpty)
                         {
-                            Text("∙")
+                            Image("dot")
+                        }
+
+                        if todo.todayTodo {
+                            Image("today-todo-small")
                         }
 
                         if todo.alarms.count > 0 {
-                            Image(systemName: "bell")
+                            Image("alarm-small")
                         }
 
                         if todo.repeatValue != nil || todo.repeatOption != nil {
-                            Image(systemName: "repeat")
+                            Image("repeat-small")
                         }
 
                         if !todo.memo.isEmpty {
-                            Image(systemName: "note")
+                            Image("memo-small")
                         }
                     }
-                    .font(.caption2)
+                    .padding(.leading, -2)
+                    .font(.system(size: 10, weight: .regular))
                     .foregroundColor(Color(0x000000, opacity: 0.5))
                 }
             }
 
             Spacer()
 
-            ZStack {
-                Image(systemName: todo.flag ? "star.fill" : "star")
-                    .foregroundStyle(todo.flag ? LinearGradient(gradient: Gradient(colors: [Constants.gradientEnd, Constants.gradientStart]), startPoint: .topLeading, endPoint: .bottomTrailing) : LinearGradient(gradient: Gradient(colors: [Color(0x000000, opacity: 0.4)]), startPoint: .top, endPoint: .bottom))
-                    .onTapGesture {
-                        checkListViewModel.updateFlag(todo: todo) { _ in }
-                    }
-            }
+            StarButton(isClicked: todo.flag)
+                .onTapGesture {
+                    checkListViewModel.updateFlag(todo: todo) { _ in }
+                }
         }
+        .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
+        .padding(.trailing, 20)
         .background(.white)
         .contextMenu {
             Button(action: {
