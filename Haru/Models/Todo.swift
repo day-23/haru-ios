@@ -20,6 +20,7 @@ struct Todo: Identifiable, Codable {
     private(set) var alarms: [Alarm]
     private(set) var endDate: Date?
     private(set) var endDateTime: Date?
+    private(set) var isSelectedEndDateTime: Bool
     private(set) var repeatEnd: Date?
     private(set) var todoOrder: Int?
     private(set) var todayTodoOrder: Int?
@@ -39,6 +40,7 @@ struct Todo: Identifiable, Codable {
 
 extension Todo {
     func nextEndDate() -> Date? {
+        // !!!: - 입력시에 마감일이 없으면 어떻게 해결할지에 대해서
         guard let repeatOption = repeatOption,
               let repeatValue = repeatValue,
               let endDate = endDate
@@ -104,23 +106,28 @@ extension Todo {
 
             let dateComponents = DateComponents(year: year, month: month)
             guard let dateInMonth = calendar.date(from: dateComponents),
-                  let range = calendar.range(of: .day, in: .month, for: dateInMonth),
-                  let lastDay = calendar.date(from: DateComponents(year: year, month: month, day: range.upperBound))
+                  let range = calendar.range(of: .day, in: .month, for: dateInMonth)
             else {
                 return nil
             }
 
             let pattern = repeatValue.map { $0 == "1" ? true : false }
 
+            //  FIXME: 만약, 매 달 31일만 반복되는 일정이라고 가정해보자, 이럴 때 2월달에는 무슨 일이 발생하는가?
             //  pattern 인덱스가 0~30인데, 아래의 반환값은 1~31이므로 다음 날을 가르키게 됨
             var index = calendar.component(.day, from: endDate)
-            var lastIndex = calendar.component(.day, from: lastDay)
-            let startIndex = index - 1
+            if index == range.upperBound - 1 {
+                index = 0
+            }
+            nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+
+            let lastIndex = range.upperBound - 1
+            let startIndex = index
             while !pattern[index] {
                 nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
                 index += 1
 
-                if index > lastIndex {
+                if index >= lastIndex {
                     index = 0
                 }
                 if index == startIndex {
@@ -149,6 +156,7 @@ extension Todo {
             return nil
         }
 
+        print(nextEndDate)
         return nextEndDate
     }
 }

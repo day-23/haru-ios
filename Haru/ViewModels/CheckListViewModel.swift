@@ -288,6 +288,23 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
+    func completeTodoWithRepeat(
+        todoId: String,
+        todo: Request.Todo,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.completeTodoWithRepeat(todoId: todoId,
+                                           todo: todo) { result in
+            switch result {
+            case let .success(success):
+                completion(.success(success))
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                completion(.failure(failure))
+            }
+        }
+    }
+
     // MARK: - Delete
 
     func deleteTodo(

@@ -37,26 +37,93 @@ struct TodoView: View {
                             case .success:
                                 checkListViewModel.fetchTodoList()
                             case .failure(let failure):
-                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                print("[Debug] 반복하지 않는 할 일 완료 실패 \(failure) (\(#fileID), \(#function))")
                             }
                         }
                         return
                     }
 
-                    //  TODO: 반복 할 일 완료 넘겨주기, 만약 반복이 끝났다면 endDate = null
+                    //  반복 할 일 완료 넘겨주기, 만약 반복이 끝났다면 endDate = null
                     guard let nextEndDate = todo.nextEndDate() else { return }
 
                     guard let repeatEnd = todo.repeatEnd else {
                         // 무한히 반복하는 할 일
-
+                        let data = Request.Todo(
+                            content: todo.content,
+                            memo: todo.memo,
+                            todayTodo: todo.todayTodo,
+                            flag: todo.flag,
+                            endDate: nextEndDate,
+                            isSelectedEndDateTime: todo.isSelectedEndDateTime,
+                            alarms: todo.alarms.map { $0.time },
+                            repeatOption: todo.repeatOption,
+                            repeatValue: todo.repeatValue,
+                            repeatEnd: todo.repeatEnd,
+                            tags: todo.tags.map { $0.content },
+                            subTodos: todo.subTodos.map { $0.content })
+                        checkListViewModel.completeTodoWithRepeat(todoId: todo.id,
+                                                                  todo: data) { result in
+                            switch result {
+                            case .success:
+                                print("[Debug] 무한히 반복하는 할 일 완료")
+                                checkListViewModel.fetchTodoList()
+                            case .failure(let failure):
+                                print("[Debug] 무한히 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
                         return
                     }
 
                     if nextEndDate.compare(repeatEnd) == .orderedAscending {
                         // 반복이 끝나지 않았음
-
+                        let data = Request.Todo(
+                            content: todo.content,
+                            memo: todo.memo,
+                            todayTodo: todo.todayTodo,
+                            flag: todo.flag,
+                            endDate: nextEndDate,
+                            isSelectedEndDateTime: todo.isSelectedEndDateTime,
+                            alarms: todo.alarms.map { $0.time },
+                            repeatOption: todo.repeatOption,
+                            repeatValue: todo.repeatValue,
+                            repeatEnd: todo.repeatEnd,
+                            tags: todo.tags.map { $0.content },
+                            subTodos: todo.subTodos.map { $0.content })
+                        checkListViewModel.completeTodoWithRepeat(todoId: todo.id,
+                                                                  todo: data) { result in
+                            switch result {
+                            case .success:
+                                print("[Debug] 반복하는 할 일 완료")
+                                checkListViewModel.fetchTodoList()
+                            case .failure(let failure):
+                                print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
                     } else {
                         // 반복이 끝났음
+                        let data = Request.Todo(
+                            content: todo.content,
+                            memo: todo.memo,
+                            todayTodo: todo.todayTodo,
+                            flag: todo.flag,
+                            endDate: nil,
+                            isSelectedEndDateTime: todo.isSelectedEndDateTime,
+                            alarms: todo.alarms.map { $0.time },
+                            repeatOption: todo.repeatOption,
+                            repeatValue: todo.repeatValue,
+                            repeatEnd: todo.repeatEnd,
+                            tags: todo.tags.map { $0.content },
+                            subTodos: todo.subTodos.map { $0.content })
+                        checkListViewModel.completeTodoWithRepeat(todoId: todo.id,
+                                                                  todo: data) { result in
+                            switch result {
+                            case .success:
+                                print("[Debug] 마지막 반복하는 할 일 완료")
+                                checkListViewModel.fetchTodoList()
+                            case .failure(let failure):
+                                print("[Debug] 마지막 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
                     }
                 }
 
