@@ -60,24 +60,31 @@ extension Todo {
                 TimeInterval(day * interval)
             )
         case RepeatOption.everyWeek.rawValue:
-            //  pattern 인덱스가 0~6인데, 아래의 반환값은 1~7이므로 다음 날을 가르키게 됨
-            var index = calendar.component(.weekday, from: endDate)
-            let startIndex = index - 1
             let pattern = repeatValue.map { $0 == "1" ? true : false }
-            while !pattern[index % 7] {
-                nextEndDate = nextEndDate.addingTimeInterval(
-                    TimeInterval(day)
-                )
-                index += 1
 
-                if startIndex == index % 7 {
+            //  pattern 인덱스가 0~6인데, 아래의 반환값은 1~7이므로 다음 날을 가르키게 됨
+            var index = calendar.component(.weekday, from: endDate) % 7
+            nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+
+            let startIndex = index
+            while !pattern[index] {
+                nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+                index = (index + 1) % 7
+
+                if startIndex == index {
                     return nil
                 }
             }
         case RepeatOption.everySecondWeek.rawValue:
+            let pattern = repeatValue.map { $0 == "1" ? true : false }
+
             //  pattern 인덱스가 0~6인데, 아래의 반환값은 1~7이므로 다음 날을 가르키게 됨
             var index = calendar.component(.weekday, from: endDate)
-            let pattern = repeatValue.map { $0 == "1" ? true : false }
+            if index == 7 {
+                index = 0
+            }
+            nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+
             while !pattern[index], index < 7 {
                 nextEndDate = nextEndDate.addingTimeInterval(
                     TimeInterval(day)
@@ -156,7 +163,6 @@ extension Todo {
             return nil
         }
 
-        print(nextEndDate)
         return nextEndDate
     }
 }
