@@ -10,6 +10,7 @@
 		1301D32B29CB3123003B3848 /* StarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D32A29CB3123003B3848 /* StarButton.swift */; };
 		1301D32D29CB634F003B3848 /* ListSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D32C29CB634F003B3848 /* ListSectionView.swift */; };
 		1301D32F29CB654E003B3848 /* EmptySectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D32E29CB654E003B3848 /* EmptySectionView.swift */; };
+		1301D33129CB71E3003B3848 /* TagList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D33029CB71E3003B3848 /* TagList.swift */; };
 		1310B00C29BF109A00DEC17F /* TagService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00B29BF109A00DEC17F /* TagService.swift */; };
 		1310B00E29BF2FA700DEC17F /* Alarm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00D29BF2FA700DEC17F /* Alarm.swift */; };
 		1310B01029BF48A800DEC17F /* SubTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00F29BF48A700DEC17F /* SubTodoView.swift */; };
@@ -52,6 +53,7 @@
 		1301D32A29CB3123003B3848 /* StarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarButton.swift; sourceTree = "<group>"; };
 		1301D32C29CB634F003B3848 /* ListSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSectionView.swift; sourceTree = "<group>"; };
 		1301D32E29CB654E003B3848 /* EmptySectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptySectionView.swift; sourceTree = "<group>"; };
+		1301D33029CB71E3003B3848 /* TagList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagList.swift; sourceTree = "<group>"; };
 		1310B00B29BF109A00DEC17F /* TagService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagService.swift; sourceTree = "<group>"; };
 		1310B00D29BF2FA700DEC17F /* Alarm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alarm.swift; sourceTree = "<group>"; };
 		1310B00F29BF48A700DEC17F /* SubTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubTodoView.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				137D670329C2084C0010C8B3 /* TodoAddView.swift */,
 				1310B00F29BF48A700DEC17F /* SubTodoView.swift */,
 				1301D32C29CB634F003B3848 /* ListSectionView.swift */,
+				1301D33029CB71E3003B3848 /* TagList.swift */,
 			);
 			path = CheckList;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1301D33129CB71E3003B3848 /* TagList.swift in Sources */,
 				1301D32D29CB634F003B3848 /* ListSectionView.swift in Sources */,
 				137611F929B61674008787BD /* SubTodo.swift in Sources */,
 				1334334F29B5A0AC00F26F57 /* CheckListView.swift in Sources */,

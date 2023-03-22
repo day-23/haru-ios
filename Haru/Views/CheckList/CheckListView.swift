@@ -21,56 +21,11 @@ struct CheckListView: View {
             ZStack(alignment: .bottomTrailing) {
                 VStack {
                     //  태그 리스트
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            //  중요 태그
-                            StarButton(isClicked: true)
-                                .onTapGesture {
-                                    withAnimation {
-                                        viewModel.selectedTag = Tag(
-                                            id: "중요",
-                                            content: "중요"
-                                        )
-                                    }
-                                    initialOffset = nil
-                                }
-
-                            //  미분류 태그
-                            TagView(Tag(id: "미분류", content: "미분류"))
-                                .onTapGesture {
-                                    withAnimation {
-                                        viewModel.selectedTag = Tag(
-                                            id: "미분류",
-                                            content: "미분류"
-                                        )
-                                    }
-                                    initialOffset = nil
-                                }
-
-                            //  완료 태그
-                            TagView(Tag(id: "완료", content: "완료"))
-                                .onTapGesture {
-                                    withAnimation {
-                                        viewModel.selectedTag = Tag(
-                                            id: "완료",
-                                            content: "완료"
-                                        )
-                                    }
-                                    initialOffset = nil
-                                }
-
-                            //  태그 리스트들
-                            ForEach(viewModel.tagList) { tag in
-                                TagView(tag)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            viewModel.selectedTag = tag
-                                        }
-                                        initialOffset = nil
-                                    }
-                            }
+                    TagList(viewModel: viewModel) { tag in
+                        withAnimation {
+                            viewModel.selectedTag = tag
                         }
-                        .padding(.horizontal, 20)
+                        initialOffset = nil
                     }
 
                     //  오늘 나의 하루 클릭시
