@@ -66,6 +66,59 @@ final class ScheduleService {
         }
     }
 
+    func fetchScheduleListAsync(
+        _ startDate: Date,
+        _ endDate: Date
+    ) async throws -> [Schedule] {
+        struct Response: Codable {
+            struct Pagination: Codable {
+                let totalItems: Int
+                let startDate: Date
+                let endDate: Date
+            }
+
+            let success: Bool
+            let data: [Schedule]
+            let pagination: Pagination
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(formatter)
+
+        let paramFormatter = DateFormatter()
+        paramFormatter.dateFormat = "yyyyMMdd"
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "startDate": paramFormatter.string(from: startDate),
+            "endDate": paramFormatter.string(from: endDate),
+        ]
+
+        return try await withCheckedThrowingContinuation { continuation in
+
+            AF.request(
+                ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
+                method: .get,
+                parameters: parameters,
+                encoding: URLEncoding.queryString,
+                headers: headers
+            )
+            .responseDecodable(of: Response.self, decoder: decoder) { response in
+                switch response.result {
+                case let .success(response):
+                    continuation.resume(returning: response.data)
+                case let .failure(error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     /**
      * 일정 추가하기
      */
@@ -173,7 +226,7 @@ final class ScheduleService {
         }
 
         for week in 0 ..< numberOfWeeks {
-            for order in 0 ..< 4 {
+            for order in 0 ..< prodCnt {
                 var prev = result[week * 7 + 0][order]?.first
                 var cnt = 1
                 for day in 1 ..< 7 {

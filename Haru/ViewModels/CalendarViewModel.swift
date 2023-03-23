@@ -17,7 +17,11 @@ final class CalendarViewModel: ObservableObject {
     
     @Published var startOnSunday: Bool = true
     
-    @Published var monthOffest: Int = 0 // 진짜 월과의 차이
+    @Published var monthOffest: Int = 0 {
+        didSet {
+            getCurDateList(monthOffest, startOnSunday)
+        }
+    } // 진짜 월과의 차이
     
     @Published var selectedDate: DateValue // 터치해서 선택된 날짜
     @Published var selectedScheduleList: [Schedule] = [] // 터치해서 선택된 날짜에 있는 일정 리스트
@@ -48,22 +52,12 @@ final class CalendarViewModel: ObservableObject {
         
         setStartOnSunday(startOnSunday)
         getCategoryList()
-        
+     
         print("calendarVM init")
     }
 
     func setMonthOffset(_ offset: Int) {
         monthOffest = offset
-        getCurDateList(monthOffest, startOnSunday)
-    }
-    
-    func addMonthOffset() {
-        monthOffest += 1
-        getCurDateList(monthOffest, startOnSunday)
-    }
-
-    func subMonthOffset() {
-        monthOffest -= 1
         getCurDateList(monthOffest, startOnSunday)
     }
     
@@ -79,7 +73,6 @@ final class CalendarViewModel: ObservableObject {
         dateList = CalendarHelper.extractDate(monthOffset, startOnSunday)
         
         numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
-        
         getCurMonthSchList(dateList)
     }
 
@@ -87,12 +80,19 @@ final class CalendarViewModel: ObservableObject {
         productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
         viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: 4), count: numberOfWeeks)
         
-        scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
-            switch result {
-            case .success(let success):
-                (self.productivityList, self.viewProductivityList) = self.calendarService.fittingCalendar(dateList: dateList, scheduleList: success, todoList: [])
-            case .failure(let failure):
-                print("[Debug] \(failure)")
+//        scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
+//            switch result {
+//            case .success(let success):
+//                (self.productivityList, self.viewProductivityList) = self.calendarService.fittingCalendar(dateList: dateList, scheduleList: success, todoList: [])
+//            case .failure(let failure):
+//                print("[Debug] \(failure) \(#fileID) \(#function)")
+//            }
+//        }
+        
+        Task {
+            let result = await calendarService.fetchScheduleAndTodo(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!)
+            DispatchQueue.main.async { [self] in
+                (self.productivityList, self.viewProductivityList) = self.calendarService.fittingCalendar(dateList: dateList, scheduleList: result.0, todoList: result.1)
             }
         }
     }
