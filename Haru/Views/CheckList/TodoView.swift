@@ -172,7 +172,7 @@ struct TodoView: View {
                                 todo.repeatOption != nil ||
                                 !todo.memo.isEmpty)
                         {
-                            Image("dot")
+                            Image("dot-small")
                         }
 
                         if todo.todayTodo {

@@ -17,8 +17,8 @@ struct DayButton: View {
             action()
         } label: {
             Text(content)
-                .foregroundColor(isClicked ? Constants.gradientStart : Constants.lightGray)
-                .font(.system(size: 15))
+                .foregroundColor(isClicked ? Color(0x1DAFFF) : Color(0xACACAC))
+                .font(.system(size: 14))
         }
     }
 }

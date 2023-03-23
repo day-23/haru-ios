@@ -11,6 +11,7 @@ struct HaruLinkView: View {
     var body: some View {
         HStack {
             Image("today-todo")
+                .renderingMode(.template)
                 .padding(.vertical, 12)
                 .padding(.leading, 20)
                 .padding(.trailing, 12)
