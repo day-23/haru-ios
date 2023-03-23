@@ -15,17 +15,15 @@ final class CalendarService {
      * 일정과 할일 가져오기
      */
     func fetchScheduleAndTodo(_ startDate: Date, _ endDate: Date) async -> ([Schedule], [Todo]) {
-        var scheduleList: [Schedule] = []
-        var todoList: [Todo] = []
-
         do {
-            scheduleList = try await scheduleService.fetchScheduleListAsync(startDate, endDate)
-            todoList = try await fetchTodoListAsync(startDate, endDate)
-        } catch {
-            print("[Debug] \(error)")
-        }
+            async let scheduleList = scheduleService.fetchScheduleListAsync(startDate, endDate)
+            async let todoList = fetchTodoListAsync(startDate, endDate)
 
-        return (scheduleList, todoList)
+            return try await (scheduleList, todoList)
+        } catch {
+            print("[Debug] \(error) \(#fileID) \(#function)")
+        }
+        return ([], [])
     }
 
     /**
@@ -104,7 +102,6 @@ final class CalendarService {
         scheduleService.fittingScheduleList(dateList, scheduleList, prodCnt, result: &result, result_: &result_)
 
         // TODO: todoService의 fittingTodoList 함수로 뽑기
-
         let todoList = todoList.filter { $0.endDate != nil }
         var p = 0
         for index in dateList.indices {
@@ -116,7 +113,9 @@ final class CalendarService {
                 maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
             }
         }
-        
+
+        // MARK: -
+
         for week in 0 ..< numberOfWeeks {
             for order in 0 ..< prodCnt {
                 var prev = result[week * 7 + 0][order]?.first

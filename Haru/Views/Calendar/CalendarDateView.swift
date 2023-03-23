@@ -40,7 +40,7 @@ struct CalendarDateView: View {
                     
                     HStack(spacing: 12) {
                         Button {
-                            calendarVM.setMonthOffset(0)
+                            calendarVM.monthOffest = 0
                         } label: {
                             Text("\(Date().day)")
                                 .font(Font.custom(Constants.Bold, size: 12))
@@ -74,37 +74,41 @@ struct CalendarDateView: View {
                         }
                     } // HStack
                     
-                    GeometryReader { proxy in
-                        
-                        // MARK: - Gesture 분리를 위함
-                        
-                        let longPress = LongPressGesture(minimumDuration: 0.3)
-                            .onEnded { longPress in
-                                calendarVM.firstSelected = true
-                            }
-                        
-                        let drag = DragGesture()
-                            .onChanged { value in
-                                calendarVM.addSelectedItems(
-                                    from: value,
-                                    proxy.size.width / 7,
-                                    proxy.size.height / CGFloat(calendarVM.numberOfWeeks)
+                    TabView(selection: $calendarVM.monthOffest) {
+                        ForEach(-100 ... 100, id: \.self) { _ in
+                            GeometryReader { proxy in
+                                // MARK: - Gesture 분리를 위함
+                                
+                                let longPress = LongPressGesture(minimumDuration: 0.3)
+                                    .onEnded { longPress in
+                                        calendarVM.firstSelected = true
+                                    }
+                                
+                                let drag = DragGesture()
+                                    .onChanged { value in
+                                        calendarVM.addSelectedItems(
+                                            from: value,
+                                            proxy.size.width / 7,
+                                            proxy.size.height / CGFloat(calendarVM.numberOfWeeks)
+                                        )
+                                    }
+                                    .onEnded { value in
+                                        isSchModalVisible = true
+                                    }
+                                
+                                let combined = longPress.sequenced(before: drag)
+                                
+                                CalendarWeekView(
+                                    isDayModalVisible: $isDayModalVisible,
+                                    cellHeight: proxy.size.height / CGFloat(calendarVM.numberOfWeeks),
+                                    cellWidhth: proxy.size.width / 7
                                 )
-                            }
-                            .onEnded { value in
-                                isSchModalVisible = true
-                            }
-                        
-                        let combined = longPress.sequenced(before: drag)
-                        
-                        CalendarWeekView(
-                            isDayModalVisible: $isDayModalVisible,
-                            cellHeight: proxy.size.height / CGFloat(calendarVM.numberOfWeeks),
-                            cellWidhth: proxy.size.width / 7
-                        )
-                        .environmentObject(calendarVM)
-                        .gesture(combined)
-                    } // GeometryReader
+                                .environmentObject(calendarVM)
+                                .gesture(combined)
+                            } // GeometryReader
+                        } // ForEach
+                    } // TabView
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 } // Group
                 .padding(.horizontal)
             } // VStack
@@ -148,23 +152,8 @@ struct CalendarDateView: View {
                     .onTapGesture {
                         isDayModalVisible = false
                     }
-
-                Modal(isActive: $isDayModalVisible, ratio: 0.9) {
-                    VStack(spacing: 20) {
-                        Text("선택된 날을 위한 뷰")
-
-                        Text(
-                            "\(calendarVM.selectedDate.date.month)월 \(calendarVM.selectedDate.date.day)일"
-                        )
-                        
-                        List {
-                            ForEach(calendarVM.selectedProdList.indices, id: \.self) { index in
-                                Text(calendarVM.selectedProdList[index].content)
-                            }
-                        }
-                    }
-                }
-                .zIndex(2)
+                CalendarDayView()
+                    .zIndex(2)
             }
         } // ZStack
         .onChange(of: isSchModalVisible) { _ in

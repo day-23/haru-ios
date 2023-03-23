@@ -11,13 +11,8 @@ struct CalendarMainView: View {
     @StateObject var calendarVM: CalendarViewModel = .init()
 
     var body: some View {
-        TabView(selection: $calendarVM.monthOffest) {
-            ForEach(-100 ... 100, id: \.self) { _ in
-                CalendarDateView()
-                    .environmentObject(calendarVM)
-            }
-        }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+        CalendarDateView()
+            .environmentObject(calendarVM)
     }
 }
 
