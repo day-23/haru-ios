@@ -19,205 +19,203 @@ struct CheckListView: View {
     @State private var maxOffset: CGFloat?
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .bottomTrailing) {
-                VStack {
-                    //  태그 리스트
-                    TagListView(viewModel: viewModel) { tag in
-                        withAnimation {
-                            viewModel.selectedTag = tag
-                        }
-                        prevOffset = nil
-                        minOffset = nil
-                        maxOffset = nil
+        ZStack(alignment: .bottomTrailing) {
+            VStack {
+                //  태그 리스트
+                TagListView(viewModel: viewModel) { tag in
+                    withAnimation {
+                        viewModel.selectedTag = tag
                     }
-
-                    //  오늘 나의 하루
-                    NavigationLink {
-                        HaruView(
-                            viewModel: viewModel,
-                            addViewModel: addViewModel
-                        )
-                    } label: {
-                        HaruLinkView()
-                    }
-
-                    //  체크 리스트
-                    if !viewModel.isEmpty {
-                        if viewModel.selectedTag == nil {
-                            ListView {
-                                ListSectionView(
-                                    checkListViewModel: viewModel,
-                                    todoAddViewModel: addViewModel,
-                                    todoList: $viewModel.todoListByFlag
-                                ) {
-                                    viewModel.updateOrderMain()
-                                } header: {
-                                    StarButton(isClicked: true)
-                                        .padding(.leading, 29)
-                                }
-
-                                Divider()
-
-                                ListSectionView(
-                                    checkListViewModel: viewModel,
-                                    todoAddViewModel: addViewModel,
-                                    todoList: $viewModel.todoListWithAnyTag
-                                ) {
-                                    viewModel.updateOrderMain()
-                                } header: {
-                                    TagView(Tag(id: "분류됨", content: "분류됨"))
-                                        .padding(.leading, 21)
-                                }
-
-                                Divider()
-
-                                ListSectionView(
-                                    checkListViewModel: viewModel,
-                                    todoAddViewModel: addViewModel,
-                                    todoList: $viewModel.todoListWithoutTag
-                                ) {
-                                    viewModel.updateOrderMain()
-                                } header: {
-                                    TagView(Tag(id: "미분류", content: "미분류"))
-                                        .padding(.leading, 21)
-                                }
-
-                                Divider()
-
-                                ListSectionView(
-                                    checkListViewModel: viewModel,
-                                    todoAddViewModel: addViewModel,
-                                    todoList: $viewModel.todoListByCompleted
-                                ) {
-                                    viewModel.updateOrderMain()
-                                } header: {
-                                    TagView(Tag(id: "완료", content: "완료"))
-                                        .padding(.leading, 21)
-                                }
-                            } offsetChanged: {
-                                self.changeOffset($0)
-                            }
-                        } else {
-                            if let tag = viewModel.selectedTag {
-                                if tag.id == "중요" {
-                                    ListView {
-                                        ListSectionView(
-                                            checkListViewModel: viewModel,
-                                            todoAddViewModel: addViewModel,
-                                            todoList: $viewModel.todoListByFlag
-                                        ) {
-                                            viewModel.updateOrderFlag()
-                                        } header: {
-                                            StarButton(isClicked: true)
-                                                .padding(.leading, 29)
-                                        }
-                                    } offsetChanged: {
-                                        self.changeOffset($0)
-                                    }
-                                } else if tag.id == "미분류" {
-                                    ListView {
-                                        ListSectionView(
-                                            checkListViewModel: viewModel,
-                                            todoAddViewModel: addViewModel,
-                                            todoList: $viewModel.todoListWithoutTag
-                                        ) {
-                                            viewModel.updateOrderWithoutTag()
-                                        } header: {
-                                            TagView(tag)
-                                                .padding(.leading, 21)
-                                        }
-                                    } offsetChanged: {
-                                        self.changeOffset($0)
-                                    }
-                                } else if tag.id == "완료" {
-                                    //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
-                                    ListView {
-                                        ListSectionView(
-                                            checkListViewModel: viewModel,
-                                            todoAddViewModel: addViewModel,
-                                            todoList: $viewModel.todoListByCompleted
-                                        ) {
-                                            viewModel.updateOrderWithoutTag()
-                                        } header: {
-                                            TagView(tag)
-                                                .padding(.leading, 21)
-                                        }
-                                    } offsetChanged: {
-                                        self.changeOffset($0)
-                                    }
-                                } else {
-                                    //  Tag 클릭시
-                                    ListView {
-                                        ListSectionView(
-                                            checkListViewModel: viewModel,
-                                            todoAddViewModel: addViewModel,
-                                            todoList: $viewModel.todoListByTag
-                                        ) {
-                                            viewModel.updateOrderByTag(tagId: tag.id)
-                                        } header: {
-                                            TagView(tag)
-                                                .padding(.leading, 21)
-                                        }
-                                    } offsetChanged: {
-                                        self.changeOffset($0)
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        VStack {
-                            Text("모든 할 일을 마쳤습니다!")
-                                .foregroundColor(Color(0x000000, opacity: 0.5))
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
+                    prevOffset = nil
+                    minOffset = nil
+                    maxOffset = nil
                 }
 
-                if isModalVisible {
-                    Color.black.opacity(0.4)
-                        .edgesIgnoringSafeArea(.all)
-                        .zIndex(1)
-                        .onTapGesture {
-                            withAnimation {
-                                isModalVisible = false
+                //  오늘 나의 하루
+                NavigationLink {
+                    HaruView(
+                        viewModel: viewModel,
+                        addViewModel: addViewModel
+                    )
+                } label: {
+                    HaruLinkView()
+                }
+
+                //  체크 리스트
+                if !viewModel.isEmpty {
+                    if viewModel.selectedTag == nil {
+                        ListView {
+                            ListSectionView(
+                                checkListViewModel: viewModel,
+                                todoAddViewModel: addViewModel,
+                                todoList: $viewModel.todoListByFlag
+                            ) {
+                                viewModel.updateOrderMain()
+                            } header: {
+                                StarButton(isClicked: true)
+                                    .padding(.leading, 29)
+                            }
+
+                            Divider()
+
+                            ListSectionView(
+                                checkListViewModel: viewModel,
+                                todoAddViewModel: addViewModel,
+                                todoList: $viewModel.todoListWithAnyTag
+                            ) {
+                                viewModel.updateOrderMain()
+                            } header: {
+                                TagView(Tag(id: "분류됨", content: "분류됨"))
+                                    .padding(.leading, 21)
+                            }
+
+                            Divider()
+
+                            ListSectionView(
+                                checkListViewModel: viewModel,
+                                todoAddViewModel: addViewModel,
+                                todoList: $viewModel.todoListWithoutTag
+                            ) {
+                                viewModel.updateOrderMain()
+                            } header: {
+                                TagView(Tag(id: "미분류", content: "미분류"))
+                                    .padding(.leading, 21)
+                            }
+
+                            Divider()
+
+                            ListSectionView(
+                                checkListViewModel: viewModel,
+                                todoAddViewModel: addViewModel,
+                                todoList: $viewModel.todoListByCompleted
+                            ) {
+                                viewModel.updateOrderMain()
+                            } header: {
+                                TagView(Tag(id: "완료", content: "완료"))
+                                    .padding(.leading, 21)
+                            }
+                        } offsetChanged: {
+                            self.changeOffset($0)
+                        }
+                    } else {
+                        if let tag = viewModel.selectedTag {
+                            if tag.id == "중요" {
+                                ListView {
+                                    ListSectionView(
+                                        checkListViewModel: viewModel,
+                                        todoAddViewModel: addViewModel,
+                                        todoList: $viewModel.todoListByFlag
+                                    ) {
+                                        viewModel.updateOrderFlag()
+                                    } header: {
+                                        StarButton(isClicked: true)
+                                            .padding(.leading, 29)
+                                    }
+                                } offsetChanged: {
+                                    self.changeOffset($0)
+                                }
+                            } else if tag.id == "미분류" {
+                                ListView {
+                                    ListSectionView(
+                                        checkListViewModel: viewModel,
+                                        todoAddViewModel: addViewModel,
+                                        todoList: $viewModel.todoListWithoutTag
+                                    ) {
+                                        viewModel.updateOrderWithoutTag()
+                                    } header: {
+                                        TagView(tag)
+                                            .padding(.leading, 21)
+                                    }
+                                } offsetChanged: {
+                                    self.changeOffset($0)
+                                }
+                            } else if tag.id == "완료" {
+                                //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
+                                ListView {
+                                    ListSectionView(
+                                        checkListViewModel: viewModel,
+                                        todoAddViewModel: addViewModel,
+                                        todoList: $viewModel.todoListByCompleted
+                                    ) {
+                                        viewModel.updateOrderWithoutTag()
+                                    } header: {
+                                        TagView(tag)
+                                            .padding(.leading, 21)
+                                    }
+                                } offsetChanged: {
+                                    self.changeOffset($0)
+                                }
+                            } else {
+                                //  Tag 클릭시
+                                ListView {
+                                    ListSectionView(
+                                        checkListViewModel: viewModel,
+                                        todoAddViewModel: addViewModel,
+                                        todoList: $viewModel.todoListByTag
+                                    ) {
+                                        viewModel.updateOrderByTag(tagId: tag.id)
+                                    } header: {
+                                        TagView(tag)
+                                            .padding(.leading, 21)
+                                    }
+                                } offsetChanged: {
+                                    self.changeOffset($0)
+                                }
                             }
                         }
-
-                    Modal(isActive: $isModalVisible, ratio: 0.9) {
-                        TodoAddView(
-                            viewModel: addViewModel,
-                            isModalVisible: $isModalVisible
-                        )
                     }
-                    .transition(.modal)
-                    .zIndex(2)
                 } else {
-                    if viewIsShown {
-                        HStack(spacing: 0) {
-                            TextField("할 일 간편 추가", text: $addViewModel.todoContent)
-                                .font(.system(size: 14, weight: .light))
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, 12)
-                                .background(Color(0xF1F1F5))
-                                .cornerRadius(8)
-                                .padding(.leading, 20)
-                                .padding(.trailing, 16)
-                                .onSubmit {
-                                    addViewModel.addSimpleTodo()
-                                }
-
-                            Button {
-                                withAnimation {
-                                    isModalVisible = true
-                                    addViewModel.mode = .add
-                                }
-                            } label: {
-                                Image("add-button")
-                            }
-                        }
-                        .zIndex(5)
+                    VStack {
+                        Text("모든 할 일을 마쳤습니다!")
+                            .foregroundColor(Color(0x000000, opacity: 0.5))
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+
+            if isModalVisible {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            isModalVisible = false
+                        }
+                    }
+
+                Modal(isActive: $isModalVisible, ratio: 0.9) {
+                    TodoAddView(
+                        viewModel: addViewModel,
+                        isModalVisible: $isModalVisible
+                    )
+                }
+                .transition(.modal)
+                .zIndex(2)
+            } else {
+                if viewIsShown {
+                    HStack(spacing: 0) {
+                        TextField("할 일 간편 추가", text: $addViewModel.todoContent)
+                            .font(.system(size: 14, weight: .light))
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 12)
+                            .background(Color(0xF1F1F5))
+                            .cornerRadius(8)
+                            .padding(.leading, 20)
+                            .padding(.trailing, 16)
+                            .onSubmit {
+                                addViewModel.addSimpleTodo()
+                            }
+
+                        Button {
+                            withAnimation {
+                                isModalVisible = true
+                                addViewModel.mode = .add
+                            }
+                        } label: {
+                            Image("add-button")
+                        }
+                    }
+                    .zIndex(5)
                 }
             }
         }

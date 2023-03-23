@@ -65,7 +65,6 @@ struct TodoView: View {
                             case .failure(let failure):
                                 print("[Debug] 반복하지 않는 할 일 완료 실패 \(failure) (\(#fileID), \(#function))")
                             }
-                            disabled = false
                         }
                         return
                     }
@@ -96,7 +95,6 @@ struct TodoView: View {
                                 case .failure(let failure):
                                     print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
                                 }
-                                disabled = false
                             }
                             return
                         }
@@ -123,7 +121,6 @@ struct TodoView: View {
                             case .failure(let failure):
                                 print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
                             }
-                            disabled = false
                         }
                     } catch {
                         switch error {
@@ -142,8 +139,9 @@ struct TodoView: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(todo.content)
-                    .font(.system(size: 14, weight: .bold))
                     .strikethrough(todo.completed)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
 
                 if todo.tags.count > 0 ||
                     todo.endDate != nil ||
@@ -225,6 +223,7 @@ struct TodoView: View {
         checkListViewModel.toggleCompleted(todoId: todoId)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             checkListViewModel.fetchTodoList()
+            disabled = false
         }
     }
 }

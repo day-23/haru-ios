@@ -317,6 +317,12 @@ final class CheckListViewModel: ObservableObject {
             withAnimation(.easeInOut(duration: 0.1)) {
                 todoListByFlag[index].isShowingSubTodo.toggle()
             }
+
+            if let index = todoListByFlagWithToday.firstIndex(where: { $0.id == todoId }) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    todoListByFlagWithToday[index].isShowingSubTodo.toggle()
+                }
+            }
             return
         }
 
@@ -330,6 +336,12 @@ final class CheckListViewModel: ObservableObject {
         if let index = todoListByFlagWithToday.firstIndex(where: { $0.id == todoId }) {
             withAnimation(.easeInOut(duration: 0.1)) {
                 todoListByFlagWithToday[index].isShowingSubTodo.toggle()
+            }
+
+            if let index = todoListByFlag.firstIndex(where: { $0.id == todoId }) {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    todoListByFlag[index].isShowingSubTodo.toggle()
+                }
             }
             return
         }

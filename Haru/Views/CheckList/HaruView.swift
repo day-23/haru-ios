@@ -25,6 +25,7 @@ struct HaruView: View {
                 startPoint: .bottomLeading,
                 endPoint: .topTrailing
             ).ignoresSafeArea()
+                .opacity(0.5)
 
             ListView {
                 ListSectionView(

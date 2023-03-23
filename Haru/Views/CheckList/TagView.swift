@@ -20,6 +20,7 @@ struct TagView: View {
             .bold()
             .padding(.vertical, 5)
             .padding(.horizontal, 10)
+            .background(Color(0xFDFDFD))
             .cornerRadius(10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)

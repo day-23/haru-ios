@@ -30,8 +30,9 @@ struct SubTodoView: View {
                 .padding(.trailing, 14)
 
             Text(subTodo.content)
-                .font(.system(size: 14, weight: .bold))
                 .strikethrough(subTodo.completed)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(!subTodo.completed ? Color(0x191919) : Color(0xacacac))
 
             Spacer()
         }
