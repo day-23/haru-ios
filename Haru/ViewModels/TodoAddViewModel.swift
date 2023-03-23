@@ -275,6 +275,23 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
+    func addSimpleTodo() {
+        let alt = todoContent
+        clear()
+        todoContent = alt
+        isTodayTodo = true
+
+        checkListViewModel.addTodo(todo: createTodoData()) { result in
+            switch result {
+            case .success:
+                self.clear()
+                self.checkListViewModel.fetchTodoList()
+            case let .failure(error):
+                print("[Debug] \(error) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
     func createSubTodo() {
         subTodoList.append(SubTodo(id: UUID().uuidString,
                                    content: "",

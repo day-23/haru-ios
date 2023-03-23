@@ -190,13 +190,27 @@ struct CheckListView: View {
                     .zIndex(2)
                 } else {
                     if viewIsShown {
-                        Button {
-                            withAnimation {
-                                isModalVisible = true
-                                addViewModel.mode = .add
+                        HStack(spacing: 0) {
+                            TextField("할 일 간편 추가", text: $addViewModel.todoContent)
+                                .font(.system(size: 14, weight: .light))
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 12)
+                                .background(Color(0xF1F1F5))
+                                .cornerRadius(8)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 16)
+                                .onSubmit {
+                                    addViewModel.addSimpleTodo()
+                                }
+
+                            Button {
+                                withAnimation {
+                                    isModalVisible = true
+                                    addViewModel.mode = .add
+                                }
+                            } label: {
+                                Image("add-button")
                             }
-                        } label: {
-                            Image("add-button")
                         }
                         .zIndex(5)
                     }
