@@ -223,7 +223,7 @@ struct TodoView: View {
 
     func successCompletion(todoId: String) {
         checkListViewModel.toggleCompleted(todoId: todoId)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             checkListViewModel.fetchTodoList()
         }
     }

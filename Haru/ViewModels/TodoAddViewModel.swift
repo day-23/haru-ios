@@ -26,10 +26,10 @@ final class TodoAddViewModel: ObservableObject {
     @Published var isTodayTodo: Bool = false
 
     @Published var endDate: Date = .init()
+
     @Published var endDateTime: Date = .init()
     @Published var isSelectedEndDate: Bool = false {
         didSet {
-            endDate = .init()
             if !isSelectedEndDate && isSelectedRepeat {
                 isSelectedRepeat = false
             }
@@ -68,6 +68,10 @@ final class TodoAddViewModel: ObservableObject {
     @Published var isSelectedRepeatEnd: Bool = false
     @Published var repeatDay: String = "1" {
         didSet {
+            if mode == .edit {
+                return
+            }
+
             guard let interval = Int(repeatDay) else { return }
 
             let day = 60 * 60 * 24
@@ -79,7 +83,11 @@ final class TodoAddViewModel: ObservableObject {
                                         Day(content: "수"), Day(content: "목"), Day(content: "금"), Day(content: "토")]
     {
         didSet {
-            var nextEndDate = Date()
+            if mode == .edit {
+                return
+            }
+
+            var nextEndDate = isSelectedEndDate ? endDate : Date()
             let day = 60 * 60 * 24
             let calendar = Calendar.current
             let pattern = repeatWeek.map { $0.isClicked ? true : false }
@@ -94,6 +102,8 @@ final class TodoAddViewModel: ObservableObject {
                     nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
                     index = (index + 1) % 7
                 }
+
+                endDate = nextEndDate
             } else if repeatOption == .everySecondWeek {
                 if index == 0 {
                     nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
@@ -107,15 +117,19 @@ final class TodoAddViewModel: ObservableObject {
                         nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
                     }
                 }
-            }
 
-            endDate = nextEndDate
+                endDate = nextEndDate
+            }
         }
     }
 
     @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") } {
         didSet {
-            var nextEndDate = Date()
+            if mode == .edit {
+                return
+            }
+
+            var nextEndDate = isSelectedEndDate ? endDate : Date()
             let day = 60 * 60 * 24
             let calendar = Calendar.current
             let pattern = repeatMonth.map { $0.isClicked ? true : false }
@@ -147,7 +161,11 @@ final class TodoAddViewModel: ObservableObject {
 
     @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") } {
         didSet {
-            var nextEndDate = Date()
+            if mode == .edit {
+                return
+            }
+
+            var nextEndDate = isSelectedEndDate ? endDate : Date()
             let calendar = Calendar.current
             let pattern = repeatYear.map { $0.isClicked ? true : false }
 
