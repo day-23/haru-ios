@@ -46,8 +46,6 @@ struct TodoService {
             "Content-Type": "application/json",
         ]
 
-        print(String(data: try! TodoService.encoder.encode(todo), encoding: .utf8))
-
         AF.request(
             TodoService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,

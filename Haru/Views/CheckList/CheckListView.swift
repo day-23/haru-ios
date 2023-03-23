@@ -12,9 +12,11 @@ struct CheckListView: View {
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
     @State private var isModalVisible: Bool = false
-    @State private var initialOffset: CGFloat?
+    @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
+    @State private var minOffset: CGFloat?
+    @State private var maxOffset: CGFloat?
 
     var body: some View {
         GeometryReader { geometry in
@@ -25,7 +27,9 @@ struct CheckListView: View {
                         withAnimation {
                             viewModel.selectedTag = tag
                         }
-                        initialOffset = nil
+                        prevOffset = nil
+                        minOffset = nil
+                        maxOffset = nil
                     }
 
                     //  오늘 나의 하루
@@ -226,25 +230,38 @@ struct CheckListView: View {
     }
 
     func changeOffset(_ value: CGFloat?) {
-        if self.initialOffset == nil || self.initialOffset == 0 {
+        if self.prevOffset == nil || self.prevOffset == 0 {
             self.viewIsShown = true
-            self.initialOffset = value
+            self.prevOffset = value
+            self.minOffset = value
+            self.maxOffset = value
             return
         }
         self.offset = value
 
-        guard let initialOffset = self.initialOffset,
-              let offset = self.offset
+        guard let prevOffset = self.prevOffset,
+              let offset = self.offset,
+              let minOffset = self.minOffset,
+              let maxOffset = self.maxOffset
         else {
             return
         }
 
         withAnimation(.easeInOut(duration: 0.25)) {
-            if initialOffset > offset {
+//            if maxOffset - offset < UIScreen.main.bounds.height {
+//                self.viewIsShown = true
+//            } else if offset < minOffset + 200 {
+//                self.viewIsShown = false
+//            } else {}
+
+            if prevOffset > offset {
                 self.viewIsShown = false
             } else {
                 self.viewIsShown = true
             }
+            self.prevOffset = offset
         }
+        self.minOffset = min(minOffset, offset)
+        self.maxOffset = max(maxOffset, offset)
     }
 }

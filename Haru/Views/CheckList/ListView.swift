@@ -15,13 +15,14 @@ struct ListView<Content>: View where Content: View {
         ScrollView {
             LazyVStack(pinnedViews: [.sectionHeaders]) {
                 content()
-                GeometryReader { geometry in
-                    Color.clear.preference(
-                        key: OffsetKey.self,
-                        value: geometry.frame(in: .global).minY
-                    )
-                    .frame(height: 0)
-                }
+            }
+
+            GeometryReader { geometry in
+                Color.clear.preference(
+                    key: OffsetKey.self,
+                    value: geometry.frame(in: .global).minY
+                )
+                .frame(height: 0)
             }
         }
         .onPreferenceChange(OffsetKey.self) { offsetChanged($0) }
