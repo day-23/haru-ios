@@ -30,7 +30,8 @@ struct HaruView: View {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
-                    todoList: $viewModel.todoListByFlagWithToday
+                    todoList: $viewModel.todoListByFlagWithToday,
+                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
@@ -43,7 +44,8 @@ struct HaruView: View {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
-                    todoList: $viewModel.todoListByTodayTodo
+                    todoList: $viewModel.todoListByTodayTodo,
+                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
@@ -56,7 +58,8 @@ struct HaruView: View {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
-                    todoList: $viewModel.todoListByUntilToday
+                    todoList: $viewModel.todoListByUntilToday,
+                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {

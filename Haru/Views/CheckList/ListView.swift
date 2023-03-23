@@ -13,7 +13,7 @@ struct ListView<Content>: View where Content: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack {
+            LazyVStack(pinnedViews: [.sectionHeaders]) {
                 content()
                 GeometryReader { geometry in
                     Color.clear.preference(

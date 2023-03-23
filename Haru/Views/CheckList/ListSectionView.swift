@@ -11,21 +11,9 @@ struct ListSectionView<Content>: View where Content: View {
     var checkListViewModel: CheckListViewModel
     var todoAddViewModel: TodoAddViewModel
     @Binding var todoList: [Todo]
+    var itemBackgroundColor: Color = .white
     let orderAction: () -> Void
     @ViewBuilder let header: () -> Content
-
-    init(checkListViewModel: CheckListViewModel,
-         todoAddViewModel: TodoAddViewModel,
-         todoList: Binding<[Todo]>,
-         orderAction: @escaping () -> Void,
-         @ViewBuilder header: @escaping () -> Content)
-    {
-        self.checkListViewModel = checkListViewModel
-        self.todoAddViewModel = todoAddViewModel
-        self._todoList = todoList
-        self.orderAction = orderAction
-        self.header = header
-    }
 
     var body: some View {
         Section {
@@ -43,9 +31,12 @@ struct ListSectionView<Content>: View where Content: View {
                                 }
                             }
                     } label: {
-                        TodoView(checkListViewModel: checkListViewModel,
-                                 todo: todo)
-                            .foregroundColor(.black)
+                        TodoView(
+                            checkListViewModel: checkListViewModel,
+                            todo: todo,
+                            backgroundColor: itemBackgroundColor
+                        )
+                        .foregroundColor(.black)
                     }
 
                     if todo.isShowingSubTodo {
@@ -53,7 +44,8 @@ struct ListSectionView<Content>: View where Content: View {
                             SubTodoView(
                                 checkListViewModel: checkListViewModel,
                                 todo: todo,
-                                subTodo: subTodo
+                                subTodo: subTodo,
+                                backgroundColor: itemBackgroundColor
                             )
                         }
                         .moveDisabled(true)
@@ -70,7 +62,7 @@ struct ListSectionView<Content>: View where Content: View {
                 header()
                 Spacer()
             }
-            .background(Color(0xffffff, opacity: 0.01))
+            .background(itemBackgroundColor)
         }
     }
 }

@@ -11,6 +11,7 @@ struct SubTodoView: View {
     var checkListViewModel: CheckListViewModel
     var todo: Todo
     var subTodo: SubTodo
+    var backgroundColor: Color = .white
 
     var body: some View {
         HStack {
@@ -37,7 +38,7 @@ struct SubTodoView: View {
         .frame(maxWidth: .infinity, minHeight: 36)
         .padding(.leading, 54)
         .padding(.trailing, 20)
-        .background(Color(0xffffff, opacity: 0.01))
+        .background(backgroundColor)
         .contextMenu {
             Button(action: {
                 checkListViewModel.deleteSubTodo(todoId: todo.id, subTodoId: subTodo.id) { _ in

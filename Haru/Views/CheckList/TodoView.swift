@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct TodoView: View {
+    @State private var disabled = false
     var checkListViewModel: CheckListViewModel
     var todo: Todo
+    var backgroundColor: Color = .white
 
     private var tagString: String {
         var res = ""
@@ -50,6 +52,8 @@ struct TodoView: View {
 
             CompleteButton(isClicked: todo.completed)
                 .onTapGesture {
+                    disabled = true
+
                     if (todo.repeatOption == nil &&
                         todo.repeatValue == nil) || todo.completed
                     {
@@ -61,6 +65,7 @@ struct TodoView: View {
                             case .failure(let failure):
                                 print("[Debug] 반복하지 않는 할 일 완료 실패 \(failure) (\(#fileID), \(#function))")
                             }
+                            disabled = false
                         }
                         return
                     }
@@ -91,6 +96,7 @@ struct TodoView: View {
                                 case .failure(let failure):
                                     print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
                                 }
+                                disabled = false
                             }
                             return
                         }
@@ -117,6 +123,7 @@ struct TodoView: View {
                             case .failure(let failure):
                                 print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
                             }
+                            disabled = false
                         }
                     } catch {
                         switch error {
@@ -127,9 +134,11 @@ struct TodoView: View {
                         default:
                             print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
                         }
+                        disabled = false
                     }
                 }
                 .padding(.trailing, 14)
+                .disabled(disabled)
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(todo.content)
@@ -200,7 +209,7 @@ struct TodoView: View {
         .frame(maxWidth: .infinity, minHeight: 36)
         .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
         .padding(.trailing, 20)
-        .background(Color(0xffffff, opacity: 0.01))
+        .background(backgroundColor)
         .contextMenu {
             Button(action: {
                 checkListViewModel.deleteTodo(todoId: todo.id) { _ in
