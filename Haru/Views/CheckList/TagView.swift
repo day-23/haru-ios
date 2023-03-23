@@ -9,18 +9,19 @@ import SwiftUI
 
 struct TagView: View {
     var tag: Tag
-    init(_ tag: Tag) {
-        self.tag = tag
-    }
+    var isSelected: Bool = false
 
     var body: some View {
         Text(tag.content)
             .font(.caption)
-            .foregroundColor(.black)
+            .foregroundColor(isSelected ? .white : Color(0x191919))
             .bold()
             .padding(.vertical, 5)
             .padding(.horizontal, 10)
-            .background(Color(0xFDFDFD))
+            .background(isSelected ?
+                LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .leading, endPoint: .trailing) :
+                LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
+            )
             .cornerRadius(10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)

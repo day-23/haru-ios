@@ -25,7 +25,11 @@ struct ListView<Content>: View where Content: View {
                 .frame(height: 0)
             }
         }
-        .onPreferenceChange(OffsetKey.self) { offsetChanged($0) }
+        .onPreferenceChange(OffsetKey.self) { value in
+            DispatchQueue.main.async {
+                offsetChanged(value)
+            }
+        }
     }
 }
 

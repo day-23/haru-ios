@@ -21,20 +21,26 @@ struct TagListView: View {
                     }
 
                 //  미분류 태그
-                TagView(Tag(id: "미분류", content: "미분류"))
-                    .onTapGesture {
-                        action(Tag(id: "미분류", content: "미분류"))
-                    }
+                TagView(
+                    tag: Tag(id: "미분류", content: "미분류"),
+                    isSelected: viewModel.selectedTag?.id == "미분류"
+                )
+                .onTapGesture {
+                    action(Tag(id: "미분류", content: "미분류"))
+                }
 
                 //  완료 태그
-                TagView(Tag(id: "완료", content: "완료"))
-                    .onTapGesture {
-                        action(Tag(id: "완료", content: "완료"))
-                    }
+                TagView(
+                    tag: Tag(id: "완료", content: "완료"),
+                    isSelected: viewModel.selectedTag?.id == "완료"
+                )
+                .onTapGesture {
+                    action(Tag(id: "완료", content: "완료"))
+                }
 
                 //  태그 리스트들
                 ForEach(viewModel.tagList) { tag in
-                    TagView(tag)
+                    TagView(tag: tag, isSelected: viewModel.selectedTag?.id == tag.id)
                         .onTapGesture {
                             action(tag)
                         }

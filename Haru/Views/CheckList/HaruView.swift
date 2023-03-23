@@ -50,7 +50,7 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    TagView(Tag(id: "오늘 할 일", content: "오늘 할 일"))
+                    TagView(tag: Tag(id: "오늘 할 일", content: "오늘 할 일"))
                         .padding(.leading, 21)
                 }
 
@@ -64,7 +64,7 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    TagView(Tag(id: "오늘까지", content: "오늘까지"))
+                    TagView(tag: Tag(id: "오늘까지", content: "오늘까지"))
                         .padding(.leading, 21)
                 }
             } offsetChanged: { _ in }

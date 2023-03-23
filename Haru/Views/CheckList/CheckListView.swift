@@ -25,10 +25,10 @@ struct CheckListView: View {
                 TagListView(viewModel: viewModel) { tag in
                     withAnimation {
                         viewModel.selectedTag = tag
+                        prevOffset = nil
+                        minOffset = nil
+                        maxOffset = nil
                     }
-                    prevOffset = nil
-                    minOffset = nil
-                    maxOffset = nil
                 }
 
                 //  오늘 나의 하루
@@ -65,7 +65,7 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(Tag(id: "분류됨", content: "분류됨"))
+                                TagView(tag: Tag(id: "분류됨", content: "분류됨"))
                                     .padding(.leading, 21)
                             }
 
@@ -78,7 +78,7 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(Tag(id: "미분류", content: "미분류"))
+                                TagView(tag: Tag(id: "미분류", content: "미분류"))
                                     .padding(.leading, 21)
                             }
 
@@ -91,7 +91,7 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(Tag(id: "완료", content: "완료"))
+                                TagView(tag: Tag(id: "완료", content: "완료"))
                                     .padding(.leading, 21)
                             }
                         } offsetChanged: {
@@ -123,7 +123,8 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
-                                        TagView(tag)
+                                        TagView(tag: tag,
+                                                isSelected: viewModel.selectedTag?.id == "미분류")
                                             .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
@@ -139,7 +140,8 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
-                                        TagView(tag)
+                                        TagView(tag: tag,
+                                                isSelected: viewModel.selectedTag?.id == "완료")
                                             .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
@@ -155,7 +157,8 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {
-                                        TagView(tag)
+                                        TagView(tag: tag,
+                                                isSelected: viewModel.selectedTag?.id == tag.id)
                                             .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
