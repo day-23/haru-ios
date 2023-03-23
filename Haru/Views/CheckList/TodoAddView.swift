@@ -25,13 +25,8 @@ struct TodoAddView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 0) {
                         if !isModalVisible {
-                            Button {
-                                //  TODO: Complete API 연결
-                            } label: {
-                                Circle()
-                                    .strokeBorder(Color(0x707070), lineWidth: 1)
-                                    .frame(width: 20, height: 20)
-                            }
+                            //  FIXME: 수정 필요
+                            CompleteButton(isClicked: false)
                         }
 
                         TextField("투두 입력", text: $viewModel.todoContent)
@@ -481,6 +476,7 @@ struct TodoAddView: View {
                     }
                     .padding(.trailing, 61)
                 }
+                .padding(.vertical, 20)
             }
             .onAppear {
                 UIDatePicker.appearance().minuteInterval = 5
@@ -494,16 +490,11 @@ struct TodoAddView: View {
         .toolbar {
             if !isModalVisible {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    HStack {
-                        Button {
-                            dismissAction.callAsFunction()
-                        } label: {
-                            Image("back-button")
-                                .frame(width: 28, height: 28)
-                        }
-
-                        Text("나의 하루")
-                            .font(.system(size: 16))
+                    Button {
+                        dismissAction.callAsFunction()
+                    } label: {
+                        Image("back-button")
+                            .frame(width: 28, height: 28)
                     }
                 }
             }
