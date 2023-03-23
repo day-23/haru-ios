@@ -33,23 +33,19 @@ struct ListSectionView<Content>: View where Content: View {
                 EmptySectionView()
             } else {
                 ForEach(todoList) { todo in
-                    TodoView(
-                        checkListViewModel: checkListViewModel,
-                        todo: todo
-                    ).overlay {
-                        NavigationLink {
-                            TodoAddView(viewModel: todoAddViewModel)
-                                .onAppear {
-                                    withAnimation {
-                                        todoAddViewModel.applyTodoData(todo: todo)
-                                        todoAddViewModel.mode = .edit
-                                        todoAddViewModel.todoId = todo.id
-                                    }
+                    NavigationLink {
+                        TodoAddView(viewModel: todoAddViewModel)
+                            .onAppear {
+                                withAnimation {
+                                    todoAddViewModel.applyTodoData(todo: todo)
+                                    todoAddViewModel.mode = .edit
+                                    todoAddViewModel.todoId = todo.id
                                 }
-                        } label: {
-                            EmptyView()
-                        }
-                        .opacity(0)
+                            }
+                    } label: {
+                        TodoView(checkListViewModel: checkListViewModel,
+                                 todo: todo)
+                            .foregroundColor(.black)
                     }
 
                     if todo.isShowingSubTodo {
@@ -64,25 +60,17 @@ struct ListSectionView<Content>: View where Content: View {
                     }
                 }
                 .onMove(perform: { indexSet, index in
+                    //  ScrollView로 변경함으로써 알고리즘 변경 필요
                     todoList.move(fromOffsets: indexSet, toOffset: index)
                     orderAction()
                 })
-                .listRowBackground(Color.white)
             }
         } header: {
             HStack {
                 header()
                 Spacer()
             }
-            .listRowInsets(EdgeInsets(
-                top: 0,
-                leading: 0,
-                bottom: 1,
-                trailing: 0
-            ))
-            .background(.white)
+            .background(Color(0xffffff, opacity: 0.01))
         }
-        .listRowSeparator(.hidden)
-        .listRowInsets(EdgeInsets())
     }
 }

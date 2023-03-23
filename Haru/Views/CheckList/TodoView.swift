@@ -37,16 +37,15 @@ struct TodoView: View {
     }()
 
     var body: some View {
-        //  Todo Item
         HStack(spacing: 0) {
             if !todo.subTodos.isEmpty {
-                // TODO: - Toggle Todo에 있는 데이터 이용하여 변경하기
-                Image("toggle")
-                    .frame(width: 20, height: 20)
-                    .rotationEffect(Angle(degrees: todo.isShowingSubTodo ? 90 : 0))
-                    .onTapGesture {
-                        checkListViewModel.toggleTodo(todoId: todo.id)
-                    }
+                Button {
+                    checkListViewModel.toggleShowingSubtodo(todoId: todo.id)
+                } label: {
+                    Image("toggle")
+                        .frame(width: 20, height: 20)
+                        .rotationEffect(Angle(degrees: todo.isShowingSubTodo ? 90 : 0))
+                }
             }
 
             CompleteButton(isClicked: todo.completed)
@@ -58,7 +57,7 @@ struct TodoView: View {
                                                         completed: !todo.completed) { result in
                             switch result {
                             case .success:
-                                checkListViewModel.fetchTodoList()
+                                successCompletion(todoId: todo.id)
                             case .failure(let failure):
                                 print("[Debug] 반복하지 않는 할 일 완료 실패 \(failure) (\(#fileID), \(#function))")
                             }
@@ -88,7 +87,7 @@ struct TodoView: View {
                                                                       todo: data) { result in
                                 switch result {
                                 case .success:
-                                    checkListViewModel.fetchTodoList()
+                                    successCompletion(todoId: todo.id)
                                 case .failure(let failure):
                                     print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
                                 }
@@ -114,7 +113,7 @@ struct TodoView: View {
                                                                   todo: data) { result in
                             switch result {
                             case .success:
-                                checkListViewModel.fetchTodoList()
+                                successCompletion(todoId: todo.id)
                             case .failure(let failure):
                                 print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
                             }
@@ -185,7 +184,7 @@ struct TodoView: View {
                             Image("memo-small")
                         }
                     }
-                    .padding(.leading, -2)
+                    .padding(.leading, -4)
                     .font(.system(size: 10, weight: .regular))
                     .foregroundColor(Color(0x000000, opacity: 0.5))
                 }
@@ -198,9 +197,10 @@ struct TodoView: View {
                     checkListViewModel.updateFlag(todo: todo) { _ in }
                 }
         }
+        .frame(maxWidth: .infinity, minHeight: 36)
         .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
         .padding(.trailing, 20)
-        .background(.white)
+        .background(Color(0xffffff, opacity: 0.01))
         .contextMenu {
             Button(action: {
                 checkListViewModel.deleteTodo(todoId: todo.id) { _ in
@@ -209,6 +209,13 @@ struct TodoView: View {
             }, label: {
                 Label("Delete", systemImage: "trash")
             })
+        }
+    }
+
+    func successCompletion(todoId: String) {
+        checkListViewModel.toggleCompleted(todoId: todoId)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            checkListViewModel.fetchTodoList()
         }
     }
 }

@@ -29,17 +29,19 @@ struct CheckListView: View {
                     }
 
                     //  오늘 나의 하루
-                    HaruView { tag in
-                        withAnimation {
-                            viewModel.selectedTag = tag
-                        }
-                        initialOffset = nil
+                    NavigationLink {
+                        HaruView(
+                            viewModel: viewModel,
+                            addViewModel: addViewModel
+                        )
+                    } label: {
+                        HaruLinkView()
                     }
 
                     //  체크 리스트
                     if !viewModel.isEmpty {
-                        List {
-                            if viewModel.selectedTag == nil {
+                        if viewModel.selectedTag == nil {
+                            ListView {
                                 ListSectionView(
                                     checkListViewModel: viewModel,
                                     todoAddViewModel: addViewModel,
@@ -52,8 +54,6 @@ struct CheckListView: View {
                                 }
 
                                 Divider()
-                                    .listRowSeparator(.hidden)
-                                    .listRowInsets(EdgeInsets())
 
                                 ListSectionView(
                                     checkListViewModel: viewModel,
@@ -67,8 +67,6 @@ struct CheckListView: View {
                                 }
 
                                 Divider()
-                                    .listRowSeparator(.hidden)
-                                    .listRowInsets(EdgeInsets())
 
                                 ListSectionView(
                                     checkListViewModel: viewModel,
@@ -82,8 +80,6 @@ struct CheckListView: View {
                                 }
 
                                 Divider()
-                                    .listRowSeparator(.hidden)
-                                    .listRowInsets(EdgeInsets())
 
                                 ListSectionView(
                                     checkListViewModel: viewModel,
@@ -95,50 +91,13 @@ struct CheckListView: View {
                                     TagView(Tag(id: "완료", content: "완료"))
                                         .padding(.leading, 21)
                                 }
-                            } else {
-                                if let tag = viewModel.selectedTag {
-                                    if tag.id == "하루" {
-                                        ListSectionView(
-                                            checkListViewModel: viewModel,
-                                            todoAddViewModel: addViewModel,
-                                            todoList: $viewModel.todoListByFlagWithToday
-                                        ) {
-                                            viewModel.updateOrderHaru()
-                                        } header: {
-                                            StarButton(isClicked: true)
-                                                .padding(.leading, 29)
-                                        }
-
-                                        Divider()
-                                            .listRowSeparator(.hidden)
-                                            .listRowInsets(EdgeInsets())
-
-                                        ListSectionView(
-                                            checkListViewModel: viewModel,
-                                            todoAddViewModel: addViewModel,
-                                            todoList: $viewModel.todoListByTodayTodo
-                                        ) {
-                                            viewModel.updateOrderHaru()
-                                        } header: {
-                                            TagView(Tag(id: "오늘 할 일", content: "오늘 할 일"))
-                                                .padding(.leading, 21)
-                                        }
-
-                                        Divider()
-                                            .listRowSeparator(.hidden)
-                                            .listRowInsets(EdgeInsets())
-
-                                        ListSectionView(
-                                            checkListViewModel: viewModel,
-                                            todoAddViewModel: addViewModel,
-                                            todoList: $viewModel.todoListByUntilToday
-                                        ) {
-                                            viewModel.updateOrderHaru()
-                                        } header: {
-                                            TagView(Tag(id: "오늘까지", content: "오늘까지"))
-                                                .padding(.leading, 21)
-                                        }
-                                    } else if tag.id == "중요" {
+                            } offsetChanged: {
+                                self.changeOffset($0)
+                            }
+                        } else {
+                            if let tag = viewModel.selectedTag {
+                                if tag.id == "중요" {
+                                    ListView {
                                         ListSectionView(
                                             checkListViewModel: viewModel,
                                             todoAddViewModel: addViewModel,
@@ -149,7 +108,11 @@ struct CheckListView: View {
                                             StarButton(isClicked: true)
                                                 .padding(.leading, 29)
                                         }
-                                    } else if tag.id == "미분류" {
+                                    } offsetChanged: {
+                                        self.changeOffset($0)
+                                    }
+                                } else if tag.id == "미분류" {
+                                    ListView {
                                         ListSectionView(
                                             checkListViewModel: viewModel,
                                             todoAddViewModel: addViewModel,
@@ -160,8 +123,12 @@ struct CheckListView: View {
                                             TagView(tag)
                                                 .padding(.leading, 21)
                                         }
-                                    } else if tag.id == "완료" {
-                                        //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
+                                    } offsetChanged: {
+                                        self.changeOffset($0)
+                                    }
+                                } else if tag.id == "완료" {
+                                    //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
+                                    ListView {
                                         ListSectionView(
                                             checkListViewModel: viewModel,
                                             todoAddViewModel: addViewModel,
@@ -172,7 +139,12 @@ struct CheckListView: View {
                                             TagView(tag)
                                                 .padding(.leading, 21)
                                         }
-                                    } else {
+                                    } offsetChanged: {
+                                        self.changeOffset($0)
+                                    }
+                                } else {
+                                    //  Tag 클릭시
+                                    ListView {
                                         ListSectionView(
                                             checkListViewModel: viewModel,
                                             todoAddViewModel: addViewModel,
@@ -183,40 +155,9 @@ struct CheckListView: View {
                                             TagView(tag)
                                                 .padding(.leading, 21)
                                         }
+                                    } offsetChanged: {
+                                        self.changeOffset($0)
                                     }
-                                }
-                            }
-
-                            GeometryReader { geometry in
-                                Color.clear.preference(
-                                    key: OffsetKey.self,
-                                    value: geometry.frame(in: .global).minY
-                                )
-                                .frame(height: 0)
-                            }
-                            .listRowSeparator(.hidden)
-                        }
-                        .environment(\.defaultMinListRowHeight, 48)
-                        .listStyle(.inset)
-                        .onPreferenceChange(OffsetKey.self) {
-                            if self.initialOffset == nil || self.initialOffset == 0 {
-                                self.viewIsShown = true
-                                self.initialOffset = $0
-                                return
-                            }
-                            self.offset = $0
-
-                            guard let initialOffset = self.initialOffset,
-                                  let offset = self.offset
-                            else {
-                                return
-                            }
-
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                if initialOffset > offset {
-                                    self.viewIsShown = false
-                                } else {
-                                    self.viewIsShown = true
                                 }
                             }
                         }
@@ -269,11 +210,27 @@ struct CheckListView: View {
             viewModel.fetchTags()
         }
     }
-}
 
-struct OffsetKey: PreferenceKey {
-    static let defaultValue: CGFloat? = nil
-    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
-        value = value ?? nextValue()
+    func changeOffset(_ value: CGFloat?) {
+        if self.initialOffset == nil || self.initialOffset == 0 {
+            self.viewIsShown = true
+            self.initialOffset = value
+            return
+        }
+        self.offset = value
+
+        guard let initialOffset = self.initialOffset,
+              let offset = self.offset
+        else {
+            return
+        }
+
+        withAnimation(.easeInOut(duration: 0.25)) {
+            if initialOffset > offset {
+                self.viewIsShown = false
+            } else {
+                self.viewIsShown = true
+            }
+        }
     }
 }

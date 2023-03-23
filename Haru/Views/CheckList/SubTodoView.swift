@@ -34,9 +34,10 @@ struct SubTodoView: View {
 
             Spacer()
         }
+        .frame(maxWidth: .infinity, minHeight: 36)
         .padding(.leading, 54)
         .padding(.trailing, 20)
-        .background(.white)
+        .background(Color(0xffffff, opacity: 0.01))
         .contextMenu {
             Button(action: {
                 checkListViewModel.deleteSubTodo(todoId: todo.id, subTodoId: subTodo.id) { _ in

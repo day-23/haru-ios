@@ -305,7 +305,7 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    func toggleTodo(todoId: String) {
+    func toggleShowingSubtodo(todoId: String) {
         if let index = todoListByTag.firstIndex(where: { $0.id == todoId }) {
             withAnimation(.easeInOut(duration: 0.1)) {
                 todoListByTag[index].isShowingSubTodo.toggle()
@@ -358,6 +358,64 @@ final class CheckListViewModel: ObservableObject {
         if let index = todoListWithoutTag.firstIndex(where: { $0.id == todoId }) {
             withAnimation(.easeInOut(duration: 0.1)) {
                 todoListWithoutTag[index].isShowingSubTodo.toggle()
+            }
+            return
+        }
+    }
+
+    func toggleCompleted(todoId: String) {
+        if let index = todoListByTag.firstIndex(where: { $0.id == todoId }) {
+            withAnimation {
+                todoListByTag[index].completed.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByFlag.firstIndex(where: { $0.id == todoId }) {
+            withAnimation {
+                todoListByFlag[index].completed.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByCompleted.firstIndex(where: { $0.id == todoId }) {
+            withAnimation {
+                todoListByCompleted[index].completed.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByFlagWithToday.firstIndex(where: { $0.id == todoId }) {
+            withAnimation {
+                todoListByFlagWithToday[index].completed.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByTodayTodo.firstIndex(where: { $0.id == todoId }) {
+            withAnimation {
+                todoListByTodayTodo[index].completed.toggle()
+            }
+            return
+        }
+
+        if let index = todoListByUntilToday.firstIndex(where: { $0.id == todoId }) {
+            withAnimation {
+                todoListByUntilToday[index].completed.toggle()
+            }
+            return
+        }
+
+        if let index = todoListWithAnyTag.firstIndex(where: { $0.id == todoId }) {
+            withAnimation {
+                todoListWithAnyTag[index].completed.toggle()
+            }
+            return
+        }
+
+        if let index = todoListWithoutTag.firstIndex(where: { $0.id == todoId }) {
+            withAnimation {
+                todoListWithoutTag[index].completed.toggle()
             }
             return
         }
