@@ -97,11 +97,42 @@ final class CalendarService {
         let prodCnt = numberOfWeeks < 6 ? 4 : 3
 
         // 최종 결과
-        var result = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
+        var result = [[Int: [Productivity]]](repeating: [:], count: dateList.count) // 날짜별
 
-        var result_ = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: prodCnt), count: numberOfWeeks)
+        var result_ = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: prodCnt), count: numberOfWeeks) // 순서
 
         scheduleService.fittingScheduleList(dateList, scheduleList, prodCnt, result: &result, result_: &result_)
+
+        // TODO: todoService의 fittingTodoList 함수로 뽑기
+
+        let todoList = todoList.filter { $0.endDate != nil }
+        var p = 0
+        for index in dateList.indices {
+            var maxKey = result[index].max { $0.key < $1.key }?.key ?? -1
+            maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+            while p < todoList.count, dateList[index].date.isEqual(other: todoList[p].endDate!) {
+                result[index][maxKey] = (result[index][maxKey] ?? []) + [todoList[p]]
+                p += 1
+                maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+            }
+        }
+        
+        for week in 0 ..< numberOfWeeks {
+            for order in 0 ..< prodCnt {
+                var prev = result[week * 7 + 0][order]?.first
+                var cnt = 1
+                for day in 1 ..< 7 {
+                    if let prev, let prod = result[week * 7 + day][order]?.first, prev.isEqualTo(prod) {
+                        cnt += 1
+                    } else {
+                        result_[week][order].append((cnt, prev))
+                        cnt = 1
+                    }
+                    prev = result[week * 7 + day][order]?.first
+                }
+                result_[week][order].append((cnt, prev))
+            }
+        }
 
         return (result, result_)
     }

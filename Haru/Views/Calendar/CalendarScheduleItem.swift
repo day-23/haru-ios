@@ -14,13 +14,19 @@ struct CalendarScheduleItem: View {
     var body: some View {
         HStack(spacing: 0) {
             ForEach(productivityList.indices, id: \.self) { index in
-                if let producitiviy = productivityList[index].1, let schedule = producitiviy as? Schedule {
-                    Text("\(schedule.content)")
-                        .font(Font.custom(Constants.Regular, size: 12))
-                        .padding(4)
-                        .frame(width: cellWidth * CGFloat(productivityList[index].0), alignment: .leading)
-                        .background(Color(schedule.category?.color, true))
-                        .cornerRadius(10)
+                if let productivity = productivityList[index].1 {
+                    if let schedule = productivity as? Schedule {
+                        Text("\(schedule.content)")
+                            .font(Font.custom(Constants.Regular, size: 12))
+                            .padding(4)
+                            .frame(width: cellWidth * CGFloat(productivityList[index].0), alignment: .leading)
+                            .background(Color(schedule.category?.color, true))
+                            .cornerRadius(10)
+                    } else if let todo = productivity as? Todo {
+                        Text("\(todo.content)")
+                            .font(Font.custom(Constants.Regular, size: 12))
+                            .frame(width: cellWidth * CGFloat(productivityList[index].0))
+                    }
                 } else {
                     Rectangle()
                         .fill(.clear)

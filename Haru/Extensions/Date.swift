@@ -24,7 +24,7 @@ public extension Date {
         let calendar = Calendar.current
 
         // getting start Date ...
-        let startDate = startOfMonth()
+        let startDate = self.startOfMonth()
         
         let range = calendar.range(of: .day, in: .month, for: startDate)!
         
@@ -40,7 +40,7 @@ public extension Date {
     }
     
     internal func endOfMonth() -> Date {
-        Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth())!
+        Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: self.startOfMonth())!
     }
     
     internal func distance(to other: Date) -> TimeInterval {
@@ -49,5 +49,9 @@ public extension Date {
 
     internal func advanced(by n: TimeInterval) -> Date {
         self + n
+    }
+    
+    func isEqual(other: Date) -> Bool {
+        self.day == other.day && self.month == other.month && self.year == other.year
     }
 }

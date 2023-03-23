@@ -14,6 +14,7 @@ final class CalendarViewModel: ObservableObject {
     
     @Published var productivityList: [[Int: [Productivity]]] = [[:]] // 원소 개수 == dateList의 개수
     @Published var viewProductivityList = [[[(Int, Productivity?)]]]() // 뷰에 보여주기 위한 일정 리스트
+    @Published var selectedProdList: [Productivity] = [] // 터치해서 선택된 날짜에 있는 리스트
     
     @Published var startOnSunday: Bool = true
     
@@ -24,7 +25,8 @@ final class CalendarViewModel: ObservableObject {
     } // 진짜 월과의 차이
     
     @Published var selectedDate: DateValue // 터치해서 선택된 날짜
-    @Published var selectedScheduleList: [Schedule] = [] // 터치해서 선택된 날짜에 있는 일정 리스트
+//    @Published var selectedScheduleList: [Schedule] = [] // 터치해서 선택된 날짜에 있는 일정 리스트
+    
     
     @Published var selectionSet: Set<DateValue> = [] // 드래그해서 선택된 날짜(들)
 
@@ -154,13 +156,13 @@ final class CalendarViewModel: ObservableObject {
     
     // 선택된 날의 스케줄 가져오기
     func getSelectedScheduleList(_ selectedIndex: Int) {
-        var result = [Schedule]()
+        var result = [Productivity]()
         
-        scheduleList[selectedIndex].sorted { $0.key < $1.key }.forEach { key, value in
+        productivityList[selectedIndex].sorted { $0.key < $1.key }.forEach { key, value in
             result.append(contentsOf: value)
         }
         
-        selectedScheduleList = result
+        selectedProdList = result
     }
     
     // 카테고리 업데이트 (전체)

@@ -158,8 +158,8 @@ struct CalendarDateView: View {
                         )
                         
                         List {
-                            ForEach(calendarVM.selectedScheduleList) { sch in
-                                Text(sch.content)
+                            ForEach(calendarVM.selectedProdList.indices, id: \.self) { index in
+                                Text(calendarVM.selectedProdList[index].content)
                             }
                         }
                     }
