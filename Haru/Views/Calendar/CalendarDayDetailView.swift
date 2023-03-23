@@ -10,10 +10,15 @@ import SwiftUI
 struct CalendarDayDetailView: View {
     @State private var content: String = ""
     
+    @Binding var currentScheduleList: [Schedule]
+    @Binding var currentTodoList: [Todo]
+    
+    var index: Int
+    
     var body: some View {
         VStack {
             HStack {
-                Text("14일 화요일")
+                Text("\(index)")
                     .foregroundColor(.white)
                     .fontWeight(.bold)
                 Spacer()
@@ -47,13 +52,13 @@ struct CalendarDayDetailView: View {
                         }
                         .padding(.horizontal, 20)
                         
-                        ForEach(0 ... 5, id: \.self) { index in
+                        ForEach(currentScheduleList.indices, id: \.self) { index in
                             HStack(spacing: 20) {
                                 Circle()
-                                    .fill(Color.random)
+                                    .fill(Color(currentScheduleList[index].category?.color, true))
                                     .frame(width: 20, height: 20)
                                 VStack(alignment: .leading) {
-                                    Text("일정\(index)")
+                                    Text("\(currentScheduleList[index].content)")
                                     Text("하루종일")
                                 }
                                 Spacer()
@@ -70,6 +75,10 @@ struct CalendarDayDetailView: View {
                             Spacer()
                         }
                         .padding(.horizontal, 20)
+                        
+                        ForEach(currentTodoList.indices, id: \.self) { index in
+                            Text("\(currentTodoList[index].content)")
+                        }
                         
                         Spacer()
                             .frame(height: 30)
@@ -93,7 +102,6 @@ struct CalendarDayDetailView: View {
                             Image(systemName: "plus")
                                 .frame(width: 28, height: 28)
                         }
-                        
                     }
                     .padding(.horizontal, 12)
                 }
@@ -109,7 +117,7 @@ struct CalendarDayDetailView: View {
 
 struct CalendarDayDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDayDetailView()
+        CalendarDayDetailView(currentScheduleList: .constant([]), currentTodoList: .constant([]), index: 0)
             .frame(width: 330, height: 480)
     }
 }

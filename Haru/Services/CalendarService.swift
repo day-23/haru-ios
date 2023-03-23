@@ -22,8 +22,8 @@ final class CalendarService {
             return try await (scheduleList, todoList)
         } catch {
             print("[Debug] \(error) \(#fileID) \(#function)")
+            return ([], [])
         }
-        return ([], [])
     }
 
     /**
@@ -134,5 +134,46 @@ final class CalendarService {
         }
 
         return (result, result_)
+    }
+
+    /**
+     * 날짜별로 스케줄과 할일이 무엇이 있는지
+     */
+    func fittingDay(_ startDate: Date, _ endDate: Date, scheduleList: [Schedule], todoList: [Todo]) -> ([[Schedule]], [[Todo]]) {
+        var result0 = [[Schedule]](repeating: [], count: 31)
+        var result1 = [[Todo]](repeating: [], count: 31)
+
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        var todoIdx = 0
+
+        for (index, date) in stride(from: startDate, through: endDate, by: dayDurationInSeconds).enumerated() {
+            // date에 해당하는 일정이 있는지 확인
+            for sch in scheduleList {
+                if sch.repeatStart < Calendar.current.date(
+                    byAdding: .day,
+                    value: 1,
+                    to: date
+                )!,
+                    sch.repeatEnd >= date
+                {
+                    result0[index].append(sch)
+                }
+            }
+
+            while todoIdx < todoList.count {
+                if let endDate = todoList[todoIdx].endDate {
+                    if date.isEqual(other: endDate) {
+                        result1[index].append(todoList[todoIdx])
+                        todoIdx += 1
+                    } else {
+                        break
+                    }
+                } else {
+                    todoIdx += 1
+                }
+            }
+        }
+
+        return (result0, result1)
     }
 }

@@ -9,10 +9,13 @@ import Foundation
 import SwiftUI
 
 final class CalendarViewModel: ObservableObject {
-    @Published var productivityList: [[Int: [Productivity]]] = [[:]] // 원소 개수 == dateList의 개수
+    var productivityList: [[Int: [Productivity]]] = [[:]] // 원소 개수 == dateList의 개수
     @Published var viewProductivityList = [[[(Int, Productivity?)]]]() // 뷰에 보여주기 위한 일정 리스트
     
-    @Published var selectedProdList: [Productivity] = [] // 터치해서 선택된 날짜에 있는 리스트
+    @Published var selectedProdList: [[Productivity]] = [] // 터치해서 선택된 날짜에 있는 리스트
+    
+    @Published var scheduleList: [[Schedule]] = []
+    @Published var todoList: [[Todo]] = []
     
     @Published var startOnSunday: Bool = true
     
@@ -73,18 +76,9 @@ final class CalendarViewModel: ObservableObject {
         productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
         viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: 4), count: numberOfWeeks)
         
-//        scheduleService.fetchScheduleList(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!) { result in
-//            switch result {
-//            case .success(let success):
-//                (self.productivityList, self.viewProductivityList) = self.calendarService.fittingCalendar(dateList: dateList, scheduleList: success, todoList: [])
-//            case .failure(let failure):
-//                print("[Debug] \(failure) \(#fileID) \(#function)")
-//            }
-//        }
-        
         Task {
             let result = await calendarService.fetchScheduleAndTodo(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!)
-            DispatchQueue.main.async { [self] in
+            DispatchQueue.main.async {
                 (self.productivityList, self.viewProductivityList) = self.calendarService.fittingCalendar(dateList: dateList, scheduleList: result.0, todoList: result.1)
             }
         }
@@ -145,15 +139,23 @@ final class CalendarViewModel: ObservableObject {
         }
     }
     
-    // 선택된 날의 스케줄 가져오기
+    // 선택된 날의 일정과 할일들 가져오기 (선택된 날짜로부터 15일 이전 ~ 15일 이후)
     func getSelectedScheduleList(_ selectedIndex: Int) {
-        var result = [Productivity]()
+        // TODO: currentDate @Published로 만들어주기
+        scheduleList = [[Schedule]](repeating: [], count: 31)
+        todoList = [[Todo]](repeating: [], count: 31)
+        let currentDate = dateList[selectedIndex].date
         
-        productivityList[selectedIndex].sorted { $0.key < $1.key }.forEach { key, value in
-            result.append(contentsOf: value)
+        guard let startDate = Calendar.current.date(byAdding: .day, value: -15, to: currentDate) else { return }
+        guard let endDate = Calendar.current.date(byAdding: .day, value: 15, to: currentDate) else { return }
+        
+        Task {
+            let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            
+            DispatchQueue.main.async {
+                (self.scheduleList, self.todoList) = self.calendarService.fittingDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+            }
         }
-        
-        selectedProdList = result
     }
     
     // 카테고리 업데이트 (전체)

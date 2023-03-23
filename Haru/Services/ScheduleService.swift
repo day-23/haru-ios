@@ -180,7 +180,7 @@ final class ScheduleService {
 
         for schedule in scheduleList {
             // 카테고리 필터링
-            if let category = schedule.category, category.isSelected {
+            if schedule.category == nil || schedule.category!.isSelected {
                 for (week, dates) in splitDateList.enumerated() {
                     // 구간 필터링
                     if schedule.repeatEnd < dates[0] {
@@ -224,22 +224,5 @@ final class ScheduleService {
                 }
             }
         }
-
-//        for week in 0 ..< numberOfWeeks {
-//            for order in 0 ..< prodCnt {
-//                var prev = result[week * 7 + 0][order]?.first
-//                var cnt = 1
-//                for day in 1 ..< 7 {
-//                    if let prev, let prod = result[week * 7 + day][order]?.first, prev.isEqualTo(prod) {
-//                        cnt += 1
-//                    } else {
-//                        result_[week][order].append((cnt, prev))
-//                        cnt = 1
-//                    }
-//                    prev = result[week * 7 + day][order]?.first
-//                }
-//                result_[week][order].append((cnt, prev))
-//            }
-//        }
     }
 }

@@ -77,6 +77,7 @@ struct CalendarDateView: View {
                     TabView(selection: $calendarVM.monthOffest) {
                         ForEach(-100 ... 100, id: \.self) { _ in
                             GeometryReader { proxy in
+
                                 // MARK: - Gesture 분리를 위함
                                 
                                 let longPress = LongPressGesture(minimumDuration: 0.3)
@@ -152,7 +153,7 @@ struct CalendarDateView: View {
                     .onTapGesture {
                         isDayModalVisible = false
                     }
-                CalendarDayView()
+                CalendarDayView(scheduleList: $calendarVM.scheduleList, todoList: $calendarVM.todoList)
                     .zIndex(2)
             }
         } // ZStack
