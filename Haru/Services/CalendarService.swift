@@ -15,6 +15,7 @@ final class CalendarService {
      * 일정과 할일 가져오기
      */
     func fetchScheduleAndTodo(_ startDate: Date, _ endDate: Date) async -> ([Schedule], [Todo]) {
+        print("call schedule & todo API")
         do {
             async let scheduleList = scheduleService.fetchScheduleListAsync(startDate, endDate)
             async let todoList = fetchTodoListAsync(startDate, endDate)
@@ -143,6 +144,44 @@ final class CalendarService {
         var result0 = [[Schedule]](repeating: [], count: 31)
         var result1 = [[Todo]](repeating: [], count: 31)
 
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        var todoIdx = 0
+
+        for (index, date) in stride(from: startDate, through: endDate, by: dayDurationInSeconds).enumerated() {
+            // date에 해당하는 일정이 있는지 확인
+            for sch in scheduleList {
+                if sch.repeatStart < Calendar.current.date(
+                    byAdding: .day,
+                    value: 1,
+                    to: date
+                )!,
+                    sch.repeatEnd >= date
+                {
+                    result0[index].append(sch)
+                }
+            }
+
+            while todoIdx < todoList.count {
+                if let endDate = todoList[todoIdx].endDate {
+                    if date.isEqual(other: endDate) {
+                        result1[index].append(todoList[todoIdx])
+                        todoIdx += 1
+                    } else {
+                        break
+                    }
+                } else {
+                    todoIdx += 1
+                }
+            }
+        }
+
+        return (result0, result1)
+    }
+    
+    func fittingOffsetDay(_ startDate: Date, _ endDate: Date, scheduleList: [Schedule], todoList: [Todo]) -> ([[Schedule]], [[Todo]]) {
+        var result0 = [[Schedule]](repeating: [], count: 5)
+        var result1 = [[Todo]](repeating: [], count: 5)
+        
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         var todoIdx = 0
 

@@ -25,7 +25,7 @@ struct CalendarWeekView: View {
                             ForEach(0 ..< 7, id: \.self) { day in
                                 CalendarDateItem(selectionSet: $calendarVM.selectionSet, value: calendarVM.dateList[week * 7 + day], cellHeight: cellHeight, cellWidhth: cellWidhth)
                                     .onTapGesture {
-                                        calendarVM.selectedDate = calendarVM.dateList[week * 7 + day]
+                                        calendarVM.pivotDate = calendarVM.dateList[week * 7 + day].date
                                         calendarVM.getSelectedScheduleList(week * 7 + day)
                                         isDayModalVisible = true
                                     }

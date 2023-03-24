@@ -12,12 +12,14 @@ struct CalendarDayView: View {
     @StateObject var page: Page = .withIndex(15)
 
     @State var data = Array(0 ... 30)
-    @Binding var scheduleList: [[Schedule]]
-    @Binding var todoList: [[Todo]]
+
+    @EnvironmentObject var calendarViewModel: CalendarViewModel
+
+    @State var prevPageIndex: Int = 15
 
     var body: some View {
-        Pager(page: page, data: self.data, id: \.self) { index in
-            CalendarDayDetailView(currentScheduleList: $scheduleList[index], currentTodoList: $todoList[index], index: index)
+        Pager(page: page, data: self.data.indices, id: \.self) { index in
+            CalendarDayDetailView(currentScheduleList: $calendarViewModel.scheduleList[index], currentTodoList: $calendarViewModel.todoList[index], currentDate: $calendarViewModel.pivotDate)
                 .frame(width: 330, height: 480)
                 .cornerRadius(20)
         }
@@ -27,15 +29,30 @@ struct CalendarDayView: View {
         .interactive(scale: 0.8)
         .interactive(opacity: 0.8)
         .onPageChanged { pageIndex in
-            guard let first = self.data.first else { return }
-            guard let last = self.data.last else { return }
-            let frontData = first - 1
-            let backData = last + 1
-            withAnimation {
-                self.data.insert(frontData, at: 0)
-                self.data.append(backData)
+            if prevPageIndex < pageIndex {
+                
+            } else {
+                calendarViewModel.pivotDate = calendarViewModel.pivotDate.subtractDay()
+                
             }
-            self.page.index += 1
+
+            if pageIndex == data.count - 5 {
+                guard let last = self.data.last else { return }
+                self.data.append(contentsOf: last + 1 ... last + 5)
+                self.data.removeFirst(5)
+                self.page.index -= 5
+                calendarViewModel.getMoreProductivityList(isRight: true)
+            }
+
+            if pageIndex == 5 {
+                guard let first = self.data.first else { return }
+                self.data.insert(contentsOf: first - 5 ... first - 1, at: 0)
+                self.data.removeLast(5)
+                self.page.index += 5
+                calendarViewModel.getMoreProductivityList(isRight: false)
+            }
+
+            prevPageIndex = self.page.index
         }
         .frame(height: 480)
     }
@@ -43,6 +60,7 @@ struct CalendarDayView: View {
 
 struct CalendarDayView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDayView(scheduleList: .constant([]), todoList: .constant([]))
+        CalendarDayView()
+            .environmentObject(CalendarViewModel())
     }
 }

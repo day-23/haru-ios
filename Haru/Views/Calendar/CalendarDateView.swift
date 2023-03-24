@@ -153,7 +153,8 @@ struct CalendarDateView: View {
                     .onTapGesture {
                         isDayModalVisible = false
                     }
-                CalendarDayView(scheduleList: $calendarVM.scheduleList, todoList: $calendarVM.todoList)
+                CalendarDayView()
+                    .environmentObject(calendarVM)
                     .zIndex(2)
             }
         } // ZStack

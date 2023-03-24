@@ -12,8 +12,6 @@ final class CalendarViewModel: ObservableObject {
     var productivityList: [[Int: [Productivity]]] = [[:]] // 원소 개수 == dateList의 개수
     @Published var viewProductivityList = [[[(Int, Productivity?)]]]() // 뷰에 보여주기 위한 일정 리스트
     
-    @Published var selectedProdList: [[Productivity]] = [] // 터치해서 선택된 날짜에 있는 리스트
-    
     @Published var scheduleList: [[Schedule]] = []
     @Published var todoList: [[Todo]] = []
     
@@ -25,7 +23,7 @@ final class CalendarViewModel: ObservableObject {
         }
     } // 진짜 월과의 차이
     
-    @Published var selectedDate: DateValue // 터치해서 선택된 날짜
+    @Published var pivotDate: Date = .init() // 터치해서 선택된 날짜
     
     @Published var selectionSet: Set<DateValue> = [] // 드래그해서 선택된 날짜(들)
 
@@ -49,8 +47,6 @@ final class CalendarViewModel: ObservableObject {
     private let calendarService = CalendarService()
     
     init() {
-        selectedDate = .init(day: Date().day, date: Date())
-        
         setStartOnSunday(startOnSunday)
         getCategoryList()
      
@@ -154,6 +150,34 @@ final class CalendarViewModel: ObservableObject {
             
             DispatchQueue.main.async {
                 (self.scheduleList, self.todoList) = self.calendarService.fittingDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+            }
+        }
+    }
+    
+    // offSet만큼 더해주고 빼주깈
+    func getMoreProductivityList(isRight: Bool) {
+        // TODO: currentDate @Published로 만들어주기
+        let offSet = 5
+        
+        guard let startDate = Calendar.current.date(byAdding: .day, value: isRight ? 1 : -offSet, to: pivotDate) else { return }
+        guard let endDate = Calendar.current.date(byAdding: .day, value: isRight ? offSet : -1, to: pivotDate) else { return }
+        
+        Task {
+            let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            
+            DispatchQueue.main.async {
+                let result = self.calendarService.fittingOffsetDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+                if isRight {
+                    self.scheduleList.append(contentsOf: result.0)
+                    self.scheduleList.removeFirst(5)
+                    self.todoList.append(contentsOf: result.1)
+                    self.todoList.removeFirst(5)
+                } else {
+                    self.scheduleList.insert(contentsOf: result.0, at: 0)
+                    self.scheduleList.removeLast(5)
+                    self.todoList.insert(contentsOf: result.1, at: 0)
+                    self.todoList.removeLast(5)
+                }
             }
         }
     }

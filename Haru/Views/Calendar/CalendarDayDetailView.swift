@@ -12,13 +12,12 @@ struct CalendarDayDetailView: View {
     
     @Binding var currentScheduleList: [Schedule]
     @Binding var currentTodoList: [Todo]
-    
-    var index: Int
+    @Binding var currentDate: Date
     
     var body: some View {
         VStack {
             HStack {
-                Text("\(index)")
+                Text("\(currentDate.month)월 \(currentDate.day)일")
                     .foregroundColor(.white)
                     .fontWeight(.bold)
                 Spacer()
@@ -89,7 +88,7 @@ struct CalendarDayDetailView: View {
                     Spacer()
                     
                     HStack {
-                        TextField("3월 14일 일정 추가", text: $content)
+                        TextField("\(currentDate.month)월 \(currentDate.day)일 일정 추가", text: $content)
                             .frame(height: 20)
                             .padding(10)
                             .padding(.horizontal, 12)
@@ -117,7 +116,7 @@ struct CalendarDayDetailView: View {
 
 struct CalendarDayDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDayDetailView(currentScheduleList: .constant([]), currentTodoList: .constant([]), index: 0)
+        CalendarDayDetailView(currentScheduleList: .constant([]), currentTodoList: .constant([]), currentDate: .constant(Date()))
             .frame(width: 330, height: 480)
     }
 }
