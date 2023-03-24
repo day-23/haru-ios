@@ -14,6 +14,7 @@
 		1301D33329CB7370003B3848 /* HaruView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D33229CB7370003B3848 /* HaruView.swift */; };
 		1301D33529CB742F003B3848 /* HaruLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D33429CB742F003B3848 /* HaruLinkView.swift */; };
 		1301D33729CB74AD003B3848 /* ListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D33629CB74AD003B3848 /* ListView.swift */; };
+		1301D33929CCA31F003B3848 /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1301D33829CCA31F003B3848 /* CustomDatePicker.swift */; };
 		1310B00C29BF109A00DEC17F /* TagService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00B29BF109A00DEC17F /* TagService.swift */; };
 		1310B00E29BF2FA700DEC17F /* Alarm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00D29BF2FA700DEC17F /* Alarm.swift */; };
 		1310B01029BF48A800DEC17F /* SubTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1310B00F29BF48A700DEC17F /* SubTodoView.swift */; };
@@ -60,6 +61,7 @@
 		1301D33229CB7370003B3848 /* HaruView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaruView.swift; sourceTree = "<group>"; };
 		1301D33429CB742F003B3848 /* HaruLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaruLinkView.swift; sourceTree = "<group>"; };
 		1301D33629CB74AD003B3848 /* ListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListView.swift; sourceTree = "<group>"; };
+		1301D33829CCA31F003B3848 /* CustomDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
 		1310B00B29BF109A00DEC17F /* TagService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagService.swift; sourceTree = "<group>"; };
 		1310B00D29BF2FA700DEC17F /* Alarm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alarm.swift; sourceTree = "<group>"; };
 		1310B00F29BF48A700DEC17F /* SubTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubTodoView.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				131D3AD029C9CAE1008B431B /* CompleteButton.swift */,
 				1301D32A29CB3123003B3848 /* StarButton.swift */,
 				1301D32E29CB654E003B3848 /* EmptySectionView.swift */,
+				1301D33829CCA31F003B3848 /* CustomDatePicker.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -354,6 +357,7 @@
 				1301D33129CB71E3003B3848 /* TagListView.swift in Sources */,
 				1301D32D29CB634F003B3848 /* ListSectionView.swift in Sources */,
 				137611F929B61674008787BD /* SubTodo.swift in Sources */,
+				1301D33929CCA31F003B3848 /* CustomDatePicker.swift in Sources */,
 				1334334F29B5A0AC00F26F57 /* CheckListView.swift in Sources */,
 				137D670429C2084C0010C8B3 /* TodoAddView.swift in Sources */,
 				13AE615629B489D500C08EB1 /* HaruApp.swift in Sources */,

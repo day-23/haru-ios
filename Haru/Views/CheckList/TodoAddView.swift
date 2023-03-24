@@ -12,6 +12,7 @@ struct TodoAddView: View {
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isModalVisible: Bool
     @FocusState private var tagInFocus: Bool
+    @State private var isClicked = false
 
     init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
         self.viewModel = viewModel
@@ -25,8 +26,13 @@ struct TodoAddView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 0) {
                         if !isModalVisible {
-                            //  FIXME: 수정 필요
-                            CompleteButton(isClicked: false)
+                            //  FIXME: 완료 API 호출해야 함.
+                            CompleteButton(isClicked: isClicked)
+                                .onTapGesture {
+                                    withAnimation {
+                                        isClicked.toggle()
+                                    }
+                                }
                         }
 
                         TextField("투두 입력", text: $viewModel.todoContent)
@@ -423,10 +429,17 @@ struct TodoAddView: View {
                                 isModalVisible = false
                             }
                         } else {
-                            dismissAction.callAsFunction()
+                            viewModel.deleteTodo { result in
+                                switch result {
+                                case .success:
+                                    dismissAction.callAsFunction()
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
+                            }
                         }
                     } label: {
-                        Text("취소")
+                        Text("\(viewModel.mode == .add ? "취소" : "삭제")")
                             .frame(width: 74, height: 24)
                             .foregroundColor(.black)
                             .font(.system(size: 20, weight: .medium))
@@ -441,11 +454,7 @@ struct TodoAddView: View {
                                 switch result {
                                 case .success:
                                     withAnimation {
-                                        if isModalVisible {
-                                            isModalVisible = false
-                                        } else {
-                                            dismissAction.callAsFunction()
-                                        }
+                                        isModalVisible = false
                                     }
                                 case let .failure(failure):
                                     print("[Debug] \(failure) (\(#fileID), \(#function))")
@@ -456,11 +465,7 @@ struct TodoAddView: View {
                                 switch result {
                                 case .success:
                                     withAnimation {
-                                        if isModalVisible {
-                                            isModalVisible = false
-                                        } else {
-                                            dismissAction.callAsFunction()
-                                        }
+                                        dismissAction.callAsFunction()
                                     }
                                 case let .failure(failure):
                                     print("[Debug] \(failure) (\(#fileID), \(#function))")
@@ -468,7 +473,7 @@ struct TodoAddView: View {
                             }
                         }
                     } label: {
-                        Text("\(viewModel.mode == .add ? "추가" : "수정")")
+                        Text("\(viewModel.mode == .add ? "추가" : "저장")")
                             .frame(width: 74, height: 24)
                             .font(.system(size: 20, weight: .medium))
                             .foregroundColor(Color(0x1DAFFF))

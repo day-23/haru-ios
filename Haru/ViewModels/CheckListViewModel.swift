@@ -442,6 +442,7 @@ final class CheckListViewModel: ObservableObject {
         todoService.deleteTodo(todoId: todoId) { result in
             switch result {
             case let .success(success):
+                self.fetchTodoList()
                 completion(.success(success))
             case let .failure(error):
                 completion(.failure(error))
