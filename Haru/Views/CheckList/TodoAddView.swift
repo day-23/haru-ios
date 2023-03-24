@@ -173,6 +173,8 @@ struct TodoAddView: View {
                                     ) {}
                                         .labelsHidden()
                                         .padding(.vertical, -5)
+                                        .scaleEffect(0.75)
+                                        .padding(.trailing, -10)
                                 }
                             }
                         }
@@ -209,6 +211,7 @@ struct TodoAddView: View {
                                         ) {}
                                             .labelsHidden()
                                             .padding(.vertical, -5)
+                                            .scaleEffect(0.75)
                                     }
                                 }
                             }
@@ -249,6 +252,7 @@ struct TodoAddView: View {
                                     DatePicker(selection: $viewModel.alarm) {}
                                         .labelsHidden()
                                         .padding(.vertical, -5)
+                                        .scaleEffect(0.75)
                                 }
                             }
                         }
@@ -360,6 +364,7 @@ struct TodoAddView: View {
                                         ) {}
                                             .labelsHidden()
                                             .padding(.vertical, -5)
+                                            .scaleEffect(0.75)
                                     }
                                 }
                             }
