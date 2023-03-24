@@ -50,7 +50,9 @@ enum Tab: Int, CaseIterable {
                 addViewModel: todoAddViewModel
             ))
         case .timeTable:
-            return AnyView(Text("Time-Table SubView"))
+            return AnyView(
+                TimeTableMainView()
+            )
         case .setting:
             return AnyView(Text("Setting SubView"))
         }
