@@ -39,7 +39,9 @@ enum Tab: Int, CaseIterable {
         case .sns:
             return AnyView(Text("SNS SubView"))
         case .calendar:
-            return AnyView(Text("Calendar SubView"))
+            return AnyView(
+                CalendarMainView()
+            )
         case .checkList:
             let checkListViewModel = CheckListViewModel()
             let todoAddViewModel = TodoAddViewModel(checkListViewModel: checkListViewModel)

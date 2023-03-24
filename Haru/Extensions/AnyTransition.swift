@@ -4,7 +4,6 @@
 //
 //  Created by 최정민 on 2023/03/07.
 //
-
 import Foundation
 import SwiftUI
 
@@ -13,6 +12,13 @@ extension AnyTransition {
         .asymmetric(
             insertion: .push(from: .bottom),
             removal: .push(from: .top)
+        )
+    }
+
+    static var picker: AnyTransition {
+        .asymmetric(
+            insertion: .push(from: .trailing),
+            removal: .push(from: .leading)
         )
     }
 }
