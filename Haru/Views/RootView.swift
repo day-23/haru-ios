@@ -9,46 +9,23 @@ import Foundation
 import SwiftUI
 
 struct RootView: View {
-    @State var selection: Int = 3
+    @State private var selectedTab: Tab = .checkList
 
     var body: some View {
-        TabView(selection: $selection) {
-            Text("SNS SubView")
-                .tabItem {
-                    Image(systemName: "paperplane")
-                    Text("SNS")
+        TabView(selection: $selectedTab) {
+            ForEach(Tab.allCases, id: \.self) { tab in
+                NavigationView {
+                    tab.view
                 }
-                .tag(1)
-            Text("Calendar SubView")
                 .tabItem {
-                    Image(systemName: "calendar")
-                    Text("Calendar")
+                    Image(systemName: tab.systemImageName)
+                    Text(tab.title)
                 }
-                .tag(2)
-            Text("Todo SubView")
-                .tabItem {
-                    Image(systemName: "checklist")
-                    Text("Todo")
-                }
-                .tag(3)
-            Text("TimeTable SubView")
-                .tabItem {
-                    Image(systemName: "calendar.day.timeline.left")
-                    Text("TimeTable")
-                }
-                .tag(4)
-            Text("Setting SubView")
-                .tabItem {
-                    Image(systemName: "person")
-                    Text("Setting")
-                }
-                .tag(5)
+                .tag(tab)
+            }
         }
-    }
-}
-
-struct RootView_Previews: PreviewProvider {
-    static var previews: some View {
-        RootView(selection: 3)
+        .onAppear {
+            UITabBar.appearance().backgroundColor = .white
+        }
     }
 }
