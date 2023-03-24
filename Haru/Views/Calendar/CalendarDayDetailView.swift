@@ -123,10 +123,3 @@ struct CalendarDayDetailView: View {
         .background(.white)
     }
 }
-
-struct CalendarDayDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarDayDetailView(currentScheduleList: .constant([]), currentTodoList: .constant([Todo(id: "", content: "Test", memo: "", todayTodo: true, flag: true, alarms: [], isSelectedEndDateTime: false, completed: false, subTodos: [], tags: [], createdAt: Date())]), currentDate: .constant(Date()))
-            .frame(width: 330, height: 480)
-    }
-}

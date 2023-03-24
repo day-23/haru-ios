@@ -109,7 +109,7 @@ final class CalendarService {
             var maxKey = result[index].max { $0.key < $1.key }?.key ?? -1
             maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
             while p < todoList.count, dateList[index].date.isEqual(other: todoList[p].endDate!) {
-                result[index][maxKey] = (result[index][maxKey] ?? []) + [todoList[p]]
+//                result[index][maxKey] = (result[index][maxKey] ?? []) + [todoList[p]]
                 p += 1
                 maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
             }
@@ -177,11 +177,11 @@ final class CalendarService {
 
         return (result0, result1)
     }
-    
+
     func fittingOffsetDay(_ startDate: Date, _ endDate: Date, scheduleList: [Schedule], todoList: [Todo]) -> ([[Schedule]], [[Todo]]) {
         var result0 = [[Schedule]](repeating: [], count: 5)
         var result1 = [[Todo]](repeating: [], count: 5)
-        
+
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         var todoIdx = 0
 

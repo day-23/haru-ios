@@ -9,16 +9,18 @@ import Foundation
 
 struct Request: Codable {
     struct Todo: Codable {
+        //  MARK: - Request.Todo, Properties
+
         var content: String
         var memo: String
         var todayTodo: Bool
         var flag: Bool
         var endDate: Date?
-        var endDateTime: Date?
+        var isSelectedEndDateTime: Bool
         var alarms: [Date]
         var repeatOption: String?
+        var repeatValue: String?
         var repeatEnd: Date?
-        var `repeat`: String?
         var tags: [String]
         var subTodos: [String]
     }

@@ -4,7 +4,6 @@
 //
 //  Created by 최정민 on 2023/03/06.
 //
-
 import Foundation
 
 struct User {
@@ -20,7 +19,7 @@ struct User {
 //    private(set) var deletedAt: Date?
 }
 
-// MARK: - Extensions
+//  MARK: - Extensions
 
 extension User {
 //    mutating func changeEmail(_ email: String) {

@@ -23,7 +23,7 @@ struct Modal<Content>: View where Content: View {
         GeometryReader { proxy1 in
             ZStack {
                 if isActive {
-                    VStack(spacing: 10) {
+                    VStack {
                         RoundedRectangle(cornerRadius: 50)
                             .frame(width: 50, height: 7)
                             .padding()
@@ -59,11 +59,6 @@ struct Modal<Content>: View where Content: View {
                     .onDisappear {
                         modalOffset = .zero
                     }
-                }
-            }
-            .onAppear {
-                withAnimation {
-                    isActive = true
                 }
             }
         }
