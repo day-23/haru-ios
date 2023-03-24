@@ -54,12 +54,16 @@ struct CalendarDateView: View {
                         Button {
                             showingPopup = true
                         } label: {
-                            Image(systemName: "ellipsis")
+                            Image(systemName: "line.horizontal.3")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
                         }
                         .sheet(isPresented: $showingPopup) {
                             CalendarOptionView()
                                 .environmentObject(calendarVM)
                         }
+                        .tint(.gray1)
                     }
                 } // HStack
                 .padding(.horizontal, 20)

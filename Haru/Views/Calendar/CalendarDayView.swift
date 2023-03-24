@@ -30,10 +30,9 @@ struct CalendarDayView: View {
         .interactive(opacity: 0.8)
         .onPageChanged { pageIndex in
             if prevPageIndex < pageIndex {
-                
+                calendarViewModel.pivotDate = calendarViewModel.pivotDate.addDay()
             } else {
                 calendarViewModel.pivotDate = calendarViewModel.pivotDate.subtractDay()
-                
             }
 
             if pageIndex == data.count - 5 {

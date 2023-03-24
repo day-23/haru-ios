@@ -59,11 +59,12 @@ struct CalendarDayDetailView: View {
                                 VStack(alignment: .leading) {
                                     Text("\(currentScheduleList[index].content)")
                                     Text("하루종일")
+                                        .font(Font.custom(Constants.Regular, size: 12))
                                 }
                                 Spacer()
                             }
+                            .padding(.horizontal, 20)
                         }
-                        .padding(.horizontal, 20)
                         
                         Divider()
                         
@@ -76,8 +77,17 @@ struct CalendarDayDetailView: View {
                         .padding(.horizontal, 20)
                         
                         ForEach(currentTodoList.indices, id: \.self) { index in
-                            Text("\(currentTodoList[index].content)")
+                            HStack(spacing: 20) {
+                                Circle()
+                                    .strokeBorder()
+                                    .frame(width: 20, height: 20)
+                                Text("\(currentTodoList[index].content)")
+                                Spacer()
+                                Image("star")
+                                    .frame(width: 20, height: 20)
+                            }
                         }
+                        .padding(.horizontal, 20)
                         
                         Spacer()
                             .frame(height: 30)
@@ -116,7 +126,7 @@ struct CalendarDayDetailView: View {
 
 struct CalendarDayDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDayDetailView(currentScheduleList: .constant([]), currentTodoList: .constant([]), currentDate: .constant(Date()))
+        CalendarDayDetailView(currentScheduleList: .constant([]), currentTodoList: .constant([Todo(id: "", content: "Test", memo: "", todayTodo: true, flag: true, alarms: [], isSelectedEndDateTime: false, completed: false, subTodos: [], tags: [], createdAt: Date())]), currentDate: .constant(Date()))
             .frame(width: 330, height: 480)
     }
 }
