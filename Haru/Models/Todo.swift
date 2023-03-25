@@ -232,3 +232,5 @@ extension Todo {
         return nextEndDate.compare(repeatEnd) == .orderedAscending ? nextEndDate : nil
     }
 }
+
+extension Todo: Productivity {}

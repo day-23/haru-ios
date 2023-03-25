@@ -109,7 +109,7 @@ final class CalendarService {
             var maxKey = result[index].max { $0.key < $1.key }?.key ?? -1
             maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
             while p < todoList.count, dateList[index].date.isEqual(other: todoList[p].endDate!) {
-//                result[index][maxKey] = (result[index][maxKey] ?? []) + [todoList[p]]
+                result[index][maxKey] = (result[index][maxKey] ?? []) + [todoList[p]]
                 p += 1
                 maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
             }

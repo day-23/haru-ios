@@ -12,7 +12,7 @@ struct CompleteButton: View {
 
     var body: some View {
         ZStack {
-            Image(isClicked ? "check-completed-circle" : "check-circle")
+            Image(isClicked ? "check-complete-circle" : "check-circle")
                 .zIndex(1)
                 .frame(width: 16, height: 16)
         }
