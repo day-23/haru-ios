@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="22" height="21" viewBox="0 0 22 21">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.183" y1="0.344" x2="0.903" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9fa9ff"/>
+      <stop offset="1" stop-color="#15afff"/>
+    </linearGradient>
+  </defs>
+  <g id="그룹_20379" data-name="그룹 20379" transform="translate(-269 -2718)">
+    <path id="다각형_34" data-name="다각형 34" d="M9.641,2.9a1.5,1.5,0,0,1,2.717,0l1.591,3.4a1.5,1.5,0,0,0,1.171.852l3.721.47a1.5,1.5,0,0,1,.84,2.58l-2.743,2.582a1.5,1.5,0,0,0-.445,1.373l.706,3.7A1.5,1.5,0,0,1,15,19.454l-3.275-1.81a1.5,1.5,0,0,0-1.451,0L7,19.454A1.5,1.5,0,0,1,4.8,17.86l.706-3.7a1.5,1.5,0,0,0-.445-1.373L2.318,10.2a1.5,1.5,0,0,1,.84-2.58l3.721-.47A1.5,1.5,0,0,0,8.051,6.3Z" transform="translate(269 2718)" fill="url(#linear-gradient)"/>
+  </g>
+</svg>
