@@ -123,7 +123,7 @@ struct CalendarDateView: View {
                 calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
                 isSchModalVisible = true
             } label: {
-                Image("plusButton")
+                Image("add-button")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 50, height: 50)
