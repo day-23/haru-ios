@@ -107,7 +107,6 @@
 		130666EC29CEE07600AACEE6 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		130666ED29CEE07600AACEE6 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		130666F729CEE0AC00AACEE6 /* Global.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
-		130666F829CEE0AC00AACEE6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		130666F929CEE0AC00AACEE6 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		130666FD29CEE13200AACEE6 /* tagWithTodo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = tagWithTodo.swift; sourceTree = "<group>"; };
 		130666FE29CEE13200AACEE6 /* DateValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateValue.swift; sourceTree = "<group>"; };
@@ -157,13 +156,11 @@
 		1306678429CEE1E300AACEE6 /* Modal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		1306678529CEE1E300AACEE6 /* CategoryModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryModal.swift; sourceTree = "<group>"; };
 		1306678629CEE1E300AACEE6 /* StarButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StarButton.swift; sourceTree = "<group>"; };
-		1306678729CEE1E300AACEE6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1306678829CEE1E300AACEE6 /* MyToggleStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyToggleStyle.swift; sourceTree = "<group>"; };
 		1306678929CEE1E300AACEE6 /* CompleteButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompleteButton.swift; sourceTree = "<group>"; };
 		1306678A29CEE1E300AACEE6 /* CustomDatePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
 		1306678B29CEE1E300AACEE6 /* EmptySectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptySectionView.swift; sourceTree = "<group>"; };
 		1306678C29CEE1E300AACEE6 /* DayButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DayButton.swift; sourceTree = "<group>"; };
-		1306679629CEE1F200AACEE6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1306679729CEE1F200AACEE6 /* UINavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationController.swift; sourceTree = "<group>"; };
 		1306679829CEE1F200AACEE6 /* AnyTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyTransition.swift; sourceTree = "<group>"; };
 		1306679929CEE1F200AACEE6 /* Border.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Border.swift; sourceTree = "<group>"; };
@@ -174,11 +171,9 @@
 		1306679E29CEE1F200AACEE6 /* Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		130667A829CEE1FE00AACEE6 /* RepeatOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatOption.swift; sourceTree = "<group>"; };
 		130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodoAddMode.swift; sourceTree = "<group>"; };
-		130667AA29CEE1FE00AACEE6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		130667AB29CEE1FE00AACEE6 /* Tab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
 		130667AC29CEE1FE00AACEE6 /* Calendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
-		130667B329CEE20A00AACEE6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		137414BC29CEE5A7005A8282 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -215,7 +210,6 @@
 		130666CA29CEDF4A00AACEE6 /* Haru */ = {
 			isa = PBXGroup;
 			children = (
-				137414BC29CEE5A7005A8282 /* Info.plist */,
 				130666CF29CEDF4B00AACEE6 /* Assets.xcassets */,
 				130666DF29CEDFF300AACEE6 /* Components */,
 				130666E229CEE01800AACEE6 /* Enumerations */,
@@ -223,6 +217,7 @@
 				130666D929CEDF9C00AACEE6 /* Fonts */,
 				130666DA29CEDFA600AACEE6 /* Global */,
 				130666CB29CEDF4A00AACEE6 /* HaruApp.swift */,
+				137414BC29CEE5A7005A8282 /* Info.plist */,
 				130666DB29CEDFCC00AACEE6 /* Models */,
 				130666D129CEDF4B00AACEE6 /* Preview Content */,
 				130666DC29CEDFD200AACEE6 /* Services */,
@@ -262,7 +257,6 @@
 			children = (
 				130666F929CEE0AC00AACEE6 /* Constants.swift */,
 				130666F729CEE0AC00AACEE6 /* Global.swift */,
-				130666F829CEE0AC00AACEE6 /* README.md */,
 			);
 			path = Global;
 			sourceTree = "<group>";
@@ -331,7 +325,6 @@
 				1306678B29CEE1E300AACEE6 /* EmptySectionView.swift */,
 				1306678429CEE1E300AACEE6 /* Modal.swift */,
 				1306678829CEE1E300AACEE6 /* MyToggleStyle.swift */,
-				1306678729CEE1E300AACEE6 /* README.md */,
 				1306678629CEE1E300AACEE6 /* StarButton.swift */,
 			);
 			path = Components;
@@ -345,7 +338,6 @@
 				1306679E29CEE1F200AACEE6 /* Color.swift */,
 				1306679A29CEE1F200AACEE6 /* Data.swift */,
 				1306679B29CEE1F200AACEE6 /* Date.swift */,
-				1306679629CEE1F200AACEE6 /* README.md */,
 				1306679C29CEE1F200AACEE6 /* ShapeStyle.swift */,
 				1306679729CEE1F200AACEE6 /* UINavigationController.swift */,
 				1306679D29CEE1F200AACEE6 /* View.swift */,
@@ -357,7 +349,6 @@
 			isa = PBXGroup;
 			children = (
 				130667B229CEE20A00AACEE6 /* CalendarHelper.swift */,
-				130667B329CEE20A00AACEE6 /* README.md */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -366,7 +357,6 @@
 			isa = PBXGroup;
 			children = (
 				130667AC29CEE1FE00AACEE6 /* Calendar.swift */,
-				130667AA29CEE1FE00AACEE6 /* README.md */,
 				130667A829CEE1FE00AACEE6 /* RepeatOption.swift */,
 				130667AB29CEE1FE00AACEE6 /* Tab.swift */,
 				130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */,
