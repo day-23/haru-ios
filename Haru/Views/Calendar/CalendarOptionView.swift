@@ -38,13 +38,13 @@ struct CalendarOptionView: View {
                 } header: {
                     HStack {
                         Text("카테고리")
-                            .font(Font.custom(Constants.Regular, size: 14))
+                            .font(.pretendard(size: 14, weight: .regular))
                         Spacer()
                         Button {
                             print("모두 보이기 or 모두 감추기")
                         } label: {
                             Text("모두 보이기")
-                                .font(Font.custom(Constants.Regular, size: 14))
+                                .font(.pretendard(size: 14, weight: .regular))
                         }
                     }
                 }
@@ -57,7 +57,7 @@ struct CalendarOptionView: View {
                         Text("완료")
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         print("추가")

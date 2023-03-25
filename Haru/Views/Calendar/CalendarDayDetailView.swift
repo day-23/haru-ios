@@ -59,7 +59,7 @@ struct CalendarDayDetailView: View {
                                 VStack(alignment: .leading) {
                                     Text("\(currentScheduleList[index].content)")
                                     Text("하루종일")
-                                        .font(Font.custom(Constants.Regular, size: 12))
+                                        .font(.pretendard(size: 12, weight: .regular))
                                 }
                                 Spacer()
                             }

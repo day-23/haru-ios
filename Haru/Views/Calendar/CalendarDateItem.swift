@@ -32,7 +32,7 @@ struct CalendarDateItem: View {
                     }
 
                     Text("\(value.day)")
-                        .font(Font.custom(Constants.Regular, size: 14))
+                        .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .blue : .primary)
                 }
                 .opacity(!value.isNextDate && !value.isPrevDate ? 1 : 0.5)

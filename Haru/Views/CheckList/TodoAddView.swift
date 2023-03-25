@@ -37,7 +37,7 @@ struct TodoAddView: View {
 
                         TextField("투두 입력", text: $viewModel.todoContent)
                             .padding(.leading, isModalVisible ? 14 : 12)
-                            .font(.system(size: 24, weight: .medium))
+                            .font(.pretendard(size: 24, weight: .medium))
 
                         StarButton(isClicked: viewModel.flag)
                             .onTapGesture {

@@ -90,6 +90,7 @@
 		130667C529CEE33200AACEE6 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C429CEE33200AACEE6 /* Alamofire */; };
 		130667C829CEE35400AACEE6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C729CEE35400AACEE6 /* PopupView */; };
 		130667CB29CEE38500AACEE6 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 130667CA29CEE38500AACEE6 /* SwiftUIPager */; };
+		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -175,6 +176,7 @@
 		130667AC29CEE1FE00AACEE6 /* Calendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
 		137414BC29CEE5A7005A8282 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -338,6 +340,7 @@
 				1306679E29CEE1F200AACEE6 /* Color.swift */,
 				1306679A29CEE1F200AACEE6 /* Data.swift */,
 				1306679B29CEE1F200AACEE6 /* Date.swift */,
+				6F566C8229CEEE73000F0555 /* Font.swift */,
 				1306679C29CEE1F200AACEE6 /* ShapeStyle.swift */,
 				1306679729CEE1F200AACEE6 /* UINavigationController.swift */,
 				1306679D29CEE1F200AACEE6 /* View.swift */,
@@ -498,6 +501,7 @@
 			files = (
 				1306679129CEE1E300AACEE6 /* MyToggleStyle.swift in Sources */,
 				1306676229CEE19C00AACEE6 /* CategoryFormView.swift in Sources */,
+				6F566C8329CEEE73000F0555 /* Font.swift in Sources */,
 				130667AD29CEE1FE00AACEE6 /* RepeatOption.swift in Sources */,
 				1306671D29CEE14000AACEE6 /* TagService.swift in Sources */,
 				1306677729CEE19C00AACEE6 /* TagView.swift in Sources */,
@@ -693,6 +697,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Haru/Preview Content\"";
+				DEVELOPMENT_TEAM = 55572WP5WW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Haru/Info.plist;
@@ -722,6 +727,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Haru/Preview Content\"";
+				DEVELOPMENT_TEAM = 55572WP5WW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Haru/Info.plist;

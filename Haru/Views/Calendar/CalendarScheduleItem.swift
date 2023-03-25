@@ -17,14 +17,14 @@ struct CalendarScheduleItem: View {
                 if let productivity = productivityList[index].1 {
                     if let schedule = productivity as? Schedule {
                         Text("\(schedule.content)")
-                            .font(Font.custom(Constants.Regular, size: 12))
+                            .font(.pretendard(size: 12, weight: .regular))
                             .padding(4)
                             .frame(width: cellWidth * CGFloat(productivityList[index].0), alignment: .leading)
                             .background(Color(schedule.category?.color, true))
                             .cornerRadius(10)
                     } else if let todo = productivity as? Todo {
                         Text("\(todo.content)")
-                            .font(Font.custom(Constants.Regular, size: 12))
+                            .font(.pretendard(size: 12, weight: .regular))
                             .frame(width: cellWidth * CGFloat(productivityList[index].0))
                     }
                 } else {

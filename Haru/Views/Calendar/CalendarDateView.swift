@@ -22,10 +22,10 @@ struct CalendarDateView: View {
                 HStack(spacing: 20) {
                     HStack(spacing: 12) {
                         Text("\(CalendarHelper.extraDate(calendarVM.monthOffest)[0])년")
-                            .font(Font.custom(Constants.Bold, size: 28))
+                            .font(.pretendard(size: 28, weight: .bold))
                         
                         Text(CalendarHelper.extraDate(calendarVM.monthOffest)[1])
-                            .font(Font.custom(Constants.Bold, size: 28))
+                            .font(.pretendard(size: 28, weight: .bold))
                         
                         Button {
                             print("달력 보여주기")
@@ -43,7 +43,7 @@ struct CalendarDateView: View {
                             calendarVM.monthOffest = 0
                         } label: {
                             Text("\(Date().day)")
-                                .font(Font.custom(Constants.Bold, size: 12))
+                                .font(.pretendard(size: 12, weight: .bold))
                                 .padding(8)
                                 .background(
                                     Circle()
@@ -73,7 +73,7 @@ struct CalendarDateView: View {
                     HStack(spacing: 0) {
                         ForEach(calendarVM.dayList, id: \.self) { day in
                             Text(day)
-                                .font(Font.custom(Constants.Regular, size: 14))
+                                .font(.pretendard(size: 14, weight: .regular))
                                 .frame(maxWidth: .infinity)
                         }
                     } // HStack
