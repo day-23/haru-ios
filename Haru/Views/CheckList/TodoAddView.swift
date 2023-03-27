@@ -122,7 +122,6 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.tagList.isEmpty ? Color(0xACACAC) : .black)
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     Divider()
                 }
@@ -149,7 +148,6 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.isTodayTodo ? Color(0x1DAFFF) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     Divider()
                 }
@@ -191,7 +189,6 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.isSelectedEndDate ? Color(0x191919) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     if viewModel.isSelectedEndDate {
                         Label {
@@ -230,7 +227,6 @@ struct TodoAddView: View {
                                 .hidden()
                         }
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
                     }
 
                     Divider()
@@ -269,7 +265,6 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     Divider()
                 }
@@ -300,7 +295,6 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.isSelectedRepeat ? Color(0x191919) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     if viewModel.isSelectedRepeat {
                         Picker("", selection: $viewModel.repeatOption.animation()) {
@@ -310,7 +304,6 @@ struct TodoAddView: View {
                         }
                         .pickerStyle(.segmented)
                         .padding(.horizontal, 55)
-                        .padding(.vertical, 6)
                     }
 
                     if viewModel.isSelectedRepeat {
@@ -323,7 +316,6 @@ struct TodoAddView: View {
                                 }
                             }
                             .padding(.horizontal, 55)
-                            .padding(.vertical, 5)
                         } else if viewModel.repeatOption == .everyMonth {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
                                 ForEach(viewModel.repeatMonth.indices, id: \.self) { index in
@@ -333,7 +325,6 @@ struct TodoAddView: View {
                                 }
                             }
                             .padding(.horizontal, 55)
-                            .padding(.vertical, 5)
                         } else if viewModel.repeatOption == .everySecondWeek ||
                             viewModel.repeatOption == .everyWeek
                         {
@@ -345,7 +336,6 @@ struct TodoAddView: View {
                                 }
                             }
                             .padding(.horizontal, 55)
-                            .padding(.vertical, 5)
                         }
 
                         Label {
@@ -363,8 +353,8 @@ struct TodoAddView: View {
                                             displayedComponents: [.date]
                                         ) {}
                                             .labelsHidden()
-                                            .padding(.vertical, -5)
                                             .scaleEffect(0.75)
+                                            .padding(.vertical, -5)
                                     }
                                 }
                             }
@@ -381,7 +371,6 @@ struct TodoAddView: View {
                                 .hidden()
                         }
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
                     }
 
                     Divider()
@@ -412,7 +401,6 @@ struct TodoAddView: View {
                             .foregroundColor(!viewModel.memo.isEmpty ? Color(0x191919) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     TextField("메모를 작성해주세요.",
                               text: $viewModel.memo,
@@ -420,7 +408,6 @@ struct TodoAddView: View {
                         .font(.system(size: 14, weight: .medium))
                         .padding(.leading, 45)
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
 
                     Divider()
                 }
