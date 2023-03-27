@@ -159,7 +159,7 @@ struct TodoAddView: View {
                     Label {
                         Toggle(isOn: $viewModel.isSelectedEndDate.animation()) {
                             HStack {
-                                Text("마감 설정")
+                                Text(viewModel.isSelectedRepeat ? "반복일" : "마감 설정")
                                     .font(.system(size: 14, weight: .medium))
                                     .frame(alignment: .leading)
                                     .foregroundColor(viewModel.isSelectedEndDate ? Color(0x191919) : Color(0xACACAC))
@@ -197,7 +197,7 @@ struct TodoAddView: View {
                         Label {
                             Toggle(isOn: $viewModel.isSelectedEndDateTime.animation()) {
                                 HStack {
-                                    Text("마감 시간 설정")
+                                    Text(viewModel.isSelectedRepeat ? "시간 설정" : "마감 시간 설정")
                                         .font(.system(size: 14, weight: .medium))
                                         .frame(alignment: .leading)
                                         .foregroundColor(viewModel.isSelectedEndDateTime ? Color(0x191919) : Color(0xACACAC))
