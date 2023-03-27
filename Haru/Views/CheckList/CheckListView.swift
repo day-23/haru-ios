@@ -208,11 +208,16 @@ struct CheckListView: View {
             } else {
                 if viewIsShown {
                     HStack(spacing: 0) {
-                        TextField("할 일 간편 추가", text: $addViewModel.todoContent)
-                            .font(.system(size: 14, weight: .light))
+                        TextField("", text: $addViewModel.todoContent)
+                            .placeholder(when: addViewModel.todoContent.isEmpty) {
+                                Text("간편 추가")
+                                    .foregroundColor(Color(0x646464))
+                            }
+                            .font(.pretendard(size: 14, weight: .medium))
+                            .foregroundColor(Color(0x646464))
                             .padding(.vertical, 10)
                             .padding(.horizontal, 12)
-                            .background(Color(0xF1F1F5))
+                            .background(Color(0xf1f1f5))
                             .cornerRadius(8)
                             .padding(.leading, 20)
                             .padding(.trailing, 16)
