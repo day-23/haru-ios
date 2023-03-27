@@ -37,7 +37,7 @@ struct SubTodoView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, minHeight: 36)
-        .padding(.leading, 54)
+        .padding(.leading, 70)
         .padding(.trailing, 20)
         .background(backgroundColor)
         .contextMenu {

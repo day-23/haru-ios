@@ -66,8 +66,10 @@ struct TodoView: View {
                     checkListViewModel.toggleShowingSubtodo(todoId: todo.id)
                 } label: {
                     Image("toggle")
+                        .renderingMode(.template)
                         .frame(width: 20, height: 20)
                         .rotationEffect(Angle(degrees: todo.isShowingSubTodo ? 90 : 0))
+                        .foregroundColor(Color(0x646464, opacity: todo.completed ? 0.5 : 1))
                 }
             }
 
@@ -229,7 +231,7 @@ struct TodoView: View {
                         }
                     }
                     .font(.pretendard(size: 12, weight: .regular))
-                    .foregroundColor(Color(0x191919))
+                    .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
                 }
             }
 
