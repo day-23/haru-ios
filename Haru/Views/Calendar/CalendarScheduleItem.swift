@@ -19,21 +19,24 @@ struct CalendarScheduleItem: View {
                         Text("\(schedule.content)")
                             .font(.pretendard(size: 12, weight: .regular))
                             .padding(4)
-                            .frame(width: cellWidth * CGFloat(productivityList[index].0), height: 16, alignment: .leading)
+                            .frame(width: cellWidth * CGFloat(productivityList[index].0) - 4, height: 16, alignment: .center)
                             .background(Color(schedule.category?.color, true))
                             .cornerRadius(4)
-                            .padding(.horizontal, 2)
                     } else if let todo = productivity as? Todo {
                         Text("\(todo.content)")
                             .font(.pretendard(size: 12, weight: .regular))
-                            .frame(width: cellWidth * CGFloat(productivityList[index].0), height: 16)
+                            .padding(4)
+                            .frame(width: cellWidth * CGFloat(productivityList[index].0) - 4, height: 16, alignment: .center)
+                            .background(Color.gradientEnd2)
+                            .cornerRadius(4)
                     }
                 } else {
                     Rectangle()
                         .fill(.clear)
-                        .frame(width: cellWidth * CGFloat(productivityList[index].0), height: 16)
+                        .frame(width: cellWidth * CGFloat(productivityList[index].0) - 4, height: 16)
                 }
             }
+            .padding(.horizontal, 2)
         }
     }
 }

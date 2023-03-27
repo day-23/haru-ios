@@ -39,7 +39,6 @@ struct CalendarDateItem: View {
             }
 
             Spacer()
-                .frame(height: 1)
         } // VStack
         .frame(width: cellWidhth, height: cellHeight, alignment: .top)
         .background(selectionSet.contains(value) ? .cyan : .white)

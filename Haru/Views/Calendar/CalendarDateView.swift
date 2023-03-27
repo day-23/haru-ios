@@ -122,14 +122,13 @@ struct CalendarDateView: View {
                 calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
                 isSchModalVisible = true
             } label: {
-                Image("add-button")
+                Image("plus-button")
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 50, height: 50)
+                    .frame(width: 58, height: 58)
                     .clipShape(Circle())
                     .shadow(radius: 3)
             }
-            .position(x: UIScreen.main.bounds.maxX - 40, y: UIScreen.main.bounds.maxY - 170)
+            .position(x: UIScreen.main.bounds.maxX - 40, y: UIScreen.main.bounds.maxY - 180)
             
             // 일정 추가를 위한 모달창
             if isSchModalVisible {

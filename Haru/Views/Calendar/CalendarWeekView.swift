@@ -32,7 +32,7 @@ struct CalendarWeekView: View {
                             }
                         }
                         VStack(spacing: 2) {
-                            Spacer().frame(height: 24)
+                            Spacer().frame(height: 28)
                             // TODO: 아래 코드 보기 좋게 만들기
                             ForEach(0 ..< (calendarVM.numberOfWeeks < 6 ? 4 : 3), id: \.self) { order in
                                 CalendarScheduleItem(productivityList: $calendarVM.viewProductivityList[week][order], cellWidth: cellWidhth)

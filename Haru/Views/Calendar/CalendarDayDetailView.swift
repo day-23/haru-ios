@@ -17,9 +17,9 @@ struct CalendarDayDetailView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("\(currentDate.month)월 \(currentDate.day)일")
+                Text("\(currentDate.getDateFormatString("M월 dd일 E요일"))")
                     .foregroundColor(.white)
-                    .fontWeight(.bold)
+                    .font(.pretendard(size: 20, weight: .bold))
                 Spacer()
                 Group {
                     Button {
@@ -46,7 +46,8 @@ struct CalendarDayDetailView: View {
                         HStack {
                             Image("calendar")
                             Text("일정")
-                                .foregroundColor(.blue)
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(.gradientStart1)
                             Spacer()
                         }
                         .padding(.horizontal, 20)
@@ -55,11 +56,12 @@ struct CalendarDayDetailView: View {
                             HStack(spacing: 20) {
                                 Circle()
                                     .fill(Color(currentScheduleList[index].category?.color, true))
-                                    .frame(width: 20, height: 20)
+                                    .frame(width: 14, height: 14)
                                 VStack(alignment: .leading) {
                                     Text("\(currentScheduleList[index].content)")
-                                    Text("하루종일")
-                                        .font(.pretendard(size: 12, weight: .regular))
+                                        .font(.pretendard(size: 14, weight: .bold))
+                                    Text(!currentScheduleList[index].timeOption ? "하루 종일" : "\(currentScheduleList[index].repeatStart.getDateFormatString("a hh:mm")) - \(currentScheduleList[index].repeatEnd.getDateFormatString("a hh:mm"))")
+                                        .font(.pretendard(size: 10, weight: .regular))
                                 }
                                 Spacer()
                             }
@@ -71,20 +73,31 @@ struct CalendarDayDetailView: View {
                         HStack {
                             Image("checkMark")
                             Text("할일")
-                                .foregroundColor(.blue)
+                                .foregroundColor(.gradientStart1)
+                                .font(.pretendard(size: 14, weight: .bold))
                             Spacer()
                         }
                         .padding(.horizontal, 20)
                         
                         ForEach(currentTodoList.indices, id: \.self) { index in
                             HStack(spacing: 20) {
-                                Circle()
-                                    .strokeBorder()
-                                    .frame(width: 20, height: 20)
-                                Text("\(currentTodoList[index].content)")
+                                Image("check-circle")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                VStack(alignment: .leading) {
+                                    Text("\(currentTodoList[index].content)")
+                                        .font(.pretendard(size: 14, weight: .bold))
+                                    HStack(spacing: 8) {
+                                        ForEach(currentTodoList[index].tags.prefix(5)) { tag in
+                                            Text("\(tag.content)")
+                                                .font(.pretendard(size: 10, weight: .regular))
+                                        }
+                                    }
+                                }
+                                .frame(height: 28, alignment: .leading)
                                 Spacer()
-                                Image("star")
-                                    .frame(width: 20, height: 20)
+                                Image(currentTodoList[index].flag ? "star-check" : "star")
+                                    .frame(width: 14, height: 14)
                             }
                         }
                         .padding(.horizontal, 20)
@@ -99,6 +112,7 @@ struct CalendarDayDetailView: View {
                     
                     HStack {
                         TextField("\(currentDate.month)월 \(currentDate.day)일 일정 추가", text: $content)
+                            .font(.pretendard(size: 14, weight: .light))
                             .frame(height: 20)
                             .padding(10)
                             .padding(.horizontal, 12)
@@ -108,8 +122,9 @@ struct CalendarDayDetailView: View {
                         Button {
                             print("hello")
                         } label: {
-                            Image(systemName: "plus")
-                                .frame(width: 28, height: 28)
+                            Image("plus-button")
+                                .resizable()
+                                .frame(width: 40, height: 40)
                         }
                     }
                     .padding(.horizontal, 12)

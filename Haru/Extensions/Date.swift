@@ -65,6 +65,13 @@ public extension Date {
         guard let result = Calendar.current.date(byAdding: .day, value: 1, to: self) else { return self }
         return result
     }
+    
+    func getDateFormatString(_ dateFormat: String) -> String {
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateFormat = dateFormat
+        return dateFormatter.string(from: self)
+    }
 }
 
 

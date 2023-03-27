@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 
 final class ScheduleFormViewModel: ObservableObject {
+    // TODO: 반복 설정, 하루종일 설정
+    
     @Published var repeatStart: Date
     @Published var repeatEnd: Date
     @Published var alarmDate: Date = .init()
