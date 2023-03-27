@@ -90,6 +90,7 @@
 		130667C529CEE33200AACEE6 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C429CEE33200AACEE6 /* Alamofire */; };
 		130667C829CEE35400AACEE6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C729CEE35400AACEE6 /* PopupView */; };
 		130667CB29CEE38500AACEE6 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 130667CA29CEE38500AACEE6 /* SwiftUIPager */; };
+		1356621829D1EE29003CAD1B /* DefaultTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1356621729D1EE29003CAD1B /* DefaultTag.swift */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
 /* End PBXBuildFile section */
 
@@ -175,6 +176,7 @@
 		130667AB29CEE1FE00AACEE6 /* Tab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
 		130667AC29CEE1FE00AACEE6 /* Calendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
+		1356621729D1EE29003CAD1B /* DefaultTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTag.swift; sourceTree = "<group>"; };
 		137414BC29CEE5A7005A8282 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -363,6 +365,7 @@
 				130667A829CEE1FE00AACEE6 /* RepeatOption.swift */,
 				130667AB29CEE1FE00AACEE6 /* Tab.swift */,
 				130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */,
+				1356621729D1EE29003CAD1B /* DefaultTag.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";
@@ -543,6 +546,7 @@
 				130667A029CEE1F200AACEE6 /* UINavigationController.swift in Sources */,
 				1306676329CEE19C00AACEE6 /* ScheduleFormView.swift in Sources */,
 				130667B429CEE20A00AACEE6 /* CalendarHelper.swift in Sources */,
+				1356621829D1EE29003CAD1B /* DefaultTag.swift in Sources */,
 				1306671629CEE13200AACEE6 /* Category.swift in Sources */,
 				1306671C29CEE14000AACEE6 /* ScheduleService.swift in Sources */,
 				1306675F29CEE19C00AACEE6 /* CategoryView.swift in Sources */,

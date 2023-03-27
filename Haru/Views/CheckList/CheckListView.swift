@@ -55,7 +55,7 @@ struct CheckListView: View {
                             } header: {
                                 HStack(spacing: 0) {
                                     StarButton(isClicked: true)
-                                    Text("중요")
+                                    Text(DefaultTag.important.rawValue)
                                         .font(.pretendard(size: 14, weight: .bold))
                                         .padding(.leading, 6)
                                 }
@@ -71,7 +71,7 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: "분류됨", content: "분류됨"))
+                                TagView(tag: Tag(id: DefaultTag.classified.rawValue, content: DefaultTag.classified.rawValue))
                                     .padding(.leading, 21)
                             }
 
@@ -84,7 +84,7 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: "미분류", content: "미분류"))
+                                TagView(tag: Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue))
                                     .padding(.leading, 21)
                             }
 
@@ -97,7 +97,7 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: "완료", content: "완료"))
+                                TagView(tag: Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue))
                                     .padding(.leading, 21)
                             }
                         } offsetChanged: {
@@ -105,7 +105,7 @@ struct CheckListView: View {
                         }
                     } else {
                         if let tag = viewModel.selectedTag {
-                            if tag.id == "중요" {
+                            if tag.id == DefaultTag.completed.rawValue {
                                 ListView {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
@@ -116,7 +116,7 @@ struct CheckListView: View {
                                     } header: {
                                         HStack(spacing: 0) {
                                             StarButton(isClicked: true)
-                                            Text("중요")
+                                            Text(DefaultTag.completed.rawValue)
                                                 .font(.pretendard(size: 14, weight: .bold))
                                                 .padding(.leading, 6)
                                         }
@@ -125,7 +125,7 @@ struct CheckListView: View {
                                 } offsetChanged: {
                                     self.changeOffset($0)
                                 }
-                            } else if tag.id == "미분류" {
+                            } else if tag.id == DefaultTag.unclassified.rawValue {
                                 ListView {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
@@ -135,13 +135,13 @@ struct CheckListView: View {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
                                         TagView(tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == "미분류")
+                                                isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue)
                                             .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
                                 }
-                            } else if tag.id == "완료" {
+                            } else if tag.id == DefaultTag.completed.rawValue {
                                 //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
                                 ListView {
                                     ListSectionView(
@@ -152,7 +152,7 @@ struct CheckListView: View {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
                                         TagView(tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == "완료")
+                                                isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue)
                                             .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
