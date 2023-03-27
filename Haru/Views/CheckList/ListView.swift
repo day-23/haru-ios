@@ -13,7 +13,7 @@ struct ListView<Content>: View where Content: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(pinnedViews: [.sectionHeaders]) {
+            LazyVStack {
                 content()
             }
 
