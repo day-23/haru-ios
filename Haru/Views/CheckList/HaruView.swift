@@ -36,8 +36,13 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    StarButton(isClicked: true)
-                        .padding(.leading, 29)
+                    HStack(spacing: 0) {
+                        StarButton(isClicked: true)
+                        Text("중요")
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .padding(.leading, 6)
+                    }
+                    .padding(.leading, 29)
                 }
 
                 Divider()
