@@ -19,18 +19,19 @@ struct CalendarScheduleItem: View {
                         Text("\(schedule.content)")
                             .font(.pretendard(size: 12, weight: .regular))
                             .padding(4)
-                            .frame(width: cellWidth * CGFloat(productivityList[index].0), alignment: .leading)
+                            .frame(width: cellWidth * CGFloat(productivityList[index].0), height: 16, alignment: .leading)
                             .background(Color(schedule.category?.color, true))
-                            .cornerRadius(10)
+                            .cornerRadius(4)
+                            .padding(.horizontal, 2)
                     } else if let todo = productivity as? Todo {
                         Text("\(todo.content)")
                             .font(.pretendard(size: 12, weight: .regular))
-                            .frame(width: cellWidth * CGFloat(productivityList[index].0))
+                            .frame(width: cellWidth * CGFloat(productivityList[index].0), height: 16)
                     }
                 } else {
                     Rectangle()
                         .fill(.clear)
-                        .frame(width: cellWidth * CGFloat(productivityList[index].0))
+                        .frame(width: cellWidth * CGFloat(productivityList[index].0), height: 16)
                 }
             }
         }
@@ -40,6 +41,6 @@ struct CalendarScheduleItem: View {
 // struct CalendarScheduleItem_Previews: PreviewProvider {
 //    static var vm: CalendarViewModel = .init()
 //    static var previews: some View {
-//        CalendarScheduleItem(scheduleList: .constant(vm.scheduleList[0]), date: Date().day)
+//        CalendarScheduleItem(productivityList: $vm.productivityList, cellWidth: 120)
 //    }
 // }

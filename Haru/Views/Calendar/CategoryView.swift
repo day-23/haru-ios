@@ -11,78 +11,49 @@ struct CategoryView: View {
     @EnvironmentObject var scheduleFormVM: ScheduleFormViewModel
 
     @Binding var selectedIdx: Int?
-    
-    @State var showCategoryForm: Bool = false
 
     var body: some View {
         VStack {
             HStack {
                 Text("카테고리 선택")
                     .foregroundColor(.white)
-                    .fontWeight(.bold)
+                    .font(.pretendard(size: 20, weight: .bold))
                 Spacer()
             }
-            .padding()
-            .background(.gradation1)
+            .padding(.vertical, 28)
+            .padding(.horizontal, 24)
+            .background(.gradation2)
 
             ScrollView {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 20) {
                     Group {
                         ForEach(Array(scheduleFormVM.categoryList.enumerated()),
                                 id: \.offset) { index, category in
-                            HStack {
-                                if selectedIdx == index {
-                                    Circle()
-                                        .fill(.gradation1)
-                                        .overlay {
-                                            Image(systemName: "checkmark")
-                                                .foregroundColor(.white)
-                                        }
-                                        .frame(width: 20, height: 20)
-                                } else {
-                                    Circle()
-                                        .strokeBorder(.gray1, lineWidth: 1)
-                                        .frame(width: 20, height: 20)
-                                }
-
-                                Image(systemName: "tag.fill")
-                                    .foregroundColor(Color(category.color, true))
+                            HStack(spacing: 20) {
+                                Circle()
+                                    .strokeBorder(Color(scheduleFormVM.categoryList[index].color, true))
+                                    .background(Circle().foregroundColor(selectedIdx == index ? Color(scheduleFormVM.categoryList[index].color, true) : .white))
+                                    .frame(width: 20, height: 20)
 
                                 Text("\(category.content)")
+                                    .font(.pretendard(size: 14, weight: .medium))
+                                    .foregroundColor(selectedIdx == index ? .black : .gray1)
                                 Spacer()
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 self.selectedIdx = index
                             }
-                            Divider()
-                        }
-
-                        if showCategoryForm {
-                            CategoryFormView(showCategoryForm: $showCategoryForm)
-                                .environmentObject(scheduleFormVM)
-                        }
-
-                        Button {
-                            withAnimation {
-                                showCategoryForm = true
-                            }
-                        } label: {
-                            HStack {
-                                Image(systemName: "plus")
-                                Text("카테고리 추가")
-                            }
-                            .foregroundColor(.gray1)
                         }
                     }
-                    .padding(.leading, 10)
+                    .padding(.leading, 20)
                 }
             }
 
             Spacer()
             Rectangle()
-                .fill(.gradation1)
-                .frame(height: 50)
+                .fill(.gradation2)
+                .frame(height: 25)
         }
     }
 }

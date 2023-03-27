@@ -48,6 +48,7 @@ struct CalendarDateView: View {
                                 .background(
                                     Circle()
                                         .stroke(.gradation1, lineWidth: 2)
+                                        .frame(width: 22, height: 22)
                                 )
                         }
                         
@@ -81,8 +82,6 @@ struct CalendarDateView: View {
                     TabView(selection: $calendarVM.monthOffest) {
                         ForEach(-100 ... 100, id: \.self) { _ in
                             GeometryReader { proxy in
-
-                                // MARK: - Gesture 분리를 위함
                                 
                                 let longPress = LongPressGesture(minimumDuration: 0.3)
                                     .onEnded { longPress in

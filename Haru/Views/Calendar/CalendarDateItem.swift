@@ -17,22 +17,22 @@ struct CalendarDateItem: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-                .frame(height: 2)
+                .frame(height: 4)
 
             ZStack {
                 Group {
                     if CalendarHelper.isSameDay(date1: value.date, date2: Date()) {
                         Circle()
                             .strokeBorder(.gradation1, lineWidth: 2)
-                            .frame(width: 24, height: 24)
+                            .frame(width: 22, height: 22)
                     } else {
                         Circle()
                             .fill(.clear)
-                            .frame(width: 24, height: 24)
+                            .frame(width: 22, height: 22)
                     }
 
                     Text("\(value.day)")
-                        .font(.pretendard(size: 14, weight: .regular))
+                        .font(.pretendard(size: 12, weight: .medium))
                         .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .blue : .primary)
                 }
                 .opacity(!value.isNextDate && !value.isPrevDate ? 1 : 0.5)

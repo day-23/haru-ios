@@ -17,18 +17,34 @@ final class ScheduleFormViewModel: ObservableObject {
     @Published var memo: String = ""
     
     @Published var timeOption: Bool = false
-    @Published var alarmOption: Bool = false
+    @Published var isSelectedAlarm: Bool = false
+    @Published var alarmOptions: [AlarmOption] = [.start]
     @Published var repeatOption: Bool = false
     @Published var memoOption: Bool = false
     
     @Published var selectionCategory: Int? // 선택한 카테고리의 인덱스 번호
     
-    var categoryList: [Category] {
-        calendarVM.categoryList
+    var selectedAlarm: [Date] {
+        var result = [Date]()
+        if isSelectedAlarm {
+            for option in alarmOptions {
+                switch option {
+                case .start:
+                    result.append(repeatStart)
+                case .tenMinAgo:
+                    result.append(Calendar.current.date(byAdding: .minute, value: -10, to: repeatStart) ?? repeatStart)
+                case .oneHourAgo:
+                    result.append(Calendar.current.date(byAdding: .hour, value: -1, to: repeatStart) ?? repeatStart)
+                case .oneDayAgo:
+                    result.append(Calendar.current.date(byAdding: .day, value: -1, to: repeatStart) ?? repeatStart)
+                }
+            }
+        }
+        return result
     }
     
-    var selectedAlarm: [Date] {
-        alarmOption ? [alarmDate] : []
+    var categoryList: [Category] {
+        calendarVM.categoryList
     }
     
     private var calendarVM: CalendarViewModel
@@ -40,7 +56,7 @@ final class ScheduleFormViewModel: ObservableObject {
         let selectionList = calendarVM.selectionSet.sorted(by: <)
         
         self.repeatStart = selectionList.first?.date ?? Date()
-        self.repeatEnd = selectionList.last?.date ?? Date()
+        self.repeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
         print("scheduleVM init")
     }
@@ -53,7 +69,7 @@ final class ScheduleFormViewModel: ObservableObject {
          
         scheduleService.addSchedule(schedule) { result in
             switch result {
-            case .success(_):
+            case .success:
                 // TODO: 추가된 일정을 로컬에서 가지고 있을 수 있나? (반복 일정의 경우 생각해볼 것)
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
             case .failure(let failure):

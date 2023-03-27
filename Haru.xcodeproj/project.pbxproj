@@ -91,6 +91,7 @@
 		130667C829CEE35400AACEE6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C729CEE35400AACEE6 /* PopupView */; };
 		130667CB29CEE38500AACEE6 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 130667CA29CEE38500AACEE6 /* SwiftUIPager */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
+		6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -177,6 +178,7 @@
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
 		137414BC29CEE5A7005A8282 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
+		6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmOption.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -363,6 +365,7 @@
 				130667A829CEE1FE00AACEE6 /* RepeatOption.swift */,
 				130667AB29CEE1FE00AACEE6 /* Tab.swift */,
 				130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */,
+				6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";
@@ -504,6 +507,7 @@
 				6F566C8329CEEE73000F0555 /* Font.swift in Sources */,
 				130667AD29CEE1FE00AACEE6 /* RepeatOption.swift in Sources */,
 				1306671D29CEE14000AACEE6 /* TagService.swift in Sources */,
+				6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */,
 				1306677729CEE19C00AACEE6 /* TagView.swift in Sources */,
 				1306676129CEE19C00AACEE6 /* CalendarOptionView.swift in Sources */,
 				1306672329CEE15A00AACEE6 /* TimeTableMainView.swift in Sources */,

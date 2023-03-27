@@ -11,9 +11,33 @@ struct CalendarOptionView: View {
     @EnvironmentObject var calendarVM: CalendarViewModel
 
     var body: some View {
-        NavigationView {
-            List {
-                Section {
+        VStack(spacing: 10) {
+            HStack {
+                Text("캘린더 보기 설정")
+                    .foregroundColor(.white)
+                    .font(.pretendard(size: 20, weight: .bold))
+                Spacer()
+            }
+            .padding()
+            .background(.gradation2)
+            
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    HStack {
+                        Image("calendar")
+                        Text("일정")
+                            .font(.pretendard(size: 14, weight: .bold))
+                        Spacer()
+                        Button {
+                            
+                        } label: {
+                            Text("카테고리 추가")
+                                .font(.pretendard(size: 14, weight: .regular))
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .foregroundColor(.gradientStart1)
                     ForEach(calendarVM.categoryList.indices, id: \.self) { index in
                         HStack {
                             Group {
@@ -28,45 +52,48 @@ struct CalendarOptionView: View {
                                 calendarVM.categoryList[index].toggleIsSelected()
                             }
 
-                            Image(systemName: "pencil")
-                                .foregroundColor(.red)
+                            Image(systemName: "ellipsis")
+                                .foregroundColor(.gray1)
                                 .onTapGesture {
                                     print("편집")
                                 }
                         }
                     }
-                } header: {
-                    HStack {
-                        Text("카테고리")
-                            .font(.pretendard(size: 14, weight: .regular))
-                        Spacer()
-                        Button {
-                            print("모두 보이기 or 모두 감추기")
-                        } label: {
-                            Text("모두 보이기")
-                                .font(.pretendard(size: 14, weight: .regular))
-                        }
-                    }
-                }
-            } // List
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        calendarVM.setAllCategoryList()
-                    } label: {
-                        Text("완료")
-                    }
-                }
+                    .padding(.horizontal, 40)
 
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        print("추가")
-                    } label: {
-                        Text("취소")
+                    Divider()
+
+                    HStack {
+                        Image("checkMark")
+                        Text("할일")
+                            .font(.pretendard(size: 14, weight: .bold))
+                        Spacer()
                     }
-                    .tint(.red)
+                    .padding(.horizontal, 20)
+                    .foregroundColor(.gradientStart1)
                 }
             }
+            Spacer()
+            HStack {
+                Spacer()
+                Button {
+                    print("dismiss")
+                } label: {
+                    Text("취소")
+                }
+                .tint(.red)
+                Spacer()
+                Button {
+                    calendarVM.setAllCategoryList()
+                } label: {
+                    Text("완료")
+                }
+                .tint(.gradientStart1)
+                Spacer()
+            }
+            Rectangle()
+                .fill(.gradation2)
+                .frame(height: 25)
         }
     }
 }
