@@ -22,6 +22,35 @@ struct TodoAddView: View {
     var body: some View {
         ScrollView {
             VStack {
+                if viewModel.mode == .add {
+                    HStack(spacing: 0) {
+                        Button {
+                            withAnimation {
+                                isModalVisible = false
+                            }
+                        } label: {
+                            Image("cancel")
+                        }
+                        Spacer()
+                        Button {
+                            viewModel.addTodo { result in
+                                switch result {
+                                case .success:
+                                    withAnimation {
+                                        isModalVisible = false
+                                    }
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
+                            }
+                        } label: {
+                            Image("confirm")
+                        }
+                    }
+                    .padding(.horizontal, 33)
+                    .padding(.bottom, 27)
+                }
+
                 //  Todo, SubTodo 입력 View
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 0) {
@@ -414,13 +443,9 @@ struct TodoAddView: View {
 
                 Spacer()
 
-                HStack(spacing: 0) {
-                    Button {
-                        if isModalVisible {
-                            withAnimation {
-                                isModalVisible = false
-                            }
-                        } else {
+                if viewModel.mode == .edit {
+                    HStack(spacing: 0) {
+                        Button {
                             viewModel.deleteTodo { result in
                                 switch result {
                                 case .success:
@@ -429,30 +454,16 @@ struct TodoAddView: View {
                                     print("[Debug] \(failure) (\(#fileID), \(#function))")
                                 }
                             }
+                        } label: {
+                            Text("삭제")
+                                .frame(width: 74, height: 24)
+                                .foregroundColor(.black)
+                                .font(.system(size: 20, weight: .medium))
                         }
-                    } label: {
-                        Text("\(viewModel.mode == .add ? "취소" : "삭제")")
-                            .frame(width: 74, height: 24)
-                            .foregroundColor(.black)
-                            .font(.system(size: 20, weight: .medium))
-                    }
-                    .padding(.leading, 61)
-                    .padding(.trailing, 120)
+                        .padding(.leading, 61)
+                        .padding(.trailing, 120)
 
-                    Button {
-                        switch viewModel.mode {
-                        case .add:
-                            viewModel.addTodo { result in
-                                switch result {
-                                case .success:
-                                    withAnimation {
-                                        isModalVisible = false
-                                    }
-                                case let .failure(failure):
-                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
-                                }
-                            }
-                        case .edit:
+                        Button {
                             viewModel.updateTodo { result in
                                 switch result {
                                 case .success:
@@ -463,17 +474,17 @@ struct TodoAddView: View {
                                     print("[Debug] \(failure) (\(#fileID), \(#function))")
                                 }
                             }
+                        } label: {
+                            Text("저장")
+                                .frame(width: 74, height: 24)
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(Color(0x1DAFFF))
+                                .disabled(viewModel.isFieldEmpty)
                         }
-                    } label: {
-                        Text("\(viewModel.mode == .add ? "추가" : "저장")")
-                            .frame(width: 74, height: 24)
-                            .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(Color(0x1DAFFF))
-                            .disabled(viewModel.isFieldEmpty)
+                        .padding(.trailing, 61)
                     }
-                    .padding(.trailing, 61)
+                    .padding(.vertical, 20)
                 }
-                .padding(.vertical, 20)
             }
             .onAppear {
                 UIDatePicker.appearance().minuteInterval = 5
