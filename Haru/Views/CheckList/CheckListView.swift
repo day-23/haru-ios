@@ -207,7 +207,7 @@ struct CheckListView: View {
                 .zIndex(2)
             } else {
                 if viewIsShown {
-                    HStack(spacing: 0) {
+                    HStack(alignment: .bottom, spacing: 0) {
                         TextField("", text: $addViewModel.todoContent)
                             .placeholder(when: addViewModel.todoContent.isEmpty) {
                                 Text("간편 추가")
@@ -219,8 +219,7 @@ struct CheckListView: View {
                             .padding(.horizontal, 12)
                             .background(Color(0xf1f1f5))
                             .cornerRadius(8)
-                            .padding(.leading, 20)
-                            .padding(.trailing, 16)
+                            .padding(.trailing, 18)
                             .onSubmit {
                                 addViewModel.addSimpleTodo()
                             }
@@ -232,9 +231,12 @@ struct CheckListView: View {
                             }
                         } label: {
                             Image("add-button")
+                                .shadow(radius: 10, x: 5, y: 0)
                         }
                     }
                     .zIndex(5)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 10)
                 }
             }
         }
