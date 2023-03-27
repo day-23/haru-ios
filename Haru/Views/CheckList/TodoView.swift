@@ -14,6 +14,10 @@ struct TodoView: View {
     var backgroundColor: Color = .white
 
     private var tagString: String {
+        if todo.tags.isEmpty {
+            return ""
+        }
+
         var res = ""
         for (i, tag) in zip(todo.tags.indices, todo.tags) {
             if tag.content.count + res.count <= 8 {
@@ -170,7 +174,7 @@ struct TodoView: View {
                     !todo.memo.isEmpty
                 {
                     HStack(spacing: 0) {
-                        if !tagString.trimmingCharacters(in: .whitespaces).isEmpty {
+                        if !tagString.isEmpty {
                             Text(tagString)
                         }
 
@@ -200,26 +204,32 @@ struct TodoView: View {
                                 !todo.memo.isEmpty)
                         {
                             Image("dot-small")
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
                         }
 
                         if todo.todayTodo {
                             Image("today-todo-small")
+                                .renderingMode(.template)
                         }
 
                         if todo.alarms.count > 0 {
                             Image("alarm-small")
+                                .renderingMode(.template)
                         }
 
                         if todo.repeatValue != nil || todo.repeatOption != nil {
                             Image("repeat-small")
+                                .renderingMode(.template)
                         }
 
                         if !todo.memo.isEmpty {
                             Image("memo-small")
+                                .renderingMode(.template)
                         }
                     }
                     .font(.pretendard(size: 12, weight: .regular))
-                    .foregroundColor(Color(0x000000, opacity: 0.5))
+                    .foregroundColor(Color(0x191919))
                 }
             }
 

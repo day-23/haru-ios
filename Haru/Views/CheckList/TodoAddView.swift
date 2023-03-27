@@ -263,7 +263,7 @@ struct TodoAddView: View {
                             endPoint: .trailing
                         ))
                     } icon: {
-                        Image("bell")
+                        Image("alarm")
                             .renderingMode(.template)
                             .padding(.trailing, 10)
                             .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
