@@ -16,10 +16,15 @@ struct TodoView: View {
     private var tagString: String {
         var res = ""
         for (i, tag) in zip(todo.tags.indices, todo.tags) {
-            if tag.content.count + res.count <= 10 {
-                res = "\(res) \(tag.content)"
+            if tag.content.count + res.count <= 8 {
+                if res.isEmpty {
+                    res = "\(tag.content)"
+                } else {
+                    res = "\(res) \(tag.content)"
+                }
             } else {
                 res = "\(res)  +\(todo.tags.count - i)"
+                break
             }
         }
         res = "\(res)  "
@@ -28,13 +33,25 @@ struct TodoView: View {
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 까지"
+        formatter.dateFormat = "M월 d일까지"
         return formatter
     }()
 
     let formatterWithTime: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 HH:mm 까지"
+        formatter.dateFormat = "M월 d일 HH:mm까지"
+        return formatter
+    }()
+
+    let formatterWithRepeat: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일"
+        return formatter
+    }()
+
+    let formatterWithTimeAndRepeat: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일 HH:mm"
         return formatter
     }()
 
@@ -139,8 +156,8 @@ struct TodoView: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(todo.content)
+                    .font(.pretendard(size: 16, weight: .bold))
                     .strikethrough(todo.completed)
-                    .font(.system(size: 14, weight: .bold))
                     .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
 
                 if todo.tags.count > 0 ||
@@ -153,13 +170,23 @@ struct TodoView: View {
                     !todo.memo.isEmpty
                 {
                     HStack(spacing: 0) {
-                        Text(tagString)
+                        if !tagString.trimmingCharacters(in: .whitespaces).isEmpty {
+                            Text(tagString)
+                        }
 
                         if let todoDate = todo.endDate {
                             if let todoDateTime = todo.endDateTime {
-                                Text(formatterWithTime.string(from: todoDateTime))
+                                if todo.repeatOption == nil {
+                                    Text(formatterWithTime.string(from: todoDateTime))
+                                } else {
+                                    Text(formatterWithTimeAndRepeat.string(from: todoDateTime))
+                                }
                             } else {
-                                Text(formatter.string(from: todoDate))
+                                if todo.repeatOption == nil {
+                                    Text(formatter.string(from: todoDate))
+                                } else {
+                                    Text(formatterWithRepeat.string(from: todoDate))
+                                }
                             }
                         }
 
@@ -191,8 +218,7 @@ struct TodoView: View {
                             Image("memo-small")
                         }
                     }
-                    .padding(.leading, -4)
-                    .font(.system(size: 10, weight: .regular))
+                    .font(.pretendard(size: 12, weight: .regular))
                     .foregroundColor(Color(0x000000, opacity: 0.5))
                 }
             }
@@ -204,7 +230,7 @@ struct TodoView: View {
                     checkListViewModel.updateFlag(todo: todo) { _ in }
                 }
         }
-        .frame(maxWidth: .infinity, minHeight: 36)
+        .frame(maxWidth: .infinity, minHeight: 48)
         .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
         .padding(.trailing, 20)
         .background(backgroundColor)

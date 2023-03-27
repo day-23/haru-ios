@@ -30,6 +30,7 @@ struct CheckListView: View {
                         maxOffset = nil
                     }
                 }
+                .padding(.bottom, 10)
 
                 //  오늘 나의 하루
                 NavigationLink {
