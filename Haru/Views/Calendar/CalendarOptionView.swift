@@ -20,30 +20,34 @@ struct CalendarOptionView: View {
             }
             .padding()
             .background(.gradation2)
-            
-            
+                
             ScrollView {
                 VStack(spacing: 20) {
                     HStack {
-                        Image("calendar")
-                        Text("일정")
-                            .font(.pretendard(size: 14, weight: .bold))
-                        Spacer()
-                        Button {
-                            
-                        } label: {
-                            Text("카테고리 추가")
-                                .font(.pretendard(size: 14, weight: .regular))
+                        Group {
+                            Image("calendar")
+                                .renderingMode(.template)
+                            Text("일정")
+                                .font(.pretendard(size: 14, weight: .bold))
                         }
+                        .onTapGesture {
+                            calendarVM.allCategoryOff.toggle()
+                        }
+                        Spacer()
+                        
+                        Image("plus")
+                            .resizable()
+                            .frame(width: 28, height: 28)
                     }
-                    .padding(.horizontal, 20)
-                    .foregroundColor(.gradientStart1)
+                    .padding(.init(top: 0, leading: 20, bottom: 0, trailing: 40))
+                    .foregroundColor(calendarVM.allCategoryOff ? .gray2 : .gradientStart1)
+                        
                     ForEach(calendarVM.categoryList.indices, id: \.self) { index in
                         HStack {
                             Group {
                                 Circle()
-                                    .strokeBorder(Color(calendarVM.categoryList[index].color, true))
-                                    .background(Circle().foregroundColor(calendarVM.categoryList[index].isSelected ? Color(calendarVM.categoryList[index].color, true) : .white))
+                                    .strokeBorder(calendarVM.allCategoryOff ? .gray2 : Color(calendarVM.categoryList[index].color, true))
+                                    .background(Circle().foregroundColor(calendarVM.categoryList[index].isSelected ? calendarVM.allCategoryOff ? .gray2 : Color(calendarVM.categoryList[index].color, true) : .white))
                                     .frame(width: 20, height: 20)
                                 Text(calendarVM.categoryList[index].content)
                                 Spacer()
@@ -51,42 +55,55 @@ struct CalendarOptionView: View {
                             .onTapGesture {
                                 calendarVM.categoryList[index].toggleIsSelected()
                             }
-
-                            Image(systemName: "ellipsis")
-                                .foregroundColor(.gray1)
+                            .foregroundColor(calendarVM.allCategoryOff ? .gray2 : .none)
+                                
+                            Image("ellipsis")
+                                .renderingMode(.template)
+                                .resizable()
+                                .frame(width: 28, height: 28)
+                                .foregroundColor(.gray2)
                                 .onTapGesture {
                                     print("편집")
                                 }
                         }
                     }
                     .padding(.horizontal, 40)
-
+                        
                     Divider()
-
+                        
                     HStack {
                         Image("checkMark")
+                            .renderingMode(.template)
                         Text("할일")
                             .font(.pretendard(size: 14, weight: .bold))
                         Spacer()
                     }
+                    .onTapGesture {
+                        calendarVM.allTodoOff.toggle()
+                    }
                     .padding(.horizontal, 20)
-                    .foregroundColor(.gradientStart1)
+                    .foregroundColor(calendarVM.allTodoOff ? .gray2 : .gradientStart1)
                 }
             }
+                
             Spacer()
+                
             HStack {
                 Spacer()
                 Button {
-                    print("dismiss")
+                    calendarVM.allCategoryOff = true
+                    calendarVM.allTodoOff = true
                 } label: {
-                    Text("취소")
+                    Text("모두 가리기")
+                        .font(.pretendard(size: 20, weight: .medium))
                 }
-                .tint(.red)
+                .tint(.mainBlack)
                 Spacer()
                 Button {
                     calendarVM.setAllCategoryList()
                 } label: {
                     Text("완료")
+                        .font(.pretendard(size: 20, weight: .medium))
                 }
                 .tint(.gradientStart1)
                 Spacer()

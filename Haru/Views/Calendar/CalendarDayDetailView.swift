@@ -53,19 +53,22 @@ struct CalendarDayDetailView: View {
                         .padding(.horizontal, 20)
                         
                         ForEach(currentScheduleList.indices, id: \.self) { index in
-                            HStack(spacing: 20) {
-                                Circle()
-                                    .fill(Color(currentScheduleList[index].category?.color, true))
-                                    .frame(width: 14, height: 14)
-                                VStack(alignment: .leading) {
-                                    Text("\(currentScheduleList[index].content)")
-                                        .font(.pretendard(size: 14, weight: .bold))
-                                    Text(!currentScheduleList[index].timeOption ? "하루 종일" : "\(currentScheduleList[index].repeatStart.getDateFormatString("a hh:mm")) - \(currentScheduleList[index].repeatEnd.getDateFormatString("a hh:mm"))")
-                                        .font(.pretendard(size: 10, weight: .regular))
+                            NavigationLink {Text("hello")} label: {
+                                HStack(spacing: 20) {
+                                    Circle()
+                                        .fill(Color(currentScheduleList[index].category?.color, true))
+                                        .frame(width: 14, height: 14)
+                                    VStack(alignment: .leading) {
+                                        Text("\(currentScheduleList[index].content)")
+                                            .font(.pretendard(size: 14, weight: .bold))
+                                        Text(!currentScheduleList[index].timeOption ? "하루 종일" : "\(currentScheduleList[index].repeatStart.getDateFormatString("a hh:mm")) - \(currentScheduleList[index].repeatEnd.getDateFormatString("a hh:mm"))")
+                                            .font(.pretendard(size: 10, weight: .regular))
+                                    }
+                                    Spacer()
                                 }
-                                Spacer()
+                                .padding(.horizontal, 20)
                             }
-                            .padding(.horizontal, 20)
+                            .tint(.mainBlack)
                         }
                         
                         Divider()

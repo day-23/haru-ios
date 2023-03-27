@@ -45,6 +45,9 @@ final class CalendarViewModel: ObservableObject {
     
     @Published var categoryList: [Category] = []
     
+    @Published var allCategoryOff: Bool = false // 카테고리 달력에서 안보이게 하기
+    @Published var allTodoOff: Bool = false // 할일 달력에서 안보이게 하기
+    
     // MARK: - Service
 
     private let scheduleService = ScheduleService()
@@ -80,7 +83,7 @@ final class CalendarViewModel: ObservableObject {
         Task {
             let result = await calendarService.fetchScheduleAndTodo(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!)
             DispatchQueue.main.async {
-                (self.productivityList, self.viewProductivityList) = self.calendarService.fittingCalendar(dateList: dateList, scheduleList: result.0, todoList: result.1)
+                (self.productivityList, self.viewProductivityList) = self.fittingCalendar(dateList: dateList, scheduleList: result.0, todoList: result.1)
             }
         }
     }
@@ -154,7 +157,7 @@ final class CalendarViewModel: ObservableObject {
             let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
             
             DispatchQueue.main.async {
-                (self.scheduleList, self.todoList) = self.calendarService.fittingDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+                (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: schList, todoList: todoList)
             }
         }
     }
@@ -171,7 +174,7 @@ final class CalendarViewModel: ObservableObject {
             let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
             
             DispatchQueue.main.async {
-                let result = self.calendarService.fittingOffsetDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+                let result = self.fittingOffsetDay(startDate, endDate, scheduleList: schList, todoList: todoList)
                 if isRight {
                     self.scheduleList.append(contentsOf: result.0)
                     self.scheduleList.removeFirst(5)
@@ -205,6 +208,230 @@ final class CalendarViewModel: ObservableObject {
                 self.getCurMonthSchList(self.dateList)
             case .failure(let failure):
                 print("[Debug] \(failure) \(#file) \(#fileID) \(#filePath)")
+            }
+        }
+    }
+    
+    // MARK: - 달력에 보여주기 위한 fitting 함수들
+
+    /**
+     * 달력에 보여질 일정과 할일 만드는 함수
+     */
+    func fittingCalendar(
+        dateList: [DateValue],
+        scheduleList: [Schedule],
+        todoList: [Todo]
+    ) -> ([[Int: [Productivity]]], [[[(Int, Productivity?)]]]) {
+        // 주차 개수
+        let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+
+        // 최대 보여줄 수 있는 일정, 할일 개수
+        let prodCnt = numberOfWeeks < 6 ? 4 : 3
+
+        // 최종 결과
+        var result = [[Int: [Productivity]]](repeating: [:], count: dateList.count) // 날짜별
+
+        var result_ = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: prodCnt), count: numberOfWeeks) // 순서
+
+        if !allCategoryOff {
+            fittingScheduleList(dateList, scheduleList, prodCnt, result: &result, result_: &result_)
+        }
+        if !allTodoOff {
+            fittingTodoList(dateList, todoList, prodCnt, result: &result)
+        }
+        
+        for week in 0 ..< numberOfWeeks {
+            for order in 0 ..< prodCnt {
+                var prev = result[week * 7 + 0][order]?.first
+                var cnt = 1
+                for day in 1 ..< 7 {
+                    if let prev, let prod = result[week * 7 + day][order]?.first, prev.isEqualTo(prod) {
+                        cnt += 1
+                    } else {
+                        result_[week][order].append((cnt, prev))
+                        cnt = 1
+                    }
+                    prev = result[week * 7 + day][order]?.first
+                }
+                result_[week][order].append((cnt, prev))
+            }
+        }
+
+        return (result, result_)
+    }
+
+    /**
+     * 날짜별로 스케줄과 할일이 무엇이 있는지
+     */
+    func fittingDay(_ startDate: Date, _ endDate: Date, scheduleList: [Schedule], todoList: [Todo]) -> ([[Schedule]], [[Todo]]) {
+        var result0 = [[Schedule]](repeating: [], count: 31)
+        var result1 = [[Todo]](repeating: [], count: 31)
+
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        var todoIdx = 0
+
+        for (index, date) in stride(from: startDate, through: endDate, by: dayDurationInSeconds).enumerated() {
+            // date에 해당하는 일정이 있는지 확인
+            for sch in scheduleList {
+                if sch.repeatStart < Calendar.current.date(
+                    byAdding: .day,
+                    value: 1,
+                    to: date
+                )!,
+                    sch.repeatEnd >= date
+                {
+                    result0[index].append(sch)
+                }
+            }
+
+            while todoIdx < todoList.count {
+                if let endDate = todoList[todoIdx].endDate {
+                    if date.isEqual(other: endDate) {
+                        result1[index].append(todoList[todoIdx])
+                        todoIdx += 1
+                    } else if endDate < date {
+                        todoIdx += 1
+                    } else {
+                        break
+                    }
+                } else {
+                    todoIdx += 1
+                }
+            }
+        }
+
+        return (result0, result1)
+    }
+
+    func fittingOffsetDay(_ startDate: Date, _ endDate: Date, scheduleList: [Schedule], todoList: [Todo]) -> ([[Schedule]], [[Todo]]) {
+        var result0 = [[Schedule]](repeating: [], count: 5)
+        var result1 = [[Todo]](repeating: [], count: 5)
+
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        var todoIdx = 0
+
+        for (index, date) in stride(from: startDate, through: endDate, by: dayDurationInSeconds).enumerated() {
+            // date에 해당하는 일정이 있는지 확인
+            for sch in scheduleList {
+                if sch.repeatStart < Calendar.current.date(
+                    byAdding: .day,
+                    value: 1,
+                    to: date
+                )!,
+                    sch.repeatEnd >= date
+                {
+                    result0[index].append(sch)
+                }
+            }
+
+            while todoIdx < todoList.count {
+                if let endDate = todoList[todoIdx].endDate {
+                    if date.isEqual(other: endDate) {
+                        result1[index].append(todoList[todoIdx])
+                        todoIdx += 1
+                    } else {
+                        break
+                    }
+                } else {
+                    todoIdx += 1
+                }
+            }
+        }
+
+        return (result0, result1)
+    }
+    
+    /**
+     *  달력에 표시될 일정 만드는 함수
+     */
+    func fittingScheduleList(
+        _ dateList: [DateValue],
+        _ scheduleList: [Schedule],
+        _ prodCnt: Int,
+        result: inout [[Int: [Productivity]]],
+        result_: inout [[[(Int, Productivity?)]]]
+    ) {
+        let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+
+        // 주차별 스케줄
+        var weeksOfScheduleList = [[Schedule]](repeating: [], count: numberOfWeeks)
+
+        var splitDateList = [[Date]]() // row: 주차, col: row주차에 있는 날짜들
+
+        for row in 0 ..< numberOfWeeks {
+            splitDateList.append([dateList[row * 7 + 0].date, dateList[row * 7 + 6].date])
+        }
+
+        for schedule in scheduleList {
+            // 카테고리 필터링
+            if schedule.category == nil || schedule.category!.isSelected {
+                for (week, dates) in splitDateList.enumerated() {
+                    // 구간 필터링
+                    if schedule.repeatEnd < dates[0] {
+                        break
+                    }
+                    if schedule.repeatStart >= dates[1] {
+                        continue
+                    }
+                    weeksOfScheduleList[week].append(schedule)
+                }
+            }
+        }
+
+        for (week, weekOfSchedules) in weeksOfScheduleList.enumerated() {
+            // 주 단위
+            var orders = Array(repeating: Array(repeating: true, count: prodCnt + 1), count: 7)
+            for schedule in weekOfSchedules {
+                var order = 0
+                var isFirst = true
+
+                for (index, dateValue) in dateList[week * 7 ..< (week + 1) * 7].enumerated() {
+                    if schedule.repeatStart < Calendar.current.date(
+                        byAdding: .day,
+                        value: 1,
+                        to: dateValue.date
+                    )!,
+                        schedule.repeatEnd >= dateValue.date
+                    {
+                        if isFirst {
+                            var i = 0
+                            while i < prodCnt, !orders[index][i] {
+                                i += 1
+                            }
+                            order = i
+                            orders[index][i] = false
+                            isFirst = false
+                        }
+                        orders[index][order] = false
+                        result[week * 7 + index][order] = (result[week * 7 + index][order] ?? []) + [schedule]
+                    }
+                }
+            }
+        }
+    }
+    
+    func fittingTodoList(
+        _ dateList: [DateValue],
+        _ todoList: [Todo],
+        _ prodCnt: Int,
+        result: inout [[Int: [Productivity]]]
+    ) {
+        let todoList = todoList.filter { $0.endDate != nil }
+        var todoIdx = 0, dateIdx = 0
+
+        var maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
+        maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+        while todoIdx < todoList.count, dateIdx < dateList.count {
+            if dateList[dateIdx].date.isEqual(other: todoList[todoIdx].endDate!) {
+                result[dateIdx][maxKey] = (result[dateIdx][maxKey] ?? []) + [todoList[todoIdx]]
+                maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+                todoIdx += 1
+            } else if dateList[dateIdx].date > todoList[todoIdx].endDate! {
+                todoIdx += 1
+            } else {
+                dateIdx += 1
+                maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
+                maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
             }
         }
     }

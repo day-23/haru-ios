@@ -150,7 +150,6 @@ struct CalendarDateView: View {
             .padding(20)
             .zIndex(2)
             
-            
             // 일정 추가를 위한 모달창
             if isSchModalVisible {
                 Color.black.opacity(0.4)
