@@ -38,49 +38,61 @@ struct CalendarDateView: View {
                     
                     Spacer()
                     
-                    HStack(spacing: 12) {
+                    HStack(spacing: 8) {
                         Button {
                             calendarVM.monthOffest = 0
                         } label: {
                             Text("\(Date().day)")
-                                .font(.pretendard(size: 12, weight: .bold))
-                                .padding(8)
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .padding(6)
                                 .background(
                                     Circle()
                                         .stroke(.gradation1, lineWidth: 2)
                                         .frame(width: 22, height: 22)
                                 )
                         }
+                        .tint(Color.gradientStart1)
                         
                         Button {
                             showingPopup = true
                         } label: {
-                            Image(systemName: "line.horizontal.3")
+                            Image("option-button")
                                 .resizable()
-                                .scaledToFit()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 28, height: 28)
                         }
-                        .sheet(isPresented: $showingPopup) {
+                        .popup(isPresented: $showingPopup, view: {
                             CalendarOptionView()
                                 .environmentObject(calendarVM)
-                        }
+                                .background(Color.white)
+                                .frame(width: UIScreen.main.bounds.maxX - 30, height: UIScreen.main.bounds.maxY - 240)
+                                .cornerRadius(20)
+                                .padding(.horizontal, 30)
+                                .shadow(radius: 2.0)
+                                .offset(x: 30)
+                        }, customize: {
+                            $0
+                                .animation(.spring())
+                                .closeOnTap(false)
+                                .closeOnTapOutside(true)
+                                .backgroundColor(.black.opacity(0.5))
+                        })
                         .tint(.gray1)
                     }
                 } // HStack
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 30)
 
                 Group {
                     // Day View ...
                     HStack(spacing: 0) {
                         ForEach(calendarVM.dayList, id: \.self) { day in
                             Text(day)
-                                .font(.pretendard(size: 14, weight: .regular))
+                                .font(.pretendard(size: 14, weight: .medium))
                                 .frame(maxWidth: .infinity)
                         }
                     } // HStack
                     
                     TabView(selection: $calendarVM.monthOffest) {
-                        ForEach(-100 ... 100, id: \.self) { _ in
+                        ForEach(-10 ... 10, id: \.self) { _ in
                             GeometryReader { proxy in
                                 
                                 let longPress = LongPressGesture(minimumDuration: 0.3)
@@ -114,21 +126,30 @@ struct CalendarDateView: View {
                     } // TabView
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 } // Group
-                .padding(.horizontal)
+                .padding(.horizontal, 20)
+                Spacer().frame(height: 20)
             } // VStack
 
             // 일정 추가 버튼
-            Button {
-                calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
-                isSchModalVisible = true
-            } label: {
-                Image("plus-button")
-                    .resizable()
-                    .frame(width: 58, height: 58)
-                    .clipShape(Circle())
-                    .shadow(radius: 3)
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
+                        isSchModalVisible = true
+                    } label: {
+                        Image("plus-button")
+                            .resizable()
+                            .frame(width: 56, height: 56)
+                            .clipShape(Circle())
+                            .shadow(radius: 3)
+                    }
+                }
             }
-            .position(x: UIScreen.main.bounds.maxX - 40, y: UIScreen.main.bounds.maxY - 180)
+            .padding(20)
+            .zIndex(2)
+            
             
             // 일정 추가를 위한 모달창
             if isSchModalVisible {

@@ -17,31 +17,21 @@ struct CalendarDateItem: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-                .frame(height: 4)
+                .frame(height: 7)
 
-            ZStack {
-                Group {
-                    if CalendarHelper.isSameDay(date1: value.date, date2: Date()) {
-                        Circle()
-                            .strokeBorder(.gradation1, lineWidth: 2)
-                            .frame(width: 22, height: 22)
-                    } else {
-                        Circle()
-                            .fill(.clear)
-                            .frame(width: 22, height: 22)
-                    }
-
-                    Text("\(value.day)")
-                        .font(.pretendard(size: 12, weight: .medium))
-                        .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .blue : .primary)
-                }
-                .opacity(!value.isNextDate && !value.isPrevDate ? 1 : 0.5)
-            }
-
+            Text("\(value.day)")
+                .font(.pretendard(size: 12, weight: .medium))
+                .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .gradientStart1 : Calendar.current.component(.weekday, from: value.date) == 1 ? .red : Calendar.current.component(.weekday, from: value.date) == 7 ? .gradientStart1 : .mainBlack)
+                .background(
+                    Circle()
+                        .stroke(Color.gradation1, lineWidth: CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 2 : 0)
+                        .frame(width: 20, height: 20)
+                )
             Spacer()
         } // VStack
         .frame(width: cellWidhth, height: cellHeight, alignment: .top)
-        .background(selectionSet.contains(value) ? .cyan : .white)
+        .background(selectionSet.contains(value) ? .mint : .white)
+        .opacity(!value.isNextDate && !value.isPrevDate && !selectionSet.contains(value) ? 1 : 0.3)
     }
 }
 

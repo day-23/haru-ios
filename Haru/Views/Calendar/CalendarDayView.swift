@@ -53,7 +53,7 @@ struct CalendarDayView: View {
 
             prevPageIndex = self.page.index
         }
-        .frame(height: 480)
+        .frame(height: 480, alignment: .center)
     }
 }
 

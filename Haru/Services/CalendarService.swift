@@ -104,16 +104,36 @@ final class CalendarService {
 
         // TODO: todoService의 fittingTodoList 함수로 뽑기
         let todoList = todoList.filter { $0.endDate != nil }
-        var p = 0
-        for index in dateList.indices {
-            var maxKey = result[index].max { $0.key < $1.key }?.key ?? -1
-            maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
-            while p < todoList.count, dateList[index].date.isEqual(other: todoList[p].endDate!) {
-                result[index][maxKey] = (result[index][maxKey] ?? []) + [todoList[p]]
-                p += 1
+        var todoIdx = 0, dateIdx = 0
+
+        var maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
+        maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+        while todoIdx < todoList.count, dateIdx < dateList.count {
+            if dateList[dateIdx].date.isEqual(other: todoList[todoIdx].endDate!) {
+                result[dateIdx][maxKey] = (result[dateIdx][maxKey] ?? []) + [todoList[todoIdx]]
+                maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+                todoIdx += 1
+            } else if dateList[dateIdx].date > todoList[todoIdx].endDate! {
+                todoIdx += 1
+            } else {
+                dateIdx += 1
+                maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
                 maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
             }
         }
+
+//        for index in dateList.indices {
+//            var maxKey = result[index].max { $0.key < $1.key }?.key ?? -1
+//            maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+//            while p < todoList.count, dateList[index].date >= todoList[p].endDate! {
+//                if dateList[index].date.isEqual(other: todoList[p].endDate!) {
+//                    result[index][maxKey] = (result[index][maxKey] ?? []) + [todoList[p]]
+//                    maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+//                }
+//
+//                p += 1
+//            }
+//        }
 
         // MARK: -
 
@@ -165,6 +185,8 @@ final class CalendarService {
                 if let endDate = todoList[todoIdx].endDate {
                     if date.isEqual(other: endDate) {
                         result1[index].append(todoList[todoIdx])
+                        todoIdx += 1
+                    } else if endDate < date {
                         todoIdx += 1
                     } else {
                         break

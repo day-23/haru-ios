@@ -31,11 +31,12 @@ struct CalendarWeekView: View {
                                     }
                             }
                         }
+                        
+
                         VStack(spacing: 2) {
-                            Spacer().frame(height: 28)
-                            // TODO: 아래 코드 보기 좋게 만들기
-                            ForEach(0 ..< (calendarVM.numberOfWeeks < 6 ? 4 : 3), id: \.self) { order in
-                                CalendarScheduleItem(productivityList: $calendarVM.viewProductivityList[week][order], cellWidth: cellWidhth)
+                            Spacer().frame(height: 26)
+                            ForEach(0 ..< calendarVM.maxOrder, id: \.self) { order in
+                                CalendarScheduleItem(productivityList: $calendarVM.viewProductivityList[week][order], cellWidth: cellWidhth, month: calendarVM.dateList[10].date.month)
                             }
                         }
                         .frame(width: cellWidhth * 7, height: cellHeight, alignment: .top)

@@ -29,7 +29,12 @@ final class CalendarViewModel: ObservableObject {
 
     @Published var dateList: [DateValue] = [] // 달력에 표시할 날짜들
     
-    @Published var numberOfWeeks: Int = 0 // 달력에 표시된 주차
+    @Published var numberOfWeeks: Int = 0 {
+        didSet {
+            maxOrder = numberOfWeeks < 6 ? 4 : 3
+        }
+    } // 달력에 표시된 주차
+    var maxOrder: Int = 0
     
     @Published var dayList: [String] = [] // 달력에 표시할 요일
     
