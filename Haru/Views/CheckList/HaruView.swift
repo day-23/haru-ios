@@ -96,6 +96,6 @@ struct HaruView: View {
                 }
             }
         }
-//        .toolbarBackground(.hidden)
+        .toolbarBackground(Color(0xD9EAFD))
     }
 }
