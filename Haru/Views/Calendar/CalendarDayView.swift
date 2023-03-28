@@ -13,13 +13,13 @@ struct CalendarDayView: View {
 
     @State var data = Array(0 ... 30)
 
-    @EnvironmentObject var calendarViewModel: CalendarViewModel
+    @StateObject var calendarViewModel: CalendarViewModel
 
     @State var prevPageIndex: Int = 15
 
     var body: some View {
         Pager(page: page, data: self.data.indices, id: \.self) { index in
-            CalendarDayDetailView(currentScheduleList: $calendarViewModel.scheduleList[index], currentTodoList: $calendarViewModel.todoList[index], currentDate: $calendarViewModel.pivotDate)
+            CalendarDayDetailView(calendarVM: calendarViewModel, row: index)
                 .frame(width: 330, height: 480)
                 .cornerRadius(20)
         }
@@ -59,7 +59,6 @@ struct CalendarDayView: View {
 
 struct CalendarDayView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDayView()
-            .environmentObject(CalendarViewModel())
+        CalendarDayView(calendarViewModel: CalendarViewModel())
     }
 }

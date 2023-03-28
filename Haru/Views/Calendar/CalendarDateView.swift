@@ -13,7 +13,7 @@ struct CalendarDateView: View {
     
     @State private var showingPopup: Bool = false
 
-    @EnvironmentObject var calendarVM: CalendarViewModel
+    @StateObject var calendarVM: CalendarViewModel
 
     var body: some View {
         ZStack {
@@ -61,8 +61,7 @@ struct CalendarDateView: View {
                                 .frame(width: 28, height: 28)
                         }
                         .popup(isPresented: $showingPopup, view: {
-                            CalendarOptionView()
-                                .environmentObject(calendarVM)
+                            CalendarOptionView(calendarVM: calendarVM)
                                 .background(Color.white)
                                 .frame(width: UIScreen.main.bounds.maxX - 30, height: UIScreen.main.bounds.maxY - 240)
                                 .cornerRadius(20)
@@ -115,11 +114,11 @@ struct CalendarDateView: View {
                                 let combined = longPress.sequenced(before: drag)
                                 
                                 CalendarWeekView(
+                                    calendarVM: calendarVM,
                                     isDayModalVisible: $isDayModalVisible,
                                     cellHeight: proxy.size.height / CGFloat(calendarVM.numberOfWeeks),
                                     cellWidhth: proxy.size.width / 7
                                 )
-                                .environmentObject(calendarVM)
                                 .gesture(combined)
                             } // GeometryReader
                         } // ForEach
@@ -175,8 +174,7 @@ struct CalendarDateView: View {
                     .onTapGesture {
                         isDayModalVisible = false
                     }
-                CalendarDayView()
-                    .environmentObject(calendarVM)
+                CalendarDayView(calendarViewModel: calendarVM)
                     .zIndex(2)
             }
         } // ZStack
@@ -193,7 +191,6 @@ struct CalendarDateView: View {
 
 struct CalendarDateView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDateView()
-            .environmentObject(CalendarViewModel())
+        CalendarDateView(calendarVM: CalendarViewModel())
     }
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CalendarOptionView: View {
-    @EnvironmentObject var calendarVM: CalendarViewModel
+    @StateObject var calendarVM: CalendarViewModel
 
     var body: some View {
         VStack(spacing: 10) {
@@ -117,7 +117,6 @@ struct CalendarOptionView: View {
 
 struct CalendarOptionView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarOptionView()
-            .environmentObject(CalendarViewModel())
+        CalendarOptionView(calendarVM: CalendarViewModel())
     }
 }

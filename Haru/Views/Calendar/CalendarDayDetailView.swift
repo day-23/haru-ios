@@ -10,14 +10,17 @@ import SwiftUI
 struct CalendarDayDetailView: View {
     @State private var content: String = ""
     
-    @Binding var currentScheduleList: [Schedule]
-    @Binding var currentTodoList: [Todo]
-    @Binding var currentDate: Date
+    var calendarVM: CalendarViewModel
+    var row: Int
+    
+//    @Binding var currentScheduleList: [Schedule]
+//    @Binding var currentTodoList: [Todo]
+//    @Binding var currentDate: Date
     
     var body: some View {
         VStack {
             HStack {
-                Text("\(currentDate.getDateFormatString("M월 dd일 E요일"))")
+                Text("\(calendarVM.pivotDate.getDateFormatString("M월 dd일 E요일"))")
                     .foregroundColor(.white)
                     .font(.pretendard(size: 20, weight: .bold))
                 Spacer()
@@ -52,16 +55,18 @@ struct CalendarDayDetailView: View {
                         }
                         .padding(.horizontal, 20)
                         
-                        ForEach(currentScheduleList.indices, id: \.self) { index in
-                            NavigationLink {Text("hello")} label: {
+                        ForEach(calendarVM.scheduleList[row].indices, id: \.self) { index in
+                            NavigationLink {
+                                ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM))
+                            } label: {
                                 HStack(spacing: 20) {
                                     Circle()
-                                        .fill(Color(currentScheduleList[index].category?.color, true))
+                                        .fill(Color(calendarVM.scheduleList[row][index].category?.color, true))
                                         .frame(width: 14, height: 14)
                                     VStack(alignment: .leading) {
-                                        Text("\(currentScheduleList[index].content)")
+                                        Text("\(calendarVM.scheduleList[row][index].content)")
                                             .font(.pretendard(size: 14, weight: .bold))
-                                        Text(!currentScheduleList[index].timeOption ? "하루 종일" : "\(currentScheduleList[index].repeatStart.getDateFormatString("a hh:mm")) - \(currentScheduleList[index].repeatEnd.getDateFormatString("a hh:mm"))")
+                                        Text(!calendarVM.scheduleList[row][index].timeOption ? "하루 종일" : "\(calendarVM.scheduleList[row][index].repeatStart.getDateFormatString("a hh:mm")) - \(calendarVM.scheduleList[row][index].repeatEnd.getDateFormatString("a hh:mm"))")
                                             .font(.pretendard(size: 10, weight: .regular))
                                     }
                                     Spacer()
@@ -82,16 +87,16 @@ struct CalendarDayDetailView: View {
                         }
                         .padding(.horizontal, 20)
                         
-                        ForEach(currentTodoList.indices, id: \.self) { index in
+                        ForEach(calendarVM.todoList[row].indices, id: \.self) { index in
                             HStack(spacing: 20) {
                                 Image("check-circle")
                                     .resizable()
                                     .frame(width: 24, height: 24)
                                 VStack(alignment: .leading) {
-                                    Text("\(currentTodoList[index].content)")
+                                    Text("\(calendarVM.todoList[row][index].content)")
                                         .font(.pretendard(size: 14, weight: .bold))
                                     HStack(spacing: 8) {
-                                        ForEach(currentTodoList[index].tags.prefix(5)) { tag in
+                                        ForEach(calendarVM.todoList[row][index].tags.prefix(5)) { tag in
                                             Text("\(tag.content)")
                                                 .font(.pretendard(size: 10, weight: .regular))
                                         }
@@ -99,7 +104,7 @@ struct CalendarDayDetailView: View {
                                 }
                                 .frame(height: 28, alignment: .leading)
                                 Spacer()
-                                Image(currentTodoList[index].flag ? "star-check" : "star")
+                                Image(calendarVM.todoList[row][index].flag ? "star-check" : "star")
                                     .frame(width: 14, height: 14)
                             }
                         }
@@ -114,7 +119,7 @@ struct CalendarDayDetailView: View {
                     Spacer()
                     
                     HStack {
-                        TextField("\(currentDate.month)월 \(currentDate.day)일 일정 추가", text: $content)
+                        TextField("\(calendarVM.pivotDate.month)월 \(calendarVM.pivotDate.day)일 일정 추가", text: $content)
                             .font(.pretendard(size: 14, weight: .light))
                             .frame(height: 20)
                             .padding(10)

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CalendarWeekView: View {
-    @EnvironmentObject var calendarVM: CalendarViewModel
+    @StateObject var calendarVM: CalendarViewModel
 
     @Binding var isDayModalVisible: Bool
 
@@ -31,7 +31,6 @@ struct CalendarWeekView: View {
                                     }
                             }
                         }
-                        
 
                         VStack(spacing: 2) {
                             Spacer().frame(height: 26)
@@ -50,7 +49,6 @@ struct CalendarWeekView: View {
 
 struct CalendarWeekView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarWeekView(isDayModalVisible: .constant(false), cellHeight: 120, cellWidhth: UIScreen.main.bounds.width / 7)
-            .environmentObject(CalendarViewModel())
+        CalendarWeekView(calendarVM: CalendarViewModel(), isDayModalVisible: .constant(false), cellHeight: 120, cellWidhth: UIScreen.main.bounds.width / 7)
     }
 }

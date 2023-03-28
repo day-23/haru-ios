@@ -9,7 +9,7 @@ import PopupView
 import SwiftUI
 
 struct ScheduleFormView: View {
-    @StateObject var scheduleFormVM: ScheduleFormViewModel
+    @ObservedObject var scheduleFormVM: ScheduleFormViewModel
 
     @Binding var isSchModalVisible: Bool
 
@@ -17,6 +17,11 @@ struct ScheduleFormView: View {
     @State private var showingPopup: Bool = false
 
     @State private var selectedIdx: Int?
+    
+    init(scheduleFormVM: ScheduleFormViewModel, isSchModalVisible: Binding<Bool>? = nil) {
+        self.scheduleFormVM = scheduleFormVM
+        _isSchModalVisible = isSchModalVisible ?? .constant(false)
+    }
 
     var body: some View {
         ScrollView {
