@@ -13,7 +13,7 @@ struct TagView: View {
 
     var body: some View {
         Text(tag.content)
-            .font(.caption)
+            .font(.pretendard(size: 14, weight: .bold))
             .foregroundColor(isSelected ? .white : Color(0x191919))
             .bold()
             .padding(.vertical, 5)

@@ -22,6 +22,35 @@ struct TodoAddView: View {
     var body: some View {
         ScrollView {
             VStack {
+                if viewModel.mode == .add {
+                    HStack(spacing: 0) {
+                        Button {
+                            withAnimation {
+                                isModalVisible = false
+                            }
+                        } label: {
+                            Image("cancel")
+                        }
+                        Spacer()
+                        Button {
+                            viewModel.addTodo { result in
+                                switch result {
+                                case .success:
+                                    withAnimation {
+                                        isModalVisible = false
+                                    }
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
+                            }
+                        } label: {
+                            Image("confirm")
+                        }
+                    }
+                    .padding(.horizontal, 33)
+                    .padding(.bottom, 27)
+                }
+
                 //  Todo, SubTodo 입력 View
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 0) {
@@ -36,8 +65,8 @@ struct TodoAddView: View {
                         }
 
                         TextField("투두 입력", text: $viewModel.todoContent)
-                            .padding(.leading, isModalVisible ? 14 : 12)
                             .font(.pretendard(size: 24, weight: .medium))
+                            .padding(.leading, isModalVisible ? 14 : 12)
 
                         StarButton(isClicked: viewModel.flag)
                             .onTapGesture {
@@ -52,7 +81,7 @@ struct TodoAddView: View {
                         HStack {
                             Image("dot")
                             TextField("", text: $viewModel.subTodoList[index].content)
-                                .font(.system(size: 14, weight: .light))
+                                .font(.pretendard(size: 20, weight: .medium))
                             Button {
                                 viewModel.removeSubTodo(index: index)
                             } label: {
@@ -71,7 +100,7 @@ struct TodoAddView: View {
                     } label: {
                         Label {
                             Text("하위 항목 추가")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.pretendard(size: 20, weight: .medium))
                         } icon: {
                             Image("add-sub-todo")
                                 .frame(width: 28, height: 28)
@@ -101,7 +130,7 @@ struct TodoAddView: View {
                                 }
 
                                 TextField("태그 추가", text: $viewModel.tag)
-                                    .font(.system(size: 14, weight: .medium))
+                                    .font(.pretendard(size: 14, weight: .medium))
                                     .foregroundColor(viewModel.tagList.isEmpty ? Color(0xACACAC) : .black)
                                     .onChange(
                                         of: viewModel.tag,
@@ -122,7 +151,6 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.tagList.isEmpty ? Color(0xACACAC) : .black)
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     Divider()
                 }
@@ -132,7 +160,7 @@ struct TodoAddView: View {
                     Label {
                         Toggle(isOn: $viewModel.isTodayTodo.animation()) {
                             Text("나의 하루에 추가\(viewModel.isTodayTodo ? "됨" : "")")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.pretendard(size: 14, weight: .medium))
                                 .frame(alignment: .leading)
                                 .foregroundColor(viewModel.isTodayTodo ? Color(0x1DAFFF) : Color(0xACACAC))
                         }
@@ -149,7 +177,6 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.isTodayTodo ? Color(0x1DAFFF) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     Divider()
                 }
@@ -159,8 +186,8 @@ struct TodoAddView: View {
                     Label {
                         Toggle(isOn: $viewModel.isSelectedEndDate.animation()) {
                             HStack {
-                                Text("마감 설정")
-                                    .font(.system(size: 14, weight: .medium))
+                                Text(viewModel.isSelectedRepeat ? "반복일" : "마감 설정")
+                                    .font(.pretendard(size: 14, weight: .medium))
                                     .frame(alignment: .leading)
                                     .foregroundColor(viewModel.isSelectedEndDate ? Color(0x191919) : Color(0xACACAC))
 
@@ -191,14 +218,13 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.isSelectedEndDate ? Color(0x191919) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     if viewModel.isSelectedEndDate {
                         Label {
                             Toggle(isOn: $viewModel.isSelectedEndDateTime.animation()) {
                                 HStack {
-                                    Text("마감 시간 설정")
-                                        .font(.system(size: 14, weight: .medium))
+                                    Text(viewModel.isSelectedRepeat ? "시간 설정" : "마감 시간 설정")
+                                        .font(.pretendard(size: 14, weight: .medium))
                                         .frame(alignment: .leading)
                                         .foregroundColor(viewModel.isSelectedEndDateTime ? Color(0x191919) : Color(0xACACAC))
 
@@ -230,7 +256,6 @@ struct TodoAddView: View {
                                 .hidden()
                         }
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
                     }
 
                     Divider()
@@ -242,7 +267,7 @@ struct TodoAddView: View {
                         Toggle(isOn: $viewModel.isSelectedAlarm.animation()) {
                             HStack {
                                 Text("알림\(viewModel.isSelectedAlarm ? "" : " 설정")")
-                                    .font(.system(size: 14, weight: .medium))
+                                    .font(.pretendard(size: 14, weight: .medium))
                                     .frame(alignment: .leading)
                                     .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
 
@@ -263,13 +288,12 @@ struct TodoAddView: View {
                             endPoint: .trailing
                         ))
                     } icon: {
-                        Image("bell")
+                        Image("alarm")
                             .renderingMode(.template)
                             .padding(.trailing, 10)
                             .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     Divider()
                 }
@@ -280,7 +304,7 @@ struct TodoAddView: View {
                         Toggle(isOn: $viewModel.isSelectedRepeat.animation()) {
                             HStack {
                                 Text("반복\(viewModel.isSelectedRepeat ? "" : " 설정")")
-                                    .font(.system(size: 14, weight: .medium))
+                                    .font(.pretendard(size: 14, weight: .medium))
                                     .frame(alignment: .leading)
                                     .foregroundColor(viewModel.isSelectedRepeat ? Color(0x191919) : Color(0xACACAC))
                             }
@@ -300,17 +324,16 @@ struct TodoAddView: View {
                             .foregroundColor(viewModel.isSelectedRepeat ? Color(0x191919) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     if viewModel.isSelectedRepeat {
                         Picker("", selection: $viewModel.repeatOption.animation()) {
                             ForEach(RepeatOption.allCases, id: \.self) {
                                 Text($0.rawValue)
+                                    .font(.pretendard(size: 14, weight: .medium))
                             }
                         }
                         .pickerStyle(.segmented)
                         .padding(.horizontal, 55)
-                        .padding(.vertical, 6)
                     }
 
                     if viewModel.isSelectedRepeat {
@@ -323,7 +346,6 @@ struct TodoAddView: View {
                                 }
                             }
                             .padding(.horizontal, 55)
-                            .padding(.vertical, 5)
                         } else if viewModel.repeatOption == .everyMonth {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
                                 ForEach(viewModel.repeatMonth.indices, id: \.self) { index in
@@ -333,7 +355,6 @@ struct TodoAddView: View {
                                 }
                             }
                             .padding(.horizontal, 55)
-                            .padding(.vertical, 5)
                         } else if viewModel.repeatOption == .everySecondWeek ||
                             viewModel.repeatOption == .everyWeek
                         {
@@ -345,14 +366,13 @@ struct TodoAddView: View {
                                 }
                             }
                             .padding(.horizontal, 55)
-                            .padding(.vertical, 5)
                         }
 
                         Label {
                             Toggle(isOn: $viewModel.isSelectedRepeatEnd.animation()) {
                                 HStack {
                                     Text("반복 종료일")
-                                        .font(.system(size: 14, weight: .medium))
+                                        .font(.pretendard(size: 14, weight: .medium))
                                         .frame(alignment: .leading)
                                         .foregroundColor(viewModel.isSelectedRepeatEnd ? Color(0x191919) : Color(0xACACAC))
                                     Spacer()
@@ -363,8 +383,8 @@ struct TodoAddView: View {
                                             displayedComponents: [.date]
                                         ) {}
                                             .labelsHidden()
-                                            .padding(.vertical, -5)
                                             .scaleEffect(0.75)
+                                            .padding(.vertical, -5)
                                     }
                                 }
                             }
@@ -381,7 +401,6 @@ struct TodoAddView: View {
                                 .hidden()
                         }
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
                     }
 
                     Divider()
@@ -392,7 +411,7 @@ struct TodoAddView: View {
                     Label {
                         HStack {
                             Text("메모\(viewModel.memo.isEmpty ? " 추가" : "")")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.pretendard(size: 14, weight: .medium))
                                 .frame(alignment: .leading)
                                 .foregroundColor(!viewModel.memo.isEmpty ? Color(0x191919) : Color(0xACACAC))
 
@@ -412,28 +431,22 @@ struct TodoAddView: View {
                             .foregroundColor(!viewModel.memo.isEmpty ? Color(0x191919) : Color(0xACACAC))
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
 
                     TextField("메모를 작성해주세요.",
                               text: $viewModel.memo,
                               axis: .vertical)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.pretendard(size: 14, weight: .medium))
                         .padding(.leading, 45)
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
 
                     Divider()
                 }
 
                 Spacer()
 
-                HStack(spacing: 0) {
-                    Button {
-                        if isModalVisible {
-                            withAnimation {
-                                isModalVisible = false
-                            }
-                        } else {
+                if viewModel.mode == .edit {
+                    HStack(spacing: 0) {
+                        Button {
                             viewModel.deleteTodo { result in
                                 switch result {
                                 case .success:
@@ -442,30 +455,17 @@ struct TodoAddView: View {
                                     print("[Debug] \(failure) (\(#fileID), \(#function))")
                                 }
                             }
+                        } label: {
+                            Text("삭제")
+                                .font(.pretendard(size: 20, weight: .medium))
+                                .frame(width: 74, height: 24)
+                                .foregroundColor(.black)
+                                .font(.system(size: 20, weight: .medium))
                         }
-                    } label: {
-                        Text("\(viewModel.mode == .add ? "취소" : "삭제")")
-                            .frame(width: 74, height: 24)
-                            .foregroundColor(.black)
-                            .font(.system(size: 20, weight: .medium))
-                    }
-                    .padding(.leading, 61)
-                    .padding(.trailing, 120)
+                        .padding(.leading, 61)
+                        .padding(.trailing, 120)
 
-                    Button {
-                        switch viewModel.mode {
-                        case .add:
-                            viewModel.addTodo { result in
-                                switch result {
-                                case .success:
-                                    withAnimation {
-                                        isModalVisible = false
-                                    }
-                                case let .failure(failure):
-                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
-                                }
-                            }
-                        case .edit:
+                        Button {
                             viewModel.updateTodo { result in
                                 switch result {
                                 case .success:
@@ -476,17 +476,17 @@ struct TodoAddView: View {
                                     print("[Debug] \(failure) (\(#fileID), \(#function))")
                                 }
                             }
+                        } label: {
+                            Text("저장")
+                                .frame(width: 74, height: 24)
+                                .font(.pretendard(size: 20, weight: .medium))
+                                .foregroundColor(Color(0x1DAFFF))
+                                .disabled(viewModel.isFieldEmpty)
                         }
-                    } label: {
-                        Text("\(viewModel.mode == .add ? "추가" : "저장")")
-                            .frame(width: 74, height: 24)
-                            .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(Color(0x1DAFFF))
-                            .disabled(viewModel.isFieldEmpty)
+                        .padding(.trailing, 61)
                     }
-                    .padding(.trailing, 61)
+                    .padding(.vertical, 20)
                 }
-                .padding(.vertical, 20)
             }
             .onAppear {
                 UIDatePicker.appearance().minuteInterval = 5

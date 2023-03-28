@@ -24,8 +24,8 @@ struct Modal<Content>: View where Content: View {
             ZStack {
                 if isActive {
                     VStack {
-                        RoundedRectangle(cornerRadius: 50)
-                            .frame(width: 50, height: 7)
+                        RoundedRectangle(cornerRadius: 40)
+                            .frame(width: 82, height: 6)
                             .padding()
                             .foregroundColor(Color(0x33333F))
                         content()

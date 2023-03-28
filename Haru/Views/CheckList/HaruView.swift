@@ -36,8 +36,13 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    StarButton(isClicked: true)
-                        .padding(.leading, 29)
+                    HStack(spacing: 0) {
+                        StarButton(isClicked: true)
+                        Text("중요")
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .padding(.leading, 6)
+                    }
+                    .padding(.leading, 29)
                 }
 
                 Divider()
@@ -50,8 +55,11 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    TagView(tag: Tag(id: "오늘 할 일", content: "오늘 할 일"))
-                        .padding(.leading, 21)
+                    TagView(
+                        tag: Tag(id: "오늘 할 일", content: "오늘 할 일"),
+                        isSelected: true
+                    )
+                    .padding(.leading, 21)
                 }
 
                 Divider()
@@ -64,8 +72,11 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    TagView(tag: Tag(id: "오늘까지", content: "오늘까지"))
-                        .padding(.leading, 21)
+                    TagView(
+                        tag: Tag(id: "오늘까지", content: "오늘까지"),
+                        isSelected: true
+                    )
+                    .padding(.leading, 21)
                 }
             } offsetChanged: { _ in }
         }
@@ -85,6 +96,6 @@ struct HaruView: View {
                 }
             }
         }
-//        .toolbarBackground(.hidden)
+        .toolbarBackground(Color(0xD9EAFD))
     }
 }

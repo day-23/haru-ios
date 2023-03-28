@@ -14,12 +14,21 @@ struct TodoView: View {
     var backgroundColor: Color = .white
 
     private var tagString: String {
+        if todo.tags.isEmpty {
+            return ""
+        }
+
         var res = ""
         for (i, tag) in zip(todo.tags.indices, todo.tags) {
-            if tag.content.count + res.count <= 10 {
-                res = "\(res) \(tag.content)"
+            if tag.content.count + res.count <= 8 {
+                if res.isEmpty {
+                    res = "\(tag.content)"
+                } else {
+                    res = "\(res) \(tag.content)"
+                }
             } else {
                 res = "\(res)  +\(todo.tags.count - i)"
+                break
             }
         }
         res = "\(res)  "
@@ -28,13 +37,25 @@ struct TodoView: View {
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 까지"
+        formatter.dateFormat = "M월 d일까지"
         return formatter
     }()
 
     let formatterWithTime: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 HH:mm 까지"
+        formatter.dateFormat = "M월 d일 HH:mm까지"
+        return formatter
+    }()
+
+    let formatterWithRepeat: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일"
+        return formatter
+    }()
+
+    let formatterWithTimeAndRepeat: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일 HH:mm"
         return formatter
     }()
 
@@ -45,8 +66,10 @@ struct TodoView: View {
                     checkListViewModel.toggleShowingSubtodo(todoId: todo.id)
                 } label: {
                     Image("toggle")
+                        .renderingMode(.template)
                         .frame(width: 20, height: 20)
                         .rotationEffect(Angle(degrees: todo.isShowingSubTodo ? 90 : 0))
+                        .foregroundColor(Color(0x646464, opacity: todo.completed ? 0.5 : 1))
                 }
             }
 
@@ -139,8 +162,8 @@ struct TodoView: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(todo.content)
+                    .font(.pretendard(size: 16, weight: .bold))
                     .strikethrough(todo.completed)
-                    .font(.system(size: 14, weight: .bold))
                     .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
 
                 if todo.tags.count > 0 ||
@@ -153,13 +176,23 @@ struct TodoView: View {
                     !todo.memo.isEmpty
                 {
                     HStack(spacing: 0) {
-                        Text(tagString)
+                        if !tagString.isEmpty {
+                            Text(tagString)
+                        }
 
                         if let todoDate = todo.endDate {
                             if let todoDateTime = todo.endDateTime {
-                                Text(formatterWithTime.string(from: todoDateTime))
+                                if todo.repeatOption == nil {
+                                    Text(formatterWithTime.string(from: todoDateTime))
+                                } else {
+                                    Text(formatterWithTimeAndRepeat.string(from: todoDateTime))
+                                }
                             } else {
-                                Text(formatter.string(from: todoDate))
+                                if todo.repeatOption == nil {
+                                    Text(formatter.string(from: todoDate))
+                                } else {
+                                    Text(formatterWithRepeat.string(from: todoDate))
+                                }
                             }
                         }
 
@@ -173,27 +206,32 @@ struct TodoView: View {
                                 !todo.memo.isEmpty)
                         {
                             Image("dot-small")
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
                         }
 
                         if todo.todayTodo {
                             Image("today-todo-small")
+                                .renderingMode(.template)
                         }
 
                         if todo.alarms.count > 0 {
                             Image("alarm-small")
+                                .renderingMode(.template)
                         }
 
                         if todo.repeatValue != nil || todo.repeatOption != nil {
                             Image("repeat-small")
+                                .renderingMode(.template)
                         }
 
                         if !todo.memo.isEmpty {
                             Image("memo-small")
+                                .renderingMode(.template)
                         }
                     }
-                    .padding(.leading, -4)
-                    .font(.system(size: 10, weight: .regular))
-                    .foregroundColor(Color(0x000000, opacity: 0.5))
+                    .font(.pretendard(size: 12, weight: .regular))
+                    .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
                 }
             }
 
@@ -204,7 +242,7 @@ struct TodoView: View {
                     checkListViewModel.updateFlag(todo: todo) { _ in }
                 }
         }
-        .frame(maxWidth: .infinity, minHeight: 36)
+        .frame(maxWidth: .infinity, minHeight: 48)
         .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
         .padding(.trailing, 20)
         .background(backgroundColor)
