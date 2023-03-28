@@ -80,8 +80,11 @@ final class CalendarViewModel: ObservableObject {
         productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
         viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: 4), count: numberOfWeeks)
         
+        guard let startDate = Calendar.current.date(byAdding: .day, value: -1, to: dateList[0].date) else { return }
+        guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
+        
         Task {
-            let result = await calendarService.fetchScheduleAndTodo(dateList[0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList.last!.date)!)
+            let result = await calendarService.fetchScheduleAndTodo(startDate, endDate)
             DispatchQueue.main.async {
                 (self.productivityList, self.viewProductivityList) = self.fittingCalendar(dateList: dateList, scheduleList: result.0, todoList: result.1)
             }
@@ -190,6 +193,7 @@ final class CalendarViewModel: ObservableObject {
     }
     
     // MARK: - 캘린더 옵션에서 설정 가능한 카테고리 기능
+
     // 카테고리 업데이트 (전체)
     func setAllCategoryList() {
         // TODO: 카테고리 수정시에 fittingSchedule 함수 호출하기 (코드가 꼬일 문제 있음)
@@ -218,7 +222,7 @@ final class CalendarViewModel: ObservableObject {
     func addCategory(_ content: String, _ color: String?) {
         let category = Request.Category(content: content, color: color != nil ? "#" + color! : nil)
         
-        self.categoryList.append(Category(id: UUID().uuidString, content: content, color: color, isSelected: true))
+        categoryList.append(Category(id: UUID().uuidString, content: content, color: color, isSelected: true))
         let index = categoryList.endIndex - 1
         
         categoryService.addCategory(category) { result in
@@ -378,7 +382,7 @@ final class CalendarViewModel: ObservableObject {
         var splitDateList = [[Date]]() // row: 주차, col: row주차에 있는 날짜들
 
         for row in 0 ..< numberOfWeeks {
-            splitDateList.append([dateList[row * 7 + 0].date, dateList[row * 7 + 6].date])
+            splitDateList.append([dateList[row * 7 + 0].date, Calendar.current.date(byAdding: .day, value: 1, to: dateList[row * 7 + 6].date) ?? dateList[row * 7 + 6].date])
         }
 
         for schedule in scheduleList {

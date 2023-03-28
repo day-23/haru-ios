@@ -67,7 +67,7 @@ struct CalendarDayDetailView: View {
                                     VStack(alignment: .leading) {
                                         Text("\(calendarVM.scheduleList[row][index].content)")
                                             .font(.pretendard(size: 14, weight: .bold))
-                                        Text(!calendarVM.scheduleList[row][index].timeOption ? "하루 종일" : "\(calendarVM.scheduleList[row][index].repeatStart.getDateFormatString("a hh:mm")) - \(calendarVM.scheduleList[row][index].repeatEnd.getDateFormatString("a hh:mm"))")
+                                        Text(calendarVM.scheduleList[row][index].timeOption ? "하루 종일" : "\(calendarVM.scheduleList[row][index].repeatStart.getDateFormatString("a hh:mm")) - \(calendarVM.scheduleList[row][index].repeatEnd.getDateFormatString("a hh:mm"))")
                                             .font(.pretendard(size: 10, weight: .regular))
                                     }
                                     Spacer()
@@ -129,7 +129,7 @@ struct CalendarDayDetailView: View {
                             .cornerRadius(8)
                         
                         Button {
-                            print("hello")
+                            scheduleVM.addEasySchedule(content: content, repeatStart: calendarVM.pivotDate, repeatEnd: calendarVM.pivotDate)
                         } label: {
                             Image("plus-button")
                                 .resizable()

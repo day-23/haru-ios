@@ -23,9 +23,6 @@ struct CalendarDayView: View {
             CalendarDayDetailView(calendarVM: calendarViewModel, scheduleVM: scheduleFormVM, row: index)
                 .frame(width: 330, height: 480)
                 .cornerRadius(20)
-                .onAppear {
-                    print("\(index)")
-                }
         }
         .itemAspectRatio(0.8)
         .itemSpacing(30)
@@ -56,6 +53,7 @@ struct CalendarDayView: View {
             }
 
             prevPageIndex = self.page.index
+            print("\(prevPageIndex)")
         }
         .frame(height: 480, alignment: .center)
     }

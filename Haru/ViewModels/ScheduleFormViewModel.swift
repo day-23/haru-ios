@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 
 final class ScheduleFormViewModel: ObservableObject {
+//    @Published var prevPageIndex: Int
+    
     // TODO: 반복 설정, 하루종일 설정
     
     @Published var repeatStart: Date
@@ -114,6 +116,25 @@ final class ScheduleFormViewModel: ObservableObject {
     }
     
     /**
+     * 일정 간편 추가하기
+     */
+    func addEasySchedule(content: String, repeatStart: Date, repeatEnd: Date) {
+        let schedule = Request.Schedule(content: content, memo: "", categoryId: nil, alarms: [], flag: false, repeatStart: repeatStart, repeatEnd: repeatEnd, timeOption: true)
+        
+        scheduleService.addSchedule(schedule) { result in
+            switch result {
+            case .success:
+                // FIXME: getCurMonthSchList를 호출할 필요가 있나?
+                print("success")
+                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                self.calendarVM.getSelectedScheduleList()
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    /**
      * 일정 수정하기
      */
     func updateSchedule() {
@@ -121,7 +142,8 @@ final class ScheduleFormViewModel: ObservableObject {
         
         scheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
             switch result {
-            case .success(let success):
+            case .success:
+                // FIXME: getCurMonthSchList를 호출할 필요가 있나?
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
                 self.calendarVM.getSelectedScheduleList()
             case .failure(let failure):
@@ -136,7 +158,7 @@ final class ScheduleFormViewModel: ObservableObject {
     func deleteSchedule() {
         scheduleService.deleteSchedule(scheduleId: scheduleId) { result in
             switch result {
-            case .success(let success):
+            case .success:
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
                 self.calendarVM.getSelectedScheduleList()
             case .failure(let failure):
