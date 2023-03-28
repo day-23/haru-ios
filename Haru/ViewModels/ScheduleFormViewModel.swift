@@ -22,9 +22,11 @@ final class ScheduleFormViewModel: ObservableObject {
     @Published var isSelectedAlarm: Bool = false
     @Published var alarmOptions: [AlarmOption] = [.start]
     @Published var repeatOption: Bool = false
-    @Published var memoOption: Bool = false
     
     @Published var selectionCategory: Int? // 선택한 카테고리의 인덱스 번호
+    
+    var scheduleId: String?
+    var mode: ScheduleFormMode
     
     var selectedAlarm: [Date] {
         var result = [Date]()
@@ -45,22 +47,53 @@ final class ScheduleFormViewModel: ObservableObject {
         return result
     }
     
+    var memoOption: Bool {
+        !memo.isEmpty
+    }
+    
     var categoryList: [Category] {
         calendarVM.categoryList
     }
     
+    // MARK: - DI
+
     private var calendarVM: CalendarViewModel
     private var scheduleService: ScheduleService = .init()
     private var categoryService: CategoryService = .init()
 
-    init(calendarVM: CalendarViewModel) {
+    // MARK: init
+
+    init(calendarVM: CalendarViewModel, mode: ScheduleFormMode = .add) {
         self.calendarVM = calendarVM
         let selectionList = calendarVM.selectionSet.sorted(by: <)
         
         self.repeatStart = selectionList.first?.date ?? Date()
         self.repeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
+        self.mode = mode
         print("scheduleVM init")
+    }
+    
+    // 일정을 수정할 때 호출하는 함수
+    func initScheduleData(schedule: Schedule) {
+        scheduleId = schedule.id
+        
+        repeatStart = schedule.repeatStart
+        repeatEnd = schedule.repeatEnd
+        
+        content = schedule.content
+        memo = schedule.memo
+        
+        timeOption = !schedule.timeOption
+        isSelectedAlarm = !schedule.alarms.isEmpty
+        
+        if let category = schedule.category {
+            selectionCategory = categoryList.firstIndex(where: { other in
+                category.id == other.id
+            })
+        } else {
+            selectionCategory = nil
+        }
     }
     
     /**
@@ -81,18 +114,16 @@ final class ScheduleFormViewModel: ObservableObject {
     }
     
     /**
-     * 카테고리 추가하기
+     * 일정 수정하기
      */
-    func addCategory(_ content: String, _ color: String?) {
-        let category = Request.Category(content: content, color: color != nil ? "#" + color! : nil)
+    func updateSchedule() {
+        let schedule = Request.Schedule(content: content, memo: memo, categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil, alarms: selectedAlarm, flag: false, repeatStart: repeatStart, repeatEnd: repeatEnd, timeOption: timeOption)
         
-        calendarVM.categoryList.append(Category(id: UUID().uuidString, content: content, color: color, isSelected: true))
-        let index = categoryList.endIndex - 1
-        
-        categoryService.addCategory(category) { result in
+        scheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
             switch result {
             case .success(let success):
-                self.calendarVM.categoryList[index] = success
+                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                self.calendarVM.getSelectedScheduleList()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }

@@ -14,14 +14,18 @@ struct CalendarDayView: View {
     @State var data = Array(0 ... 30)
 
     @StateObject var calendarViewModel: CalendarViewModel
+    @StateObject var scheduleFormVM: ScheduleFormViewModel
 
     @State var prevPageIndex: Int = 15
 
     var body: some View {
         Pager(page: page, data: self.data.indices, id: \.self) { index in
-            CalendarDayDetailView(calendarVM: calendarViewModel, row: index)
+            CalendarDayDetailView(calendarVM: calendarViewModel, scheduleVM: scheduleFormVM, row: index)
                 .frame(width: 330, height: 480)
                 .cornerRadius(20)
+                .onAppear {
+                    print("\(index)")
+                }
         }
         .itemAspectRatio(0.8)
         .itemSpacing(30)
@@ -59,6 +63,6 @@ struct CalendarDayView: View {
 
 struct CalendarDayView_Previews: PreviewProvider {
     static var previews: some View {
-        CalendarDayView(calendarViewModel: CalendarViewModel())
+        CalendarDayView(calendarViewModel: CalendarViewModel(), scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()))
     }
 }

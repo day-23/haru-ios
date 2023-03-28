@@ -10,12 +10,9 @@ import SwiftUI
 struct CalendarDayDetailView: View {
     @State private var content: String = ""
     
-    var calendarVM: CalendarViewModel
+    @StateObject var calendarVM: CalendarViewModel
+    @StateObject var scheduleVM: ScheduleFormViewModel
     var row: Int
-    
-//    @Binding var currentScheduleList: [Schedule]
-//    @Binding var currentTodoList: [Todo]
-//    @Binding var currentDate: Date
     
     var body: some View {
         VStack {
@@ -57,7 +54,11 @@ struct CalendarDayDetailView: View {
                         
                         ForEach(calendarVM.scheduleList[row].indices, id: \.self) { index in
                             NavigationLink {
-                                ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM))
+                                ScheduleFormView(scheduleFormVM: scheduleVM, isSchModalVisible: .constant(false), selectedIndex: row)
+                                    .onAppear {
+                                        scheduleVM.mode = .edit
+                                        scheduleVM.initScheduleData(schedule: calendarVM.scheduleList[row][index])
+                                    }
                             } label: {
                                 HStack(spacing: 20) {
                                     Circle()

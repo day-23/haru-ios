@@ -160,7 +160,7 @@ struct CalendarDateView: View {
 
                 Modal(isActive: $isSchModalVisible, ratio: 0.9) {
                     ScheduleFormView(
-                        scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM), isSchModalVisible: $isSchModalVisible
+                        scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM), isSchModalVisible: $isSchModalVisible, selectedIndex: -1
                     )
                 }
                 .zIndex(2)
@@ -174,7 +174,7 @@ struct CalendarDateView: View {
                     .onTapGesture {
                         isDayModalVisible = false
                     }
-                CalendarDayView(calendarViewModel: calendarVM)
+                CalendarDayView(calendarViewModel: calendarVM, scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM))
                     .zIndex(2)
             }
         } // ZStack

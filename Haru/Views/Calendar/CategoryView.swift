@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CategoryView: View {
-    @EnvironmentObject var scheduleFormVM: ScheduleFormViewModel
+    @ObservedObject var scheduleFormVM: ScheduleFormViewModel
 
     @Binding var selectedIdx: Int?
 
@@ -57,16 +57,3 @@ struct CategoryView: View {
         }
     }
 }
-
-// struct CategoryView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CategoryView(
-//            categoryList: .constant([
-//                Category(id: UUID().uuidString, content: "집"),
-//                Category(id: UUID().uuidString, content: "학교"),
-//                Category(id: UUID().uuidString, content: "친구"),
-//            ]),
-//            selectionCategory: .constant(nil)
-//        )
-//    }
-// }

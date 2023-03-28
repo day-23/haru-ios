@@ -144,14 +144,13 @@ final class CalendarViewModel: ObservableObject {
     }
     
     // 선택된 날의 일정과 할일들 가져오기 (선택된 날짜로부터 15일 이전 ~ 15일 이후)
-    func getSelectedScheduleList(_ selectedIndex: Int) {
+    func getSelectedScheduleList() {
         // TODO: currentDate @Published로 만들어주기
         scheduleList = [[Schedule]](repeating: [], count: 31)
         todoList = [[Todo]](repeating: [], count: 31)
-        let currentDate = dateList[selectedIndex].date
         
-        guard let startDate = Calendar.current.date(byAdding: .day, value: -15, to: currentDate) else { return }
-        guard let endDate = Calendar.current.date(byAdding: .day, value: 15, to: currentDate) else { return }
+        guard let startDate = Calendar.current.date(byAdding: .day, value: -15, to: pivotDate) else { return }
+        guard let endDate = Calendar.current.date(byAdding: .day, value: 15, to: pivotDate) else { return }
         
         Task {
             let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
@@ -190,6 +189,7 @@ final class CalendarViewModel: ObservableObject {
         }
     }
     
+    // MARK: - 캘린더 옵션에서 설정 가능한 카테고리 기능
     // 카테고리 업데이트 (전체)
     func setAllCategoryList() {
         // TODO: 카테고리 수정시에 fittingSchedule 함수 호출하기 (코드가 꼬일 문제 있음)
@@ -208,6 +208,25 @@ final class CalendarViewModel: ObservableObject {
                 self.getCurMonthSchList(self.dateList)
             case .failure(let failure):
                 print("[Debug] \(failure) \(#file) \(#fileID) \(#filePath)")
+            }
+        }
+    }
+    
+    /**
+     * 카테고리 추가하기
+     */
+    func addCategory(_ content: String, _ color: String?) {
+        let category = Request.Category(content: content, color: color != nil ? "#" + color! : nil)
+        
+        self.categoryList.append(Category(id: UUID().uuidString, content: content, color: color, isSelected: true))
+        let index = categoryList.endIndex - 1
+        
+        categoryService.addCategory(category) { result in
+            switch result {
+            case .success(let success):
+                self.categoryList[index] = success
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }

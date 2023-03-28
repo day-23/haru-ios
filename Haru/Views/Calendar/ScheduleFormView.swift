@@ -9,7 +9,8 @@ import PopupView
 import SwiftUI
 
 struct ScheduleFormView: View {
-    @ObservedObject var scheduleFormVM: ScheduleFormViewModel
+    @Environment(\.dismiss) var dismissAction
+    @StateObject var scheduleFormVM: ScheduleFormViewModel
 
     @Binding var isSchModalVisible: Bool
 
@@ -18,10 +19,7 @@ struct ScheduleFormView: View {
 
     @State private var selectedIdx: Int?
     
-    init(scheduleFormVM: ScheduleFormViewModel, isSchModalVisible: Binding<Bool>? = nil) {
-        self.scheduleFormVM = scheduleFormVM
-        _isSchModalVisible = isSchModalVisible ?? .constant(false)
-    }
+    var selectedIndex: Int
 
     var body: some View {
         ScrollView {
@@ -50,13 +48,15 @@ struct ScheduleFormView: View {
                                     .font(.pretendard(size: 14, weight: .medium))
                             }
                             .popup(isPresented: $showCategorySheet) {
-                                CategoryView(selectedIdx: $selectedIdx)
-                                    .environmentObject(scheduleFormVM)
+                                CategoryView(scheduleFormVM: scheduleFormVM, selectedIdx: $selectedIdx)
                                     .background(Color.white)
                                     .frame(height: 450)
                                     .cornerRadius(20)
                                     .padding(.horizontal, 30)
                                     .shadow(radius: 2.0)
+                                    .onAppear {
+                                        selectedIdx = self.scheduleFormVM.selectionCategory
+                                    }
                             } customize: {
                                 $0
                                     .animation(.spring())
@@ -81,8 +81,7 @@ struct ScheduleFormView: View {
                                     .font(.pretendard(size: 14, weight: .medium))
                             }
                             .popup(isPresented: $showCategorySheet) {
-                                CategoryView(selectedIdx: $selectedIdx)
-                                    .environmentObject(scheduleFormVM)
+                                CategoryView(scheduleFormVM: scheduleFormVM, selectedIdx: $selectedIdx)
                                     .background(Color.white)
                                     .frame(height: 450)
                                     .cornerRadius(20)
@@ -264,19 +263,30 @@ struct ScheduleFormView: View {
                 Group {
                     HStack {
                         Button {
-                            isSchModalVisible = false
+                            switch scheduleFormVM.mode {
+                            case .add:
+                                isSchModalVisible = false
+                            case .edit:
+                                dismissAction.callAsFunction()
+                            }
                         } label: {
-                            Text("취소")
+                            Text(scheduleFormVM.mode == .add ? "취소" : "삭제")
                                 .font(.pretendard(size: 20, weight: .medium))
                         }
                         .tint(.mainBlack)
                         Spacer()
                         Button {
                             // TODO: 일정의 종료 시간이 일정의 시작 시간보다 빠르면 toast 알림창
-                            scheduleFormVM.addSchedule()
-                            isSchModalVisible = false
+                            switch scheduleFormVM.mode {
+                            case .add:
+                                scheduleFormVM.addSchedule()
+                                isSchModalVisible = false
+                            case .edit:
+                                scheduleFormVM.updateSchedule()
+                                dismissAction.callAsFunction()
+                            }
                         } label: {
-                            Text("추가")
+                            Text(scheduleFormVM.mode == .add ? "추가" : "저장")
                                 .font(.pretendard(size: 20, weight: .medium))
                         }
                         .tint(.gradientStart1)
@@ -288,8 +298,8 @@ struct ScheduleFormView: View {
     }
 }
 
-struct ScheduleFormView_Previews: PreviewProvider {
-    static var previews: some View {
-        ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()), isSchModalVisible: .constant(true))
-    }
-}
+//struct ScheduleFormView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()), isSchModalVisible: .constant(true))
+//    }
+//}

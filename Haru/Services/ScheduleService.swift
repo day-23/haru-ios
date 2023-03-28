@@ -11,6 +11,24 @@ import Foundation
 final class ScheduleService {
     private static let baseURL = Constants.baseURL + "schedule/"
 
+    private static let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        return formatter
+    }()
+
+    private static let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(ScheduleService.formatter)
+        return decoder
+    }()
+
+    private static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+        return encoder
+    }()
+
     /**
      * 현재 선택된 달을 기준으로 이전 달, (선택된) 현재 달, 다음 달의 스케줄 데이터 가져오기
      */
@@ -31,11 +49,6 @@ final class ScheduleService {
             let pagination: Pagination
         }
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.dateFormat
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(formatter)
-
         let paramFormatter = DateFormatter()
         paramFormatter.dateFormat = "yyyyMMdd"
 
@@ -55,7 +68,7 @@ final class ScheduleService {
             encoding: URLEncoding.queryString,
             headers: headers
         )
-        .responseDecodable(of: Response.self, decoder: decoder) { response in
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -82,11 +95,6 @@ final class ScheduleService {
             let pagination: Pagination
         }
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.dateFormat
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(formatter)
-
         let paramFormatter = DateFormatter()
         paramFormatter.dateFormat = "yyyyMMdd"
 
@@ -108,7 +116,7 @@ final class ScheduleService {
                 encoding: URLEncoding.queryString,
                 headers: headers
             )
-            .responseDecodable(of: Response.self, decoder: decoder) { response in
+            .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
                 switch response.result {
                 case let .success(response):
                     continuation.resume(returning: response.data)
@@ -132,22 +140,14 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.dateFormat
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(formatter)
-
         AF.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: schedule,
-            encoder: JSONParameterEncoder(encoder: encoder),
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
             headers: headers
         )
-        .responseDecodable(of: Response.self, decoder: decoder) { response in
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -157,5 +157,27 @@ final class ScheduleService {
         }
     }
 
-    
+    /**
+     * 일정 수정하기
+     */
+    func updateSchedule(scheduleId: String?, schedule: Request.Schedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")",
+            method: .patch,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 }
