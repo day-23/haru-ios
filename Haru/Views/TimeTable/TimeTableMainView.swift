@@ -12,7 +12,7 @@ struct TimeTableCell {
 }
 
 struct TimeTableMainView: View {
-    // MARK: - View properties
+    //  MARK: - View properties
 
     private let column = [GridItem(.fixed(20)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
@@ -53,15 +53,20 @@ struct TimeTableMainView: View {
         return datesOfWeek
     }
 
-    @State private var cellWidth: CGFloat? = nil
+    private let showHourTextWidth = 20
+    private let borderWidth = 1
 
-    // MARK: - ViewModel properties
+    @State private var cellWidth: CGFloat? = nil
+    private var cellHeight: CGFloat = 120
+    private var minuteInterval: Double = 5.0
+
+    //  MARK: - ViewModel properties
 
     @State private var range = (0 ..< 24 * 8)
     @State private var today: Date = .init()
     @State private var cellList: [TimeTableCell] = Array(repeating: TimeTableCell(), count: 24 * 7)
 
-    // MARK: - Dummy Data
+    //  MARK: - Dummy Data
 
     private var scheduleList: [Date] = {
         let now = Date()
@@ -72,7 +77,7 @@ struct TimeTableMainView: View {
 
         var randomDates: [Date] = []
 
-        for _ in 1 ... 10 { // change 10 to the number of dates you want to generate
+        for _ in 1 ... 10 { //  change 10 to the number of dates you want to generate
             let randomTimeInterval = TimeInterval(arc4random_uniform(UInt32(endOfWeek.timeIntervalSince(startOfWeek)))) + startOfWeek.timeIntervalSinceReferenceDate
 
             let randomDate = Date(timeIntervalSinceReferenceDate: randomTimeInterval)
@@ -87,7 +92,7 @@ struct TimeTableMainView: View {
     var body: some View {
         ZStack {
             VStack {
-                // 날짜 레이아웃
+                //  날짜 레이아웃
                 VStack {
                     HStack {
                         Text("\(monthFormatter.string(from: today))월")
@@ -145,7 +150,7 @@ struct TimeTableMainView: View {
                                 Rectangle()
                                     .foregroundColor(.white)
                                     .border(Color(0x000000, opacity: 0.1))
-                                    .frame(height: 100)
+                                    .frame(height: cellHeight)
                                     .background(
                                         GeometryReader(content: { proxy in
                                             Color.clear.onAppear {
@@ -155,22 +160,15 @@ struct TimeTableMainView: View {
                                             }
                                         })
                                     )
-
-                                // Index: index / 8 * 7 + index % 8 - 1
-//                                Group {
-//                                    let cellIndex = index / 8 * 7 + index % 8 - 1
-//                                    ForEach(cellList[cellIndex].scheduleList, id: \.self) { schedule in
-//                                        Text(schedule.description)
-//                                    }
-//                                }
-//                                .font(.system(size: 8))
                             }
                         }
                     }
                     .overlay(content: {
                         if let cellWidth = cellWidth {
                             ForEach(scheduleList, id: \.self) { schedule in
-                                if let scheduleIndex = getScheduleIndex(schedule: schedule) {
+                                if let scheduleIndex = getScheduleIndex(schedule: schedule),
+                                   let position = calcPosition(row: scheduleIndex.row, column: scheduleIndex.column, minuteIndex: scheduleIndex.minuteIndex)
+                                {
                                     ZStack {
                                         Rectangle()
                                             .foregroundColor(Color(0x000000, opacity: 0.5))
@@ -179,10 +177,9 @@ struct TimeTableMainView: View {
                                             .foregroundColor(.white)
                                             .font(.system(size: 8))
                                     }
-                                    .frame(width: cellWidth, height: 100)
-                                    .position(x: CGFloat(scheduleIndex.column) * cellWidth + 28 - (cellWidth * 0.5), y: CGFloat(scheduleIndex.row) * 100 - 50)
+                                    .frame(width: cellWidth, height: cellHeight)
+                                    .position(x: position.x, y: position.y)
                                     .onAppear {
-                                        print(tempFormatter.string(from: schedule), "\t", scheduleIndex)
                                         print(cellWidth)
                                     }
                                 }
@@ -221,12 +218,15 @@ struct TimeTableMainView: View {
 }
 
 extension TimeTableMainView {
-    func getScheduleIndex(schedule: Date) -> (row: Int, column: Int)? {
+    func getScheduleIndex(schedule: Date) -> (row: Int, column: Int, minuteIndex: Int)? {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
 
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "H"
+        let hourFormatter = DateFormatter()
+        hourFormatter.dateFormat = "H"
+
+        let minuteFormatter = DateFormatter()
+        minuteFormatter.dateFormat = "m"
 
         let thisWeekString = thisWeek.map { formatter.string(from: $0) }
 
@@ -234,16 +234,34 @@ extension TimeTableMainView {
 
         for index in thisWeekString.indices {
             if thisWeekString[index] == dateString {
-                let hour = timeFormatter.string(from: schedule)
-                print(hour)
+                let hour = hourFormatter.string(from: schedule)
                 if let hour = Int(hour) {
-                    return (hour + 1, index + 1)
+                    let minute = minuteFormatter.string(from: schedule)
+                    if let minute = Int(minute) {
+                        return (hour + 1, index + 1, minute / 5)
+                    }
                 }
             }
         }
 
-        // 찾지 못했을 때
+        //  찾지 못했을 때
         return nil
+    }
+
+    func calcPosition(row: Int, column: Int, minuteIndex: Int) -> (x: CGFloat, y: CGFloat)? {
+        guard let cellWidth = cellWidth else {
+            return nil
+        }
+
+        var x = CGFloat(column) * cellWidth
+        x += CGFloat(showHourTextWidth) + CGFloat(borderWidth * 8)
+        x -= (cellWidth * 0.5)
+
+        var y = CGFloat(row) * cellHeight
+        y += cellHeight * CGFloat(Double(minuteIndex) * minuteInterval / 60.0)
+        y -= (cellHeight * 0.5)
+
+        return (x: x, y: y)
     }
 }
 
