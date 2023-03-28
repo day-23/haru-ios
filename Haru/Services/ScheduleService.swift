@@ -180,4 +180,21 @@ final class ScheduleService {
             }
         }
     }
+
+    /**
+     * 일정 삭제하기
+     */
+    func deleteSchedule(scheduleId: String?, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")",
+            method: .delete
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 }

@@ -129,4 +129,19 @@ final class ScheduleFormViewModel: ObservableObject {
             }
         }
     }
+    
+    /**
+     * 일정 삭제하기
+     */
+    func deleteSchedule() {
+        scheduleService.deleteSchedule(scheduleId: scheduleId) { result in
+            switch result {
+            case .success(let success):
+                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                self.calendarVM.getSelectedScheduleList()
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
 }

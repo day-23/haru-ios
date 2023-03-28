@@ -267,6 +267,7 @@ struct ScheduleFormView: View {
                             case .add:
                                 isSchModalVisible = false
                             case .edit:
+                                scheduleFormVM.deleteSchedule()
                                 dismissAction.callAsFunction()
                             }
                         } label: {
@@ -294,12 +295,26 @@ struct ScheduleFormView: View {
                     .padding(.horizontal, 80)
                 }
             } // VStack
+            .padding(.top, 30)
+        }
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            if !isSchModalVisible {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismissAction.callAsFunction()
+                    } label: {
+                        Image("back-button")
+                            .frame(width: 28, height: 28)
+                    }
+                }
+            }
         }
     }
 }
 
-//struct ScheduleFormView_Previews: PreviewProvider {
+// struct ScheduleFormView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()), isSchModalVisible: .constant(true))
 //    }
-//}
+// }
