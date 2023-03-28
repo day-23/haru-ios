@@ -7,8 +7,16 @@
 
 import SwiftUI
 
-struct TimeTableCell {
-    var scheduleList: [Date] = []
+struct DateCell: Identifiable {
+    var id: String
+    var date: Date
+    var weight: Int
+    var order: Int
+}
+
+struct DateList: Identifiable {
+    var id: String
+    var dateList: [DateCell]
 }
 
 struct TimeTableMainView: View {
@@ -64,11 +72,11 @@ struct TimeTableMainView: View {
 
     @State private var range = (0 ..< 24 * 8)
     @State private var today: Date = .init()
-    @State private var cellList: [TimeTableCell] = Array(repeating: TimeTableCell(), count: 24 * 7)
+    @State private var scheduleList: [DateList] = []
 
     //  MARK: - Dummy Data
 
-    private var scheduleList: [Date] = {
+    private var dummyScheduleList: [Date] = {
         let now = Date()
         let calendar = Calendar.current
 
@@ -77,7 +85,7 @@ struct TimeTableMainView: View {
 
         var randomDates: [Date] = []
 
-        for _ in 1 ... 10 { //  change 10 to the number of dates you want to generate
+        for _ in 1 ... 75 { //  change 10 to the number of dates you want to generate
             let randomTimeInterval = TimeInterval(arc4random_uniform(UInt32(endOfWeek.timeIntervalSince(startOfWeek)))) + startOfWeek.timeIntervalSinceReferenceDate
 
             let randomDate = Date(timeIntervalSinceReferenceDate: randomTimeInterval)
@@ -85,7 +93,6 @@ struct TimeTableMainView: View {
             randomDates.append(randomDate)
         }
 
-        print(randomDates)
         return randomDates
     }()
 
@@ -164,23 +171,25 @@ struct TimeTableMainView: View {
                         }
                     }
                     .overlay(content: {
-                        if let cellWidth = cellWidth {
-                            ForEach(scheduleList, id: \.self) { schedule in
-                                if let scheduleIndex = getScheduleIndex(schedule: schedule),
-                                   let position = calcPosition(row: scheduleIndex.row, column: scheduleIndex.column, minuteIndex: scheduleIndex.minuteIndex)
-                                {
-                                    ZStack {
-                                        Rectangle()
-                                            .foregroundColor(Color(0x000000, opacity: 0.5))
+                        if cellWidth != nil {
+                            ForEach(scheduleList) { dateList in
+                                ForEach(dateList.dateList) { schedule in
+                                    if let scheduleIndex = getScheduleIndex(schedule: schedule.date),
+                                       let position = calcPosition(row: scheduleIndex.row, column: scheduleIndex.column,
+                                                                   minuteIndex: scheduleIndex.minuteIndex, weight: schedule.weight,
+                                                                   order: schedule.order),
+                                       let frame = calcFrame(weight: schedule.weight)
+                                    {
+                                        ZStack {
+                                            Rectangle()
+                                                .foregroundColor(Color(0x000000, opacity: 0.5))
 
-                                        Text("\(tempFormatter.string(from: schedule))")
-                                            .foregroundColor(.white)
-                                            .font(.system(size: 8))
-                                    }
-                                    .frame(width: cellWidth, height: cellHeight)
-                                    .position(x: position.x, y: position.y)
-                                    .onAppear {
-                                        print(cellWidth)
+                                            Text("\(tempFormatter.string(from: schedule.date))")
+                                                .foregroundColor(.white)
+                                                .font(.system(size: 8))
+                                        }
+                                        .frame(width: frame.width, height: frame.height)
+                                        .position(x: position.x, y: position.y)
                                     }
                                 }
                             }
@@ -191,25 +200,77 @@ struct TimeTableMainView: View {
             .padding(.trailing)
         }
         .onAppear {
+            scheduleList = []
+
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
 
-            let timeFormatter = DateFormatter()
-            timeFormatter.dateFormat = "H"
-
             let thisWeekString = thisWeek.map { formatter.string(from: $0) }
-            for schedule in scheduleList {
-                let dateString = formatter.string(from: schedule)
 
-                for index in thisWeekString.indices {
-                    if thisWeekString[index] == dateString {
-                        let hour = timeFormatter.string(from: schedule)
-                        if let hour = Int(hour) {
-                            cellList[hour * 7 + index].scheduleList.append(schedule)
-                            if hour + 1 < 24 {
-                                cellList[(hour + 1) * 7 + index].scheduleList.append(schedule)
+            for weekString in thisWeekString {
+                scheduleList.append(DateList(id: weekString, dateList: []))
+            }
+
+            for schedule in dummyScheduleList {
+                if let scheduleIndex = getScheduleIndex(schedule: schedule) {
+                    scheduleList[scheduleIndex.column - 1].dateList.append(
+                        DateCell(id: UUID().uuidString, date: schedule, weight: 1, order: 1)
+                    )
+                }
+            }
+
+            let timeFormatter = DateFormatter()
+            timeFormatter.dateFormat = "HHmmss"
+
+            let hourFormatter = DateFormatter()
+            hourFormatter.dateFormat = "HH"
+
+            let minuteFormatter = DateFormatter()
+            minuteFormatter.dateFormat = "mm"
+
+            for i in scheduleList.indices {
+                scheduleList[i].dateList.sort { first, second in
+                    timeFormatter.string(from: first.date) < timeFormatter.string(from: second.date)
+                }
+
+                var parent: [Int] = []
+                for index in scheduleList[i].dateList.indices { parent.append(index) }
+
+                for j in scheduleList[i].dateList.indices {
+                    for k in j + 1 ..< scheduleList[i].dateList.count {
+                        let date1 = scheduleList[i].dateList[j].date.addingTimeInterval(TimeInterval(60 * 60))
+                        let date2 = scheduleList[i].dateList[k].date
+
+                        let date1Hour = hourFormatter.string(from: date1)
+                        let date2Hour = hourFormatter.string(from: date2)
+
+                        if date1Hour < date2Hour {
+                            break
+                        }
+
+                        if date1Hour == date2Hour {
+                            let date1Minute = minuteFormatter.string(from: date1)
+                            let date2Minute = minuteFormatter.string(from: date2)
+
+                            if date1Minute <= date2Minute {
+                                break
                             }
                         }
+
+                        unionMerge(parent: &parent, x: j, y: k)
+                    }
+                }
+
+                var set: [[Int]] = Array(repeating: [], count: scheduleList[i].dateList.count)
+                for j in scheduleList[i].dateList.indices {
+                    parent[j] = unionFind(parent: &parent, x: j)
+                    set[parent[j]].append(j)
+                }
+
+                for j in set.indices {
+                    for (order, index) in zip(set[j].indices, set[j]) {
+                        scheduleList[i].dateList[index].weight = set[j].count
+                        scheduleList[i].dateList[index].order = order + 1
                     }
                 }
             }
@@ -217,7 +278,7 @@ struct TimeTableMainView: View {
     }
 }
 
-extension TimeTableMainView {
+private extension TimeTableMainView {
     func getScheduleIndex(schedule: Date) -> (row: Int, column: Int, minuteIndex: Int)? {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -248,25 +309,62 @@ extension TimeTableMainView {
         return nil
     }
 
-    func calcPosition(row: Int, column: Int, minuteIndex: Int) -> (x: CGFloat, y: CGFloat)? {
+    func calcPosition(row: Int, column: Int, minuteIndex: Int, weight: Int, order: Int) -> (x: CGFloat, y: CGFloat)? {
         guard let cellWidth = cellWidth else {
             return nil
         }
 
+        let width = cellWidth * CGFloat(1.0 / Double(weight))
+
         var x = CGFloat(column) * cellWidth
         x += CGFloat(showHourTextWidth) + CGFloat(borderWidth * 8)
-        x -= (cellWidth * 0.5)
+        x -= width == cellWidth ?
+            width * 0.5 :
+            width * Double(weight) - width * 0.5
+
+        for _ in 1 ..< order {
+            x += width
+        }
 
         var y = CGFloat(row) * cellHeight
         y += cellHeight * CGFloat(Double(minuteIndex) * minuteInterval / 60.0)
-        y -= (cellHeight * 0.5)
+        y -= cellHeight * 0.5
 
         return (x: x, y: y)
     }
-}
 
-struct TimeTableMainView_Previews: PreviewProvider {
-    static var previews: some View {
-        TimeTableMainView()
+    func calcFrame(weight: Int, duration: Int = 60) -> (width: CGFloat, height: CGFloat)? {
+        guard let cellWidth = cellWidth else {
+            return nil
+        }
+
+        let width: CGFloat = cellWidth * CGFloat(1.0 / Double(weight))
+        let height: CGFloat = cellHeight * CGFloat(Double(duration) / minuteInterval * minuteInterval / 60.0)
+
+        return (width: width, height: height)
+    }
+
+    func unionFind(parent: inout [Int], x: Int) -> Int {
+        if parent[x] == x {
+            return x
+        }
+        let alt = unionFind(parent: &parent, x: parent[x])
+        parent[x] = alt
+        return alt
+    }
+
+    func unionMerge(parent: inout [Int], x: Int, y: Int) {
+        let parentX = unionFind(parent: &parent, x: x)
+        let parentY = unionFind(parent: &parent, x: y)
+
+        if parentX == parentY {
+            return
+        }
+
+        if parentX < parentY {
+            parent[x] = y
+        } else {
+            parent[y] = x
+        }
     }
 }
