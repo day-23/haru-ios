@@ -27,11 +27,6 @@ struct TimeTableMainView: View {
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0)]
     private let week = ["일", "월", "화", "수", "목", "금", "토"]
-    private let tempFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd, H:mm"
-        return formatter
-    }()
 
     private let monthFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -180,22 +175,22 @@ struct TimeTableMainView: View {
                                                                    order: schedule.order),
                                        let frame = calcFrame(weight: schedule.weight)
                                     {
-                                        ZStack {
-                                            Rectangle()
-                                                .foregroundColor(Color(0x000000, opacity: 0.5))
-
-                                            Text("\(tempFormatter.string(from: schedule.date))")
-                                                .foregroundColor(.white)
-                                                .font(.system(size: 8))
-                                        }
-                                        .frame(width: frame.width, height: frame.height)
-                                        .position(x: position.x, y: position.y)
+                                        ScheduleItemView(schedule: schedule)
+                                            .frame(width: frame.width, height: frame.height)
+                                            .position(x: position.x, y: position.y)
+                                            .onDrag {
+                                                NSItemProvider(object: schedule.id as NSString)
+                                            } preview: {
+                                                ScheduleItemView(schedule: schedule)
+                                                    .frame(width: frame.width, height: frame.height)
+                                            }
                                     }
                                 }
                             }
                         }
                     })
                 }
+                .onDrop(of: ["schedule"], delegate: CellDropDelegate())
             }
             .padding(.trailing)
         }
@@ -344,7 +339,7 @@ private extension TimeTableMainView {
         return (width: width, height: height)
     }
 
-    func unionFind(parent: inout [Int], x: Int) -> Int {
+    private func unionFind(parent: inout [Int], x: Int) -> Int {
         if parent[x] == x {
             return x
         }
@@ -353,7 +348,7 @@ private extension TimeTableMainView {
         return alt
     }
 
-    func unionMerge(parent: inout [Int], x: Int, y: Int) {
+    private func unionMerge(parent: inout [Int], x: Int, y: Int) {
         let parentX = unionFind(parent: &parent, x: x)
         let parentY = unionFind(parent: &parent, x: y)
 
@@ -365,6 +360,46 @@ private extension TimeTableMainView {
             parent[x] = y
         } else {
             parent[y] = x
+        }
+    }
+}
+
+struct CellDropDelegate: DropDelegate {
+    // Drop entered called
+    func dropEntered(info: DropInfo) {}
+
+    // Drop exited called
+    func dropExited(info: DropInfo) {}
+
+    // Drop has been updated
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        return DropProposal(operation: .move)
+    }
+
+    // This function is executed when the user "drops" their object
+    func performDrop(info: DropInfo) -> Bool {
+        if let item = info.itemProviders(for: ["schedule"]).first {}
+        return true
+    }
+}
+
+struct ScheduleItemView: View {
+    private let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd, H:mm"
+        return formatter
+    }()
+
+    @State var schedule: DateCell
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundColor(Color(0x000000, opacity: 0.5))
+
+            Text("\(formatter.string(from: schedule.date))")
+                .foregroundColor(.white)
+                .font(.system(size: 8))
         }
     }
 }
