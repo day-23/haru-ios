@@ -63,7 +63,7 @@ final class TimeTableViewModel: ObservableObject {
 
             for j in i + 1 ..< scheduleList.count {
                 let date1 = scheduleList[i].data
-                    .repeatStart.addingTimeInterval(TimeInterval(60 * 60))
+                    .repeatEnd
                 let date2 = scheduleList[j].data
                     .repeatStart
 
@@ -85,7 +85,9 @@ final class TimeTableViewModel: ObservableObject {
                     }
                 }
 
+                print(scheduleList[i].data.repeatEnd, scheduleList[j].data.repeatStart)
                 unionMerge(parent: &parent, x: i, y: j)
+                print(parent)
             }
         }
 
@@ -121,9 +123,9 @@ final class TimeTableViewModel: ObservableObject {
         }
 
         if parentX < parentY {
-            parent[x] = y
-        } else {
             parent[y] = x
+        } else {
+            parent[x] = y
         }
     }
 
