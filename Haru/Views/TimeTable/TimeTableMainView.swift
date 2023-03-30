@@ -5,6 +5,10 @@
 //  Created by 최정민 on 2023/03/20.
 //
 
+//  TODO: DateList 분리 및 일도 포함해서 Union Find 진행
+//  TODO: Union Find 함수 분리
+//  TODO: 보여주기 방식 수정 필요, 현재 셀 위에 놓는게 안됨, 빈 셀 위에만 놓을 수 있는 듯한 문제가 있음
+
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -13,11 +17,6 @@ struct DateCell: Identifiable {
     var date: Date
     var weight: Int
     var order: Int
-}
-
-struct DateList: Identifiable {
-    var id: String
-    var dateList: [DateCell]
 }
 
 struct TimeTableMainView: View {
@@ -35,7 +34,7 @@ struct TimeTableMainView: View {
         return formatter
     }()
 
-    private let dateFormatter: DateFormatter = {
+    private let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd"
         return formatter
@@ -61,7 +60,7 @@ struct TimeTableMainView: View {
     private let borderWidth = 1
 
     @State private var cellWidth: CGFloat? = nil
-    private var cellHeight: CGFloat = 120
+    private var cellHeight: CGFloat = 168
     private var minuteInterval: Double = 5.0
 
     @State var dragging: DateCell? = nil
@@ -70,7 +69,7 @@ struct TimeTableMainView: View {
 
     @State private var range = (0 ..< 24 * 8)
     @State private var today: Date = .init()
-    @State private var scheduleList: [DateList] = []
+    @State private var scheduleList: [DateCell] = []
 
     //  MARK: - Dummy Data
 
@@ -83,7 +82,7 @@ struct TimeTableMainView: View {
 
         var randomDates: [Date] = []
 
-        for _ in 1 ... 75 { //  change 10 to the number of dates you want to generate
+        for _ in 1 ... 100 { //  change 10 to the number of dates you want to generate
             let randomTimeInterval = TimeInterval(arc4random_uniform(UInt32(endOfWeek.timeIntervalSince(startOfWeek)))) + startOfWeek.timeIntervalSinceReferenceDate
 
             let randomDate = Date(timeIntervalSinceReferenceDate: randomTimeInterval)
@@ -130,7 +129,7 @@ struct TimeTableMainView: View {
                             Text("")
 
                             ForEach(thisWeek.indices, id: \.self) { index in
-                                Text(dateFormatter.string(from: thisWeek[index]))
+                                Text(dayFormatter.string(from: thisWeek[index]))
                             }
                         }
                     }
@@ -189,25 +188,23 @@ struct TimeTableMainView: View {
                     }
                     .overlay(content: {
                         if cellWidth != nil {
-                            ForEach(scheduleList) { dateList in
-                                ForEach(dateList.dateList) { schedule in
-                                    if let scheduleIndex = getScheduleIndex(schedule: schedule.date),
-                                       let position = calcPosition(row: scheduleIndex.row, column: scheduleIndex.column,
-                                                                   minuteIndex: scheduleIndex.minuteIndex, weight: schedule.weight,
-                                                                   order: schedule.order),
-                                       let frame = calcFrame(weight: schedule.weight)
-                                    {
-                                        ScheduleItemView(schedule: schedule)
-                                            .frame(width: frame.width, height: frame.height)
-                                            .position(x: position.x, y: position.y)
-                                            .onDrag {
-                                                dragging = schedule
-                                                return NSItemProvider(object: schedule.id as NSString)
-                                            } preview: {
-                                                ScheduleItemView(schedule: schedule)
-                                                    .frame(width: frame.width, height: frame.height)
-                                            }
-                                    }
+                            ForEach(scheduleList) { schedule in
+                                if let scheduleIndex = getScheduleIndex(schedule: schedule.date),
+                                   let position = calcPosition(row: scheduleIndex.row, column: scheduleIndex.column,
+                                                               minuteIndex: scheduleIndex.minuteIndex, weight: schedule.weight,
+                                                               order: schedule.order),
+                                   let frame = calcFrame(weight: schedule.weight)
+                                {
+                                    ScheduleItemView(schedule: schedule)
+                                        .frame(width: frame.width, height: frame.height)
+                                        .position(x: position.x, y: position.y)
+                                        .onDrag {
+                                            dragging = schedule
+                                            return NSItemProvider(object: schedule.id as NSString)
+                                        } preview: {
+                                            ScheduleItemView(schedule: schedule)
+                                                .frame(width: frame.width, height: frame.height)
+                                        }
                                 }
                             }
                         }
@@ -291,25 +288,17 @@ private extension TimeTableMainView {
     private func findUnion() {
         scheduleList = []
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-
-        let thisWeekString = thisWeek.map { formatter.string(from: $0) }
-
-        for weekString in thisWeekString {
-            scheduleList.append(DateList(id: weekString, dateList: []))
-        }
-
         for schedule in dummyScheduleList {
-            if let scheduleIndex = getScheduleIndex(schedule: schedule) {
-                scheduleList[scheduleIndex.column - 1].dateList.append(
-                    DateCell(id: UUID().uuidString, date: schedule, weight: 1, order: 1)
-                )
-            }
+            scheduleList.append(
+                DateCell(id: UUID().uuidString, date: schedule, weight: 1, order: 1)
+            )
         }
 
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "HHmmss"
+        let dateTimeFormatter = DateFormatter()
+        dateTimeFormatter.dateFormat = "yyyyMMddHHmmss"
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
 
         let hourFormatter = DateFormatter()
         hourFormatter.dateFormat = "HH"
@@ -317,50 +306,50 @@ private extension TimeTableMainView {
         let minuteFormatter = DateFormatter()
         minuteFormatter.dateFormat = "mm"
 
+        var parent: [Int] = []
+        for index in scheduleList.indices { parent.append(index) }
+
+        scheduleList.sort { lvalue, rvalue in
+            dateTimeFormatter.string(from: lvalue.date) < dateTimeFormatter.string(from: rvalue.date)
+        }
+
         for i in scheduleList.indices {
-            scheduleList[i].dateList.sort { first, second in
-                timeFormatter.string(from: first.date) < timeFormatter.string(from: second.date)
-            }
+            for j in i + 1 ..< scheduleList.count {
+                let date1 = scheduleList[i].date.addingTimeInterval(TimeInterval(60 * 60))
+                let date2 = scheduleList[j].date
 
-            var parent: [Int] = []
-            for index in scheduleList[i].dateList.indices { parent.append(index) }
+                if dateFormatter.string(from: date1) != dateFormatter.string(from: date2) {
+                    break
+                }
 
-            for j in scheduleList[i].dateList.indices {
-                for k in j + 1 ..< scheduleList[i].dateList.count {
-                    let date1 = scheduleList[i].dateList[j].date.addingTimeInterval(TimeInterval(60 * 60))
-                    let date2 = scheduleList[i].dateList[k].date
+                let hour1 = hourFormatter.string(from: date1)
+                let hour2 = hourFormatter.string(from: date2)
 
-                    let date1Hour = hourFormatter.string(from: date1)
-                    let date2Hour = hourFormatter.string(from: date2)
+                if hour1 < hour2 {
+                    break
+                } else if hour1 == hour2 {
+                    let minute1 = minuteFormatter.string(from: date1)
+                    let minute2 = minuteFormatter.string(from: date2)
 
-                    if date1Hour < date2Hour {
+                    if minute1 <= minute2 {
                         break
                     }
-
-                    if date1Hour == date2Hour {
-                        let date1Minute = minuteFormatter.string(from: date1)
-                        let date2Minute = minuteFormatter.string(from: date2)
-
-                        if date1Minute <= date2Minute {
-                            break
-                        }
-                    }
-
-                    unionMerge(parent: &parent, x: j, y: k)
                 }
-            }
 
-            var set: [[Int]] = Array(repeating: [], count: scheduleList[i].dateList.count)
-            for j in scheduleList[i].dateList.indices {
-                parent[j] = unionFind(parent: &parent, x: j)
-                set[parent[j]].append(j)
+                unionMerge(parent: &parent, x: i, y: j)
             }
+        }
 
-            for j in set.indices {
-                for (order, index) in zip(set[j].indices, set[j]) {
-                    scheduleList[i].dateList[index].weight = set[j].count
-                    scheduleList[i].dateList[index].order = order + 1
-                }
+        var set: [[Int]] = Array(repeating: [], count: scheduleList.count)
+        for j in scheduleList.indices {
+            parent[j] = unionFind(parent: &parent, x: j)
+            set[parent[j]].append(j)
+        }
+
+        for j in set.indices {
+            for (order, index) in zip(set[j].indices, set[j]) {
+                scheduleList[index].weight = set[j].count
+                scheduleList[index].order = order + 1
             }
         }
     }
@@ -389,8 +378,6 @@ private extension TimeTableMainView {
         }
     }
 }
-
-//  !!!: - 각 셀에 이벤트를 걸자 (시간 값)
 
 struct CellDropDelegate: DropDelegate {
     var dayIndex: Int
@@ -422,7 +409,9 @@ struct CellDropDelegate: DropDelegate {
     }
 
     // Drop entered called
-    func dropEntered(info: DropInfo) {}
+    func dropEntered(info: DropInfo) {
+        print(dayIndex, hourIndex, minuteIndex)
+    }
 
     // Drop exited called
     func dropExited(info: DropInfo) {}
