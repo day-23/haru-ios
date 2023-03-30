@@ -36,7 +36,8 @@ struct CalendarOptionView: View {
                         Spacer()
                         
                         NavigationLink {
-                            Text("hello")
+                            CategoryFormView(calendarVM: calendarVM)
+                                
                         } label: {
                             Image("plus")
                                 .resizable()

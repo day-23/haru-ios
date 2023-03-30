@@ -270,7 +270,7 @@ final class CalendarViewModel: ObservableObject {
     /**
      * 카테고리 추가하기
      */
-    func addCategory(_ content: String, _ color: String?) {
+    func addCategory(_ content: String, _ color: String?, completion: @escaping () -> Void) {
         let category = Request.Category(content: content, color: color != nil ? "#" + color! : nil)
         
         categoryList.append(Category(id: UUID().uuidString, content: content, color: color, isSelected: true))
@@ -280,6 +280,7 @@ final class CalendarViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 self.categoryList[index] = success
+                completion()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }

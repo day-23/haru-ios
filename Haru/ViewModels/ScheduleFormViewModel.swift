@@ -56,7 +56,6 @@ final class ScheduleFormViewModel: ObservableObject {
 
     private var calendarVM: CalendarViewModel
     private var scheduleService: ScheduleService = .init()
-    private var categoryService: CategoryService = .init()
 
     // MARK: init
 
@@ -83,6 +82,7 @@ final class ScheduleFormViewModel: ObservableObject {
             repeatEnd: repeatEnd,
             repeatOption: repeatOption,
             repeatValue: repeatValue,
+            categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
             alarms: selectedAlarm
         )
     }
