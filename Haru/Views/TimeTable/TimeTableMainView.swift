@@ -123,7 +123,18 @@ struct TimeTableMainView: View {
                                                         hourIndex: index / 8,
                                                         minuteIndex: minuteIndex,
                                                         dragging: $timeTableViewModel.draggingSchedule
-                                                    ) {
+                                                    ) { date in
+                                                        guard let draggingSchedule = timeTableViewModel.draggingSchedule else {
+                                                            return
+                                                        }
+
+                                                        let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
+                                                            draggingSchedule.data.repeatStart
+                                                        )
+
+                                                        timeTableViewModel.draggingSchedule?.data.setRepeatStart(date)
+                                                        timeTableViewModel.draggingSchedule?.data.setRepeatEnd(date.advanced(by: TimeInterval(60 * diff)))
+
                                                         if let index = timeTableViewModel.scheduleList.firstIndex(where: { schedule in
                                                             schedule.id == timeTableViewModel.draggingSchedule?.id
                                                         }) {
@@ -261,7 +272,7 @@ struct CellDropDelegate: DropDelegate {
     var hourIndex: Int
     var minuteIndex: Int
     @Binding var dragging: ScheduleCell?
-    var completion: () -> Void
+    var completion: (Date) -> Void
 
     private static var dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -301,7 +312,6 @@ struct CellDropDelegate: DropDelegate {
         guard let dragging = dragging else {
             return false
         }
-
         let calendar = Calendar.current
         let year = calendar.component(.year, from: dragging.data.repeatStart)
         let month = calendar.component(.month, from: dragging.data.repeatStart)
@@ -310,8 +320,7 @@ struct CellDropDelegate: DropDelegate {
         guard let date = Calendar.current.date(from: components) else {
             return false
         }
-        self.dragging?.data.setRepeatStart(date)
-        completion()
+        completion(date)
         return true
     }
 }
