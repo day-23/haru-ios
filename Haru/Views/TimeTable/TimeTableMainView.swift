@@ -5,8 +5,6 @@
 //  Created by 최정민 on 2023/03/20.
 //
 
-//  TODO: DateList 분리 및 일도 포함해서 Union Find 진행
-//  TODO: Union Find 함수 분리
 //  TODO: 보여주기 방식 수정 필요, 현재 셀 위에 놓는게 안됨, 빈 셀 위에만 놓을 수 있는 듯한 문제가 있음
 
 import SwiftUI
@@ -82,14 +80,13 @@ struct TimeTableMainView: View {
 
         var randomDates: [Date] = []
 
-        for _ in 1 ... 100 { //  change 10 to the number of dates you want to generate
+        for _ in 1 ... 20 {
             let randomTimeInterval = TimeInterval(arc4random_uniform(UInt32(endOfWeek.timeIntervalSince(startOfWeek)))) + startOfWeek.timeIntervalSinceReferenceDate
 
             let randomDate = Date(timeIntervalSinceReferenceDate: randomTimeInterval)
 
             randomDates.append(randomDate)
         }
-
         return randomDates
     }()
 
@@ -143,9 +140,6 @@ struct TimeTableMainView: View {
                         ForEach(range.indices, id: \.self) { index in
                             if index % 8 == 0 {
                                 VStack {
-                                    if index == 0 {
-                                        Text("0")
-                                    }
                                     Spacer()
                                     Text("\(index / 8 + 1)")
                                 }
@@ -169,8 +163,7 @@ struct TimeTableMainView: View {
                                             ForEach(0 ..< (60 / Int(minuteInterval)), id: \.self) {
                                                 minuteIndex in
                                                 Rectangle()
-                                                    .foregroundColor(.white)
-                                                    .border(Color(0x000000, opacity: 0.1))
+                                                    .foregroundColor(Color(0xffffff, opacity: 0.001))
                                                     .onDrop(of: [.text], delegate: CellDropDelegate(
                                                         dayIndex: index % 8 - 1,
                                                         hourIndex: index / 8,
