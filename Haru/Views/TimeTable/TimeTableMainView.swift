@@ -177,6 +177,9 @@ struct TimeTableMainView: View {
                                                         minuteIndex: minuteIndex,
                                                         dragging: $dragging
                                                     ) {
+                                                        if let index = scheduleList.firstIndex(where: { $0.id == dragging?.id }) {
+                                                            scheduleList[index] = dragging!
+                                                        }
                                                         dragging = nil
                                                         findUnion()
                                                     })
@@ -214,7 +217,7 @@ struct TimeTableMainView: View {
             .padding(.trailing)
         }
         .onAppear {
-            findUnion()
+            findUnion(isInit: true)
         }
     }
 }
@@ -285,13 +288,15 @@ private extension TimeTableMainView {
         return (width: width, height: height)
     }
 
-    private func findUnion() {
-        scheduleList = []
+    private func findUnion(isInit: Bool = false) {
+        if isInit {
+            scheduleList = []
 
-        for schedule in dummyScheduleList {
-            scheduleList.append(
-                DateCell(id: UUID().uuidString, date: schedule, weight: 1, order: 1)
-            )
+            for schedule in dummyScheduleList {
+                scheduleList.append(
+                    DateCell(id: UUID().uuidString, date: schedule, weight: 1, order: 1)
+                )
+            }
         }
 
         let dateTimeFormatter = DateFormatter()
@@ -314,6 +319,9 @@ private extension TimeTableMainView {
         }
 
         for i in scheduleList.indices {
+            scheduleList[i].weight = 1
+            scheduleList[i].order = 1
+
             for j in i + 1 ..< scheduleList.count {
                 let date1 = scheduleList[i].date.addingTimeInterval(TimeInterval(60 * 60))
                 let date2 = scheduleList[j].date
@@ -409,9 +417,7 @@ struct CellDropDelegate: DropDelegate {
     }
 
     // Drop entered called
-    func dropEntered(info: DropInfo) {
-        print(dayIndex, hourIndex, minuteIndex)
-    }
+    func dropEntered(info: DropInfo) {}
 
     // Drop exited called
     func dropExited(info: DropInfo) {}
