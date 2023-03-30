@@ -85,9 +85,7 @@ final class TimeTableViewModel: ObservableObject {
                     }
                 }
 
-                print(scheduleList[i].data.repeatEnd, scheduleList[j].data.repeatStart)
                 unionMerge(parent: &parent, x: i, y: j)
-                print(parent)
             }
         }
 
@@ -144,6 +142,39 @@ final class TimeTableViewModel: ObservableObject {
                     self.scheduleList.append(
                         ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
                     )
+                }
+                self.findUnion()
+            case .failure(let failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
+    //  MARK: - Update
+
+    func updateDraggingSchedule(
+        _ startDate: Date,
+        _ endDate: Date
+    ) {
+        guard let draggingSchedule = draggingSchedule else {
+            return
+        }
+
+        scheduleService.updateSchedule(draggingSchedule.id,
+                                       Request.Schedule(content: draggingSchedule.data.content,
+                                                        memo: draggingSchedule.data.memo,
+                                                        alarms: draggingSchedule.data.alarms.map { $0.time },
+                                                        isAllDay: draggingSchedule.data.isAllDay,
+                                                        repeatStart: startDate,
+                                                        repeatEnd: endDate)) { result in
+            switch result {
+            case .success(let schedule):
+                if let index = self.scheduleList.firstIndex(where: { schedule in
+                    schedule.id == self.draggingSchedule?.id
+                }) {
+                    self.draggingSchedule?.data = schedule
+                    self.scheduleList[index] = self.draggingSchedule!
+                    self.draggingSchedule = nil
                 }
                 self.findUnion()
             case .failure(let failure):

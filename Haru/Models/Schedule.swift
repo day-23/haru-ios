@@ -3,6 +3,7 @@
 //  Haru
 //
 //  Created by 이준호 on 2023/03/07.
+//  Updated by 최정민 on 2023/03/31.
 //
 
 import Foundation
@@ -23,7 +24,7 @@ struct Schedule: Identifiable, Codable {
 
     // MARK: - Dates
 
-    let createdAt: Date
+    let createdAt: Date?
     private(set) var updatedAt: Date?
     private(set) var deletedAt: Date?
 }

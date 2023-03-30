@@ -131,17 +131,7 @@ struct TimeTableMainView: View {
                                                         let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
                                                             draggingSchedule.data.repeatStart
                                                         )
-
-                                                        timeTableViewModel.draggingSchedule?.data.setRepeatStart(date)
-                                                        timeTableViewModel.draggingSchedule?.data.setRepeatEnd(date.advanced(by: TimeInterval(60 * diff)))
-
-                                                        if let index = timeTableViewModel.scheduleList.firstIndex(where: { schedule in
-                                                            schedule.id == timeTableViewModel.draggingSchedule?.id
-                                                        }) {
-                                                            timeTableViewModel.scheduleList[index] = timeTableViewModel.draggingSchedule!
-                                                        }
-                                                        timeTableViewModel.draggingSchedule = nil
-                                                        timeTableViewModel.findUnion()
+                                                        timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
                                                     })
                                             }
                                         }
