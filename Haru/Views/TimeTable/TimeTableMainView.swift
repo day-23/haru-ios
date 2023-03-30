@@ -10,15 +10,10 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct DateCell: Identifiable {
-    var id: String
-    var date: Date
-    var weight: Int
-    var order: Int
-}
-
 struct TimeTableMainView: View {
-    //  MARK: - View properties
+    //  MARK: - Properties
+
+    @StateObject var timeTableViewModel: TimeTableViewModel
 
     private let column = [GridItem(.fixed(20)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
@@ -34,61 +29,22 @@ struct TimeTableMainView: View {
 
     private let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "dd"
+        formatter.dateFormat = "d"
         return formatter
     }()
 
-    private var thisWeek: [Date] {
-        let calendar = Calendar.current
-        guard let startOfWeek = calendar.date(
-            from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today)
-        ) else {
-            return []
-        }
-
-        var datesOfWeek: [Date] = []
-        for i in 0 ... 6 {
-            let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
-            datesOfWeek.append(date)
-        }
-        return datesOfWeek
-    }
-
-    private let showHourTextWidth = 20
-    private let borderWidth = 1
+    private var range = (0 ..< 24 * 8)
+    private var today: Date = .init()
 
     @State private var cellWidth: CGFloat? = nil
     private var cellHeight: CGFloat = 168
     private var minuteInterval: Double = 5.0
+    private let showHourTextWidth = 20
+    private let borderWidth = 1
 
-    @State var dragging: DateCell? = nil
-
-    //  MARK: - ViewModel properties
-
-    @State private var range = (0 ..< 24 * 8)
-    @State private var today: Date = .init()
-    @State private var scheduleList: [DateCell] = []
-
-    //  MARK: - Dummy Data
-
-    private var dummyScheduleList: [Date] = {
-        let now = Date()
-        let calendar = Calendar.current
-
-        let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now))!
-        let endOfWeek = calendar.date(byAdding: .day, value: 6, to: startOfWeek)!
-
-        var randomDates: [Date] = []
-
-        for _ in 1 ... 20 {
-            let randomTimeInterval = TimeInterval(arc4random_uniform(UInt32(endOfWeek.timeIntervalSince(startOfWeek)))) + startOfWeek.timeIntervalSinceReferenceDate
-
-            let randomDate = Date(timeIntervalSinceReferenceDate: randomTimeInterval)
-
-            randomDates.append(randomDate)
-        }
-        return randomDates
-    }()
+    init(timeTableViewModel: StateObject<TimeTableViewModel>) {
+        _timeTableViewModel = timeTableViewModel
+    }
 
     var body: some View {
         ZStack {
@@ -125,8 +81,8 @@ struct TimeTableMainView: View {
                         ]) {
                             Text("")
 
-                            ForEach(thisWeek.indices, id: \.self) { index in
-                                Text(dayFormatter.string(from: thisWeek[index]))
+                            ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                                Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
                             }
                         }
                     }
@@ -168,12 +124,14 @@ struct TimeTableMainView: View {
                                                         dayIndex: index % 8 - 1,
                                                         hourIndex: index / 8,
                                                         minuteIndex: minuteIndex,
-                                                        dragging: $dragging
+                                                        dragging: $timeTableViewModel.draggingSchedule
                                                     ) {
-                                                        if let index = scheduleList.firstIndex(where: { $0.id == dragging?.id }) {
-                                                            scheduleList[index] = dragging!
+                                                        if let index = timeTableViewModel.scheduleList.firstIndex(where: { schedule in
+                                                            schedule.id == timeTableViewModel.draggingSchedule?.id
+                                                        }) {
+                                                            timeTableViewModel.scheduleList[index] = timeTableViewModel.draggingSchedule!
                                                         }
-                                                        dragging = nil
+                                                        timeTableViewModel.draggingSchedule = nil
                                                         findUnion()
                                                     })
                                             }
@@ -184,7 +142,7 @@ struct TimeTableMainView: View {
                     }
                     .overlay(content: {
                         if cellWidth != nil {
-                            ForEach(scheduleList) { schedule in
+                            ForEach(timeTableViewModel.scheduleList) { schedule in
                                 if let scheduleIndex = getScheduleIndex(schedule: schedule.date),
                                    let position = calcPosition(row: scheduleIndex.row, column: scheduleIndex.column,
                                                                minuteIndex: scheduleIndex.minuteIndex, weight: schedule.weight,
@@ -195,7 +153,7 @@ struct TimeTableMainView: View {
                                         .frame(width: frame.width, height: frame.height)
                                         .position(x: position.x, y: position.y)
                                         .onDrag {
-                                            dragging = schedule
+                                            timeTableViewModel.draggingSchedule = schedule
                                             return NSItemProvider(object: schedule.id as NSString)
                                         } preview: {
                                             ScheduleItemView(schedule: schedule)
@@ -210,7 +168,7 @@ struct TimeTableMainView: View {
             .padding(.trailing)
         }
         .onAppear {
-            findUnion(isInit: true)
+            findUnion()
         }
     }
 }
@@ -226,7 +184,7 @@ private extension TimeTableMainView {
         let minuteFormatter = DateFormatter()
         minuteFormatter.dateFormat = "m"
 
-        let thisWeekString = thisWeek.map { formatter.string(from: $0) }
+        let thisWeekString = timeTableViewModel.thisWeek.map { formatter.string(from: $0) }
 
         let dateString = formatter.string(from: schedule)
 
@@ -281,17 +239,7 @@ private extension TimeTableMainView {
         return (width: width, height: height)
     }
 
-    private func findUnion(isInit: Bool = false) {
-        if isInit {
-            scheduleList = []
-
-            for schedule in dummyScheduleList {
-                scheduleList.append(
-                    DateCell(id: UUID().uuidString, date: schedule, weight: 1, order: 1)
-                )
-            }
-        }
-
+    private func findUnion() {
         let dateTimeFormatter = DateFormatter()
         dateTimeFormatter.dateFormat = "yyyyMMddHHmmss"
 
@@ -305,19 +253,19 @@ private extension TimeTableMainView {
         minuteFormatter.dateFormat = "mm"
 
         var parent: [Int] = []
-        for index in scheduleList.indices { parent.append(index) }
+        for index in timeTableViewModel.scheduleList.indices { parent.append(index) }
 
-        scheduleList.sort { lvalue, rvalue in
+        timeTableViewModel.scheduleList.sort { lvalue, rvalue in
             dateTimeFormatter.string(from: lvalue.date) < dateTimeFormatter.string(from: rvalue.date)
         }
 
-        for i in scheduleList.indices {
-            scheduleList[i].weight = 1
-            scheduleList[i].order = 1
+        for i in timeTableViewModel.scheduleList.indices {
+            timeTableViewModel.scheduleList[i].weight = 1
+            timeTableViewModel.scheduleList[i].order = 1
 
-            for j in i + 1 ..< scheduleList.count {
-                let date1 = scheduleList[i].date.addingTimeInterval(TimeInterval(60 * 60))
-                let date2 = scheduleList[j].date
+            for j in i + 1 ..< timeTableViewModel.scheduleList.count {
+                let date1 = timeTableViewModel.scheduleList[i].date.addingTimeInterval(TimeInterval(60 * 60))
+                let date2 = timeTableViewModel.scheduleList[j].date
 
                 if dateFormatter.string(from: date1) != dateFormatter.string(from: date2) {
                     break
@@ -341,16 +289,16 @@ private extension TimeTableMainView {
             }
         }
 
-        var set: [[Int]] = Array(repeating: [], count: scheduleList.count)
-        for j in scheduleList.indices {
+        var set: [[Int]] = Array(repeating: [], count: timeTableViewModel.scheduleList.count)
+        for j in timeTableViewModel.scheduleList.indices {
             parent[j] = unionFind(parent: &parent, x: j)
             set[parent[j]].append(j)
         }
 
         for j in set.indices {
             for (order, index) in zip(set[j].indices, set[j]) {
-                scheduleList[index].weight = set[j].count
-                scheduleList[index].order = order + 1
+                timeTableViewModel.scheduleList[index].weight = set[j].count
+                timeTableViewModel.scheduleList[index].order = order + 1
             }
         }
     }
@@ -384,7 +332,7 @@ struct CellDropDelegate: DropDelegate {
     var dayIndex: Int
     var hourIndex: Int
     var minuteIndex: Int
-    @Binding var dragging: DateCell?
+    @Binding var dragging: ScheduleCell?
     var completion: () -> Void
 
     private static var dayFormatter: DateFormatter = {
@@ -451,7 +399,7 @@ struct ScheduleItemView: View {
         return formatter
     }()
 
-    @State var schedule: DateCell
+    @State var schedule: ScheduleCell
 
     var body: some View {
         ZStack {

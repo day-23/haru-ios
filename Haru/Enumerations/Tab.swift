@@ -51,7 +51,9 @@ enum Tab: Int, CaseIterable {
             ))
         case .timeTable:
             return AnyView(
-                TimeTableMainView()
+                TimeTableMainView(
+                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel())
+                )
             )
         case .setting:
             return AnyView(Text("Setting SubView"))
