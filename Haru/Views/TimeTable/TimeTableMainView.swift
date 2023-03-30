@@ -5,8 +5,6 @@
 //  Created by 최정민 on 2023/03/20.
 //
 
-//  TODO: 보여주기 방식 수정 필요, 현재 셀 위에 놓는게 안됨, 빈 셀 위에만 놓을 수 있는 듯한 문제가 있음
-
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -132,7 +130,7 @@ struct TimeTableMainView: View {
                                                             timeTableViewModel.scheduleList[index] = timeTableViewModel.draggingSchedule!
                                                         }
                                                         timeTableViewModel.draggingSchedule = nil
-                                                        findUnion()
+                                                        timeTableViewModel.findUnion()
                                                     })
                                             }
                                         }
@@ -143,11 +141,19 @@ struct TimeTableMainView: View {
                     .overlay(content: {
                         if cellWidth != nil {
                             ForEach(timeTableViewModel.scheduleList) { schedule in
-                                if let scheduleIndex = getScheduleIndex(schedule: schedule.date),
-                                   let position = calcPosition(row: scheduleIndex.row, column: scheduleIndex.column,
-                                                               minuteIndex: scheduleIndex.minuteIndex, weight: schedule.weight,
-                                                               order: schedule.order),
-                                   let frame = calcFrame(weight: schedule.weight)
+                                if let scheduleIndex = getScheduleIndex(schedule: schedule.data.repeatStart),
+                                   let frame = calcFrame(
+                                       weight: schedule.weight,
+                                       duration: schedule.data.repeatEnd.diffToMinute(other: schedule.data.repeatStart)
+                                   ),
+                                   let position = calcPosition(
+                                       row: scheduleIndex.row,
+                                       column: scheduleIndex.column,
+                                       minuteIndex: scheduleIndex.minuteIndex,
+                                       weight: schedule.weight,
+                                       order: schedule.order,
+                                       frame: frame
+                                   )
                                 {
                                     ScheduleItemView(schedule: schedule)
                                         .frame(width: frame.width, height: frame.height)
@@ -168,7 +174,7 @@ struct TimeTableMainView: View {
             .padding(.trailing)
         }
         .onAppear {
-            findUnion()
+            timeTableViewModel.fetchScheduleList()
         }
     }
 }
@@ -204,7 +210,14 @@ private extension TimeTableMainView {
         return nil
     }
 
-    func calcPosition(row: Int, column: Int, minuteIndex: Int, weight: Int, order: Int) -> (x: CGFloat, y: CGFloat)? {
+    func calcPosition(
+        row: Int,
+        column: Int,
+        minuteIndex: Int,
+        weight: Int,
+        order: Int,
+        frame: (width: CGFloat, height: CGFloat)
+    ) -> (x: CGFloat, y: CGFloat)? {
         guard let cellWidth = cellWidth else {
             return nil
         }
@@ -223,108 +236,23 @@ private extension TimeTableMainView {
 
         var y = CGFloat(row) * cellHeight
         y += cellHeight * CGFloat(Double(minuteIndex) * minuteInterval / 60.0)
-        y -= cellHeight * 0.5
+        y += frame.height * 0.5 - cellHeight
 
         return (x: x, y: y)
     }
 
-    func calcFrame(weight: Int, duration: Int = 60) -> (width: CGFloat, height: CGFloat)? {
+    func calcFrame(
+        weight: Int,
+        duration: Int = 60
+    ) -> (width: CGFloat, height: CGFloat)? {
         guard let cellWidth = cellWidth else {
             return nil
         }
 
         let width: CGFloat = cellWidth * CGFloat(1.0 / Double(weight))
-        let height: CGFloat = cellHeight * CGFloat(Double(duration) / minuteInterval * minuteInterval / 60.0)
+        let height: CGFloat = cellHeight * CGFloat(Double(duration) / 60.0)
 
         return (width: width, height: height)
-    }
-
-    private func findUnion() {
-        let dateTimeFormatter = DateFormatter()
-        dateTimeFormatter.dateFormat = "yyyyMMddHHmmss"
-
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd"
-
-        let hourFormatter = DateFormatter()
-        hourFormatter.dateFormat = "HH"
-
-        let minuteFormatter = DateFormatter()
-        minuteFormatter.dateFormat = "mm"
-
-        var parent: [Int] = []
-        for index in timeTableViewModel.scheduleList.indices { parent.append(index) }
-
-        timeTableViewModel.scheduleList.sort { lvalue, rvalue in
-            dateTimeFormatter.string(from: lvalue.date) < dateTimeFormatter.string(from: rvalue.date)
-        }
-
-        for i in timeTableViewModel.scheduleList.indices {
-            timeTableViewModel.scheduleList[i].weight = 1
-            timeTableViewModel.scheduleList[i].order = 1
-
-            for j in i + 1 ..< timeTableViewModel.scheduleList.count {
-                let date1 = timeTableViewModel.scheduleList[i].date.addingTimeInterval(TimeInterval(60 * 60))
-                let date2 = timeTableViewModel.scheduleList[j].date
-
-                if dateFormatter.string(from: date1) != dateFormatter.string(from: date2) {
-                    break
-                }
-
-                let hour1 = hourFormatter.string(from: date1)
-                let hour2 = hourFormatter.string(from: date2)
-
-                if hour1 < hour2 {
-                    break
-                } else if hour1 == hour2 {
-                    let minute1 = minuteFormatter.string(from: date1)
-                    let minute2 = minuteFormatter.string(from: date2)
-
-                    if minute1 <= minute2 {
-                        break
-                    }
-                }
-
-                unionMerge(parent: &parent, x: i, y: j)
-            }
-        }
-
-        var set: [[Int]] = Array(repeating: [], count: timeTableViewModel.scheduleList.count)
-        for j in timeTableViewModel.scheduleList.indices {
-            parent[j] = unionFind(parent: &parent, x: j)
-            set[parent[j]].append(j)
-        }
-
-        for j in set.indices {
-            for (order, index) in zip(set[j].indices, set[j]) {
-                timeTableViewModel.scheduleList[index].weight = set[j].count
-                timeTableViewModel.scheduleList[index].order = order + 1
-            }
-        }
-    }
-
-    private func unionFind(parent: inout [Int], x: Int) -> Int {
-        if parent[x] == x {
-            return x
-        }
-        let alt = unionFind(parent: &parent, x: parent[x])
-        parent[x] = alt
-        return alt
-    }
-
-    private func unionMerge(parent: inout [Int], x: Int, y: Int) {
-        let parentX = unionFind(parent: &parent, x: x)
-        let parentY = unionFind(parent: &parent, x: y)
-
-        if parentX == parentY {
-            return
-        }
-
-        if parentX < parentY {
-            parent[x] = y
-        } else {
-            parent[y] = x
-        }
     }
 }
 
@@ -357,13 +285,10 @@ struct CellDropDelegate: DropDelegate {
         return datesOfWeek
     }
 
-    // Drop entered called
     func dropEntered(info: DropInfo) {}
 
-    // Drop exited called
     func dropExited(info: DropInfo) {}
 
-    // Drop has been updated
     func dropUpdated(info: DropInfo) -> DropProposal? {
         return DropProposal(operation: .move)
     }
@@ -372,41 +297,40 @@ struct CellDropDelegate: DropDelegate {
         return info.hasItemsConforming(to: [.text])
     }
 
-    // This function is executed when the user "drops" their object
     func performDrop(info: DropInfo) -> Bool {
         guard let dragging = dragging else {
             return false
         }
 
         let calendar = Calendar.current
-        let year = calendar.component(.year, from: dragging.date)
-        let month = calendar.component(.month, from: dragging.date)
+        let year = calendar.component(.year, from: dragging.data.repeatStart)
+        let month = calendar.component(.month, from: dragging.data.repeatStart)
         let day = calendar.component(.day, from: CellDropDelegate.thisWeek[dayIndex])
         let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
         guard let date = Calendar.current.date(from: components) else {
             return false
         }
-        self.dragging?.date = date
+        self.dragging?.data.setRepeatStart(date)
         completion()
         return true
     }
 }
 
 struct ScheduleItemView: View {
+    @State var schedule: ScheduleCell
+
     private let formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd, H:mm"
         return formatter
     }()
 
-    @State var schedule: ScheduleCell
-
     var body: some View {
         ZStack {
             Rectangle()
                 .foregroundColor(Color(0x000000, opacity: 0.5))
 
-            Text("\(formatter.string(from: schedule.date))")
+            Text("\(formatter.string(from: schedule.data.repeatStart))")
                 .foregroundColor(.white)
                 .font(.system(size: 8))
         }

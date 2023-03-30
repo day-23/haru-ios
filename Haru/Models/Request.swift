@@ -35,9 +35,9 @@ struct Request: Codable {
         var repeatValue: String?
         var repeatStart: Date
         var repeatEnd: Date
-        
+
         var timeOption: Bool
-        
+
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: Request.Schedule.CodingKeys.self)
             try container.encode(self.content, forKey: Request.Schedule.CodingKeys.content)
@@ -52,7 +52,7 @@ struct Request: Codable {
             try container.encode(self.timeOption, forKey: Request.Schedule.CodingKeys.timeOption)
         }
     }
-    
+
     struct Category: Codable {
         var content: String
         var color: String?

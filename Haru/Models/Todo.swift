@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Todo: Identifiable, Equatable, Codable {
+struct Todo: Identifiable, Codable {
     //  MARK: - Properties
 
     let id: String
@@ -96,15 +96,15 @@ struct Todo: Identifiable, Equatable, Codable {
         self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
         self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
     }
-
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.id == rhs.id
-    }
 }
 
 //  MARK: - Extensions
 
-extension Todo {
+extension Todo: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.id == rhs.id
+    }
+
     //  반복 패턴에 따른 다음 마감일을 계산해주는 함수이다.
     //  만약, 반복이 끝난다면 nil을 리턴한다.
     func nextEndDate() throws -> Date? {

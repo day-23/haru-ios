@@ -11,13 +11,11 @@ struct Schedule: Identifiable, Codable {
     let id: String
     private(set) var content: String // 일정 제목
     private(set) var memo: String
-    private(set) var flag: Bool
+    private(set) var isAllDay: Bool
     private(set) var repeatOption: String?
     private(set) var repeatValue: String?
     private(set) var repeatStart: Date
     private(set) var repeatEnd: Date
-
-    private(set) var timeOption: Bool
 
     private(set) var category: Category?
 
@@ -35,5 +33,13 @@ struct Schedule: Identifiable, Codable {
 extension Schedule: Productivity, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
         lhs.id == rhs.id
+    }
+
+    mutating func setRepeatStart(_ newer: Date) {
+        repeatStart = newer
+    }
+
+    mutating func setRepeatEnd(_ newer: Date) {
+        repeatEnd = newer
     }
 }
