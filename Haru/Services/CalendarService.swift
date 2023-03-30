@@ -18,7 +18,10 @@ final class CalendarService {
         print("call schedule & todo API")
         do {
             async let scheduleList = scheduleService.fetchScheduleListAsync(startDate, endDate)
-            async let todoList = fetchTodoListAsync(startDate, endDate)
+
+            // FIXME: struct Todo 변경되면 수정해주기
+//            async let todoList = fetchTodoListAsync(startDate, endDate)
+            let todoList = [Todo]()
 
             return try await (scheduleList, todoList)
         } catch {

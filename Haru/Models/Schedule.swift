@@ -11,13 +11,13 @@ struct Schedule: Identifiable, Codable {
     let id: String
     private(set) var content: String // 일정 제목
     private(set) var memo: String
-    private(set) var flag: Bool
-    private(set) var repeatOption: String?
-    private(set) var repeatValue: String?
+    private(set) var isAllDay: Bool
+
     private(set) var repeatStart: Date
     private(set) var repeatEnd: Date
 
-    private(set) var timeOption: Bool
+    private(set) var repeatOption: String?
+    private(set) var repeatValue: String?
 
     private(set) var category: Category?
 
@@ -27,7 +27,6 @@ struct Schedule: Identifiable, Codable {
 
     let createdAt: Date
     private(set) var updatedAt: Date?
-    private(set) var deletedAt: Date?
 }
 
 // MARK: - extension

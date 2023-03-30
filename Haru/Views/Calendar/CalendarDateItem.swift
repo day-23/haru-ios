@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct CalendarDateItem: View {
-    @Binding var selectionSet: Set<DateValue>
+    var selectionSet: Set<DateValue>
 
     let value: DateValue
-    var cellHeight: CGFloat
-    var cellWidhth: CGFloat
+    let cellHeight: CGFloat
+    let cellWidth: CGFloat
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,14 +29,14 @@ struct CalendarDateItem: View {
                 )
             Spacer()
         } // VStack
-        .frame(width: cellWidhth, height: cellHeight, alignment: .top)
+        .frame(width: cellWidth, height: cellHeight, alignment: .top)
         .background(selectionSet.contains(value) ? .mint : .white)
         .opacity(!value.isNextDate && !value.isPrevDate && !selectionSet.contains(value) ? 1 : 0.3)
     }
 }
 
-struct CalendarDateItem_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarDateItem(selectionSet: .constant([DateValue(day: 8, date: Date())]), value: DateValue(day: 7, date: Date()), cellHeight: 100, cellWidhth: UIScreen.main.bounds.width / 7)
-    }
-}
+// struct CalendarDateItem_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CalendarDateItem(selectionSet: .constant([DateValue(day: 8, date: Date())]), value: DateValue(day: 7, date: Date()), cellHeight: 100, cellWidhth: UIScreen.main.bounds.width / 7)
+//    }
+// }

@@ -117,7 +117,7 @@ struct CalendarDateView: View {
                                     calendarVM: calendarVM,
                                     isDayModalVisible: $isDayModalVisible,
                                     cellHeight: proxy.size.height / CGFloat(calendarVM.numberOfWeeks),
-                                    cellWidhth: proxy.size.width / 7
+                                    cellWidth: proxy.size.width / 7
                                 )
                                 .gesture(combined)
                             } // GeometryReader
@@ -130,24 +130,26 @@ struct CalendarDateView: View {
             } // VStack
 
             // 일정 추가 버튼
-            VStack {
-                Spacer()
-                HStack {
+            if !isDayModalVisible {
+                VStack {
                     Spacer()
-                    Button {
-                        calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
-                        isSchModalVisible = true
-                    } label: {
-                        Image("plus-button")
-                            .resizable()
-                            .frame(width: 56, height: 56)
-                            .clipShape(Circle())
-                            .shadow(radius: 3)
+                    HStack {
+                        Spacer()
+                        Button {
+                            calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
+                            isSchModalVisible = true
+                        } label: {
+                            Image("plus-button")
+                                .resizable()
+                                .frame(width: 56, height: 56)
+                                .clipShape(Circle())
+                                .shadow(radius: 3)
+                        }
                     }
                 }
+                .padding(20)
+                .zIndex(2)
             }
-            .padding(20)
-            .zIndex(2)
             
             // 일정 추가를 위한 모달창
             if isSchModalVisible {

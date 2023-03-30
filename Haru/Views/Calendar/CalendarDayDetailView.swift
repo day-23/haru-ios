@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct CalendarDayDetailView: View {
-    @State private var content: String = ""
-    
-    @StateObject var calendarVM: CalendarViewModel
+    var calendarVM: CalendarViewModel
     @StateObject var scheduleVM: ScheduleFormViewModel
+    var todoAddViewModel: TodoAddViewModel
+    
     var row: Int
     
     var body: some View {
         VStack {
             HStack {
-                Text("\(calendarVM.pivotDate.getDateFormatString("M월 dd일 E요일"))")
+                Text("\(calendarVM.pivotDateList[row].getDateFormatString("M월 dd일 E요일"))")
                     .foregroundColor(.white)
                     .font(.pretendard(size: 20, weight: .bold))
                 Spacer()
@@ -42,7 +42,7 @@ struct CalendarDayDetailView: View {
             
             ZStack {
                 ScrollView {
-                    VStack(spacing: 20) {
+                    VStack(alignment: .leading, spacing: 20) {
                         HStack {
                             Image("calendar")
                             Text("일정")
@@ -67,10 +67,9 @@ struct CalendarDayDetailView: View {
                                     VStack(alignment: .leading) {
                                         Text("\(calendarVM.scheduleList[row][index].content)")
                                             .font(.pretendard(size: 14, weight: .bold))
-                                        Text(calendarVM.scheduleList[row][index].timeOption ? "하루 종일" : "\(calendarVM.scheduleList[row][index].repeatStart.getDateFormatString("a hh:mm")) - \(calendarVM.scheduleList[row][index].repeatEnd.getDateFormatString("a hh:mm"))")
+                                        Text(calendarVM.scheduleList[row][index].isAllDay ? "하루 종일" : "\(calendarVM.scheduleList[row][index].repeatStart.getDateFormatString("a hh:mm")) - \(calendarVM.scheduleList[row][index].repeatEnd.getDateFormatString("a hh:mm"))")
                                             .font(.pretendard(size: 10, weight: .regular))
                                     }
-                                    Spacer()
                                 }
                                 .padding(.horizontal, 20)
                             }
@@ -89,27 +88,32 @@ struct CalendarDayDetailView: View {
                         .padding(.horizontal, 20)
                         
                         ForEach(calendarVM.todoList[row].indices, id: \.self) { index in
-                            HStack(spacing: 20) {
-                                Image("check-circle")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                VStack(alignment: .leading) {
-                                    Text("\(calendarVM.todoList[row][index].content)")
-                                        .font(.pretendard(size: 14, weight: .bold))
-                                    HStack(spacing: 8) {
-                                        ForEach(calendarVM.todoList[row][index].tags.prefix(5)) { tag in
-                                            Text("\(tag.content)")
-                                                .font(.pretendard(size: 10, weight: .regular))
+                            NavigationLink {
+                                Text("todo list 수정")
+                            } label: {
+                                HStack(spacing: 20) {
+                                    Image("check-circle")
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                    VStack(alignment: .leading) {
+                                        Text("\(calendarVM.todoList[row][index].content)")
+                                            .font(.pretendard(size: 14, weight: .bold))
+                                        HStack(spacing: 8) {
+                                            ForEach(calendarVM.todoList[row][index].tags.prefix(5)) { tag in
+                                                Text("\(tag.content)")
+                                                    .font(.pretendard(size: 10, weight: .regular))
+                                            }
                                         }
                                     }
+                                    .frame(height: 28, alignment: .leading)
+                                    Spacer()
+                                    Image(calendarVM.todoList[row][index].flag ? "star-check" : "star")
+                                        .frame(width: 14, height: 14)
                                 }
-                                .frame(height: 28, alignment: .leading)
-                                Spacer()
-                                Image(calendarVM.todoList[row][index].flag ? "star-check" : "star")
-                                    .frame(width: 14, height: 14)
+                                .padding(.horizontal, 20)
                             }
+                            .tint(.mainBlack)
                         }
-                        .padding(.horizontal, 20)
                         
                         Spacer()
                             .frame(height: 30)
@@ -120,7 +124,7 @@ struct CalendarDayDetailView: View {
                     Spacer()
                     
                     HStack {
-                        TextField("\(calendarVM.pivotDate.month)월 \(calendarVM.pivotDate.day)일 일정 추가", text: $content)
+                        TextField("\(calendarVM.pivotDateList[row].month)월 \(calendarVM.pivotDateList[row].day)일 일정 추가", text: $scheduleVM.content)
                             .font(.pretendard(size: 14, weight: .light))
                             .frame(height: 20)
                             .padding(10)
@@ -129,7 +133,10 @@ struct CalendarDayDetailView: View {
                             .cornerRadius(8)
                         
                         Button {
-                            scheduleVM.addEasySchedule(content: content, repeatStart: calendarVM.pivotDate, repeatEnd: calendarVM.pivotDate)
+                            scheduleVM.repeatStart = calendarVM.pivotDate
+                            scheduleVM.repeatEnd = calendarVM.pivotDate
+                            print(calendarVM.pivotDate.getDateFormatString("MM dd"))
+                            scheduleVM.addEasySchedule()
                         } label: {
                             Image("plus-button")
                                 .resizable()

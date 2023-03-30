@@ -20,7 +20,8 @@ struct CalendarDayView: View {
 
     var body: some View {
         Pager(page: page, data: self.data.indices, id: \.self) { index in
-            CalendarDayDetailView(calendarVM: calendarViewModel, scheduleVM: scheduleFormVM, row: index)
+            // TODO: todoAddViewModel 이렇게 사용해도 되는지 물어보기
+            CalendarDayDetailView(calendarVM: calendarViewModel, scheduleVM: scheduleFormVM, todoAddViewModel: TodoAddViewModel(checkListViewModel: CheckListViewModel()), row: index)
                 .frame(width: 330, height: 480)
                 .cornerRadius(20)
         }
@@ -40,16 +41,20 @@ struct CalendarDayView: View {
                 guard let last = self.data.last else { return }
                 self.data.append(contentsOf: last + 1 ... last + 5)
                 self.data.removeFirst(5)
-                self.page.index -= 5
-                calendarViewModel.getMoreProductivityList(isRight: true)
+                calendarViewModel.getMoreProductivityList(isRight: true, offSet: 5) {
+                    self.page.index -= 5
+                    self.prevPageIndex -= 5
+                }
             }
 
-            if pageIndex == 5 {
+            if pageIndex == 4 {
                 guard let first = self.data.first else { return }
                 self.data.insert(contentsOf: first - 5 ... first - 1, at: 0)
                 self.data.removeLast(5)
-                self.page.index += 5
-                calendarViewModel.getMoreProductivityList(isRight: false)
+                calendarViewModel.getMoreProductivityList(isRight: false, offSet: 5) {
+                    self.page.index += 5
+                    self.prevPageIndex += 5
+                }
             }
 
             prevPageIndex = self.page.index

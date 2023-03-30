@@ -25,6 +25,9 @@ struct CalendarScheduleItem: View {
                                 .background(Color(schedule.category?.color, true))
                                 .cornerRadius(4)
                                 .opacity(month == schedule.repeatStart.month || month == schedule.repeatEnd.month ? 1 : 0.3)
+                                .onTapGesture {
+                                    print("hi")
+                                }
                         } else if let todo = productivity as? Todo {
                             Text("\(todo.content)")
                                 .font(.pretendard(size: 12, weight: .regular))

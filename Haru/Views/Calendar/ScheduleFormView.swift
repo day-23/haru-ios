@@ -107,7 +107,7 @@ struct ScheduleFormView: View {
                 // 시작일, 종료일 설정
                 Group {
                     Label {
-                        Toggle(isOn: $scheduleFormVM.timeOption.animation(), label: {
+                        Toggle(isOn: $scheduleFormVM.isAllDay.animation(), label: {
                             HStack {
                                 Text("하루 종일")
                                     .font(.pretendard(size: 14, weight: .medium))
@@ -122,7 +122,7 @@ struct ScheduleFormView: View {
                             .padding(6)
                             .frame(width: 28, height: 28)
                     }
-                    .foregroundColor(scheduleFormVM.timeOption ? .black : .gray2)
+                    .foregroundColor(scheduleFormVM.isAllDay ? .black : .gray2)
                     .padding(.horizontal, 20)
 
                     HStack {
@@ -136,7 +136,7 @@ struct ScheduleFormView: View {
                             .labelsHidden()
                             .transition(.picker)
                             
-                            if !scheduleFormVM.timeOption {
+                            if !scheduleFormVM.isAllDay {
                                 DatePicker(
                                     "",
                                     selection: $scheduleFormVM.repeatStart,
@@ -160,7 +160,7 @@ struct ScheduleFormView: View {
                             .labelsHidden()
                             .transition(.picker)
                             
-                            if !scheduleFormVM.timeOption {
+                            if !scheduleFormVM.isAllDay {
                                 DatePicker(
                                     "",
                                     selection: $scheduleFormVM.repeatEnd,
@@ -212,27 +212,27 @@ struct ScheduleFormView: View {
                 }
                 
                 // 반복 설정
-                Group {
-                    Label {
-                        Toggle(isOn: $scheduleFormVM.repeatOption.animation(), label: {
-                            HStack {
-                                Text("반복 설정")
-                                    .font(.pretendard(size: 14, weight: .medium))
-                                Spacer()
-                            }
-                        })
-                        .toggleStyle(MyToggleStyle())
-                    } icon: {
-                        Image("repeat")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 28, height: 28)
-                    }
-                    .padding(.horizontal, 20)
-                    .foregroundColor(scheduleFormVM.repeatOption ? .mainBlack : .gray2)
-
-                    Divider()
-                }
+//                Group {
+//                    Label {
+//                        Toggle(isOn: $scheduleFormVM.repeatOption.animation(), label: {
+//                            HStack {
+//                                Text("반복 설정")
+//                                    .font(.pretendard(size: 14, weight: .medium))
+//                                Spacer()
+//                            }
+//                        })
+//                        .toggleStyle(MyToggleStyle())
+//                    } icon: {
+//                        Image("repeat")
+//                            .renderingMode(.template)
+//                            .resizable()
+//                            .frame(width: 28, height: 28)
+//                    }
+//                    .padding(.horizontal, 20)
+//                    .foregroundColor(scheduleFormVM.repeatOption ? .mainBlack : .gray2)
+//
+//                    Divider()
+//                }
                 
                 // 메모 추가
                 Group {

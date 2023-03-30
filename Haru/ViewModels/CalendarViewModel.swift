@@ -12,8 +12,12 @@ final class CalendarViewModel: ObservableObject {
     var productivityList: [[Int: [Productivity]]] = [[:]] // 원소 개수 == dateList의 개수
     @Published var viewProductivityList = [[[(Int, Productivity?)]]]() // 뷰에 보여주기 위한 일정 리스트
     
+    // MARK: - DetailView에 보여질 데이터들
+
     @Published var scheduleList: [[Schedule]] = []
     @Published var todoList: [[Todo]] = []
+    @Published var pivotDateList: [Date] = []
+    @Published var pivotDate: Date = .init()
     
     @Published var startOnSunday: Bool = true
     
@@ -22,8 +26,6 @@ final class CalendarViewModel: ObservableObject {
             getCurDateList(monthOffest, startOnSunday)
         }
     } // 진짜 월과의 차이
-    
-    @Published var pivotDate: Date = .init() // 터치해서 선택된 날짜
     
     @Published var selectionSet: Set<DateValue> = [] // 드래그해서 선택된 날짜(들)
 
@@ -34,6 +36,7 @@ final class CalendarViewModel: ObservableObject {
             maxOrder = numberOfWeeks < 6 ? 4 : 3
         }
     } // 달력에 표시된 주차
+    
     var maxOrder: Int = 0
     
     @Published var dayList: [String] = [] // 달력에 표시할 요일
@@ -78,7 +81,7 @@ final class CalendarViewModel: ObservableObject {
 
     func getCurMonthSchList(_ dateList: [DateValue]) {
         productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
-        viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: 4), count: numberOfWeeks)
+        viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: maxOrder), count: numberOfWeeks)
         
         guard let startDate = Calendar.current.date(byAdding: .day, value: -1, to: dateList[0].date) else { return }
         guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
@@ -148,12 +151,46 @@ final class CalendarViewModel: ObservableObject {
     
     // 선택된 날의 일정과 할일들 가져오기 (선택된 날짜로부터 15일 이전 ~ 15일 이후)
     func getSelectedScheduleList() {
-        // TODO: currentDate @Published로 만들어주기
         scheduleList = [[Schedule]](repeating: [], count: 31)
         todoList = [[Todo]](repeating: [], count: 31)
+        pivotDateList = [Date](repeating: Date(), count: 31)
         
         guard let startDate = Calendar.current.date(byAdding: .day, value: -15, to: pivotDate) else { return }
         guard let endDate = Calendar.current.date(byAdding: .day, value: 15, to: pivotDate) else { return }
+        
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        
+        for (index, date) in stride(from: startDate, through: endDate, by: dayDurationInSeconds).enumerated() {
+            pivotDateList[index] = date
+        }
+        
+        print("초기 날짜")
+        pivotDateList.enumerated().forEach { index, date in
+            print("[\(index)] \(date.getDateFormatString("MM dd"))")
+        }
+        
+        Task {
+            let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            
+            DispatchQueue.main.async {
+                (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+            }
+        }
+    }
+    
+    func getRefreshProductivityList() {
+        guard let startDate = pivotDateList.first else { return }
+        guard let endDate = pivotDateList.last else { return }
+        
+        scheduleList = [[Schedule]](repeating: [], count: 31)
+        todoList = [[Todo]](repeating: [], count: 31)
+        pivotDateList = [Date](repeating: Date(), count: 31)
+        
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        
+        for (index, date) in stride(from: startDate, through: endDate, by: dayDurationInSeconds).enumerated() {
+            pivotDateList[index] = date
+        }
         
         Task {
             let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
@@ -165,29 +202,43 @@ final class CalendarViewModel: ObservableObject {
     }
     
     // offSet만큼 더해주고 빼주깈
-    func getMoreProductivityList(isRight: Bool) {
-        // TODO: currentDate @Published로 만들어주기
-        let offSet = 5
+    func getMoreProductivityList(isRight: Bool, offSet: Int, completion: @escaping () -> Void) {
+        guard let toDate = isRight ? pivotDateList.last : pivotDateList.first else { return }
+        let startValue = isRight ? 1 : -offSet
+        let endValue = isRight ? offSet : -1
+        print(startValue, endValue)
         
-        guard let startDate = Calendar.current.date(byAdding: .day, value: isRight ? 1 : -offSet, to: pivotDate) else { return }
-        guard let endDate = Calendar.current.date(byAdding: .day, value: isRight ? offSet : -1, to: pivotDate) else { return }
+        guard let startDate = Calendar.current.date(byAdding: .day, value: startValue, to: toDate) else { return }
+        guard let endDate = Calendar.current.date(byAdding: .day, value: endValue, to: toDate) else { return }
         
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+
         Task {
             let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
             
             DispatchQueue.main.async {
                 let result = self.fittingOffsetDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+            
+                var addedDateList = [Date]()
+                addedDateList.append(contentsOf: stride(from: startDate, through: endDate, by: dayDurationInSeconds))
+                
                 if isRight {
+                    self.pivotDateList.append(contentsOf: addedDateList)
+                    self.pivotDateList.removeFirst(5)
                     self.scheduleList.append(contentsOf: result.0)
                     self.scheduleList.removeFirst(5)
                     self.todoList.append(contentsOf: result.1)
                     self.todoList.removeFirst(5)
+                    
                 } else {
+                    self.pivotDateList.insert(contentsOf: addedDateList, at: 0)
+                    self.pivotDateList.removeLast(5)
                     self.scheduleList.insert(contentsOf: result.0, at: 0)
                     self.scheduleList.removeLast(5)
                     self.todoList.insert(contentsOf: result.1, at: 0)
                     self.todoList.removeLast(5)
                 }
+                completion()
             }
         }
     }
@@ -249,7 +300,7 @@ final class CalendarViewModel: ObservableObject {
         let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
 
         // 최대 보여줄 수 있는 일정, 할일 개수
-        let prodCnt = numberOfWeeks < 6 ? 4 : 3
+        let prodCnt = maxOrder
 
         // 최종 결과
         var result = [[Int: [Productivity]]](repeating: [:], count: dateList.count) // 날짜별
@@ -290,8 +341,8 @@ final class CalendarViewModel: ObservableObject {
         var result0 = [[Schedule]](repeating: [], count: 31)
         var result1 = [[Todo]](repeating: [], count: 31)
 
-        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         var todoIdx = 0
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
 
         for (index, date) in stride(from: startDate, through: endDate, by: dayDurationInSeconds).enumerated() {
             // date에 해당하는 일정이 있는지 확인
@@ -443,11 +494,11 @@ final class CalendarViewModel: ObservableObject {
         var todoIdx = 0, dateIdx = 0
 
         var maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
-        maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+        maxKey = maxKey >= prodCnt ? maxKey : maxKey + 1
         while todoIdx < todoList.count, dateIdx < dateList.count {
             if dateList[dateIdx].date.isEqual(other: todoList[todoIdx].endDate!) {
                 result[dateIdx][maxKey] = (result[dateIdx][maxKey] ?? []) + [todoList[todoIdx]]
-                maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+                maxKey = maxKey >= prodCnt ? maxKey : maxKey + 1
                 todoIdx += 1
             } else if dateList[dateIdx].date > todoList[todoIdx].endDate! {
                 todoIdx += 1

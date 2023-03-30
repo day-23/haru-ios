@@ -9,8 +9,6 @@ import Foundation
 import SwiftUI
 
 final class ScheduleFormViewModel: ObservableObject {
-//    @Published var prevPageIndex: Int
-    
     // TODO: 반복 설정, 하루종일 설정
     
     @Published var repeatStart: Date
@@ -20,10 +18,11 @@ final class ScheduleFormViewModel: ObservableObject {
     @Published var content: String = ""
     @Published var memo: String = ""
     
-    @Published var timeOption: Bool = false
+    @Published var isAllDay: Bool = false
     @Published var isSelectedAlarm: Bool = false
     @Published var alarmOptions: [AlarmOption] = [.start]
-    @Published var repeatOption: Bool = false
+    @Published var repeatOption: String?
+    @Published var repeatValue: String?
     
     @Published var selectionCategory: Int? // 선택한 카테고리의 인덱스 번호
     
@@ -49,10 +48,6 @@ final class ScheduleFormViewModel: ObservableObject {
         return result
     }
     
-    var memoOption: Bool {
-        !memo.isEmpty
-    }
-    
     var categoryList: [Category] {
         calendarVM.categoryList
     }
@@ -76,6 +71,22 @@ final class ScheduleFormViewModel: ObservableObject {
         print("scheduleVM init")
     }
     
+    /**
+     * Request.Schedule 만들기
+     */
+    func createSchedule() -> Request.Schedule {
+        Request.Schedule(
+            content: content,
+            memo: memo,
+            isAllDay: isAllDay,
+            repeatStart: repeatStart,
+            repeatEnd: repeatEnd,
+            repeatOption: repeatOption,
+            repeatValue: repeatValue,
+            alarms: selectedAlarm
+        )
+    }
+    
     // 일정을 수정할 때 호출하는 함수
     func initScheduleData(schedule: Schedule) {
         scheduleId = schedule.id
@@ -86,7 +97,7 @@ final class ScheduleFormViewModel: ObservableObject {
         content = schedule.content
         memo = schedule.memo
         
-        timeOption = !schedule.timeOption
+        isAllDay = !schedule.isAllDay
         isSelectedAlarm = !schedule.alarms.isEmpty
         
         if let category = schedule.category {
@@ -102,8 +113,8 @@ final class ScheduleFormViewModel: ObservableObject {
      * 일정 추가하기
      */
     func addSchedule() {
-        let schedule = Request.Schedule(content: content, memo: memo, categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil, alarms: selectedAlarm, flag: false, repeatStart: repeatStart, repeatEnd: repeatEnd, timeOption: timeOption)
-         
+        let schedule = createSchedule()
+        
         scheduleService.addSchedule(schedule) { result in
             switch result {
             case .success:
@@ -118,16 +129,17 @@ final class ScheduleFormViewModel: ObservableObject {
     /**
      * 일정 간편 추가하기
      */
-    func addEasySchedule(content: String, repeatStart: Date, repeatEnd: Date) {
-        let schedule = Request.Schedule(content: content, memo: "", categoryId: nil, alarms: [], flag: false, repeatStart: repeatStart, repeatEnd: repeatEnd, timeOption: true)
+    func addEasySchedule() {
+        isAllDay = true
+        let schedule = createSchedule()
         
         scheduleService.addSchedule(schedule) { result in
             switch result {
             case .success:
                 // FIXME: getCurMonthSchList를 호출할 필요가 있나?
-                print("success")
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                self.calendarVM.getSelectedScheduleList()
+                self.calendarVM.getRefreshProductivityList()
+                self.content = ""
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -138,14 +150,14 @@ final class ScheduleFormViewModel: ObservableObject {
      * 일정 수정하기
      */
     func updateSchedule() {
-        let schedule = Request.Schedule(content: content, memo: memo, categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil, alarms: selectedAlarm, flag: false, repeatStart: repeatStart, repeatEnd: repeatEnd, timeOption: timeOption)
+        let schedule = createSchedule()
         
         scheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
             switch result {
             case .success:
                 // FIXME: getCurMonthSchList를 호출할 필요가 있나?
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                self.calendarVM.getSelectedScheduleList()
+                self.calendarVM.getRefreshProductivityList()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -160,7 +172,7 @@ final class ScheduleFormViewModel: ObservableObject {
             switch result {
             case .success:
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                self.calendarVM.getSelectedScheduleList()
+                self.calendarVM.getRefreshProductivityList()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
