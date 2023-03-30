@@ -93,6 +93,7 @@
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
 		6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */; };
 		6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */; };
+		6FD912C829D5F4DD00B4545F /* SlideOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD912C729D5F4DD00B4545F /* SlideOptionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -181,6 +182,7 @@
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmOption.swift; sourceTree = "<group>"; };
 		6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormMode.swift; sourceTree = "<group>"; };
+		6FD912C729D5F4DD00B4545F /* SlideOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideOptionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -395,6 +397,7 @@
 				1306673A29CEE19C00AACEE6 /* CalendarMainView.swift */,
 				1306673B29CEE19C00AACEE6 /* CalendarDateView.swift */,
 				1306673C29CEE19C00AACEE6 /* CalendarScheduleItem.swift */,
+				6FD912C729D5F4DD00B4545F /* SlideOptionView.swift */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -554,6 +557,7 @@
 				1306671629CEE13200AACEE6 /* Category.swift in Sources */,
 				1306671C29CEE14000AACEE6 /* ScheduleService.swift in Sources */,
 				1306675F29CEE19C00AACEE6 /* CategoryView.swift in Sources */,
+				6FD912C829D5F4DD00B4545F /* SlideOptionView.swift in Sources */,
 				130667A329CEE1F200AACEE6 /* Data.swift in Sources */,
 				1306676529CEE19C00AACEE6 /* CalendarWeekView.swift in Sources */,
 				1306670C29CEE13200AACEE6 /* TodoLog.swift in Sources */,

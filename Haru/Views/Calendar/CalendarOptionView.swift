@@ -35,11 +35,15 @@ struct CalendarOptionView: View {
                         }
                         Spacer()
                         
-                        Image("plus")
-                            .resizable()
-                            .frame(width: 28, height: 28)
+                        NavigationLink {
+                            Text("hello")
+                        } label: {
+                            Image("plus")
+                                .resizable()
+                                .frame(width: 28, height: 28)
+                        }
                     }
-                    .padding(.init(top: 0, leading: 20, bottom: 0, trailing: 40))
+                    .padding(.init(top: 0, leading: 20, bottom: 0, trailing: 30))
                     .foregroundColor(calendarVM.allCategoryOff ? .gray2 : .gradientStart1)
                         
                     ForEach(calendarVM.categoryList.indices, id: \.self) { index in
@@ -67,7 +71,7 @@ struct CalendarOptionView: View {
                                 }
                         }
                     }
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, 30)
                         
                     Divider()
                         
@@ -89,7 +93,8 @@ struct CalendarOptionView: View {
             Spacer()
                 
             HStack {
-                Spacer()
+                Spacer(minLength: 0)
+                    .frame(width: 54)
                 Button {
                     calendarVM.allCategoryOff = true
                     calendarVM.allTodoOff = true
@@ -98,7 +103,8 @@ struct CalendarOptionView: View {
                         .font(.pretendard(size: 20, weight: .medium))
                 }
                 .tint(.mainBlack)
-                Spacer()
+                Spacer(minLength: 0)
+                    .frame(width: 100)
                 Button {
                     calendarVM.setAllCategoryList()
                 } label: {

@@ -11,9 +11,13 @@ struct CalendarDateView: View {
     @State private var isSchModalVisible: Bool = false
     @State private var isDayModalVisible: Bool = false
     
-    @State private var showingPopup: Bool = false
+    @State private var isOptionModalVisible: Bool = false
 
     @StateObject var calendarVM: CalendarViewModel
+    
+    @State var width = UIScreen.main.bounds.width - 33
+    @State var x = UIScreen.main.bounds.width
+//    @State var x: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -54,28 +58,31 @@ struct CalendarDateView: View {
                         .tint(Color.gradientStart1)
                         
                         Button {
-                            showingPopup = true
+                            withAnimation {
+                                isOptionModalVisible = true
+                                x = 0
+                            }
                         } label: {
                             Image("option-button")
                                 .resizable()
                                 .frame(width: 28, height: 28)
                         }
-                        .popup(isPresented: $showingPopup, view: {
-                            CalendarOptionView(calendarVM: calendarVM)
-                                .background(Color.white)
-                                .frame(width: UIScreen.main.bounds.maxX - 30, height: UIScreen.main.bounds.maxY - 240)
-                                .cornerRadius(20)
-                                .padding(.horizontal, 30)
-                                .shadow(radius: 2.0)
-                                .offset(x: 30)
-                        }, customize: {
-                            $0
-                                .animation(.spring())
-                                .closeOnTap(false)
-                                .closeOnTapOutside(true)
-                                .backgroundColor(.black.opacity(0.5))
-                        })
                         .tint(.gray1)
+//                        .popup(isPresented: $showingPopup, view: {
+//                            CalendarOptionView(calendarVM: calendarVM)
+//                                .background(Color.white)
+//                                .frame(width: UIScreen.main.bounds.maxX - 30, height: UIScreen.main.bounds.maxY - 240)
+//                                .cornerRadius(20)
+//                                .padding(.horizontal, 30)
+//                                .shadow(radius: 2.0)
+//                                .offset(x: 30)
+//                        }, customize: {
+//                            $0
+//                                .animation(.spring())
+//                                .closeOnTap(false)
+//                                .closeOnTapOutside(true)
+//                                .backgroundColor(.black.opacity(0.5))
+//                        })
                     }
                 } // HStack
                 .padding(.horizontal, 30)
@@ -130,7 +137,7 @@ struct CalendarDateView: View {
             } // VStack
 
             // 일정 추가 버튼
-            if !isDayModalVisible {
+            if !isDayModalVisible, !isOptionModalVisible {
                 VStack {
                     Spacer()
                     HStack {
@@ -177,6 +184,41 @@ struct CalendarDateView: View {
                         isDayModalVisible = false
                     }
                 CalendarDayView(calendarViewModel: calendarVM, scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM))
+                    .zIndex(2)
+            }
+            
+            // 설정을 위한 슬라이드 메뉴
+            Group {
+                if isOptionModalVisible {
+                    Color.black.opacity(0.4)
+                        .edgesIgnoringSafeArea(.all)
+                        .zIndex(1)
+                        .onTapGesture {
+                            withAnimation {
+                                x = UIScreen.main.bounds.width
+                                isOptionModalVisible = false
+                            }
+                        }
+                }
+                SlideOptionView(calendarVM: calendarVM)
+                    .shadow(color: .black.opacity(x != 0 ? 0.1 : 0), radius: 5)
+                    .offset(x: x)
+                    .gesture(DragGesture().onChanged { value in
+                        withAnimation {
+                            if value.translation.width > 0 {
+                                x = value.translation.width
+                            }
+                        }
+                    }.onEnded { value in
+                        withAnimation {
+                            if x > width / 3 {
+                                x = UIScreen.main.bounds.width
+                                isOptionModalVisible = false
+                            } else {
+                                x = 0
+                            }
+                        }
+                    })
                     .zIndex(2)
             }
         } // ZStack
