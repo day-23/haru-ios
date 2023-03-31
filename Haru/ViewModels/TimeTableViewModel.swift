@@ -21,21 +21,7 @@ final class TimeTableViewModel: ObservableObject {
     @Published var scheduleList: [ScheduleCell] = []
     @Published var draggingSchedule: ScheduleCell? = nil
 
-    var thisWeek: [Date] {
-        let calendar = Calendar.current
-        guard let startOfWeek = calendar.date(
-            from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: .now)
-        ) else {
-            return []
-        }
-
-        var datesOfWeek: [Date] = []
-        for i in 0 ... 6 {
-            let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
-            datesOfWeek.append(date)
-        }
-        return datesOfWeek
-    }
+    @Published var thisWeek: [Date] = Date.thisWeek()
 
     func findUnion() {
         let dateTimeFormatter = DateFormatter()

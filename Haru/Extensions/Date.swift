@@ -75,6 +75,38 @@ public extension Date {
         return abs(minutes!)
     }
     
+    static func thisWeek() -> [Date] {
+        let calendar = Calendar.current
+        guard let startOfWeek = calendar.date(
+            from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: .now)
+        ) else {
+            return []
+        }
+
+        var datesOfWeek: [Date] = []
+        for i in 0 ... 6 {
+            let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
+            datesOfWeek.append(date)
+        }
+        return datesOfWeek
+    }
+    
+    func indexOfWeek() -> Int? {
+        let calendar = Calendar.current
+        guard let startOfWeek = calendar.date(
+            from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)
+        ) else {
+            return nil
+        }
+
+        var datesOfWeek: [Date] = []
+        for i in 0 ... 6 {
+            let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
+            datesOfWeek.append(date)
+        }
+        return datesOfWeek.firstIndex(where: { $0.compare(self) == .orderedSame })
+    }
+    
     internal func localization(dateFormat: String = Constants.dateFormat) -> Date? {
         let formatter = DateFormatter()
         formatter.dateFormat = .localizedStringWithFormat(dateFormat)

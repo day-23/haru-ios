@@ -10,7 +10,7 @@ import SwiftUI
 struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
 
-    private let column = [GridItem(.fixed(20)), GridItem(.flexible(), spacing: 0),
+    private let column = [GridItem(.fixed(31)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0)]
@@ -19,9 +19,9 @@ struct TimeTableScheduleView: View {
     private var today: Date = .init()
 
     @State private var cellWidth: CGFloat? = nil
-    private var cellHeight: CGFloat = 168
+    private var cellHeight: CGFloat = 72
     private var minuteInterval: Double = 5.0
-    private let showHourTextWidth = 20
+    private let showHourTextWidth = 31
     private let borderWidth = 1
 
     init(timeTableViewModel: StateObject<TimeTableViewModel>) {
@@ -39,12 +39,13 @@ struct TimeTableScheduleView: View {
                         VStack {
                             Spacer()
                             Text("\(index / 8 + 1)")
+                                .font(.pretendard(size: 8, weight: .medium))
+                                .frame(maxWidth: .infinity, alignment: .trailing)
                         }
-                        .font(.system(size: 12))
                     } else {
                         Rectangle()
                             .foregroundColor(.white)
-                            .border(Color(0x000000, opacity: 0.1))
+                            .border(Color(0xededed))
                             .frame(height: cellHeight)
                             .background(
                                 GeometryReader(content: { proxy in
@@ -74,6 +75,7 @@ struct TimeTableScheduleView: View {
                                                 let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
                                                     draggingSchedule.data.repeatStart
                                                 )
+
                                                 timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
                                             })
                                     }
@@ -128,7 +130,7 @@ private extension TimeTableScheduleView {
         let minuteFormatter = DateFormatter()
         minuteFormatter.dateFormat = "m"
 
-        let thisWeekString = timeTableViewModel.thisWeek.map { formatter.string(from: $0) }
+        let thisWeekString = Date.thisWeek().map { formatter.string(from: $0) }
 
         let dateString = formatter.string(from: schedule)
 
@@ -239,14 +241,16 @@ struct CellDropDelegate: DropDelegate {
         guard let dragging = dragging else {
             return false
         }
+
         let calendar = Calendar.current
-        let year = calendar.component(.year, from: dragging.data.repeatStart)
-        let month = calendar.component(.month, from: dragging.data.repeatStart)
+        let year = calendar.component(.year, from: CellDropDelegate.thisWeek[dayIndex])
+        let month = calendar.component(.month, from: CellDropDelegate.thisWeek[dayIndex])
         let day = calendar.component(.day, from: CellDropDelegate.thisWeek[dayIndex])
         let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
         guard let date = Calendar.current.date(from: components) else {
             return false
         }
+        print(date)
         completion(date)
         return true
     }
