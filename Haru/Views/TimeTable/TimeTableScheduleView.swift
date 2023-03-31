@@ -238,7 +238,7 @@ struct CellDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        guard let dragging = dragging else {
+        if dragging == nil {
             return false
         }
 
@@ -250,7 +250,6 @@ struct CellDropDelegate: DropDelegate {
         guard let date = Calendar.current.date(from: components) else {
             return false
         }
-        print(date)
         completion(date)
         return true
     }

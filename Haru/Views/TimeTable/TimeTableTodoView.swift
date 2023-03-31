@@ -17,6 +17,8 @@ struct TimeTableTodoView: View {
             TimeTableTodoRow()
             TimeTableTodoRow()
             TimeTableTodoRow()
+
+            Spacer()
         }
     }
 }
