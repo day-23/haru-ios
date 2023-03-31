@@ -340,6 +340,35 @@ struct TodoService {
         }
     }
 
+    func updateFolded(
+        todoId: String,
+        folded: Bool,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: [String: Any] = [
+            "folded": folded,
+        ]
+
+        AF.request(
+            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/folded/\(todoId)",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     func updateOrderMain(
         todoListByFlag: [Todo],
         todoListWithAnyTag: [Todo],
@@ -525,15 +554,7 @@ struct TodoService {
         ).response { response in
             switch response.result {
             case .success:
-                fetchTodoList { result in
-                    switch result {
-                    case .success:
-                        completion(.success(true))
-                    case let .failure(failure):
-                        print("[Debug] 완료 후 Todo 불러오기에 실패했습니다. \(failure), (\(#fileID), \(#function))")
-                        completion(.failure(failure))
-                    }
-                }
+                completion(.success(true))
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
                 completion(.failure(error))
@@ -564,15 +585,7 @@ struct TodoService {
         ).response { response in
             switch response.result {
             case .success:
-                fetchTodoList { result in
-                    switch result {
-                    case .success:
-                        completion(.success(true))
-                    case let .failure(failure):
-                        print("[Debug] 완료 후 Todo 불러오기에 실패했습니다. \(failure), (\(#fileID), \(#function))")
-                        completion(.failure(failure))
-                    }
-                }
+                completion(.success(true))
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
                 completion(.failure(error))
@@ -599,15 +612,7 @@ struct TodoService {
         ).response { response in
             switch response.result {
             case .success:
-                fetchTodoList { result in
-                    switch result {
-                    case .success:
-                        completion(.success(true))
-                    case let .failure(failure):
-                        print("[Debug] 완료 후 Todo 불러오기에 실패했습니다. \(failure), (\(#fileID), \(#function))")
-                        completion(.failure(failure))
-                    }
-                }
+                completion(.success(true))
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
                 completion(.failure(error))

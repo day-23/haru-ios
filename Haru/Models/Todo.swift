@@ -11,91 +11,27 @@ struct Todo: Identifiable, Codable {
     //  MARK: - Properties
 
     let id: String
-    private(set) var content: String
-    private(set) var memo: String
-    private(set) var todayTodo: Bool
-    private(set) var flag: Bool
-    private(set) var repeatOption: String?
-    private(set) var repeatValue: String?
-    private(set) var alarms: [Alarm]
-    private(set) var endDate: Date?
-    private(set) var endDateTime: Date?
-    private(set) var isSelectedEndDateTime: Bool
-    private(set) var repeatEnd: Date?
-    private(set) var todoOrder: Int?
-    private(set) var todayTodoOrder: Int?
-    private(set) var nextSubTodoOrder: Int?
+    var content: String
+    var memo: String
+    var todayTodo: Bool
+    var flag: Bool
+    var endDate: Date?
+    var isAllDay: Bool
+    var repeatOption: String?
+    var repeatValue: String?
+    var repeatEnd: Date?
+    var todoOrder: Int?
     var completed: Bool
+    var folded: Bool
     var subTodos: [SubTodo]
-    private(set) var tags: [Tag]
-
-    //  MARK: - Server랑 다른 데이터
-
-    var isShowingSubTodo: Bool = true
+    var tags: [Tag]
+    var alarms: [Alarm]
 
     //  MARK: - Dates
 
     let createdAt: Date
-    private(set) var updatedAt: Date?
-    private(set) var deletedAt: Date?
-
-    //  MARK: - init
-
-    init(id: String, content: String, memo: String, todayTodo: Bool, flag: Bool,
-         repeatOption: String? = nil, repeatValue: String? = nil, alarms: [Alarm],
-         endDate: Date? = nil, endDateTime: Date? = nil, isSelectedEndDateTime: Bool,
-         repeatEnd: Date? = nil, todoOrder: Int? = nil, todayTodoOrder: Int? = nil,
-         nextSubTodoOrder: Int? = nil, completed: Bool, subTodos: [SubTodo], tags: [Tag],
-         isShowingSubTodo: Bool, createdAt: Date, updatedAt: Date? = nil, deletedAt: Date? = nil)
-    {
-        self.id = id
-        self.content = content
-        self.memo = memo
-        self.todayTodo = todayTodo
-        self.flag = flag
-        self.repeatOption = repeatOption
-        self.repeatValue = repeatValue
-        self.alarms = alarms
-        self.endDate = endDate
-        self.endDateTime = endDateTime
-        self.isSelectedEndDateTime = isSelectedEndDateTime
-        self.repeatEnd = repeatEnd
-        self.todoOrder = todoOrder
-        self.todayTodoOrder = todayTodoOrder
-        self.nextSubTodoOrder = nextSubTodoOrder
-        self.completed = completed
-        self.subTodos = subTodos
-        self.tags = tags
-        self.isShowingSubTodo = isShowingSubTodo
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
-        self.deletedAt = deletedAt
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.content = try container.decode(String.self, forKey: .content)
-        self.memo = try container.decode(String.self, forKey: .memo)
-        self.todayTodo = try container.decode(Bool.self, forKey: .todayTodo)
-        self.flag = try container.decode(Bool.self, forKey: .flag)
-        self.repeatOption = try container.decodeIfPresent(String.self, forKey: .repeatOption)
-        self.repeatValue = try container.decodeIfPresent(String.self, forKey: .repeatValue)
-        self.alarms = try container.decode([Alarm].self, forKey: .alarms)
-        self.endDate = try container.decodeIfPresent(Date.self, forKey: .endDate)
-        self.endDateTime = try container.decodeIfPresent(Date.self, forKey: .endDateTime)
-        self.isSelectedEndDateTime = try container.decode(Bool.self, forKey: .isSelectedEndDateTime)
-        self.repeatEnd = try container.decodeIfPresent(Date.self, forKey: .repeatEnd)
-        self.todoOrder = try container.decodeIfPresent(Int.self, forKey: .todoOrder)
-        self.todayTodoOrder = try container.decodeIfPresent(Int.self, forKey: .todayTodoOrder)
-        self.nextSubTodoOrder = try container.decodeIfPresent(Int.self, forKey: .nextSubTodoOrder)
-        self.completed = try container.decode(Bool.self, forKey: .completed)
-        self.subTodos = try container.decode([SubTodo].self, forKey: .subTodos)
-        self.tags = try container.decode([Tag].self, forKey: .tags)
-        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
-        self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
-        self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
-    }
+    var updatedAt: Date?
+    var deletedAt: Date?
 }
 
 //  MARK: - Extensions
