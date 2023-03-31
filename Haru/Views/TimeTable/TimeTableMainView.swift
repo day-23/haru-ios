@@ -105,11 +105,19 @@ struct TimeTableMainView: View {
                             Text("")
 
                             ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                                Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
-                                    .font(.pretendard(size: 14, weight: .medium))
-                                    .foregroundColor(
-                                        index == 0 ? Color(0xf71e58) : (index == 6 ? Color(0x1dafff) : Color(0x191919))
-                                    )
+                                if timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth {
+                                    Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .foregroundColor(
+                                            index == 0 ? Color(0xfdbbcd) : (index == 6 ? Color(0xbbe7ff) : Color(0xbababa))
+                                        )
+                                } else {
+                                    Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .foregroundColor(
+                                            index == 0 ? Color(0xf71e58) : (index == 6 ? Color(0x1dafff) : Color(0x191919))
+                                        )
+                                }
                             }
                         }
 

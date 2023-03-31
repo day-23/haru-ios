@@ -91,6 +91,11 @@ public extension Date {
         return datesOfWeek
     }
     
+    func weekOfYear() -> Int {
+        let calendar = Calendar.current
+        return calendar.component(.weekOfYear, from: Date.now)
+    }
+    
     func indexOfWeek() -> Int? {
         let calendar = Calendar.current
         guard let startOfWeek = calendar.date(

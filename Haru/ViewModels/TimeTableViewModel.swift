@@ -21,7 +21,24 @@ final class TimeTableViewModel: ObservableObject {
     @Published var scheduleList: [ScheduleCell] = []
     @Published var draggingSchedule: ScheduleCell? = nil
 
-    @Published var thisWeek: [Date] = Date.thisWeek()
+    @Published var currentYear: Int = Date.now.year
+    @Published var currentMonth: Int = Date.now.month
+    @Published var currentWeek: Int = Date.now.weekOfYear()
+    var thisWeek: [Date] {
+        let calendar = Calendar.current
+
+        // 해당 연도와 주차로 해당 주의 첫 번째 날짜를 가져옵니다.
+        guard var dayOfWeek = calendar.date(from: DateComponents(weekOfYear: currentWeek, yearForWeekOfYear: currentYear)) else {
+            return []
+        }
+
+        var result: [Date] = []
+        for _ in 0 ... 6 {
+            result.append(dayOfWeek)
+            dayOfWeek = dayOfWeek.addDay()
+        }
+        return result
+    }
 
     func findUnion() {
         let dateTimeFormatter = DateFormatter()
