@@ -66,6 +66,13 @@ public extension Date {
         return result
     }
     
+    func getDateFormatString(_ dateFormat: String) -> String {
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateFormat = dateFormat
+        return dateFormatter.string(from: self)
+    }
+
     func diffToMinute(other: Date) -> Int {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.minute], from: self, to: other)

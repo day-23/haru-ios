@@ -12,6 +12,24 @@ import Foundation
 final class ScheduleService {
     private static let baseURL = Constants.baseURL + "schedule/"
 
+    private static let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        return formatter
+    }()
+
+    private static let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(ScheduleService.formatter)
+        return decoder
+    }()
+
+    private static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+        return encoder
+    }()
+
     /**
      * 현재 선택된 달을 기준으로 이전 달, (선택된) 현재 달, 다음 달의 스케줄 데이터 가져오기
      */
@@ -32,11 +50,6 @@ final class ScheduleService {
             let pagination: Pagination
         }
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.dateFormat
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(formatter)
-
         let paramFormatter = DateFormatter()
         paramFormatter.dateFormat = "yyyyMMdd"
 
@@ -56,7 +69,7 @@ final class ScheduleService {
             encoding: URLEncoding.queryString,
             headers: headers
         )
-        .responseDecodable(of: Response.self, decoder: decoder) { response in
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -83,11 +96,6 @@ final class ScheduleService {
             let pagination: Pagination
         }
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.dateFormat
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(formatter)
-
         let paramFormatter = DateFormatter()
         paramFormatter.dateFormat = "yyyyMMdd"
 
@@ -109,7 +117,7 @@ final class ScheduleService {
                 encoding: URLEncoding.queryString,
                 headers: headers
             )
-            .responseDecodable(of: Response.self, decoder: decoder) { response in
+            .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
                 switch response.result {
                 case let .success(response):
                     continuation.resume(returning: response.data)
@@ -133,22 +141,14 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.dateFormat
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(formatter)
-
         AF.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: schedule,
-            encoder: JSONParameterEncoder(encoder: encoder),
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
             headers: headers
         )
-        .responseDecodable(of: Response.self, decoder: decoder) { response in
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -204,68 +204,40 @@ final class ScheduleService {
     /**
      *  달력에 표시될 일정 만드는 함수
      */
-    func fittingScheduleList(
-        _ dateList: [DateValue],
-        _ scheduleList: [Schedule],
-        _ prodCnt: Int,
-        result: inout [[Int: [Productivity]]],
-        result_: inout [[[(Int, Productivity?)]]]
-    ) {
-        let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+    func updateSchedule(scheduleId: String?, schedule: Request.Schedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
 
-        // 주차별 스케줄
-        var weeksOfScheduleList = [[Schedule]](repeating: [], count: numberOfWeeks)
-
-        var splitDateList = [[Date]]() // row: 주차, col: row주차에 있는 날짜들
-
-        for row in 0 ..< numberOfWeeks {
-            splitDateList.append([dateList[row * 7 + 0].date, dateList[row * 7 + 6].date])
-        }
-
-        for schedule in scheduleList {
-            // 카테고리 필터링
-            if schedule.category == nil || schedule.category!.isSelected {
-                for (week, dates) in splitDateList.enumerated() {
-                    // 구간 필터링
-                    if schedule.repeatEnd < dates[0] {
-                        break
-                    }
-                    if schedule.repeatStart >= dates[1] {
-                        continue
-                    }
-                    weeksOfScheduleList[week].append(schedule)
-                }
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")",
+            method: .patch,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
             }
         }
+    }
 
-        for (week, weekOfSchedules) in weeksOfScheduleList.enumerated() {
-            // 주 단위
-            var orders = Array(repeating: Array(repeating: true, count: prodCnt + 1), count: 7)
-            for schedule in weekOfSchedules {
-                var order = 0
-                var isFirst = true
-
-                for (index, dateValue) in dateList[week * 7 ..< (week + 1) * 7].enumerated() {
-                    if schedule.repeatStart < Calendar.current.date(
-                        byAdding: .day,
-                        value: 1,
-                        to: dateValue.date
-                    )!,
-                        schedule.repeatEnd >= dateValue.date
-                    {
-                        if isFirst {
-                            var i = 0
-                            while i < prodCnt, !orders[index][i] {
-                                i += 1
-                            }
-                            order = i
-                            orders[index][i] = false
-                            isFirst = false
-                        }
-                        orders[index][order] = false
-                        result[week * 7 + index][order] = (result[week * 7 + index][order] ?? []) + [schedule]
-                    }
-                }
+    /**
+     * 일정 삭제하기
+     */
+    func deleteSchedule(scheduleId: String?, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")",
+            method: .delete
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
             }
         }
     }

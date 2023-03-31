@@ -8,46 +8,35 @@
 import SwiftUI
 
 struct CalendarDateItem: View {
-    @Binding var selectionSet: Set<DateValue>
+    var selectionSet: Set<DateValue>
 
     let value: DateValue
-    var cellHeight: CGFloat
-    var cellWidhth: CGFloat
+    let cellHeight: CGFloat
+    let cellWidth: CGFloat
 
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-                .frame(height: 2)
+                .frame(height: 7)
 
-            ZStack {
-                Group {
-                    if CalendarHelper.isSameDay(date1: value.date, date2: Date()) {
-                        Circle()
-                            .strokeBorder(.gradation1, lineWidth: 2)
-                            .frame(width: 24, height: 24)
-                    } else {
-                        Circle()
-                            .fill(.clear)
-                            .frame(width: 24, height: 24)
-                    }
-
-                    Text("\(value.day)")
-                        .font(.pretendard(size: 14, weight: .regular))
-                        .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .blue : .primary)
-                }
-                .opacity(!value.isNextDate && !value.isPrevDate ? 1 : 0.5)
-            }
-
+            Text("\(value.day)")
+                .font(.pretendard(size: 12, weight: .medium))
+                .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .gradientStart1 : Calendar.current.component(.weekday, from: value.date) == 1 ? .red : Calendar.current.component(.weekday, from: value.date) == 7 ? .gradientStart1 : .mainBlack)
+                .background(
+                    Circle()
+                        .stroke(Color.gradation1, lineWidth: CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 2 : 0)
+                        .frame(width: 20, height: 20)
+                )
             Spacer()
-                .frame(height: 1)
         } // VStack
-        .frame(width: cellWidhth, height: cellHeight, alignment: .top)
-        .background(selectionSet.contains(value) ? .cyan : .white)
+        .frame(width: cellWidth, height: cellHeight, alignment: .top)
+        .background(selectionSet.contains(value) ? .mint : .white)
+        .opacity(!value.isNextDate && !value.isPrevDate && !selectionSet.contains(value) ? 1 : 0.3)
     }
 }
 
-struct CalendarDateItem_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarDateItem(selectionSet: .constant([DateValue(day: 8, date: Date())]), value: DateValue(day: 7, date: Date()), cellHeight: 100, cellWidhth: UIScreen.main.bounds.width / 7)
-    }
-}
+// struct CalendarDateItem_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CalendarDateItem(selectionSet: .constant([DateValue(day: 8, date: Date())]), value: DateValue(day: 7, date: Date()), cellHeight: 100, cellWidhth: UIScreen.main.bounds.width / 7)
+//    }
+// }

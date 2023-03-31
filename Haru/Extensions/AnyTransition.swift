@@ -17,8 +17,8 @@ extension AnyTransition {
 
     static var picker: AnyTransition {
         .asymmetric(
-            insertion: .push(from: .trailing),
-            removal: .push(from: .leading)
+            insertion: .push(from: .bottom),
+            removal: .push(from: .top)
         )
     }
 }

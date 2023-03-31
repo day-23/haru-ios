@@ -8,18 +8,20 @@
 import SwiftUI
 
 struct CalendarDayDetailView: View {
+    var calendarVM: CalendarViewModel
+    @StateObject var scheduleVM: ScheduleFormViewModel
+    var todoAddViewModel: TodoAddViewModel
+    
     @State private var content: String = ""
     
-    @Binding var currentScheduleList: [Schedule]
-    @Binding var currentTodoList: [Todo]
-    @Binding var currentDate: Date
+    var row: Int
     
     var body: some View {
         VStack {
             HStack {
-                Text("\(currentDate.month)월 \(currentDate.day)일")
+                Text("\(calendarVM.pivotDateList[row].getDateFormatString("M월 dd일 E요일"))")
                     .foregroundColor(.white)
-                    .fontWeight(.bold)
+                    .font(.pretendard(size: 20, weight: .bold))
                 Spacer()
                 Group {
                     Button {
@@ -42,28 +44,38 @@ struct CalendarDayDetailView: View {
             
             ZStack {
                 ScrollView {
-                    VStack(spacing: 20) {
+                    VStack(alignment: .leading, spacing: 20) {
                         HStack {
                             Image("calendar")
                             Text("일정")
-                                .foregroundColor(.blue)
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(.gradientStart1)
                             Spacer()
                         }
                         .padding(.horizontal, 20)
                         
-                        ForEach(currentScheduleList.indices, id: \.self) { index in
-                            HStack(spacing: 20) {
-                                Circle()
-                                    .fill(Color(currentScheduleList[index].category?.color, true))
-                                    .frame(width: 20, height: 20)
-                                VStack(alignment: .leading) {
-                                    Text("\(currentScheduleList[index].content)")
-                                    Text("하루종일")
-                                        .font(.pretendard(size: 12, weight: .regular))
+                        ForEach(calendarVM.scheduleList[row].indices, id: \.self) { index in
+                            NavigationLink {
+                                ScheduleFormView(scheduleFormVM: scheduleVM, isSchModalVisible: .constant(false), selectedIndex: row)
+                                    .onAppear {
+                                        scheduleVM.mode = .edit
+                                        scheduleVM.initScheduleData(schedule: calendarVM.scheduleList[row][index])
+                                    }
+                            } label: {
+                                HStack(spacing: 20) {
+                                    Circle()
+                                        .fill(Color(calendarVM.scheduleList[row][index].category?.color, true))
+                                        .frame(width: 14, height: 14)
+                                    VStack(alignment: .leading) {
+                                        Text("\(calendarVM.scheduleList[row][index].content)")
+                                            .font(.pretendard(size: 14, weight: .bold))
+                                        Text(calendarVM.scheduleList[row][index].isAllDay ? "하루 종일" : "\(calendarVM.scheduleList[row][index].repeatStart.getDateFormatString("a hh:mm")) - \(calendarVM.scheduleList[row][index].repeatEnd.getDateFormatString("a hh:mm"))")
+                                            .font(.pretendard(size: 10, weight: .regular))
+                                    }
                                 }
-                                Spacer()
+                                .padding(.horizontal, 20)
                             }
-                            .padding(.horizontal, 20)
+                            .tint(.mainBlack)
                         }
                         
                         Divider()
@@ -71,23 +83,39 @@ struct CalendarDayDetailView: View {
                         HStack {
                             Image("checkMark")
                             Text("할일")
-                                .foregroundColor(.blue)
+                                .foregroundColor(.gradientStart1)
+                                .font(.pretendard(size: 14, weight: .bold))
                             Spacer()
                         }
                         .padding(.horizontal, 20)
                         
-                        ForEach(currentTodoList.indices, id: \.self) { index in
-                            HStack(spacing: 20) {
-                                Circle()
-                                    .strokeBorder()
-                                    .frame(width: 20, height: 20)
-                                Text("\(currentTodoList[index].content)")
-                                Spacer()
-                                Image("star")
-                                    .frame(width: 20, height: 20)
+                        ForEach(calendarVM.todoList[row].indices, id: \.self) { index in
+                            NavigationLink {
+                                Text("todo list 수정")
+                            } label: {
+                                HStack(spacing: 20) {
+                                    Image("check-circle")
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                    VStack(alignment: .leading) {
+                                        Text("\(calendarVM.todoList[row][index].content)")
+                                            .font(.pretendard(size: 14, weight: .bold))
+                                        HStack(spacing: 8) {
+                                            ForEach(calendarVM.todoList[row][index].tags.prefix(5)) { tag in
+                                                Text("\(tag.content)")
+                                                    .font(.pretendard(size: 10, weight: .regular))
+                                            }
+                                        }
+                                    }
+                                    .frame(height: 28, alignment: .leading)
+                                    Spacer()
+                                    Image(calendarVM.todoList[row][index].flag ? "star-check" : "star")
+                                        .frame(width: 14, height: 14)
+                                }
+                                .padding(.horizontal, 20)
                             }
+                            .tint(.mainBlack)
                         }
-                        .padding(.horizontal, 20)
                         
                         Spacer()
                             .frame(height: 30)
@@ -98,7 +126,8 @@ struct CalendarDayDetailView: View {
                     Spacer()
                     
                     HStack {
-                        TextField("\(currentDate.month)월 \(currentDate.day)일 일정 추가", text: $content)
+                        TextField("\(calendarVM.pivotDateList[row].month)월 \(calendarVM.pivotDateList[row].day)일 일정 추가", text: $content)
+                            .font(.pretendard(size: 14, weight: .light))
                             .frame(height: 20)
                             .padding(10)
                             .padding(.horizontal, 12)
@@ -106,10 +135,12 @@ struct CalendarDayDetailView: View {
                             .cornerRadius(8)
                         
                         Button {
-                            print("hello")
+                            scheduleVM.addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
+                            self.content = ""
                         } label: {
-                            Image(systemName: "plus")
-                                .frame(width: 28, height: 28)
+                            Image("plus-button")
+                                .resizable()
+                                .frame(width: 40, height: 40)
                         }
                     }
                     .padding(.horizontal, 12)

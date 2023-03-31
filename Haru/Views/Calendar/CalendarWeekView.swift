@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct CalendarWeekView: View {
-    @EnvironmentObject var calendarVM: CalendarViewModel
+    @StateObject var calendarVM: CalendarViewModel
 
     @Binding var isDayModalVisible: Bool
 
     var cellHeight: CGFloat
-    var cellWidhth: CGFloat
+    var cellWidth: CGFloat
 
     var body: some View {
         Group {
@@ -23,33 +23,54 @@ struct CalendarWeekView: View {
                     ZStack(alignment: .bottom) {
                         LazyVGrid(columns: dateColumns, spacing: 0) {
                             ForEach(0 ..< 7, id: \.self) { day in
-                                CalendarDateItem(selectionSet: $calendarVM.selectionSet, value: calendarVM.dateList[week * 7 + day], cellHeight: cellHeight, cellWidhth: cellWidhth)
+                                CalendarDateItem(selectionSet: calendarVM.selectionSet, value: calendarVM.dateList[week * 7 + day], cellHeight: cellHeight, cellWidth: cellWidth)
                                     .onTapGesture {
                                         calendarVM.pivotDate = calendarVM.dateList[week * 7 + day].date
-                                        calendarVM.getSelectedScheduleList(week * 7 + day)
+                                        calendarVM.getSelectedScheduleList()
                                         isDayModalVisible = true
                                     }
                             }
                         }
+
                         VStack(spacing: 2) {
-                            Spacer().frame(height: 24)
-                            // TODO: 아래 코드 보기 좋게 만들기
-                            ForEach(0 ..< (calendarVM.numberOfWeeks < 6 ? 4 : 3), id: \.self) { order in
-                                CalendarScheduleItem(productivityList: $calendarVM.viewProductivityList[week][order], cellWidth: cellWidhth)
+                            Spacer().frame(height: 26)
+                            ForEach(0 ..< calendarVM.maxOrder, id: \.self) { order in
+                                CalendarScheduleItem(productivityList: $calendarVM.viewProductivityList[week][order], cellWidth: cellWidth, month: calendarVM.dateList[10].date.month)
                             }
+                            moreText(week: week, dateColumns: dateColumns)
                         }
-                        .frame(width: cellWidhth * 7, height: cellHeight, alignment: .top)
+                        .frame(width: cellWidth * 7, height: cellHeight, alignment: .top)
                     }
                     .border(width: 0.5, edges: [.top], color: .gray1)
                 }
             }
         } // Group
     }
-}
 
-struct CalendarWeekView_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarWeekView(isDayModalVisible: .constant(false), cellHeight: 120, cellWidhth: UIScreen.main.bounds.width / 7)
-            .environmentObject(CalendarViewModel())
+    @ViewBuilder
+    func moreText(week: Int, dateColumns: [GridItem]) -> some View {
+        LazyVGrid(columns: dateColumns, spacing: 0) {
+            ForEach(0 ..< 7, id: \.self) { day in
+                if let moreCnt = getMoreCnt(week: week, day: day) {
+                    Text("+\(moreCnt)")
+                        .font(.pretendard(size: 12, weight: .regular))
+                        .padding(4)
+                        .frame(width: cellWidth - 4, height: 16, alignment: .center)
+                        .background(Color.gray3)
+                        .cornerRadius(4)
+                        .opacity(calcOpacity(dateValue: calendarVM.dateList[week * 7 + day]))
+                } else {
+                    Spacer()
+                }
+            }
+        }
+    }
+
+    func getMoreCnt(week: Int, day: Int) -> Int? {
+        calendarVM.productivityList[week * 7 + day][calendarVM.maxOrder]?.count
+    }
+
+    func calcOpacity(dateValue: DateValue) -> Double {
+        dateValue.isNextDate || dateValue.isPrevDate ? 0.3 : 1
     }
 }

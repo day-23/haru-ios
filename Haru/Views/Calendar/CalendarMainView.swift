@@ -11,8 +11,7 @@ struct CalendarMainView: View {
     @StateObject var calendarVM: CalendarViewModel = .init()
 
     var body: some View {
-        CalendarDateView()
-            .environmentObject(calendarVM)
+        CalendarDateView(calendarVM: calendarVM)
     }
 }
 

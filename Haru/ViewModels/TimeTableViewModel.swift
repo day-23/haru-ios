@@ -159,7 +159,7 @@ final class TimeTableViewModel: ObservableObject {
         _ startDate: Date,
         _ endDate: Date
     ) {
-        guard let draggingSchedule = draggingSchedule else {
+        guard let draggingSchedule else {
             return
         }
 
@@ -167,10 +167,11 @@ final class TimeTableViewModel: ObservableObject {
         scheduleService.updateSchedule(draggingSchedule.id,
                                        Request.Schedule(content: draggingSchedule.data.content,
                                                         memo: draggingSchedule.data.memo,
-                                                        alarms: draggingSchedule.data.alarms.map { $0.time },
                                                         isAllDay: draggingSchedule.data.isAllDay,
                                                         repeatStart: startDate,
-                                                        repeatEnd: endDate)) { result in
+                                                        repeatEnd: endDate,
+                                                        repeatOption: draggingSchedule.data.repeatOption,
+                                                        alarms: draggingSchedule.data.alarms.map(\.time))) { result in
             switch result {
             case .success(let schedule):
                 if let index = self.scheduleList.firstIndex(where: { schedule in
