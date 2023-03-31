@@ -36,6 +36,7 @@ struct ListSectionView<Content>: View where Content: View {
                         )
                         .foregroundColor(.black)
                     }
+                    .id("\(todo.id) \(UUID().uuidString)")
 
                     if !todo.folded {
                         ForEach(todo.subTodos) { subTodo in
@@ -45,6 +46,7 @@ struct ListSectionView<Content>: View where Content: View {
                                 subTodo: subTodo,
                                 backgroundColor: itemBackgroundColor
                             )
+                            .id("\(subTodo.id) \(UUID().uuidString)")
                         }
                         .moveDisabled(true)
                     }
