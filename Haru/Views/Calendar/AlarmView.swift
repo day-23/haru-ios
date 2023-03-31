@@ -9,7 +9,6 @@ import SwiftUI
 
 struct AlarmView: View {
     @StateObject var scheduleVM: ScheduleFormViewModel
-    @State var selectIdxList = [Bool](repeating: false, count: 4)
 
     var body: some View {
         VStack {
@@ -19,23 +18,22 @@ struct AlarmView: View {
                         .font(.pretendard(size: 14, weight: .medium))
                         .padding(.horizontal, 14)
                         .padding(.vertical, 2)
-                        .background(selectIdxList[index] ? .white : .clear)
+                        .background(scheduleVM.selectIdxList[index] ? .white : .clear)
                         .cornerRadius(8)
                         .onTapGesture {
-                            selectIdxList[index].toggle()
-
-                            var idxList: [Int] = []
-                            for i in selectIdxList.indices {
-                                if selectIdxList[i] {
-                                    idxList.append(i)
-                                }
-                            }
-
-                            scheduleVM.alarmOptions = idxList.map { selectedIdx in
-                                AlarmOption.allCases.first { option in
-                                    option.rawValue == AlarmOption.allCases[selectedIdx].rawValue
-                                }!
-                            }
+                            scheduleVM.selectIdxList[index].toggle()
+//                            var idxList: [Int] = []
+//                            for i in selectIdxList.indices {
+//                                if selectIdxList[i] {
+//                                    idxList.append(i)
+//                                }
+//                            }
+//
+//                            scheduleVM.alarmOptions = idxList.map { selectedIdx in
+//                                AlarmOption.allCases.first { option in
+//                                    option.rawValue == AlarmOption.allCases[selectedIdx].rawValue
+//                                }!
+//                            }
                         }
                 }
             }
@@ -46,8 +44,8 @@ struct AlarmView: View {
     }
 }
 
-//struct AlarmView_Previews: PreviewProvider {
+// struct AlarmView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        AlarmView()
 //    }
-//}
+// }

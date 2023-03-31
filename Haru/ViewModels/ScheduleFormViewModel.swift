@@ -13,14 +13,14 @@ final class ScheduleFormViewModel: ObservableObject {
     
     @Published var repeatStart: Date
     @Published var repeatEnd: Date
-    @Published var alarmDate: Date = .init()
     
     @Published var content: String = ""
     @Published var memo: String = ""
     
     @Published var isAllDay: Bool = false
     @Published var isSelectedAlarm: Bool = false
-    @Published var alarmOptions: [AlarmOption] = []
+    @Published var selectIdxList = [Bool](repeating: false, count: 4) // 선택된 알람
+    
     @Published var repeatOption: String?
     @Published var repeatValue: String?
     
@@ -32,16 +32,20 @@ final class ScheduleFormViewModel: ObservableObject {
     var selectedAlarm: [Date] {
         var result = [Date]()
         if isSelectedAlarm {
-            for option in alarmOptions {
-                switch option {
-                case .start:
-                    result.append(repeatStart)
-                case .tenMinAgo:
-                    result.append(Calendar.current.date(byAdding: .minute, value: -10, to: repeatStart) ?? repeatStart)
-                case .oneHourAgo:
-                    result.append(Calendar.current.date(byAdding: .hour, value: -1, to: repeatStart) ?? repeatStart)
-                case .oneDayAgo:
-                    result.append(Calendar.current.date(byAdding: .day, value: -1, to: repeatStart) ?? repeatStart)
+            for i in selectIdxList.indices {
+                if selectIdxList[i] {
+                    switch i {
+                    case 0:
+                        result.append(repeatStart)
+                    case 1:
+                        result.append(Calendar.current.date(byAdding: .minute, value: -10, to: repeatStart) ?? repeatStart)
+                    case 2:
+                        result.append(Calendar.current.date(byAdding: .hour, value: -1, to: repeatStart) ?? repeatStart)
+                    case 3:
+                        result.append(Calendar.current.date(byAdding: .day, value: -1, to: repeatStart) ?? repeatStart)
+                    default:
+                        continue
+                    }
                 }
             }
         }
@@ -98,7 +102,6 @@ final class ScheduleFormViewModel: ObservableObject {
         memo = schedule.memo
         
         isAllDay = schedule.isAllDay
-        isSelectedAlarm = !schedule.alarms.isEmpty
         
         if let category = schedule.category {
             selectionCategory = categoryList.firstIndex(where: { other in
@@ -106,6 +109,20 @@ final class ScheduleFormViewModel: ObservableObject {
             })
         } else {
             selectionCategory = nil
+        }
+        
+        isSelectedAlarm = !schedule.alarms.isEmpty
+        
+        schedule.alarms.forEach { alarm in
+            if alarm.time == repeatStart {
+                selectIdxList[0] = true
+            } else if alarm.time == Calendar.current.date(byAdding: .minute, value: -10, to: repeatStart) {
+                selectIdxList[1] = true
+            } else if alarm.time == Calendar.current.date(byAdding: .hour, value: -1, to: repeatStart) {
+                selectIdxList[2] = true
+            } else if alarm.time == Calendar.current.date(byAdding: .day, value: -1, to: repeatStart) {
+                selectIdxList[3] = true
+            }
         }
     }
     
