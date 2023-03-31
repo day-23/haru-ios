@@ -17,25 +17,25 @@ struct TagListView: View {
                 //  중요 태그
                 StarButton(isClicked: true)
                     .onTapGesture {
-                        action(Tag(id: "중요", content: "중요"))
+                        action(Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
                     }
 
                 //  미분류 태그
                 TagView(
-                    tag: Tag(id: "미분류", content: "미분류"),
-                    isSelected: viewModel.selectedTag?.id == "미분류"
+                    tag: Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue),
+                    isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue
                 )
                 .onTapGesture {
-                    action(Tag(id: "미분류", content: "미분류"))
+                    action(Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue))
                 }
 
                 //  완료 태그
                 TagView(
-                    tag: Tag(id: "완료", content: "완료"),
-                    isSelected: viewModel.selectedTag?.id == "완료"
+                    tag: Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue),
+                    isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
                 )
                 .onTapGesture {
-                    action(Tag(id: "완료", content: "완료"))
+                    action(Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue))
                 }
 
                 //  태그 리스트들

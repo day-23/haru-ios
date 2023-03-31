@@ -90,6 +90,10 @@
 		130667C529CEE33200AACEE6 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C429CEE33200AACEE6 /* Alamofire */; };
 		130667C829CEE35400AACEE6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C729CEE35400AACEE6 /* PopupView */; };
 		130667CB29CEE38500AACEE6 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 130667CA29CEE38500AACEE6 /* SwiftUIPager */; };
+		1356621829D1EE29003CAD1B /* DefaultTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1356621729D1EE29003CAD1B /* DefaultTag.swift */; };
+		13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */; };
+		13D9B5AD29D5DDA100109C0E /* TimeTableTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */; };
+		13D9B5AF29D5E6E400109C0E /* TimeTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
 		6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */; };
 		6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */; };
@@ -179,7 +183,11 @@
 		130667AB29CEE1FE00AACEE6 /* Tab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
 		130667AC29CEE1FE00AACEE6 /* Calendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
+		1356621729D1EE29003CAD1B /* DefaultTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTag.swift; sourceTree = "<group>"; };
 		137414BC29CEE5A7005A8282 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableScheduleView.swift; sourceTree = "<group>"; };
+		13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableTodoView.swift; sourceTree = "<group>"; };
+		13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableViewModel.swift; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmOption.swift; sourceTree = "<group>"; };
 		6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormMode.swift; sourceTree = "<group>"; };
@@ -321,6 +329,7 @@
 				1306677C29CEE1D300AACEE6 /* CheckListViewModel.swift */,
 				1306677E29CEE1D300AACEE6 /* ScheduleFormViewModel.swift */,
 				1306677D29CEE1D300AACEE6 /* TodoAddViewModel.swift */,
+				13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -373,6 +382,7 @@
 				130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */,
 				6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */,
 				6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */,
+				1356621729D1EE29003CAD1B /* DefaultTag.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";
@@ -381,6 +391,8 @@
 			isa = PBXGroup;
 			children = (
 				1306672229CEE15A00AACEE6 /* TimeTableMainView.swift */,
+				13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */,
+				13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */,
 			);
 			path = TimeTable;
 			sourceTree = "<group>";
@@ -521,6 +533,7 @@
 				1306676129CEE19C00AACEE6 /* CalendarOptionView.swift in Sources */,
 				1306672329CEE15A00AACEE6 /* TimeTableMainView.swift in Sources */,
 				1306677929CEE19C00AACEE6 /* SubTodoView.swift in Sources */,
+				13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */,
 				130667A129CEE1F200AACEE6 /* AnyTransition.swift in Sources */,
 				1306678029CEE1D300AACEE6 /* CheckListViewModel.swift in Sources */,
 				6FD912CC29D6D1DF00B4545F /* AlarmView.swift in Sources */,
@@ -539,12 +552,14 @@
 				130667B029CEE1FE00AACEE6 /* Tab.swift in Sources */,
 				1306678E29CEE1E300AACEE6 /* CategoryModal.swift in Sources */,
 				130667AE29CEE1FE00AACEE6 /* TodoAddMode.swift in Sources */,
+				13D9B5AD29D5DDA100109C0E /* TimeTableTodoView.swift in Sources */,
 				1306671529CEE13200AACEE6 /* Alarm.swift in Sources */,
 				1306671029CEE13200AACEE6 /* Schedule.swift in Sources */,
 				1306671129CEE13200AACEE6 /* Productivity.swift in Sources */,
 				1306677529CEE19C00AACEE6 /* ListSectionView.swift in Sources */,
 				1306670D29CEE13200AACEE6 /* Day.swift in Sources */,
 				1306679429CEE1E300AACEE6 /* EmptySectionView.swift in Sources */,
+				13D9B5AF29D5E6E400109C0E /* TimeTableViewModel.swift in Sources */,
 				130667A729CEE1F200AACEE6 /* Color.swift in Sources */,
 				1306676829CEE19C00AACEE6 /* CalendarScheduleItem.swift in Sources */,
 				6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */,
@@ -558,6 +573,7 @@
 				130667A029CEE1F200AACEE6 /* UINavigationController.swift in Sources */,
 				1306676329CEE19C00AACEE6 /* ScheduleFormView.swift in Sources */,
 				130667B429CEE20A00AACEE6 /* CalendarHelper.swift in Sources */,
+				1356621829D1EE29003CAD1B /* DefaultTag.swift in Sources */,
 				1306671629CEE13200AACEE6 /* Category.swift in Sources */,
 				1306671C29CEE14000AACEE6 /* ScheduleService.swift in Sources */,
 				1306675F29CEE19C00AACEE6 /* CategoryView.swift in Sources */,

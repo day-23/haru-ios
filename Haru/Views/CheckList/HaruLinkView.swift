@@ -17,7 +17,7 @@ struct HaruLinkView: View {
                 .padding(.trailing, 12)
                 .tint(.white)
             Text("오늘 나의 하루")
-                .font(.system(size: 20, weight: .bold))
+                .font(.pretendard(size: 20, weight: .bold))
             Spacer()
             Image(systemName: "chevron.right")
                 .frame(width: 28, height: 28)

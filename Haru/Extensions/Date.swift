@@ -3,7 +3,7 @@
 //  Haru
 //
 //  Created by 이준호 on 2023/03/06.
-//  Updated by 최정민 on 2023/03/10.
+//  Updated by 최정민 on 2023/03/31.
 //
 
 import Foundation
@@ -72,22 +72,63 @@ public extension Date {
         dateFormatter.dateFormat = dateFormat
         return dateFormatter.string(from: self)
     }
-}
 
+    func diffToMinute(other: Date) -> Int {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.minute], from: self, to: other)
+        
+        let minutes = components.minute
+        
+        return abs(minutes!)
+    }
+    
+    static func thisWeek() -> [Date] {
+        let calendar = Calendar.current
+        guard let startOfWeek = calendar.date(
+            from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: .now)
+        ) else {
+            return []
+        }
 
-extension Date {
-    func localization(dateFormat: String = Constants.dateFormat) -> Date? {
+        var datesOfWeek: [Date] = []
+        for i in 0 ... 6 {
+            let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
+            datesOfWeek.append(date)
+        }
+        return datesOfWeek
+    }
+    
+    func weekOfYear() -> Int {
+        let calendar = Calendar.current
+        return calendar.component(.weekOfYear, from: Date.now)
+    }
+    
+    func indexOfWeek() -> Int? {
+        let calendar = Calendar.current
+        guard let startOfWeek = calendar.date(
+            from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)
+        ) else {
+            return nil
+        }
+
+        var datesOfWeek: [Date] = []
+        for i in 0 ... 6 {
+            let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
+            datesOfWeek.append(date)
+        }
+        return datesOfWeek.firstIndex(where: { $0.compare(self) == .orderedSame })
+    }
+    
+    internal func localization(dateFormat: String = Constants.dateFormat) -> Date? {
         let formatter = DateFormatter()
         formatter.dateFormat = .localizedStringWithFormat(dateFormat)
-//        formatter.locale = Locale(identifier: Locale.current.identifier)
-//        formatter.timeZone = TimeZone(identifier: TimeZone.current.identifier)
-
+        
         let localizedString = formatter.string(from: self)
         let localized = formatter.date(from: localizedString)
         return localized
     }
 
-    func relative() -> String {
+    internal func relative() -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: self, relativeTo: Date.now)

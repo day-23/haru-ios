@@ -3,6 +3,7 @@
 //  Haru
 //
 //  Created by 이준호 on 2023/03/07.
+//  Updated by 최정민 on 2023/03/31.
 //
 
 import Alamofire
@@ -158,7 +159,50 @@ final class ScheduleService {
     }
 
     /**
-     * 일정 수정하기
+     * 일정 업데이트 API
+     */
+    func updateSchedule(
+        _ scheduleId: String,
+        _ schedule: Request.Schedule,
+        _ completion: @escaping (Result<Schedule, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: Schedule
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(formatter)
+
+        AF.request(
+            ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(scheduleId)",
+            method: .patch,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: encoder),
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    /**
+     *  달력에 표시될 일정 만드는 함수
      */
     func updateSchedule(scheduleId: String?, schedule: Request.Schedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [

@@ -3,6 +3,7 @@
 //  Haru
 //
 //  Created by 이준호 on 2023/03/07.
+//  Updated by 최정민 on 2023/03/31.
 //
 
 import Foundation
@@ -25,7 +26,7 @@ struct Schedule: Identifiable, Codable {
 
     // MARK: - Dates
 
-    let createdAt: Date
+    let createdAt: Date?
     private(set) var updatedAt: Date?
 }
 
@@ -34,5 +35,13 @@ struct Schedule: Identifiable, Codable {
 extension Schedule: Productivity, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
         lhs.id == rhs.id
+    }
+
+    mutating func setRepeatStart(_ newer: Date) {
+        repeatStart = newer
+    }
+
+    mutating func setRepeatEnd(_ newer: Date) {
+        repeatEnd = newer
     }
 }
