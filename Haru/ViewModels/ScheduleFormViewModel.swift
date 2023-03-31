@@ -49,11 +49,11 @@ final class ScheduleFormViewModel: ObservableObject {
      * 일정 추가하기
      */
     func addSchedule() {
-        let schedule = Request.Schedule(content: content, memo: memo, categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil, alarms: selectedAlarm, flag: false, repeatStart: repeatStart, repeatEnd: repeatEnd, timeOption: timeOption)
-         
+        let schedule = Request.Schedule(content: content, memo: memo, categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil, alarms: selectedAlarm, isAllDay: !timeOption, repeatStart: repeatStart, repeatEnd: repeatEnd)
+
         scheduleService.addSchedule(schedule) { result in
             switch result {
-            case .success(_):
+            case .success:
                 // TODO: 추가된 일정을 로컬에서 가지고 있을 수 있나? (반복 일정의 경우 생각해볼 것)
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
             case .failure(let failure):

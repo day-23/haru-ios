@@ -1,0 +1,18 @@
+<svg id="구성_요소_25_37" data-name="구성 요소 25 – 37" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9fa9ff"/>
+      <stop offset="1" stop-color="#15afff"/>
+    </linearGradient>
+  </defs>
+  <g id="그룹_20567" data-name="그룹 20567" transform="translate(-19900 3400)">
+    <g id="그룹_20566" data-name="그룹 20566">
+      <rect id="사각형_25111" data-name="사각형 25111" width="28" height="28" transform="translate(19900 -3400)" fill="none"/>
+      <path id="합치기_10" data-name="합치기 10" d="M3.223,18.777A11,11,0,0,1,11,0,11.01,11.01,0,0,1,22,11,11.01,11.01,0,0,1,11,22,10.917,10.917,0,0,1,3.223,18.777ZM2,11a9,9,0,1,0,18,0,8.92,8.92,0,0,0-.576-3.166L9.373,16.272H9.367l-.389.33L3.193,9.708,4.723,8.423l4.5,5.365,9.266-7.776A9,9,0,0,0,2,11Z" transform="translate(19903 -3397)" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+  <g id="그룹_20565" data-name="그룹 20565" transform="translate(-19936 3424)">
+    <rect id="사각형_25112" data-name="사각형 25112" width="28" height="28" transform="translate(19936 -3424)" fill="none"/>
+    <path id="합치기_12" data-name="합치기 12" d="M21,24H0V5H5V0H7V5h8V0h2V5h5V24ZM2,22H20V7H17v3H15V7H7v3H5V7H2Z" transform="translate(19939 -3424)" opacity="0" fill="url(#linear-gradient)"/>
+  </g>
+</svg>
