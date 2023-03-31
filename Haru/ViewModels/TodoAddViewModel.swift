@@ -14,7 +14,7 @@ final class TodoAddViewModel: ObservableObject {
     var mode: TodoAddMode
     var todoId: String?
 
-    @Published var todoContent: String = ""
+    @Published var content: String = ""
 
     @Published var flag: Bool = false
 
@@ -26,8 +26,11 @@ final class TodoAddViewModel: ObservableObject {
     @Published var isTodayTodo: Bool = false
 
     @Published var endDate: Date = .init()
+    var selectedEndDate: Date? {
+        if isSelectedEndDate { return endDate }
+        return nil
+    }
 
-    @Published var endDateTime: Date = .init()
     @Published var isSelectedEndDate: Bool = false {
         didSet {
             if !isSelectedEndDate && isSelectedRepeat {
@@ -36,17 +39,8 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    @Published var isSelectedEndDateTime: Bool = false
-    var selectedEndDate: Date? {
-        if isSelectedEndDate { return endDate }
-        return nil
-    }
-
-    var selectedEndDateTime: Date? {
-        if selectedEndDate != nil &&
-            isSelectedEndDateTime { return endDateTime }
-        return nil
-    }
+    //  isAllDay : endDate에 시간을 포함하여 계산해야하는지에 대한 데이터
+    @Published var isAllDay: Bool = false
 
     @Published var alarm: Date = .init()
     @Published var isSelectedAlarm: Bool = false
@@ -233,7 +227,7 @@ final class TodoAddViewModel: ObservableObject {
                 }
             }
         }
-        return todoContent.isEmpty
+        return content.isEmpty
     }
 
     init(checkListViewModel: CheckListViewModel, mode: TodoAddMode = .add) {
@@ -245,12 +239,12 @@ final class TodoAddViewModel: ObservableObject {
 
     private func createTodoData() -> Request.Todo {
         return Request.Todo(
-            content: todoContent,
+            content: content,
             memo: memo,
             todayTodo: isTodayTodo,
             flag: flag,
             endDate: selectedEndDate,
-            isSelectedEndDateTime: isSelectedEndDateTime,
+            isAllDay: isAllDay,
             alarms: selectedAlarm,
             repeatOption: !isSelectedEndDate || !isSelectedRepeat ? nil : repeatOption.rawValue,
             repeatValue: !isSelectedEndDate || !isSelectedRepeat ? nil : repeatValue,
@@ -276,9 +270,9 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func addSimpleTodo() {
-        let alt = todoContent
+        let alt = content
         clear()
-        todoContent = alt
+        content = alt
         isTodayTodo = true
 
         checkListViewModel.addTodo(todo: createTodoData()) { result in
@@ -430,7 +424,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func applyTodoData(todo: Todo) {
-        todoContent = todo.content
+        content = todo.content
 
         flag = todo.flag
 
@@ -447,9 +441,8 @@ final class TodoAddViewModel: ObservableObject {
         isTodayTodo = todo.todayTodo
 
         endDate = todo.endDate ?? .init()
-        endDateTime = todo.endDateTime ?? .init()
         isSelectedEndDate = todo.endDate != nil
-        isSelectedEndDateTime = todo.endDateTime != nil
+        isAllDay = todo.isAllDay
 
         alarm = !todo.alarms.isEmpty ? todo.alarms[0].time : .init()
         isSelectedAlarm = !todo.alarms.isEmpty
@@ -494,7 +487,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func clear() {
-        todoContent = ""
+        content = ""
 
         flag = false
 
@@ -505,9 +498,9 @@ final class TodoAddViewModel: ObservableObject {
         isTodayTodo = false
 
         endDate = .init()
-        endDateTime = .init()
         isSelectedEndDate = false
-        isSelectedEndDateTime = false
+
+        isAllDay = false
 
         alarm = .init()
         isSelectedAlarm = false

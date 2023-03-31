@@ -222,6 +222,22 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
+    func updateFolded(
+        todo: Todo,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.updateFolded(todoId: todo.id,
+                                 folded: !todo.flag) { result in
+            switch result {
+            case let .success(success):
+                self.fetchTodoList()
+                completion(.success(success))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     func updateOrderMain() {
         todoService.updateOrderMain(
             todoListByFlag: todoListByFlag,
@@ -263,6 +279,9 @@ final class CheckListViewModel: ObservableObject {
                                  completed: completed) { result in
             switch result {
             case let .success(success):
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.fetchTodoList()
+                }
                 completion(.success(success))
             case let .failure(failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
@@ -297,81 +316,14 @@ final class CheckListViewModel: ObservableObject {
                                            todo: todo) { result in
             switch result {
             case let .success(success):
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.fetchTodoList()
+                }
                 completion(.success(success))
             case let .failure(failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
                 completion(.failure(failure))
             }
-        }
-    }
-
-    func toggleShowingSubtodo(todoId: String) {
-        if let index = todoListByTag.firstIndex(where: { $0.id == todoId }) {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                todoListByTag[index].isShowingSubTodo.toggle()
-            }
-            return
-        }
-
-        if let index = todoListByFlag.firstIndex(where: { $0.id == todoId }) {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                todoListByFlag[index].isShowingSubTodo.toggle()
-            }
-
-            if let index = todoListByFlagWithToday.firstIndex(where: { $0.id == todoId }) {
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    todoListByFlagWithToday[index].isShowingSubTodo.toggle()
-                }
-            }
-            return
-        }
-
-        if let index = todoListByCompleted.firstIndex(where: { $0.id == todoId }) {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                todoListByCompleted[index].isShowingSubTodo.toggle()
-            }
-            return
-        }
-
-        if let index = todoListByFlagWithToday.firstIndex(where: { $0.id == todoId }) {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                todoListByFlagWithToday[index].isShowingSubTodo.toggle()
-            }
-
-            if let index = todoListByFlag.firstIndex(where: { $0.id == todoId }) {
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    todoListByFlag[index].isShowingSubTodo.toggle()
-                }
-            }
-            return
-        }
-
-        if let index = todoListByTodayTodo.firstIndex(where: { $0.id == todoId }) {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                todoListByTodayTodo[index].isShowingSubTodo.toggle()
-            }
-            return
-        }
-
-        if let index = todoListByUntilToday.firstIndex(where: { $0.id == todoId }) {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                todoListByUntilToday[index].isShowingSubTodo.toggle()
-            }
-            return
-        }
-
-        if let index = todoListWithAnyTag.firstIndex(where: { $0.id == todoId }) {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                todoListWithAnyTag[index].isShowingSubTodo.toggle()
-            }
-            return
-        }
-
-        if let index = todoListWithoutTag.firstIndex(where: { $0.id == todoId }) {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                todoListWithoutTag[index].isShowingSubTodo.toggle()
-            }
-            return
         }
     }
 
@@ -442,8 +394,10 @@ final class CheckListViewModel: ObservableObject {
         todoService.deleteTodo(todoId: todoId) { result in
             switch result {
             case let .success(success):
-                self.fetchTodoList()
-                completion(.success(success))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                    self.fetchTodoList()
+                    completion(.success(success))
+                }
             case let .failure(error):
                 completion(.failure(error))
             }

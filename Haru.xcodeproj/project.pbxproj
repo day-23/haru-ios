@@ -376,13 +376,13 @@
 		130666E229CEE01800AACEE6 /* Enumerations */ = {
 			isa = PBXGroup;
 			children = (
+				6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */,
 				130667AC29CEE1FE00AACEE6 /* Calendar.swift */,
+				1356621729D1EE29003CAD1B /* DefaultTag.swift */,
 				130667A829CEE1FE00AACEE6 /* RepeatOption.swift */,
+				6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */,
 				130667AB29CEE1FE00AACEE6 /* Tab.swift */,
 				130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */,
-				6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */,
-				6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */,
-				1356621729D1EE29003CAD1B /* DefaultTag.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";

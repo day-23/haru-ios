@@ -37,7 +37,7 @@ struct ListSectionView<Content>: View where Content: View {
                         .foregroundColor(.black)
                     }
 
-                    if todo.isShowingSubTodo {
+                    if !todo.folded {
                         ForEach(todo.subTodos) { subTodo in
                             SubTodoView(
                                 checkListViewModel: checkListViewModel,

@@ -16,7 +16,7 @@ struct Request: Codable {
         var todayTodo: Bool
         var flag: Bool
         var endDate: Date?
-        var isSelectedEndDateTime: Bool
+        var isAllDay: Bool
         var alarms: [Date]
         var repeatOption: String?
         var repeatValue: String?

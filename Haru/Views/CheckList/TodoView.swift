@@ -63,12 +63,12 @@ struct TodoView: View {
         HStack(spacing: 0) {
             if !todo.subTodos.isEmpty {
                 Button {
-                    checkListViewModel.toggleShowingSubtodo(todoId: todo.id)
+                    checkListViewModel.updateFolded(todo: todo) { _ in }
                 } label: {
                     Image("toggle")
                         .renderingMode(.template)
                         .frame(width: 20, height: 20)
-                        .rotationEffect(Angle(degrees: todo.isShowingSubTodo ? 90 : 0))
+                        .rotationEffect(Angle(degrees: !todo.folded ? 90 : 0))
                         .foregroundColor(Color(0x646464, opacity: todo.completed ? 0.5 : 1))
                 }
             }
@@ -102,7 +102,7 @@ struct TodoView: View {
                                 todayTodo: todo.todayTodo,
                                 flag: todo.flag,
                                 endDate: nil,
-                                isSelectedEndDateTime: todo.isSelectedEndDateTime,
+                                isAllDay: todo.isAllDay,
                                 alarms: todo.alarms.map { $0.time },
                                 repeatOption: todo.repeatOption,
                                 repeatValue: todo.repeatValue,
@@ -129,7 +129,7 @@ struct TodoView: View {
                             todayTodo: todo.todayTodo,
                             flag: todo.flag,
                             endDate: nextEndDate,
-                            isSelectedEndDateTime: todo.isSelectedEndDateTime,
+                            isAllDay: todo.isAllDay,
                             alarms: todo.alarms.map { $0.time },
                             repeatOption: todo.repeatOption,
                             repeatValue: todo.repeatValue,
@@ -168,7 +168,6 @@ struct TodoView: View {
 
                 if todo.tags.count > 0 ||
                     todo.endDate != nil ||
-                    todo.endDateTime != nil ||
                     todo.todayTodo ||
                     todo.alarms.count > 0 ||
                     todo.repeatValue != nil ||
@@ -181,11 +180,11 @@ struct TodoView: View {
                         }
 
                         if let todoDate = todo.endDate {
-                            if let todoDateTime = todo.endDateTime {
+                            if todo.isAllDay {
                                 if todo.repeatOption == nil {
-                                    Text(formatterWithTime.string(from: todoDateTime))
+                                    Text(formatterWithTime.string(from: todoDate))
                                 } else {
-                                    Text(formatterWithTimeAndRepeat.string(from: todoDateTime))
+                                    Text(formatterWithTimeAndRepeat.string(from: todoDate))
                                 }
                             } else {
                                 if todo.repeatOption == nil {
@@ -197,8 +196,7 @@ struct TodoView: View {
                         }
 
                         if (todo.tags.count > 0 ||
-                            todo.endDate != nil ||
-                            todo.endDateTime != nil) &&
+                            todo.endDate != nil) &&
                             (todo.alarms.count > 0 ||
                                 todo.todayTodo ||
                                 todo.repeatValue != nil ||
@@ -260,7 +258,6 @@ struct TodoView: View {
     func successCompletion(todoId: String) {
         checkListViewModel.toggleCompleted(todoId: todoId)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            checkListViewModel.fetchTodoList()
             disabled = false
         }
     }

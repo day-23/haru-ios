@@ -64,7 +64,7 @@ struct TodoAddView: View {
                                 }
                         }
 
-                        TextField("투두 입력", text: $viewModel.todoContent)
+                        TextField("투두 입력", text: $viewModel.content)
                             .font(.pretendard(size: 24, weight: .medium))
                             .padding(.leading, isModalVisible ? 14 : 12)
 
@@ -221,18 +221,18 @@ struct TodoAddView: View {
 
                     if viewModel.isSelectedEndDate {
                         Label {
-                            Toggle(isOn: $viewModel.isSelectedEndDateTime.animation()) {
+                            Toggle(isOn: $viewModel.isAllDay.animation()) {
                                 HStack {
                                     Text(viewModel.isSelectedRepeat ? "시간 설정" : "마감 시간 설정")
                                         .font(.pretendard(size: 14, weight: .medium))
                                         .frame(alignment: .leading)
-                                        .foregroundColor(viewModel.isSelectedEndDateTime ? Color(0x191919) : Color(0xACACAC))
+                                        .foregroundColor(viewModel.isAllDay ? Color(0x191919) : Color(0xACACAC))
 
                                     Spacer()
 
-                                    if viewModel.isSelectedEndDateTime {
+                                    if viewModel.isAllDay {
                                         DatePicker(
-                                            selection: $viewModel.endDateTime,
+                                            selection: $viewModel.endDate,
                                             displayedComponents: [.hourAndMinute]
                                         ) {}
                                             .labelsHidden()
