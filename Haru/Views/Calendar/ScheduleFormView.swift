@@ -199,14 +199,9 @@ struct ScheduleFormView: View {
                     .foregroundColor(scheduleFormVM.isSelectedAlarm ? .mainBlack : .gray2)
                     
                     if scheduleFormVM.isSelectedAlarm {
-                        Picker("", selection: $scheduleFormVM.alarmOptions.animation()) {
-                            ForEach(AlarmOption.allCases, id: \.self) {
-                                Text($0.rawValue)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.horizontal, 55)
-                        .padding(.vertical, 6)
+                        AlarmView(scheduleVM: scheduleFormVM)
+                            .padding(.horizontal, 55)
+                            .padding(.vertical, 6)
                     }
                     Divider()
                 }
@@ -312,9 +307,3 @@ struct ScheduleFormView: View {
         }
     }
 }
-
-// struct ScheduleFormView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()), isSchModalVisible: .constant(true))
-//    }
-// }

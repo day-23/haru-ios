@@ -164,11 +164,6 @@ final class CalendarViewModel: ObservableObject {
             pivotDateList[index] = date
         }
         
-        print("초기 날짜")
-        pivotDateList.enumerated().forEach { index, date in
-            print("[\(index)] \(date.getDateFormatString("MM dd"))")
-        }
-        
         Task {
             let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
             
@@ -206,7 +201,6 @@ final class CalendarViewModel: ObservableObject {
         guard let toDate = isRight ? pivotDateList.last : pivotDateList.first else { return }
         let startValue = isRight ? 1 : -offSet
         let endValue = isRight ? offSet : -1
-        print(startValue, endValue)
         
         guard let startDate = Calendar.current.date(byAdding: .day, value: startValue, to: toDate) else { return }
         guard let endDate = Calendar.current.date(byAdding: .day, value: endValue, to: toDate) else { return }

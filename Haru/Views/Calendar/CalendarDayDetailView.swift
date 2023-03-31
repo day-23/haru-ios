@@ -12,6 +12,8 @@ struct CalendarDayDetailView: View {
     @StateObject var scheduleVM: ScheduleFormViewModel
     var todoAddViewModel: TodoAddViewModel
     
+    @State private var content: String = ""
+    
     var row: Int
     
     var body: some View {
@@ -124,7 +126,7 @@ struct CalendarDayDetailView: View {
                     Spacer()
                     
                     HStack {
-                        TextField("\(calendarVM.pivotDateList[row].month)월 \(calendarVM.pivotDateList[row].day)일 일정 추가", text: $scheduleVM.content)
+                        TextField("\(calendarVM.pivotDateList[row].month)월 \(calendarVM.pivotDateList[row].day)일 일정 추가", text: $content)
                             .font(.pretendard(size: 14, weight: .light))
                             .frame(height: 20)
                             .padding(10)
@@ -133,10 +135,8 @@ struct CalendarDayDetailView: View {
                             .cornerRadius(8)
                         
                         Button {
-                            scheduleVM.repeatStart = calendarVM.pivotDate
-                            scheduleVM.repeatEnd = calendarVM.pivotDate
-                            print(calendarVM.pivotDate.getDateFormatString("MM dd"))
-                            scheduleVM.addEasySchedule()
+                            scheduleVM.addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
+                            self.content = ""
                         } label: {
                             Image("plus-button")
                                 .resizable()

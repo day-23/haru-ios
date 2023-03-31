@@ -20,7 +20,7 @@ final class ScheduleFormViewModel: ObservableObject {
     
     @Published var isAllDay: Bool = false
     @Published var isSelectedAlarm: Bool = false
-    @Published var alarmOptions: [AlarmOption] = [.start]
+    @Published var alarmOptions: [AlarmOption] = []
     @Published var repeatOption: String?
     @Published var repeatValue: String?
     
@@ -97,7 +97,7 @@ final class ScheduleFormViewModel: ObservableObject {
         content = schedule.content
         memo = schedule.memo
         
-        isAllDay = !schedule.isAllDay
+        isAllDay = schedule.isAllDay
         isSelectedAlarm = !schedule.alarms.isEmpty
         
         if let category = schedule.category {
@@ -129,8 +129,11 @@ final class ScheduleFormViewModel: ObservableObject {
     /**
      * 일정 간편 추가하기
      */
-    func addEasySchedule() {
+    func addEasySchedule(content: String, pivotDate: Date) {
         isAllDay = true
+        self.content = content
+        repeatStart = pivotDate
+        repeatEnd = pivotDate
         let schedule = createSchedule()
         
         scheduleService.addSchedule(schedule) { result in
@@ -139,7 +142,6 @@ final class ScheduleFormViewModel: ObservableObject {
                 // FIXME: getCurMonthSchList를 호출할 필요가 있나?
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
                 self.calendarVM.getRefreshProductivityList()
-                self.content = ""
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
