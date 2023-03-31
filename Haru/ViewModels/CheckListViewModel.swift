@@ -227,7 +227,7 @@ final class CheckListViewModel: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.updateFolded(todoId: todo.id,
-                                 folded: !todo.flag) { result in
+                                 folded: !todo.folded) { result in
             switch result {
             case let .success(success):
                 self.fetchTodoList()
