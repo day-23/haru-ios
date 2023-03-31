@@ -190,7 +190,7 @@ struct ScheduleFormView: View {
                         })
                         .toggleStyle(MyToggleStyle())
                     } icon: {
-                        Image("bell")
+                        Image("alarm")
                             .renderingMode(.template)
                             .resizable()
                             .frame(width: 28, height: 28)
