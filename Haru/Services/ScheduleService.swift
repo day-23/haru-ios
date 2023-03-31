@@ -180,6 +180,7 @@ final class ScheduleService {
 
         let formatter = DateFormatter()
         formatter.dateFormat = Constants.dateFormat
+
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(formatter)
 

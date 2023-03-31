@@ -91,6 +91,7 @@
 		130667C829CEE35400AACEE6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C729CEE35400AACEE6 /* PopupView */; };
 		130667CB29CEE38500AACEE6 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 130667CA29CEE38500AACEE6 /* SwiftUIPager */; };
 		1356621829D1EE29003CAD1B /* DefaultTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1356621729D1EE29003CAD1B /* DefaultTag.swift */; };
+		13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */; };
 		13D9B5AD29D5DDA100109C0E /* TimeTableTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */; };
 		13D9B5AF29D5E6E400109C0E /* TimeTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
@@ -180,6 +181,7 @@
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
 		1356621729D1EE29003CAD1B /* DefaultTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTag.swift; sourceTree = "<group>"; };
 		137414BC29CEE5A7005A8282 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableScheduleView.swift; sourceTree = "<group>"; };
 		13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableTodoView.swift; sourceTree = "<group>"; };
 		13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableViewModel.swift; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
@@ -380,6 +382,7 @@
 			children = (
 				1306672229CEE15A00AACEE6 /* TimeTableMainView.swift */,
 				13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */,
+				13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */,
 			);
 			path = TimeTable;
 			sourceTree = "<group>";
@@ -517,6 +520,7 @@
 				1306676129CEE19C00AACEE6 /* CalendarOptionView.swift in Sources */,
 				1306672329CEE15A00AACEE6 /* TimeTableMainView.swift in Sources */,
 				1306677929CEE19C00AACEE6 /* SubTodoView.swift in Sources */,
+				13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */,
 				130667A129CEE1F200AACEE6 /* AnyTransition.swift in Sources */,
 				1306678029CEE1D300AACEE6 /* CheckListViewModel.swift in Sources */,
 				1306676429CEE19C00AACEE6 /* CalendarDateItem.swift in Sources */,

@@ -160,6 +160,7 @@ final class TimeTableViewModel: ObservableObject {
             return
         }
 
+        //  FIXME: - Alarms 데이터 넣어야 함
         scheduleService.updateSchedule(draggingSchedule.id,
                                        Request.Schedule(content: draggingSchedule.data.content,
                                                         memo: draggingSchedule.data.memo,

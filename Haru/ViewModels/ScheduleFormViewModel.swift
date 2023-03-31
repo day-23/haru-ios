@@ -49,8 +49,7 @@ final class ScheduleFormViewModel: ObservableObject {
      * 일정 추가하기
      */
     func addSchedule() {
-        //  !!!: - TimeOption이 isAllDay 인 것 같아서 임시로 데이터 삽입
-        let schedule = Request.Schedule(content: content, memo: memo, categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil, alarms: selectedAlarm, isAllDay: timeOption, repeatStart: repeatStart, repeatEnd: repeatEnd)
+        let schedule = Request.Schedule(content: content, memo: memo, categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil, alarms: selectedAlarm, isAllDay: !timeOption, repeatStart: repeatStart, repeatEnd: repeatEnd)
 
         scheduleService.addSchedule(schedule) { result in
             switch result {
