@@ -71,6 +71,7 @@ struct TodoView: View {
                         .rotationEffect(Angle(degrees: !todo.folded ? 90 : 0))
                         .foregroundColor(Color(0x646464, opacity: todo.completed ? 0.5 : 1))
                 }
+                .padding(.trailing, 6)
             }
 
             CompleteButton(isClicked: todo.completed)
@@ -103,12 +104,12 @@ struct TodoView: View {
                                 flag: todo.flag,
                                 endDate: nil,
                                 isAllDay: todo.isAllDay,
-                                alarms: todo.alarms.map { $0.time },
+                                alarms: todo.alarms.map(\.time),
                                 repeatOption: todo.repeatOption,
                                 repeatValue: todo.repeatValue,
                                 repeatEnd: todo.repeatEnd,
-                                tags: todo.tags.map { $0.content },
-                                subTodos: todo.subTodos.map { $0.content })
+                                tags: todo.tags.map(\.content),
+                                subTodos: todo.subTodos.map(\.content))
 
                             checkListViewModel.completeTodoWithRepeat(todoId: todo.id,
                                                                       todo: data) { result in
@@ -130,12 +131,12 @@ struct TodoView: View {
                             flag: todo.flag,
                             endDate: nextEndDate,
                             isAllDay: todo.isAllDay,
-                            alarms: todo.alarms.map { $0.time },
+                            alarms: todo.alarms.map(\.time),
                             repeatOption: todo.repeatOption,
                             repeatValue: todo.repeatValue,
                             repeatEnd: todo.repeatEnd,
-                            tags: todo.tags.map { $0.content },
-                            subTodos: todo.subTodos.map { $0.content })
+                            tags: todo.tags.map(\.content),
+                            subTodos: todo.subTodos.map(\.content))
                         checkListViewModel.completeTodoWithRepeat(todoId: todo.id,
                                                                   todo: data) { result in
                             switch result {

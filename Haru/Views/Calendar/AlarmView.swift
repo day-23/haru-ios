@@ -22,18 +22,6 @@ struct AlarmView: View {
                         .cornerRadius(8)
                         .onTapGesture {
                             scheduleVM.selectIdxList[index].toggle()
-//                            var idxList: [Int] = []
-//                            for i in selectIdxList.indices {
-//                                if selectIdxList[i] {
-//                                    idxList.append(i)
-//                                }
-//                            }
-//
-//                            scheduleVM.alarmOptions = idxList.map { selectedIdx in
-//                                AlarmOption.allCases.first { option in
-//                                    option.rawValue == AlarmOption.allCases[selectedIdx].rawValue
-//                                }!
-//                            }
                         }
                 }
             }
