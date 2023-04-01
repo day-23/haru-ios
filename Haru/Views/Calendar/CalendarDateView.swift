@@ -17,7 +17,6 @@ struct CalendarDateView: View {
     
     @State var width = UIScreen.main.bounds.width - 33
     @State var x = UIScreen.main.bounds.width
-//    @State var x: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -68,21 +67,6 @@ struct CalendarDateView: View {
                                 .frame(width: 28, height: 28)
                         }
                         .tint(.gray1)
-//                        .popup(isPresented: $showingPopup, view: {
-//                            CalendarOptionView(calendarVM: calendarVM)
-//                                .background(Color.white)
-//                                .frame(width: UIScreen.main.bounds.maxX - 30, height: UIScreen.main.bounds.maxY - 240)
-//                                .cornerRadius(20)
-//                                .padding(.horizontal, 30)
-//                                .shadow(radius: 2.0)
-//                                .offset(x: 30)
-//                        }, customize: {
-//                            $0
-//                                .animation(.spring())
-//                                .closeOnTap(false)
-//                                .closeOnTapOutside(true)
-//                                .backgroundColor(.black.opacity(0.5))
-//                        })
                     }
                 } // HStack
                 .padding(.horizontal, 30)
