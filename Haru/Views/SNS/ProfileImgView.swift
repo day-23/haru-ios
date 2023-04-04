@@ -11,17 +11,14 @@ struct ProfileImgView: View {
     var imageUrl: URL
 
     var body: some View {
-        HStack {
-            AsyncImage(url: imageUrl, content: { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            }, placeholder: {
-                Image(systemName: "person")
-            })
-            .clipShape(Circle())
-            .frame(width: 30, height: 30)
-        }
+        AsyncImage(url: imageUrl, content: { image in
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        }, placeholder: {
+            Image(systemName: "person")
+        })
+        .clipShape(Circle())
     }
 }
 

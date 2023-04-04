@@ -95,6 +95,7 @@
 		13D9B5AD29D5DDA100109C0E /* TimeTableTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */; };
 		13D9B5AF29D5E6E400109C0E /* TimeTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */; };
 		6F54DF4929DC6B02002FAD7F /* ProfileInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF4829DC6B02002FAD7F /* ProfileInfoView.swift */; };
+		6F54DF4B29DC813D002FAD7F /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF4A29DC813D002FAD7F /* MediaView.swift */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
 		6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */; };
 		6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */; };
@@ -192,6 +193,7 @@
 		13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableTodoView.swift; sourceTree = "<group>"; };
 		13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableViewModel.swift; sourceTree = "<group>"; };
 		6F54DF4829DC6B02002FAD7F /* ProfileInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoView.swift; sourceTree = "<group>"; };
+		6F54DF4A29DC813D002FAD7F /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmOption.swift; sourceTree = "<group>"; };
 		6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormMode.swift; sourceTree = "<group>"; };
@@ -447,6 +449,7 @@
 				6FE8908129DC5D4600A6B35C /* SNSView.swift */,
 				6FE8908329DC5F2500A6B35C /* ProfileImgView.swift */,
 				6F54DF4829DC6B02002FAD7F /* ProfileInfoView.swift */,
+				6F54DF4A29DC813D002FAD7F /* MediaView.swift */,
 			);
 			path = SNS;
 			sourceTree = "<group>";
@@ -575,6 +578,7 @@
 				1306671029CEE13200AACEE6 /* Schedule.swift in Sources */,
 				1306671129CEE13200AACEE6 /* Productivity.swift in Sources */,
 				1306677529CEE19C00AACEE6 /* ListSectionView.swift in Sources */,
+				6F54DF4B29DC813D002FAD7F /* MediaView.swift in Sources */,
 				1306670D29CEE13200AACEE6 /* Day.swift in Sources */,
 				1306679429CEE1E300AACEE6 /* EmptySectionView.swift in Sources */,
 				13D9B5AF29D5E6E400109C0E /* TimeTableViewModel.swift in Sources */,

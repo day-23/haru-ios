@@ -36,6 +36,7 @@ struct SNSView: View {
                         VStack(spacing: 16) {
                             HStack {
                                 ProfileImgView(imageUrl: URL(string: "https://item.kakaocdn.net/do/fd0050f12764b403e7863c2c03cd4d2d7154249a3890514a43687a85e6b6cc82")!)
+                                    .frame(width: 30, height: 30)
                                 Text("게으름민수")
                                     .font(.pretendard(size: 14, weight: .bold))
                                     .foregroundColor(.mainBlack)
