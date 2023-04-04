@@ -462,7 +462,7 @@ final class CalendarViewModel: ObservableObject {
                     )!,
                         schedule.repeatEnd >= dateValue.date
                     {
-                        if isFirst {
+                        if isFirst || order == prodCnt {
                             var i = 0
                             while i < prodCnt, !orders[index][i] {
                                 i += 1
@@ -489,7 +489,7 @@ final class CalendarViewModel: ObservableObject {
         var todoIdx = 0, dateIdx = 0
 
         var maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
-        maxKey = maxKey >= prodCnt ? maxKey : maxKey + 1
+        maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
         while todoIdx < todoList.count, dateIdx < dateList.count {
             if dateList[dateIdx].date.isEqual(other: todoList[todoIdx].endDate!) {
                 result[dateIdx][maxKey] = (result[dateIdx][maxKey] ?? []) + [todoList[todoIdx]]
@@ -499,8 +499,10 @@ final class CalendarViewModel: ObservableObject {
                 todoIdx += 1
             } else {
                 dateIdx += 1
-                maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
-                maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+                if dateIdx < dateList.count {
+                    maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
+                    maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+                }
             }
         }
     }
