@@ -126,9 +126,13 @@ struct TimeTableMainView: View {
                                 Text("")
 
                                 ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                                    VStack(spacing: 2) {
+                                    VStack(spacing: 0) {
                                         ForEach($timeTableViewModel.scheduleListWithoutTime[index]) { $schedule in
-                                            ScheduleTopItemView(schedule: $schedule)
+                                            if schedule.weight == -1 {
+                                                Spacer()
+                                            } else {
+                                                ScheduleTopItemView(schedule: $schedule)
+                                            }
                                         }
                                     }.frame(height: 18 * CGFloat(timeTableViewModel.maxRowCount))
                                 }

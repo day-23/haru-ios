@@ -63,18 +63,22 @@ final class TimeTableViewModel: ObservableObject {
             })
         }
 
+        var scheduleMap: [String: Int] = [:]
         for (i, scheduleList) in zip(scheduleListWithoutTime.indices, scheduleListWithoutTime) {
             for j in scheduleList.indices {
-                if scheduleList[j].order != 1 {
+                if let order = scheduleMap[scheduleList[j].id] {
+                    scheduleListWithoutTime[i][j].order = order
                     let prevOrder: Int = j == 0 ? 0 : scheduleList[j - 1].order
 
-                    for index in prevOrder + 1 ..< scheduleList[j].order {
+                    for index in prevOrder + 1 ..< order {
                         scheduleListWithoutTime[i].insert(ScheduleCell(
-                            id: "Spacer \(i)\(j)", data: scheduleList[j].data, weight: 1, order: index
-                        ), at: index)
+                            id: "Spacer \(i)\(j)", data: scheduleList[j].data, weight: -1, order: index
+                        ), at: index - 1)
                     }
                     continue
                 }
+
+                scheduleMap[scheduleList[j].id] = j + 1
                 scheduleListWithoutTime[i][j].order = j + 1
             }
         }
@@ -105,10 +109,8 @@ final class TimeTableViewModel: ObservableObject {
             scheduleList[i].order = 1
 
             for j in i + 1 ..< scheduleList.count {
-                let date1 = scheduleList[i].data
-                    .repeatEnd
-                let date2 = scheduleList[j].data
-                    .repeatStart
+                let date1 = scheduleList[i].data.repeatEnd
+                let date2 = scheduleList[j].data.repeatStart
 
                 if dateFormatter.string(from: date1) != dateFormatter.string(from: date2) {
                     break
@@ -227,6 +229,7 @@ final class TimeTableViewModel: ObservableObject {
                                                         repeatStart: startDate,
                                                         repeatEnd: endDate,
                                                         repeatOption: draggingSchedule.data.repeatOption,
+                                                        categoryId: draggingSchedule.data.category?.id,
                                                         alarms: draggingSchedule.data.alarms.map(\.time))) { result in
             switch result {
             case .success(let schedule):

@@ -19,7 +19,6 @@ struct ScheduleTopItemView: View {
                 .foregroundColor(.black)
                 .padding(.vertical, 2)
                 .padding(.horizontal, 3)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(width: 48, height: 18)
         .cornerRadius(4)
