@@ -19,6 +19,7 @@ final class TimeTableViewModel: ObservableObject {
 
     @Published var todoList: [Todo] = []
     @Published var scheduleList: [ScheduleCell] = []
+    @Published var scheduleListWithoutTime: [ScheduleCell] = []
     @Published var draggingSchedule: ScheduleCell? = nil
 
     @Published var currentYear: Int = Date.now.year
@@ -140,11 +141,19 @@ final class TimeTableViewModel: ObservableObject {
         scheduleService.fetchScheduleList(startDate, endDate) { result in
             switch result {
             case .success(let scheduleList):
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyyMMdd"
+
                 self.scheduleList = []
                 for schedule in scheduleList {
-                    self.scheduleList.append(
-                        ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
-                    )
+                    let data = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
+                    if schedule.isAllDay ||
+                        dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd)
+                    {
+                        self.scheduleListWithoutTime.append(data)
+                        continue
+                    }
+                    self.scheduleList.append(data)
                 }
                 self.findUnion()
             case .failure(let failure):

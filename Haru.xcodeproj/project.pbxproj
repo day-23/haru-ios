@@ -90,6 +90,7 @@
 		130667C529CEE33200AACEE6 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C429CEE33200AACEE6 /* Alamofire */; };
 		130667C829CEE35400AACEE6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C729CEE35400AACEE6 /* PopupView */; };
 		130667CB29CEE38500AACEE6 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 130667CA29CEE38500AACEE6 /* SwiftUIPager */; };
+		134F5FEE29DD356C0072704B /* ScheduleItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 134F5FED29DD356C0072704B /* ScheduleItemView.swift */; };
 		1356621829D1EE29003CAD1B /* DefaultTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1356621729D1EE29003CAD1B /* DefaultTag.swift */; };
 		13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */; };
 		13D9B5AD29D5DDA100109C0E /* TimeTableTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */; };
@@ -183,6 +184,7 @@
 		130667AB29CEE1FE00AACEE6 /* Tab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
 		130667AC29CEE1FE00AACEE6 /* Calendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
+		134F5FED29DD356C0072704B /* ScheduleItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleItemView.swift; sourceTree = "<group>"; };
 		1356621729D1EE29003CAD1B /* DefaultTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTag.swift; sourceTree = "<group>"; };
 		137414BC29CEE5A7005A8282 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableScheduleView.swift; sourceTree = "<group>"; };
@@ -393,6 +395,7 @@
 				1306672229CEE15A00AACEE6 /* TimeTableMainView.swift */,
 				13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */,
 				13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */,
+				134F5FED29DD356C0072704B /* ScheduleItemView.swift */,
 			);
 			path = TimeTable;
 			sourceTree = "<group>";
@@ -531,6 +534,7 @@
 				6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */,
 				1306677729CEE19C00AACEE6 /* TagView.swift in Sources */,
 				1306676129CEE19C00AACEE6 /* CalendarOptionView.swift in Sources */,
+				134F5FEE29DD356C0072704B /* ScheduleItemView.swift in Sources */,
 				1306672329CEE15A00AACEE6 /* TimeTableMainView.swift in Sources */,
 				1306677929CEE19C00AACEE6 /* SubTodoView.swift in Sources */,
 				13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */,

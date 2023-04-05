@@ -86,7 +86,7 @@ struct TimeTableScheduleView: View {
             }
             .overlay(content: {
                 if cellWidth != nil {
-                    ForEach(timeTableViewModel.scheduleList) { schedule in
+                    ForEach($timeTableViewModel.scheduleList) { $schedule in
                         if let scheduleIndex = getScheduleIndex(schedule: schedule.data.repeatStart),
                            let frame = calcFrame(
                                weight: schedule.weight,
@@ -101,14 +101,14 @@ struct TimeTableScheduleView: View {
                                frame: frame
                            )
                         {
-                            ScheduleItemView(schedule: schedule)
+                            ScheduleItemView(schedule: $schedule)
                                 .frame(width: frame.width, height: frame.height)
                                 .position(x: position.x, y: position.y)
                                 .onDrag {
                                     timeTableViewModel.draggingSchedule = schedule
                                     return NSItemProvider(object: schedule.id as NSString)
                                 } preview: {
-                                    ScheduleItemView(schedule: schedule)
+                                    ScheduleItemView(schedule: $schedule)
                                         .frame(width: frame.width, height: frame.height)
                                 }
                         }
@@ -252,27 +252,5 @@ struct CellDropDelegate: DropDelegate {
         }
         completion(date)
         return true
-    }
-}
-
-struct ScheduleItemView: View {
-    @State var schedule: ScheduleCell
-
-    private let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd, H:mm"
-        return formatter
-    }()
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(Color(0x000000, opacity: 0.5))
-
-            Text("\(formatter.string(from: schedule.data.repeatStart))")
-                .foregroundColor(.white)
-                .font(.system(size: 8))
-        }
-        .cornerRadius(10)
     }
 }
