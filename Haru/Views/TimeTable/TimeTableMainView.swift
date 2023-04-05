@@ -126,15 +126,19 @@ struct TimeTableMainView: View {
                                 Text("")
 
                                 ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                                    VStack(spacing: 0) {
-                                        ForEach($timeTableViewModel.scheduleListWithoutTime[index]) { $schedule in
-                                            if schedule.weight == -1 {
-                                                Spacer()
-                                            } else {
-                                                ScheduleTopItemView(schedule: $schedule)
-                                            }
-                                        }
-                                    }.frame(height: 18 * CGFloat(timeTableViewModel.maxRowCount))
+                                    VStack {}.frame(height: 18 * CGFloat(timeTableViewModel.maxRowCount))
+                                }
+                            }
+                            .overlay {
+                                ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                                    ForEach($timeTableViewModel.scheduleListWithoutTime[index]) { $schedule in
+                                        ScheduleTopItemView(
+                                            schedule: $schedule, width: 48 * CGFloat(schedule.weight), height: 18
+                                        )
+                                        .position(
+                                            getPosition(weight: schedule.weight, index: index, order: schedule.order)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -152,5 +156,23 @@ struct TimeTableMainView: View {
         .onAppear {
             timeTableViewModel.fetchScheduleList()
         }
+    }
+}
+
+extension TimeTableMainView {
+    func getPosition(
+        weight: Int,
+        index: Int,
+        order: Int
+    ) -> CGPoint {
+        var x = 48.0 * Double(index + 1)
+        x += 31 + 8
+        x -= 48.0 * Double(weight) * 0.5
+        x += 48.0 * Double(weight) * (Double(weight - 1) / Double(weight))
+
+        var y = 18.0 * Double(order)
+        y -= 18.0 * 0.5
+        y += Double(order) * 2
+        return CGPoint(x: x, y: y)
     }
 }

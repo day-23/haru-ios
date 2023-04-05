@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ScheduleTopItemView: View {
     @Binding var schedule: ScheduleCell
+    var width: CGFloat
+    var height: CGFloat
 
     var body: some View {
         ZStack {
@@ -20,7 +22,7 @@ struct ScheduleTopItemView: View {
                 .padding(.vertical, 2)
                 .padding(.horizontal, 3)
         }
-        .frame(width: 48, height: 18)
+        .frame(width: width, height: height)
         .cornerRadius(4)
     }
 }

@@ -22,7 +22,9 @@ final class TimeTableViewModel: ObservableObject {
     @Published var scheduleListWithoutTime: [[ScheduleCell]] = Array(repeating: [], count: 7)
     var maxRowCount: Int {
         return scheduleListWithoutTime.reduce(0) { acc, curr in
-            acc >= curr.count ? acc : curr.count
+            max(acc, curr.reduce(0) { maxOrder, schedule in
+                max(maxOrder, schedule.order)
+            })
         }
     }
 
@@ -63,25 +65,26 @@ final class TimeTableViewModel: ObservableObject {
             })
         }
 
-        var scheduleMap: [String: Int] = [:]
+        var scheduleMap: [String: (Int, Int)] = [:]
         for (i, scheduleList) in zip(scheduleListWithoutTime.indices, scheduleListWithoutTime) {
+            var alt: [ScheduleCell] = []
             for j in scheduleList.indices {
-                if let order = scheduleMap[scheduleList[j].id] {
-                    scheduleListWithoutTime[i][j].order = order
-                    let prevOrder: Int = j == 0 ? 0 : scheduleList[j - 1].order
-
-                    for index in prevOrder + 1 ..< order {
-                        scheduleListWithoutTime[i].insert(ScheduleCell(
-                            id: "Spacer \(i)\(j)", data: scheduleList[j].data, weight: -1, order: index
-                        ), at: index - 1)
-                    }
+                if let (r, c) = scheduleMap[scheduleList[j].id] {
+                    scheduleListWithoutTime[r][c].weight += 1
+                    scheduleListWithoutTime[r][c].order = max(
+                        j + 1, scheduleListWithoutTime[r][c].order
+                    )
                     continue
                 }
 
-                scheduleMap[scheduleList[j].id] = j + 1
+                scheduleMap[scheduleList[j].id] = (i, j)
                 scheduleListWithoutTime[i][j].order = j + 1
+                alt.append(scheduleListWithoutTime[i][j])
             }
+            scheduleListWithoutTime[i] = alt
         }
+
+        print(scheduleListWithoutTime)
     }
 
     func findUnion() {
