@@ -19,7 +19,13 @@ final class TimeTableViewModel: ObservableObject {
 
     @Published var todoList: [Todo] = []
     @Published var scheduleList: [ScheduleCell] = []
-    @Published var scheduleListWithoutTime: [ScheduleCell] = []
+    @Published var scheduleListWithoutTime: [[ScheduleCell]] = Array(repeating: [], count: 7)
+    var maxRowCount: Int {
+        return scheduleListWithoutTime.reduce(0) { acc, curr in
+            acc >= curr.count ? acc : curr.count
+        }
+    }
+
     @Published var draggingSchedule: ScheduleCell? = nil
 
     @Published var currentYear: Int = Date.now.year
@@ -39,6 +45,39 @@ final class TimeTableViewModel: ObservableObject {
             dayOfWeek = dayOfWeek.addDay()
         }
         return result
+    }
+
+    func sortScheduleListWithoutTime() {
+        let dateTimeFormatter = DateFormatter()
+        dateTimeFormatter.dateFormat = "yyyyMMddHHmmss"
+
+        for (index, scheduleList) in zip(scheduleListWithoutTime.indices, scheduleListWithoutTime) {
+            scheduleListWithoutTime[index] = scheduleList.sorted(by: { first, second in
+                if first.data.isAllDay {
+                    return true
+                } else if second.data.isAllDay {
+                    return false
+                }
+
+                return dateTimeFormatter.string(from: first.data.repeatStart) < dateTimeFormatter.string(from: second.data.repeatStart)
+            })
+        }
+
+        for (i, scheduleList) in zip(scheduleListWithoutTime.indices, scheduleListWithoutTime) {
+            for j in scheduleList.indices {
+                if scheduleList[j].order != 1 {
+                    let prevOrder: Int = j == 0 ? 0 : scheduleList[j - 1].order
+
+                    for index in prevOrder + 1 ..< scheduleList[j].order {
+                        scheduleListWithoutTime[i].insert(ScheduleCell(
+                            id: "Spacer \(i)\(j)", data: scheduleList[j].data, weight: 1, order: index
+                        ), at: index)
+                    }
+                    continue
+                }
+                scheduleListWithoutTime[i][j].order = j + 1
+            }
+        }
     }
 
     func findUnion() {
@@ -145,17 +184,25 @@ final class TimeTableViewModel: ObservableObject {
                 dateFormatter.dateFormat = "yyyyMMdd"
 
                 self.scheduleList = []
+                self.scheduleListWithoutTime = Array(repeating: [], count: 7)
                 for schedule in scheduleList {
                     let data = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
                     if schedule.isAllDay ||
                         dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd)
                     {
-                        self.scheduleListWithoutTime.append(data)
+                        if let start = schedule.repeatStart.indexOfWeek(),
+                           let end = schedule.repeatEnd.indexOfWeek()
+                        {
+                            for index in start ... end {
+                                self.scheduleListWithoutTime[index].append(data)
+                            }
+                        }
                         continue
                     }
                     self.scheduleList.append(data)
                 }
                 self.findUnion()
+                self.sortScheduleListWithoutTime()
             case .failure(let failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
             }

@@ -39,7 +39,7 @@ struct TimeTableScheduleView: View {
                         VStack {
                             Spacer()
                             Text("\(index / 8 + 1)")
-                                .font(.pretendard(size: 8, weight: .medium))
+                                .font(.pretendard(size: 10, weight: .medium))
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     } else {

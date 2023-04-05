@@ -104,6 +104,9 @@ public extension Date {
     }
     
     func indexOfWeek() -> Int? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        
         let calendar = Calendar.current
         guard let startOfWeek = calendar.date(
             from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)
@@ -116,7 +119,7 @@ public extension Date {
             let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
             datesOfWeek.append(date)
         }
-        return datesOfWeek.firstIndex(where: { $0.compare(self) == .orderedSame })
+        return datesOfWeek.firstIndex(where: { dateFormatter.string(from: $0) == dateFormatter.string(from: self) })
     }
     
     internal func localization(dateFormat: String = Constants.dateFormat) -> Date? {

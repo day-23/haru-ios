@@ -121,6 +121,20 @@ struct TimeTableMainView: View {
                             }
                         }
 
+                        if !timeTableViewModel.scheduleListWithoutTime.isEmpty {
+                            LazyVGrid(columns: column) {
+                                Text("")
+
+                                ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                                    VStack(spacing: 2) {
+                                        ForEach($timeTableViewModel.scheduleListWithoutTime[index]) { $schedule in
+                                            ScheduleTopItemView(schedule: $schedule)
+                                        }
+                                    }.frame(height: 18 * CGFloat(timeTableViewModel.maxRowCount))
+                                }
+                            }
+                        }
+
                         TimeTableScheduleView(
                             timeTableViewModel: _timeTableViewModel
                         )
