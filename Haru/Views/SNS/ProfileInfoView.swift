@@ -10,11 +10,19 @@ import SwiftUI
 struct ProfileInfoView: View {
     @State private var isFeedSelected: Bool = true
 
+    @StateObject var snsVM: SNSViewModel
+
     var body: some View {
         VStack(spacing: 20) {
             HStack(spacing: 20) {
-                ProfileImgView(imageUrl: URL(string: "https://item.kakaocdn.net/do/fd0050f12764b403e7863c2c03cd4d2d7154249a3890514a43687a85e6b6cc82")!)
-                    .frame(width: 62, height: 62)
+                if let imageURL = snsVM.myProfileURL {
+                    ProfileImgView(imageUrl: imageURL)
+                        .frame(width: 62, height: 62)
+                } else {
+                    Image(systemName: "person")
+                        .clipShape(Circle())
+                        .frame(width: 62, height: 62)
+                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("게으름민수")
@@ -26,14 +34,19 @@ struct ProfileInfoView: View {
                 Spacer()
 
                 VStack(spacing: 4) {
-                    Text("프로필 편집")
-                        .font(.pretendard(size: 14, weight: .bold))
-                        .frame(width: 64, height: 16)
-                        .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 9)
-                                .stroke(.gradation2, lineWidth: 1)
-                        )
+                    NavigationLink {
+                        ProfileFormView(snsVM: snsVM)
+                    } label: {
+                        Text("프로필 편집")
+                            .foregroundColor(.mainBlack)
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .frame(width: 64, height: 16)
+                            .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 9)
+                                    .stroke(.gradation2, lineWidth: 1)
+                            )
+                    }
                     Text("프로필 공유")
                         .font(.pretendard(size: 14, weight: .bold))
                         .frame(width: 64, height: 16)
@@ -107,7 +120,7 @@ struct ProfileInfoView: View {
             }
 
             if isFeedSelected {
-                SNSView()
+                FeedListView(snsVM: snsVM, feedList: $snsVM.myFeedList)
             } else {
                 MediaView()
             }
@@ -117,6 +130,6 @@ struct ProfileInfoView: View {
 
 struct ProfileInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileInfoView()
+        ProfileInfoView(snsVM: SNSViewModel())
     }
 }

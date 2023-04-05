@@ -14,70 +14,39 @@ struct Sns: Identifiable, Hashable {
 }
 
 struct SNSView: View {
-    let snsContents = [
-        Sns(imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true),
-        
-        Sns(imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: false),
-        
-        Sns(imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: false),
-        
-        Sns(imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true),
-        
-        Sns(imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true)
-    ]
-    
     @State private var maxNumber: Int = 4
-    
+
+    @StateObject var snsVM: SNSViewModel = .init()
+
     var body: some View {
         ZStack {
-            ScrollView {
-                LazyVStack {
-                    ForEach(0 ... maxNumber, id: \.self) { num in
-                        VStack(spacing: 16) {
-                            HStack {
-                                ProfileImgView(imageUrl: URL(string: "https://item.kakaocdn.net/do/fd0050f12764b403e7863c2c03cd4d2d7154249a3890514a43687a85e6b6cc82")!)
-                                    .frame(width: 30, height: 30)
-                                Text("게으름민수")
-                                    .font(.pretendard(size: 14, weight: .bold))
-                                    .foregroundColor(.mainBlack)
-                                Text("1일 전")
-                                    .font(.pretendard(size: 10, weight: .regular))
-                                    .foregroundColor(.gray2)
-                                Spacer()
-                                Image("ellipsis")
-                                    .renderingMode(.template)
-                                    .foregroundColor(.gray1)
-                            }
-                            .padding(.horizontal, 20)
-                            
-                            AsyncImage(url: snsContents[num % 5].imageURL) { image in
-                                image
-                                    .resizable()
-                            } placeholder: {
-                                Image(systemName: "wifi.slash")
-                            }
-                            .frame(width: 395, height: 390)
-                            .onAppear {
-                                if num % 5 == 4 {
-                                    maxNumber += 5
-                                }
-                            }
-                            
-                            HStack(spacing: 22) {
-                                Image(systemName: snsContents[num % 5].isLike ? "heart.fill" : "heart")
-                                    .foregroundColor(.red)
-                                Image(systemName: "ellipses.bubble")
-                                    .foregroundColor(.gray2)
-                                Spacer()
-                                Image("option-button")
-                                    .renderingMode(.template)
-                                    .foregroundColor(.gray2)
-                            }
-                            .padding(.horizontal, 20)
-                            Divider()
-                        }
+            VStack {
+                HStack {
+                    Spacer()
+                    NavigationLink {
+                        Text("친구피드")
+                    } label: {
+                        Text("친구피드")
                     }
+                    Spacer()
+                    NavigationLink {
+                        Text("둘러보기")
+                    } label: {
+                        Text("둘러보기")
+                    }
+                    Spacer()
+                    NavigationLink {
+                        ProfileInfoView(snsVM: snsVM)
+                            .onAppear {
+                                snsVM.fetchProfileImg()
+                            }
+                    } label: {
+                        Text("내 기록")
+                    }
+                    Spacer()
                 }
+
+                FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
             }
         }
     }

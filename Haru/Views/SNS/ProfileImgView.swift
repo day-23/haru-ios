@@ -24,6 +24,6 @@ struct ProfileImgView: View {
 
 struct ProfileImgView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileImgView(imageUrl: URL(string: "https://item.kakaocdn.net/do/fd0050f12764b403e7863c2c03cd4d2d7154249a3890514a43687a85e6b6cc82")!)
+        ProfileImgView(imageUrl: URL(string: "https://harus3.s3.ap-northeast-2.amazonaws.com/profile/1680693394711_momo.jpg")!)
     }
 }
