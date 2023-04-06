@@ -21,7 +21,6 @@ struct TimeTableTodoRow: View {
                     .foregroundColor(
                         index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
                     )
-                    .padding(.top, 12)
                     .padding(.bottom, 7)
                 Text("\(date.day)")
                     .font(.pretendard(size: 14, weight: .bold))

@@ -23,9 +23,19 @@ struct TimeTableTodoView: View {
                     index: index,
                     date: timeTableViewModel.thisWeek[index]
                 )
+                .background(
+                    index == Date.now.indexOfWeek() ? LinearGradient(
+                        gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF), Color(0xAAD7FF)]),
+                        startPoint: .bottomLeading,
+                        endPoint: .topTrailing
+                    ) : LinearGradient(
+                        colors: [.white],
+                        startPoint: .bottomLeading,
+                        endPoint: .topTrailing
+                    )
+                )
             }
             Spacer()
         }
-        .padding(.leading, 24)
     }
 }
