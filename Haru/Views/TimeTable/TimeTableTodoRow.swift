@@ -31,7 +31,7 @@ struct TimeTableTodoRow: View {
             }
             .padding(.trailing, 24)
 
-            ScrollView(.horizontal) {
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     TimeTableTodoItem()
                     TimeTableTodoItem()
