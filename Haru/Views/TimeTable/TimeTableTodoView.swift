@@ -21,21 +21,27 @@ struct TimeTableTodoView: View {
             ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
                 TimeTableTodoRow(
                     index: index,
-                    date: timeTableViewModel.thisWeek[index]
+                    date: timeTableViewModel.thisWeek[index],
+                    todoList: $timeTableViewModel.todoListByWeek[index]
                 )
                 .background(
-                    index == Date.now.indexOfWeek() ? LinearGradient(
-                        gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF), Color(0xAAD7FF)]),
-                        startPoint: .bottomLeading,
-                        endPoint: .topTrailing
-                    ) : LinearGradient(
+                    index == Date.now.indexOfWeek() ? RadialGradient(
+                        gradient: Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]),
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 150
+                    ).opacity(0.5) : RadialGradient(
                         colors: [.white],
-                        startPoint: .bottomLeading,
-                        endPoint: .topTrailing
-                    )
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 150
+                    ).opacity(0.5)
                 )
             }
             Spacer()
+        }
+        .onAppear {
+            timeTableViewModel.fetchTodoList()
         }
     }
 }

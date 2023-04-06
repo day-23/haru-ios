@@ -16,8 +16,9 @@ struct ScheduleCell: Identifiable {
 
 final class TimeTableViewModel: ObservableObject {
     private var scheduleService: ScheduleService = .init()
+    private var todoService: TodoService = .init()
 
-    @Published var todoList: [Todo] = []
+    @Published var todoListByWeek: [[Todo]] = Array(repeating: [], count: 7)
     @Published var scheduleList: [ScheduleCell] = []
     @Published var scheduleListWithoutTime: [[ScheduleCell]] = Array(repeating: [], count: 7)
     var maxRowCount: Int {
@@ -185,11 +186,13 @@ final class TimeTableViewModel: ObservableObject {
     //  MARK: - Read
 
     func fetchScheduleList() {
-        guard let startDate = thisWeek.first, let endDate = thisWeek.last else {
+        guard let startDate = thisWeek.first,
+              let endDate = thisWeek.last?.addingTimeInterval(TimeInterval(60 * 60 * 24 - 1))
+        else {
             return
         }
 
-        scheduleService.fetchScheduleList(startDate, endDate.addingTimeInterval(TimeInterval(60 * 60 * 24))) { result in
+        scheduleService.fetchScheduleList(startDate, endDate) { result in
             switch result {
             case .success(let scheduleList):
                 let dateFormatter = DateFormatter()
@@ -221,6 +224,34 @@ final class TimeTableViewModel: ObservableObject {
                 }
                 self.findUnion()
                 self.processScheduleListWithoutTime()
+            case .failure(let failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
+    func fetchTodoList() {
+        guard let startDate = thisWeek.first,
+              let endDate = thisWeek.last?.addingTimeInterval(TimeInterval(60 * 60 * 24 - 1))
+        else {
+            return
+        }
+
+        todoService.fetchTodoListByRange(
+            startDate: startDate,
+            endDate: endDate
+        ) { result in
+            switch result {
+            case .success(let todoList):
+                self.todoListByWeek = Array(repeating: [], count: 7)
+                for todo in todoList {
+                    guard let endDate = todo.endDate,
+                          let index = endDate.indexOfWeek()
+                    else {
+                        continue
+                    }
+                    self.todoListByWeek[index].append(todo)
+                }
             case .failure(let failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
             }

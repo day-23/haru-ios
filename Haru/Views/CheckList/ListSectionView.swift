@@ -19,6 +19,7 @@ struct ListSectionView<Content>: View where Content: View {
         Section {
             if todoList.isEmpty {
                 EmptySectionView()
+                    .padding(.leading, 40)
             } else {
                 ForEach(todoList) { todo in
                     NavigationLink {

@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct TimeTableTodoItem: View {
+    var todo: Todo
+
     var body: some View {
         ZStack {
-            Text("가나다라마바")
+            Text(todo.content)
                 .font(.pretendard(size: 16, weight: .regular))
-                .padding([.top, .leading, .trailing], 10)
-                .padding(.bottom, 4)
                 .background(Color(0xFDFDFD))
+                .padding(10)
                 .cornerRadius(8)
         }
         .frame(width: 68, height: 62)

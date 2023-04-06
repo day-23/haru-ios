@@ -12,6 +12,7 @@ struct TimeTableTodoRow: View {
 
     var index: Int
     var date: Date
+    @Binding var todoList: [Todo]
 
     var body: some View {
         HStack(spacing: 0) {
@@ -22,26 +23,44 @@ struct TimeTableTodoRow: View {
                         index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
                     )
                     .padding(.bottom, 7)
-                Text("\(date.day)")
-                    .font(.pretendard(size: 14, weight: .bold))
-                    .foregroundColor(
-                        index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
-                    )
+
+                if index == Date.now.indexOfWeek() {
+                    Text("\(date.day)")
+                        .font(.pretendard(size: 14, weight: .bold))
+                        .foregroundColor(Color(0x2CA4FF))
+                        .padding(.vertical, 3)
+                        .padding(.horizontal, 6)
+                        .background(
+                            Circle()
+                                .stroke(.gradation1, lineWidth: 2)
+                        )
+                } else {
+                    Text("\(date.day)")
+                        .font(.pretendard(size: 14, weight: .bold))
+                        .foregroundColor(
+                            index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
+                        )
+                        .padding(.horizontal, 6)
+                }
             }
             .padding(.trailing, 24)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    TimeTableTodoItem()
-                    TimeTableTodoItem()
-                    TimeTableTodoItem()
-                    TimeTableTodoItem()
+            if todoList.isEmpty {
+                EmptySectionView()
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(todoList) { todo in
+                            TimeTableTodoItem(
+                                todo: todo
+                            )
+                        }
+                    }
+                    .padding(1)
                 }
-                .padding(1)
             }
         }
-        .frame(width: 336, height: 74)
+        .frame(maxWidth: .infinity, maxHeight: 72)
         .padding(.leading, 24)
-        .padding(.trailing, 30)
     }
 }
