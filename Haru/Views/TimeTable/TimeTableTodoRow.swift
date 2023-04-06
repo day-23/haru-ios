@@ -13,6 +13,7 @@ struct TimeTableTodoRow: View {
     var index: Int
     var date: Date
     @Binding var todoList: [Todo]
+    var timeTableViewModel: TimeTableViewModel
 
     var body: some View {
         HStack(spacing: 0) {
@@ -47,6 +48,7 @@ struct TimeTableTodoRow: View {
 
             if todoList.isEmpty {
                 EmptySectionView()
+                    .padding(1)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
@@ -54,6 +56,10 @@ struct TimeTableTodoRow: View {
                             TimeTableTodoItem(
                                 todo: todo
                             )
+                            .onDrag {
+                                timeTableViewModel.draggingTodo = todo
+                                return NSItemProvider(object: todo.id as NSString)
+                            }
                         }
                     }
                     .padding(1)

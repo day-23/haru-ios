@@ -294,10 +294,9 @@ struct CellDropDelegate: DropDelegate {
             return false
         }
 
-        let calendar = Calendar.current
-        let year = calendar.component(.year, from: CellDropDelegate.thisWeek[dayIndex])
-        let month = calendar.component(.month, from: CellDropDelegate.thisWeek[dayIndex])
-        let day = calendar.component(.day, from: CellDropDelegate.thisWeek[dayIndex])
+        let year = CellDropDelegate.thisWeek[dayIndex].year
+        let month = CellDropDelegate.thisWeek[dayIndex].month
+        let day = CellDropDelegate.thisWeek[dayIndex].day
         let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
         guard let date = Calendar.current.date(from: components) else {
             return false

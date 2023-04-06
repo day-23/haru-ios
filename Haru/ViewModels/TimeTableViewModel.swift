@@ -18,7 +18,7 @@ final class TimeTableViewModel: ObservableObject {
     private var scheduleService: ScheduleService = .init()
     private var todoService: TodoService = .init()
 
-    @Published var todoListByWeek: [[Todo]] = Array(repeating: [], count: 7)
+    @Published var todoListByDate: [[Todo]] = Array(repeating: [], count: 7)
     @Published var scheduleList: [ScheduleCell] = []
     @Published var scheduleListWithoutTime: [[ScheduleCell]] = Array(repeating: [], count: 7)
     var maxRowCount: Int {
@@ -29,6 +29,7 @@ final class TimeTableViewModel: ObservableObject {
         }
     }
 
+    @Published var draggingTodo: Todo? = nil
     @Published var draggingSchedule: ScheduleCell? = nil
 
     @Published var currentDate: Date = .now
@@ -243,14 +244,14 @@ final class TimeTableViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success(let todoList):
-                self.todoListByWeek = Array(repeating: [], count: 7)
+                self.todoListByDate = Array(repeating: [], count: 7)
                 for todo in todoList {
                     guard let endDate = todo.endDate,
                           let index = endDate.indexOfWeek()
                     else {
                         continue
                     }
-                    self.todoListByWeek[index].append(todo)
+                    self.todoListByDate[index].append(todo)
                 }
             case .failure(let failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
@@ -291,6 +292,67 @@ final class TimeTableViewModel: ObservableObject {
             case .failure(let failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
             }
+        }
+    }
+
+    func updateDraggingTodo(
+        index: Int
+    ) {
+        guard let draggingTodo = draggingTodo else {
+            return
+        }
+
+        for (i, todoList) in todoListByDate.enumerated() {
+            guard let j = todoList.firstIndex(of: draggingTodo) else {
+                continue
+            }
+
+            //  찾는데 성공하였을 때
+            guard let endDate = draggingTodo.endDate else {
+                return
+            }
+
+            let date = thisWeek[index]
+            let components = DateComponents(
+                year: date.year,
+                month: date.month,
+                day: date.day,
+                hour: endDate.hour,
+                minute: endDate.minute,
+                second: endDate.second
+            )
+
+            guard let updatedEndDate = Calendar.current.date(from: components) else {
+                return
+            }
+
+            todoService.updateTodo(
+                todoId: draggingTodo.id,
+                todo: Request.Todo(
+                    content: draggingTodo.content,
+                    memo: draggingTodo.memo,
+                    todayTodo: draggingTodo.todayTodo,
+                    flag: draggingTodo.flag,
+                    endDate: updatedEndDate,
+                    isAllDay: draggingTodo.isAllDay,
+                    alarms: draggingTodo.alarms.map { $0.time },
+                    repeatOption: draggingTodo.repeatOption,
+                    repeatValue: draggingTodo.repeatValue,
+                    repeatEnd: draggingTodo.repeatEnd,
+                    tags: draggingTodo.tags.map { $0.content },
+                    subTodos: draggingTodo.subTodos.map { $0.content }
+                )
+            ) { result in
+                switch result {
+                case .success:
+                    self.todoListByDate[i].remove(at: j)
+                    self.todoListByDate[index].append(draggingTodo)
+                case .failure(let failure):
+                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                }
+                self.draggingTodo = nil
+            }
+            return
         }
     }
 }

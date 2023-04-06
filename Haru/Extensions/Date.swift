@@ -21,6 +21,18 @@ public extension Date {
         Calendar.current.component(.day, from: self)
     }
     
+    var hour: Int {
+        Calendar.current.component(.hour, from: self)
+    }
+    
+    var minute: Int {
+        Calendar.current.component(.minute, from: self)
+    }
+    
+    var second: Int {
+        Calendar.current.component(.second, from: self)
+    }
+    
     internal func getAllDates() -> [Date] {
         let calendar = Calendar.current
 

@@ -22,7 +22,8 @@ struct TimeTableTodoView: View {
                 TimeTableTodoRow(
                     index: index,
                     date: timeTableViewModel.thisWeek[index],
-                    todoList: $timeTableViewModel.todoListByWeek[index]
+                    todoList: $timeTableViewModel.todoListByDate[index],
+                    timeTableViewModel: timeTableViewModel
                 )
                 .background(
                     index == Date.now.indexOfWeek() ? RadialGradient(
@@ -37,11 +38,37 @@ struct TimeTableTodoView: View {
                         endRadius: 150
                     ).opacity(0.5)
                 )
+                .onDrop(of: [.text], delegate: TodoDropDelegate(
+                    index: index,
+                    timeTableViewModel: timeTableViewModel
+                ))
             }
             Spacer()
         }
         .onAppear {
             timeTableViewModel.fetchTodoList()
         }
+    }
+}
+
+struct TodoDropDelegate: DropDelegate {
+    let index: Int
+    let timeTableViewModel: TimeTableViewModel
+
+    func dropEntered(info: DropInfo) {}
+
+    func dropExited(info: DropInfo) {}
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        return DropProposal(operation: .move)
+    }
+
+    func validateDrop(info: DropInfo) -> Bool {
+        return info.hasItemsConforming(to: [.text])
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        timeTableViewModel.updateDraggingTodo(index: index)
+        return true
     }
 }
