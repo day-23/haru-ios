@@ -65,7 +65,9 @@ struct TimeTableMainView: View {
                             timeTableViewModel: _timeTableViewModel
                         )
                     } else {
-                        TimeTableTodoView()
+                        TimeTableTodoView(
+                            timeTableViewModel: _timeTableViewModel
+                        )
                     }
                 }
             }
