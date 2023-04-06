@@ -51,7 +51,7 @@ final class ScheduleService {
         }
 
         let paramFormatter = DateFormatter()
-        paramFormatter.dateFormat = "yyyyMMdd"
+        paramFormatter.dateFormat = Constants.dateFormat
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -97,7 +97,7 @@ final class ScheduleService {
         }
 
         let paramFormatter = DateFormatter()
-        paramFormatter.dateFormat = "yyyyMMdd"
+        paramFormatter.dateFormat = Constants.dateFormat
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -112,9 +112,9 @@ final class ScheduleService {
 
             AF.request(
                 ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
-                method: .get,
+                method: .post,
                 parameters: parameters,
-                encoding: URLEncoding.queryString,
+                encoding: JSONEncoding.default,
                 headers: headers
             )
             .responseDecodable(of: Response.self, decoder: Self.decoder) { response in

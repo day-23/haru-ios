@@ -51,7 +51,7 @@ final class CalendarService {
         decoder.dateDecodingStrategy = .formatted(formatter)
 
         let paramFormatter = DateFormatter()
-        paramFormatter.dateFormat = "yyyyMMdd"
+        paramFormatter.dateFormat = Constants.dateFormat
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -66,9 +66,9 @@ final class CalendarService {
 
             AF.request(
                 Constants.baseURL + "todo/" + (Global.shared.user?.id ?? "unknown") + "/todos/date",
-                method: .get,
+                method: .post,
                 parameters: parameters,
-                encoding: URLEncoding.queryString,
+                encoding: JSONEncoding.default,
                 headers: headers
             )
             .responseDecodable(of: Response.self, decoder: decoder) { response in
