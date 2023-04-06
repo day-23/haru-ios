@@ -22,7 +22,7 @@ struct ScheduleTopItemView: View {
                 .padding(.vertical, 2)
                 .padding(.horizontal, 3)
         }
-        .frame(width: width, height: height)
+        .frame(width: width - 2, height: height)
         .cornerRadius(4)
     }
 }

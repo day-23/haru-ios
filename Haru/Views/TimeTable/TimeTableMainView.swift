@@ -13,6 +13,9 @@ struct TimeTableMainView: View {
 
     @StateObject var timeTableViewModel: TimeTableViewModel
 
+    private var fixed: Double = 31
+    private var topItemWidth: Double = 48
+    private var topItemHeight: Double = 18
     private let column = [GridItem(.fixed(31)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
@@ -126,14 +129,14 @@ struct TimeTableMainView: View {
                                 Text("")
 
                                 ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                                    VStack {}.frame(height: 18 * CGFloat(timeTableViewModel.maxRowCount))
+                                    VStack {}.frame(height: topItemHeight * CGFloat(timeTableViewModel.maxRowCount) + 2)
                                 }
                             }
                             .overlay {
                                 ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
                                     ForEach($timeTableViewModel.scheduleListWithoutTime[index]) { $schedule in
                                         ScheduleTopItemView(
-                                            schedule: $schedule, width: 48 * CGFloat(schedule.weight), height: 18
+                                            schedule: $schedule, width: topItemWidth * CGFloat(schedule.weight), height: topItemHeight
                                         )
                                         .position(
                                             getPosition(weight: schedule.weight, index: index, order: schedule.order)
@@ -165,13 +168,13 @@ extension TimeTableMainView {
         index: Int,
         order: Int
     ) -> CGPoint {
-        var x = 48.0 * Double(index + 1)
-        x += 31 + 8
-        x -= 48.0 * Double(weight) * 0.5
-        x += 48.0 * Double(weight) * (Double(weight - 1) / Double(weight))
+        var x = topItemWidth * Double(index + 1)
+        x += fixed + 8
+        x -= topItemWidth * Double(weight) * 0.5
+        x += topItemWidth * Double(weight) * (Double(weight - 1) / Double(weight))
 
-        var y = 18.0 * Double(order)
-        y -= 18.0 * 0.5
+        var y = topItemHeight * Double(order)
+        y -= topItemHeight * 0.5
         y += Double(order) * 2
         return CGPoint(x: x, y: y)
     }
