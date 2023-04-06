@@ -10,6 +10,18 @@ import SwiftUI
 struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
 
+    private var fixed: Double = 31
+    private var topItemWidth: Double = 48
+    private var topItemHeight: Double = 18
+
+    private let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d"
+        return formatter
+    }()
+
+    private let week = ["일", "월", "화", "수", "목", "금", "토"]
+
     private let column = [GridItem(.fixed(31)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
@@ -21,7 +33,6 @@ struct TimeTableScheduleView: View {
     @State private var cellWidth: CGFloat? = nil
     private var cellHeight: CGFloat = 72
     private var minuteInterval: Double = 5.0
-    private let showHourTextWidth = 31
     private let borderWidth = 1
 
     init(timeTableViewModel: StateObject<TimeTableViewModel>) {
@@ -29,92 +40,152 @@ struct TimeTableScheduleView: View {
     }
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(
-                columns: column,
-                spacing: 0
-            ) {
-                ForEach(range.indices, id: \.self) { index in
-                    if index % 8 == 0 {
-                        VStack {
-                            Spacer()
-                            Text("\(index / 8 + 1)")
-                                .font(.pretendard(size: 10, weight: .medium))
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                    } else {
-                        Rectangle()
-                            .foregroundColor(.white)
-                            .border(Color(0xededed))
-                            .frame(height: cellHeight)
-                            .background(
-                                GeometryReader(content: { proxy in
-                                    Color.clear.onAppear {
-                                        if cellWidth == nil {
-                                            cellWidth = proxy.size.width
-                                        }
-                                    }
-                                })
+        Group {
+            LazyVGrid(columns: column) {
+                Text("")
+
+                ForEach(week, id: \.self) { day in
+                    Text(day)
+                        .font(.pretendard(size: 14, weight: .medium))
+                        .foregroundColor(
+                            day == "일" ? Color(0xf71e58) : (day == "토" ? Color(0x1dafff) : Color(0x191919))
+                        )
+                }
+            }
+
+            Divider()
+                .padding(.leading, 40)
+                .foregroundColor(Color(0xdbdbdb))
+
+            LazyVGrid(columns: column) {
+                Text("")
+
+                ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                    if timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth {
+                        Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                            .font(.pretendard(size: 14, weight: .medium))
+                            .foregroundColor(
+                                index == 0 ? Color(0xfdbbcd) : (index == 6 ? Color(0xbbe7ff) : Color(0xbababa))
                             )
-                            .overlay {
-                                VStack(spacing: 0) {
-                                    ForEach(0 ..< (60 / Int(minuteInterval)), id: \.self) {
-                                        minuteIndex in
-                                        Rectangle()
-                                            .foregroundColor(Color(0xffffff, opacity: 0.001))
-                                            .onDrop(of: [.text], delegate: CellDropDelegate(
-                                                dayIndex: index % 8 - 1,
-                                                hourIndex: index / 8,
-                                                minuteIndex: minuteIndex,
-                                                dragging: $timeTableViewModel.draggingSchedule
-                                            ) { date in
-                                                guard let draggingSchedule = timeTableViewModel.draggingSchedule else {
-                                                    return
-                                                }
-
-                                                let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
-                                                    draggingSchedule.data.repeatStart
-                                                )
-
-                                                timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
-                                            })
-                                    }
-                                }
-                            }
+                    } else {
+                        Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                            .font(.pretendard(size: 14, weight: .medium))
+                            .foregroundColor(
+                                index == 0 ? Color(0xf71e58) : (index == 6 ? Color(0x1dafff) : Color(0x191919))
+                            )
                     }
                 }
             }
-            .overlay(content: {
-                if cellWidth != nil {
-                    ForEach($timeTableViewModel.scheduleList) { $schedule in
-                        if let scheduleIndex = getScheduleIndex(schedule: schedule.data.repeatStart),
-                           let frame = calcFrame(
-                               weight: schedule.weight,
-                               duration: schedule.data.repeatEnd.diffToMinute(other: schedule.data.repeatStart)
-                           ),
-                           let position = calcPosition(
-                               row: scheduleIndex.row,
-                               column: scheduleIndex.column,
-                               minuteIndex: scheduleIndex.minuteIndex,
-                               weight: schedule.weight,
-                               order: schedule.order,
-                               frame: frame
-                           )
-                        {
-                            ScheduleItemView(schedule: $schedule)
-                                .frame(width: frame.width, height: frame.height)
-                                .position(x: position.x, y: position.y)
-                                .onDrag {
-                                    timeTableViewModel.draggingSchedule = schedule
-                                    return NSItemProvider(object: schedule.id as NSString)
-                                } preview: {
-                                    ScheduleItemView(schedule: $schedule)
-                                        .frame(width: frame.width, height: frame.height)
+
+            if !timeTableViewModel.scheduleListWithoutTime.isEmpty {
+                LazyVGrid(columns: column) {
+                    Text("")
+
+                    ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                        VStack {}.frame(height: topItemHeight * CGFloat(timeTableViewModel.maxRowCount) + 2)
+                    }
+                }
+                .overlay {
+                    ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                        ForEach($timeTableViewModel.scheduleListWithoutTime[index]) { $schedule in
+                            ScheduleTopItemView(
+                                schedule: $schedule, width: topItemWidth * CGFloat(schedule.weight), height: topItemHeight
+                            )
+                            .position(
+                                calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
+                            )
+                        }
+                    }
+                }
+            }
+
+            ScrollView {
+                LazyVGrid(
+                    columns: column,
+                    spacing: 0
+                ) {
+                    ForEach(range.indices, id: \.self) { index in
+                        if index % 8 == 0 {
+                            VStack {
+                                Spacer()
+                                Text("\(index / 8 + 1)")
+                                    .font(.pretendard(size: 10, weight: .medium))
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                            }
+                        } else {
+                            Rectangle()
+                                .foregroundColor(.white)
+                                .border(Color(0xededed))
+                                .frame(height: cellHeight)
+                                .background(
+                                    GeometryReader(content: { proxy in
+                                        Color.clear.onAppear {
+                                            if cellWidth == nil {
+                                                cellWidth = proxy.size.width
+                                            }
+                                        }
+                                    })
+                                )
+                                .overlay {
+                                    VStack(spacing: 0) {
+                                        ForEach(0 ..< (60 / Int(minuteInterval)), id: \.self) {
+                                            minuteIndex in
+                                            Rectangle()
+                                                .foregroundColor(Color(0xffffff, opacity: 0.001))
+                                                .onDrop(of: [.text], delegate: CellDropDelegate(
+                                                    dayIndex: index % 8 - 1,
+                                                    hourIndex: index / 8,
+                                                    minuteIndex: minuteIndex,
+                                                    dragging: $timeTableViewModel.draggingSchedule
+                                                ) { date in
+                                                    guard let draggingSchedule = timeTableViewModel.draggingSchedule else {
+                                                        return
+                                                    }
+
+                                                    let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
+                                                        draggingSchedule.data.repeatStart
+                                                    )
+
+                                                    timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
+                                                })
+                                        }
+                                    }
                                 }
                         }
                     }
                 }
-            })
+                .overlay(content: {
+                    if cellWidth != nil {
+                        ForEach($timeTableViewModel.scheduleList) { $schedule in
+                            if let scheduleIndex = getScheduleIndex(schedule: schedule.data.repeatStart),
+                               let frame = calcFrame(
+                                   weight: schedule.weight,
+                                   duration: schedule.data.repeatEnd.diffToMinute(other: schedule.data.repeatStart)
+                               ),
+                               let position = calcPosition(
+                                   row: scheduleIndex.row,
+                                   column: scheduleIndex.column,
+                                   minuteIndex: scheduleIndex.minuteIndex,
+                                   weight: schedule.weight,
+                                   order: schedule.order,
+                                   frame: frame
+                               )
+                            {
+                                ScheduleItemView(schedule: $schedule)
+                                    .frame(width: frame.width, height: frame.height)
+                                    .position(x: position.x, y: position.y)
+                                    .onDrag {
+                                        timeTableViewModel.draggingSchedule = schedule
+                                        return NSItemProvider(object: schedule.id as NSString)
+                                    } preview: {
+                                        ScheduleItemView(schedule: $schedule)
+                                            .frame(width: frame.width, height: frame.height)
+                                    }
+                            }
+                        }
+                    }
+                })
+            }
         }
     }
 }
@@ -165,7 +236,7 @@ private extension TimeTableScheduleView {
         let width = cellWidth * CGFloat(1.0 / Double(weight))
 
         var x = CGFloat(column) * cellWidth
-        x += CGFloat(showHourTextWidth) + CGFloat(borderWidth * 8)
+        x += CGFloat(fixed) + CGFloat(borderWidth * 8)
         x -= width == cellWidth ?
             width * 0.5 :
             width * Double(weight) - width * 0.5
@@ -193,6 +264,22 @@ private extension TimeTableScheduleView {
         let height: CGFloat = cellHeight * CGFloat(Double(duration) / 60.0)
 
         return (width: width, height: height)
+    }
+
+    func calcTopItemPosition(
+        weight: Int,
+        index: Int,
+        order: Int
+    ) -> CGPoint {
+        var x = topItemWidth * Double(index + 1)
+        x += fixed + 8
+        x -= topItemWidth * Double(weight) * 0.5
+        x += topItemWidth * Double(weight) * (Double(weight - 1) / Double(weight))
+
+        var y = topItemHeight * Double(order)
+        y -= topItemHeight * 0.5
+        y += Double(order) * 2
+        return CGPoint(x: x, y: y)
     }
 }
 
