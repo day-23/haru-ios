@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TimeTableTodoView: View {
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 2) {
             TimeTableTodoRow()
             TimeTableTodoRow()
             TimeTableTodoRow()
@@ -20,6 +20,7 @@ struct TimeTableTodoView: View {
 
             Spacer()
         }
+        .padding(.leading, 24)
     }
 }
 
@@ -37,7 +38,7 @@ struct TimeTableTodoRow: View {
             .padding(.trailing, 24)
 
             ScrollView(.horizontal) {
-                HStack(spacing: 8) {
+                HStack(spacing: 12) {
                     TimeTableTodoItem()
                     TimeTableTodoItem()
                     TimeTableTodoItem()
@@ -62,7 +63,7 @@ struct TimeTableTodoItem: View {
                 .background(Color(0xFDFDFD))
                 .cornerRadius(8)
         }
-        .frame(width: 64, height: 58)
+        .frame(width: 68, height: 62)
         .background(Color(0xFDFDFD))
         .cornerRadius(10)
         .overlay(

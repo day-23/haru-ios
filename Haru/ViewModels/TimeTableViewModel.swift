@@ -30,9 +30,11 @@ final class TimeTableViewModel: ObservableObject {
 
     @Published var draggingSchedule: ScheduleCell? = nil
 
-    @Published var currentYear: Int = Date.now.year
-    @Published var currentMonth: Int = Date.now.month
-    @Published var currentWeek: Int = Date.now.weekOfYear()
+    @Published var currentDate: Date = .now
+    var currentYear: Int { currentDate.year }
+    var currentMonth: Int { currentDate.month }
+    var currentWeek: Int { currentDate.weekOfYear() }
+
     var thisWeek: [Date] {
         let calendar = Calendar.current
 
@@ -187,7 +189,7 @@ final class TimeTableViewModel: ObservableObject {
             return
         }
 
-        scheduleService.fetchScheduleList(startDate, endDate) { result in
+        scheduleService.fetchScheduleList(startDate, endDate.addingTimeInterval(TimeInterval(60 * 60 * 24))) { result in
             switch result {
             case .success(let scheduleList):
                 let dateFormatter = DateFormatter()

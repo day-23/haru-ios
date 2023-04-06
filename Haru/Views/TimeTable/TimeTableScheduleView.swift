@@ -10,10 +10,6 @@ import SwiftUI
 struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
 
-    private var fixed: Double = 31
-    private var topItemWidth: Double = 48
-    private var topItemHeight: Double = 18
-
     private let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "d"
@@ -34,6 +30,7 @@ struct TimeTableScheduleView: View {
     private var cellHeight: CGFloat = 72
     private var minuteInterval: Double = 5.0
     private let borderWidth = 1
+    private var fixed: Double = 31
 
     init(timeTableViewModel: StateObject<TimeTableViewModel>) {
         _timeTableViewModel = timeTableViewModel
@@ -41,61 +38,45 @@ struct TimeTableScheduleView: View {
 
     var body: some View {
         Group {
-            LazyVGrid(columns: column) {
-                Text("")
+            VStack {
+                LazyVGrid(columns: column) {
+                    Text("")
 
-                ForEach(week, id: \.self) { day in
-                    Text(day)
-                        .font(.pretendard(size: 14, weight: .medium))
-                        .foregroundColor(
-                            day == "일" ? Color(0xf71e58) : (day == "토" ? Color(0x1dafff) : Color(0x191919))
-                        )
-                }
-            }
-
-            Divider()
-                .padding(.leading, 40)
-                .foregroundColor(Color(0xdbdbdb))
-
-            LazyVGrid(columns: column) {
-                Text("")
-
-                ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                    if timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth {
-                        Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                    ForEach(week, id: \.self) { day in
+                        Text(day)
                             .font(.pretendard(size: 14, weight: .medium))
                             .foregroundColor(
-                                index == 0 ? Color(0xfdbbcd) : (index == 6 ? Color(0xbbe7ff) : Color(0xbababa))
-                            )
-                    } else {
-                        Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
-                            .font(.pretendard(size: 14, weight: .medium))
-                            .foregroundColor(
-                                index == 0 ? Color(0xf71e58) : (index == 6 ? Color(0x1dafff) : Color(0x191919))
+                                day == "일" ? Color(0xf71e58) : (day == "토" ? Color(0x1dafff) : Color(0x191919))
                             )
                     }
                 }
-            }
 
-            if !timeTableViewModel.scheduleListWithoutTime.isEmpty {
+                Divider()
+                    .padding(.leading, 40)
+                    .foregroundColor(Color(0xdbdbdb))
+
                 LazyVGrid(columns: column) {
                     Text("")
 
                     ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                        VStack {}.frame(height: topItemHeight * CGFloat(timeTableViewModel.maxRowCount) + 2)
-                    }
-                }
-                .overlay {
-                    ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                        ForEach($timeTableViewModel.scheduleListWithoutTime[index]) { $schedule in
-                            ScheduleTopItemView(
-                                schedule: $schedule, width: topItemWidth * CGFloat(schedule.weight), height: topItemHeight
-                            )
-                            .position(
-                                calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
-                            )
+                        if timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth {
+                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                                .font(.pretendard(size: 14, weight: .medium))
+                                .foregroundColor(
+                                    index == 0 ? Color(0xfdbbcd) : (index == 6 ? Color(0xbbe7ff) : Color(0xbababa))
+                                )
+                        } else {
+                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                                .font(.pretendard(size: 14, weight: .medium))
+                                .foregroundColor(
+                                    index == 0 ? Color(0xf71e58) : (index == 6 ? Color(0x1dafff) : Color(0x191919))
+                                )
                         }
                     }
+                }
+
+                if !timeTableViewModel.scheduleListWithoutTime.isEmpty {
+                    TimeTableScheduleTopView(timeTableViewModel: _timeTableViewModel)
                 }
             }
 
@@ -264,22 +245,6 @@ private extension TimeTableScheduleView {
         let height: CGFloat = cellHeight * CGFloat(Double(duration) / 60.0)
 
         return (width: width, height: height)
-    }
-
-    func calcTopItemPosition(
-        weight: Int,
-        index: Int,
-        order: Int
-    ) -> CGPoint {
-        var x = topItemWidth * Double(index + 1)
-        x += fixed + 8
-        x -= topItemWidth * Double(weight) * 0.5
-        x += topItemWidth * Double(weight) * (Double(weight - 1) / Double(weight))
-
-        var y = topItemHeight * Double(order)
-        y -= topItemHeight * 0.5
-        y += Double(order) * 2
-        return CGPoint(x: x, y: y)
     }
 }
 

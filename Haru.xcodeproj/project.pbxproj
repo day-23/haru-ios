@@ -92,6 +92,7 @@
 		130667CB29CEE38500AACEE6 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 130667CA29CEE38500AACEE6 /* SwiftUIPager */; };
 		134F5FEE29DD356C0072704B /* ScheduleItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 134F5FED29DD356C0072704B /* ScheduleItemView.swift */; };
 		134F5FF029DD7BE80072704B /* ScheduleTopItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 134F5FEF29DD7BE80072704B /* ScheduleTopItemView.swift */; };
+		134F5FF229DF1A240072704B /* TimeTableScheduleTopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 134F5FF129DF1A240072704B /* TimeTableScheduleTopView.swift */; };
 		1356621829D1EE29003CAD1B /* DefaultTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1356621729D1EE29003CAD1B /* DefaultTag.swift */; };
 		13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */; };
 		13D9B5AD29D5DDA100109C0E /* TimeTableTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */; };
@@ -187,6 +188,7 @@
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
 		134F5FED29DD356C0072704B /* ScheduleItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleItemView.swift; sourceTree = "<group>"; };
 		134F5FEF29DD7BE80072704B /* ScheduleTopItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTopItemView.swift; sourceTree = "<group>"; };
+		134F5FF129DF1A240072704B /* TimeTableScheduleTopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableScheduleTopView.swift; sourceTree = "<group>"; };
 		1356621729D1EE29003CAD1B /* DefaultTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTag.swift; sourceTree = "<group>"; };
 		137414BC29CEE5A7005A8282 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableScheduleView.swift; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 				13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */,
 				134F5FED29DD356C0072704B /* ScheduleItemView.swift */,
 				134F5FEF29DD7BE80072704B /* ScheduleTopItemView.swift */,
+				134F5FF129DF1A240072704B /* TimeTableScheduleTopView.swift */,
 			);
 			path = TimeTable;
 			sourceTree = "<group>";
@@ -551,6 +554,7 @@
 				1306671F29CEE14000AACEE6 /* CategoryService.swift in Sources */,
 				1306671E29CEE14000AACEE6 /* CalendarService.swift in Sources */,
 				1306679229CEE1E300AACEE6 /* CompleteButton.swift in Sources */,
+				134F5FF229DF1A240072704B /* TimeTableScheduleTopView.swift in Sources */,
 				1306671229CEE13200AACEE6 /* SubTodo.swift in Sources */,
 				130667A229CEE1F200AACEE6 /* Border.swift in Sources */,
 				1306679529CEE1E300AACEE6 /* DayButton.swift in Sources */,

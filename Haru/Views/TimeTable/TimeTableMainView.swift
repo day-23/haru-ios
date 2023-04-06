@@ -13,18 +13,6 @@ struct TimeTableMainView: View {
 
     @StateObject var timeTableViewModel: TimeTableViewModel
 
-    private let yearFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy"
-        return formatter
-    }()
-
-    private let monthFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M"
-        return formatter
-    }()
-
     @State private var isScheduleView: Bool = true
 
     init(timeTableViewModel: StateObject<TimeTableViewModel>) {
@@ -37,11 +25,11 @@ struct TimeTableMainView: View {
                 //  날짜 레이아웃
                 VStack {
                     HStack(spacing: 0) {
-                        Text("\(yearFormatter.string(from: .now))년")
+                        Text("\(String(timeTableViewModel.currentYear))년")
                             .font(.pretendard(size: 28, weight: .bold))
                             .foregroundColor(Color(0x191919))
                             .padding(.leading, 40)
-                        Text("\(monthFormatter.string(from: .now))월")
+                        Text("\(timeTableViewModel.currentMonth)월")
                             .font(.pretendard(size: 28, weight: .bold))
                             .foregroundColor(Color(0x191919))
                             .padding(.leading, 10)
