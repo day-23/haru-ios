@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct ScheduleCell: Identifiable {
     var id: String
@@ -345,8 +346,10 @@ final class TimeTableViewModel: ObservableObject {
             ) { result in
                 switch result {
                 case .success:
-                    self.todoListByDate[i].remove(at: j)
-                    self.todoListByDate[index].append(draggingTodo)
+                    withAnimation {
+                        self.todoListByDate[i].remove(at: j)
+                        self.todoListByDate[index].append(draggingTodo)
+                    }
                 case .failure(let failure):
                     print("[Debug] \(failure) (\(#fileID), \(#function))")
                 }
