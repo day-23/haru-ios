@@ -49,11 +49,16 @@ final class TimeTableViewModel: ObservableObject {
         return result
     }
 
-    func sortScheduleListWithoutTime() {
+    func processScheduleListWithoutTime() {
+        struct Point: Hashable {
+            let r: Int
+            let c: Int
+        }
+
         let dateTimeFormatter = DateFormatter()
         dateTimeFormatter.dateFormat = "yyyyMMddHHmmss"
 
-        for (index, scheduleList) in zip(scheduleListWithoutTime.indices, scheduleListWithoutTime) {
+        for (index, scheduleList) in scheduleListWithoutTime.enumerated() {
             scheduleListWithoutTime[index] = scheduleList.sorted(by: { first, second in
                 if first.data.isAllDay {
                     return true
@@ -65,26 +70,26 @@ final class TimeTableViewModel: ObservableObject {
             })
         }
 
-        var scheduleMap: [String: (Int, Int)] = [:]
-        for (i, scheduleList) in zip(scheduleListWithoutTime.indices, scheduleListWithoutTime) {
-            var alt: [ScheduleCell] = []
-            for j in scheduleList.indices {
-                if let (r, c) = scheduleMap[scheduleList[j].id] {
-                    scheduleListWithoutTime[r][c].weight += 1
-                    scheduleListWithoutTime[r][c].order = max(
-                        j + 1, scheduleListWithoutTime[r][c].order
-                    )
-                    continue
+        var orderSet: Set<Point> = []
+        for (c, scheduleList) in scheduleListWithoutTime.enumerated() {
+            for (r, scheduleCell) in scheduleList.enumerated() {
+                if orderSet.contains(Point(r: r, c: c)) {
+                    var nr = r + 1
+                    while orderSet.contains(Point(r: nr, c: c)) {
+                        nr += 1
+                    }
+                    for x in c ..< c + scheduleCell.weight {
+                        orderSet.insert(Point(r: nr, c: x))
+                    }
+                    scheduleListWithoutTime[c][r].order = nr + 1
+                } else {
+                    for x in c ..< c + scheduleCell.weight {
+                        orderSet.insert(Point(r: r, c: x))
+                    }
+                    scheduleListWithoutTime[c][r].order = r + 1
                 }
-
-                scheduleMap[scheduleList[j].id] = (i, j)
-                scheduleListWithoutTime[i][j].order = j + 1
-                alt.append(scheduleListWithoutTime[i][j])
             }
-            scheduleListWithoutTime[i] = alt
         }
-
-        print(scheduleListWithoutTime)
     }
 
     func findUnion() {
@@ -191,23 +196,29 @@ final class TimeTableViewModel: ObservableObject {
                 self.scheduleList = []
                 self.scheduleListWithoutTime = Array(repeating: [], count: 7)
                 for schedule in scheduleList {
-                    let data = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
+                    var data = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
                     if schedule.isAllDay ||
                         dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd)
                     {
-                        if let start = schedule.repeatStart.indexOfWeek(),
-                           let end = schedule.repeatEnd.indexOfWeek()
+                        if var start = schedule.repeatStart.indexOfWeek(),
+                           var end = schedule.repeatEnd.indexOfWeek()
                         {
-                            for index in start ... end {
-                                self.scheduleListWithoutTime[index].append(data)
+                            if schedule.repeatStart.weekOfYear() < self.currentWeek {
+                                start = 0
                             }
+                            if schedule.repeatEnd.weekOfYear() > self.currentWeek {
+                                end = 6
+                            }
+
+                            data.weight = end - start + 1
+                            self.scheduleListWithoutTime[start].append(data)
                         }
                         continue
                     }
                     self.scheduleList.append(data)
                 }
                 self.findUnion()
-                self.sortScheduleListWithoutTime()
+                self.processScheduleListWithoutTime()
             case .failure(let failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
             }

@@ -100,7 +100,7 @@ public extension Date {
     
     func weekOfYear() -> Int {
         let calendar = Calendar.current
-        return calendar.component(.weekOfYear, from: Date.now)
+        return calendar.component(.weekOfYear, from: self)
     }
     
     func indexOfWeek() -> Int? {

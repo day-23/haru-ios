@@ -50,25 +50,22 @@ final class CalendarService {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(formatter)
 
-        let paramFormatter = DateFormatter()
-        paramFormatter.dateFormat = "yyyyMMdd"
-
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
         let parameters: Parameters = [
-            "startDate": paramFormatter.string(from: startDate),
-            "endDate": paramFormatter.string(from: endDate),
+            "startDate": formatter.string(from: startDate),
+            "endDate": formatter.string(from: endDate),
         ]
 
         return try await withCheckedThrowingContinuation { continuation in
 
             AF.request(
                 Constants.baseURL + "todo/" + (Global.shared.user?.id ?? "unknown") + "/todos/date",
-                method: .get,
+                method: .post,
                 parameters: parameters,
-                encoding: URLEncoding.queryString,
+                encoding: JSONEncoding.default,
                 headers: headers
             )
             .responseDecodable(of: Response.self, decoder: decoder) { response in
