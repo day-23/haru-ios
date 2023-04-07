@@ -17,9 +17,22 @@ final class ScheduleFormViewModel: ObservableObject {
     
     @Published var repeatStart: Date
     @Published var repeatEnd: Date
+    @Published var realRepeatEnd: Date
     
+    // 시작과 끝이 7일 이상인가
     var overWeek: Bool {
-        repeatStart.distance(to: repeatEnd) > 86400.0 * 7
+        let startDate = CalendarHelper.removeTimeData(date: repeatStart)
+        let endDate = CalendarHelper.removeTimeData(date: repeatEnd)
+        
+        return startDate.distance(to: endDate) >= 86400.0 * 7
+    }
+    
+    // 시작과 끝이 1일 이상인가
+    var overDay: Bool {
+        let startDate = CalendarHelper.removeTimeData(date: repeatStart)
+        let endDate = CalendarHelper.removeTimeData(date: repeatEnd)
+    
+        return startDate.distance(to: endDate) >= 86400.0
     }
     
     @Published var content: String = ""
@@ -159,7 +172,7 @@ final class ScheduleFormViewModel: ObservableObject {
     }
 
     var repeatValue: String? {
-//        if isSelectedEndDate && isSelectedRepeat {
+        // TODO: 연속된 반복인지 단일 반복인지
         if isSelectedRepeat {
             var value: [Day] = []
             switch repeatOption {
@@ -219,6 +232,7 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.repeatStart = selectionList.first?.date ?? Date()
         self.repeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+        self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
         self.mode = mode
         print("scheduleVM init")
@@ -241,14 +255,16 @@ final class ScheduleFormViewModel: ObservableObject {
      * Request.Schedule 만들기
      */
     func createSchedule() -> Request.Schedule {
+        // TODO: 연속
+        
         Request.Schedule(
             content: content,
             memo: memo,
             isAllDay: isAllDay,
             repeatStart: repeatStart,
-            repeatEnd: repeatEnd,
-            repeatOption: repeatOption.rawValue,
-            repeatValue: repeatValue,
+            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
+            repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
+            repeatValue: isSelectedRepeat ? repeatValue : nil,
             categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
             alarms: selectedAlarm
         )

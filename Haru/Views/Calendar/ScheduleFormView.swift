@@ -231,16 +231,14 @@ struct ScheduleFormView: View {
                         
                         if scheduleFormVM.isSelectedRepeat {
                             Picker("", selection: $scheduleFormVM.repeatOption.animation()) {
-                                ForEach(RepeatOption.allCases, id: \.self) {
+                                ForEach(getRepeatOption(), id: \.self) {
                                     Text($0.rawValue)
                                         .font(.pretendard(size: 14, weight: .medium))
                                 }
                             }
                             .pickerStyle(.segmented)
                             .padding(.horizontal, 55)
-                        }
-                        
-                        if scheduleFormVM.isSelectedRepeat {
+                            
                             if scheduleFormVM.repeatOption == .everyYear {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
                                     ForEach(scheduleFormVM.repeatYear.indices, id: \.self) { index in
@@ -250,7 +248,7 @@ struct ScheduleFormView: View {
                                     }
                                 }
                                 .padding(.horizontal, 55)
-                            } else if scheduleFormVM.repeatOption == .everyMonth {
+                            } else if !scheduleFormVM.overDay, scheduleFormVM.repeatOption == .everyMonth {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
                                     ForEach(scheduleFormVM.repeatMonth.indices, id: \.self) { index in
                                         DayButton(content: scheduleFormVM.repeatMonth[index].content, isClicked: scheduleFormVM.repeatMonth[index].isClicked) {
@@ -259,7 +257,7 @@ struct ScheduleFormView: View {
                                     }
                                 }
                                 .padding(.horizontal, 55)
-                            } else if scheduleFormVM.repeatOption == .everySecondWeek ||
+                            } else if !scheduleFormVM.overDay, scheduleFormVM.repeatOption == .everySecondWeek ||
                                 scheduleFormVM.repeatOption == .everyWeek
                             {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
@@ -284,7 +282,7 @@ struct ScheduleFormView: View {
                                         Spacer()
                                         if scheduleFormVM.isSelectedRepeatEnd {
                                             DatePicker(
-                                                selection: $scheduleFormVM.repeatEnd,
+                                                selection: $scheduleFormVM.realRepeatEnd,
                                                 in: scheduleFormVM.repeatEnd...,
                                                 displayedComponents: [.date]
                                             ) {}
@@ -384,5 +382,10 @@ struct ScheduleFormView: View {
                 }
             }
         }
+    }
+    
+    func getRepeatOption() -> [RepeatOption] {
+        let optionCnt = RepeatOption.allCases.count
+        return RepeatOption.allCases.suffix(scheduleFormVM.overDay ? optionCnt - 1 : optionCnt)
     }
 }
