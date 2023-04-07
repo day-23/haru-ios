@@ -84,7 +84,6 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func fetchTodoList() {
-        //  FIXME: - fix to Fetch All todos API
         if let selectedTag = selectedTag {
             fetchTodoListByTag(tag: selectedTag)
         }
@@ -147,7 +146,7 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func fetchTodoListByTodayTodoAndUntilToday() {
-        todoService.fetchTodoListByTodayTodoAndUntilToday(today: .now) { result in
+        todoService.fetchTodoListByTodayTodoAndUntilToday { result in
             switch result {
             case let .success(success):
                 withAnimation(.easeInOut(duration: 0.2)) {
