@@ -307,13 +307,9 @@ final class TimeTableViewModel: ObservableObject {
                                                         alarms: draggingSchedule.data.alarms.map(\.time))) { result in
             switch result {
             case .success(let schedule):
-                if let index = self.scheduleList.firstIndex(where: { schedule in
-                    schedule.id == self.draggingSchedule?.id
-                }) {
-                    self.draggingSchedule?.data = schedule
-                    self.scheduleList[index] = self.draggingSchedule!
-                    self.draggingSchedule = nil
-                }
+                self.draggingSchedule?.data = schedule
+                self.scheduleList.append(self.draggingSchedule!)
+                self.draggingSchedule = nil
                 self.findUnion()
             case .failure(let failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")

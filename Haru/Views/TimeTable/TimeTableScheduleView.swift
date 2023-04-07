@@ -142,24 +142,26 @@ struct TimeTableScheduleView: View {
                                    frame: frame
                                )
                             {
-                                if timeTableViewModel.draggingSchedule?.id != schedule.id {
-                                    ScheduleItemView(schedule: $schedule)
-                                        .opacity(schedule.id == "PREVIEW" ? 0.5 : 1)
-                                        .frame(width: frame.width, height: frame.height)
-                                        .position(x: position.x, y: position.y)
-                                        .onDrop(of: [.text], delegate: CellDropDelegate(
-                                            dayIndex: schedule.data.repeatStart.indexOfWeek()!,
-                                            hourIndex: schedule.data.repeatStart.hour,
-                                            minuteIndex: schedule.data.repeatStart.minute / 5,
-                                            timeTableViewModel: _timeTableViewModel
-                                        ))
-                                        .onDrag {
-                                            timeTableViewModel.draggingSchedule = schedule
-                                            return NSItemProvider(object: schedule.id as NSString)
-                                        } preview: {
-                                            EmptyView()
+                                ScheduleItemView(schedule: $schedule)
+                                    .opacity(schedule.id == "PREVIEW" ? 0.5 : 1)
+                                    .frame(width: frame.width, height: frame.height)
+                                    .position(x: position.x, y: position.y)
+                                    .onDrop(of: [.text], delegate: CellDropDelegate(
+                                        dayIndex: schedule.data.repeatStart.indexOfWeek()!,
+                                        hourIndex: schedule.data.repeatStart.hour,
+                                        minuteIndex: schedule.data.repeatStart.minute / 5,
+                                        timeTableViewModel: _timeTableViewModel
+                                    ))
+                                    .onDrag {
+                                        let scheduleId = schedule.id
+                                        timeTableViewModel.draggingSchedule = schedule
+                                        timeTableViewModel.scheduleList = timeTableViewModel.scheduleList.filter {
+                                            $0.id != schedule.id
                                         }
-                                }
+                                        return NSItemProvider(object: scheduleId as NSString)
+                                    } preview: {
+                                        EmptyView()
+                                    }
                             }
                         }
                     }
