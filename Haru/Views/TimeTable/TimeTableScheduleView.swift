@@ -117,18 +117,8 @@ struct TimeTableScheduleView: View {
                                                     dayIndex: index % 8 - 1,
                                                     hourIndex: index / 8,
                                                     minuteIndex: minuteIndex,
-                                                    dragging: $timeTableViewModel.draggingSchedule
-                                                ) { date in
-                                                    guard let draggingSchedule = timeTableViewModel.draggingSchedule else {
-                                                        return
-                                                    }
-
-                                                    let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
-                                                        draggingSchedule.data.repeatStart
-                                                    )
-
-                                                    timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
-                                                })
+                                                    timeTableViewModel: _timeTableViewModel
+                                                ))
                                         }
                                     }
                                 }
@@ -252,8 +242,19 @@ struct CellDropDelegate: DropDelegate {
     var dayIndex: Int
     var hourIndex: Int
     var minuteIndex: Int
-    @Binding var dragging: ScheduleCell?
-    var completion: (Date) -> Void
+    @StateObject var timeTableViewModel: TimeTableViewModel
+
+    init(
+        dayIndex: Int,
+        hourIndex: Int,
+        minuteIndex: Int,
+        timeTableViewModel: StateObject<TimeTableViewModel>
+    ) {
+        self.dayIndex = dayIndex
+        self.hourIndex = hourIndex
+        self.minuteIndex = minuteIndex
+        _timeTableViewModel = timeTableViewModel
+    }
 
     private static var dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -290,7 +291,7 @@ struct CellDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        if dragging == nil {
+        if timeTableViewModel.draggingSchedule == nil {
             return false
         }
 
@@ -301,7 +302,16 @@ struct CellDropDelegate: DropDelegate {
         guard let date = Calendar.current.date(from: components) else {
             return false
         }
-        completion(date)
+
+        guard let draggingSchedule = timeTableViewModel.draggingSchedule else {
+            return false
+        }
+
+        let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
+            draggingSchedule.data.repeatStart
+        )
+
+        timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
         return true
     }
 }
