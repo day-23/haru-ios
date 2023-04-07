@@ -8,72 +8,67 @@
 import SwiftUI
 
 struct TimeTableTodoView: View {
-    var body: some View {
-        VStack(spacing: 0) {
-            TimeTableTodoRow()
-            TimeTableTodoRow()
-            TimeTableTodoRow()
-            TimeTableTodoRow()
-            TimeTableTodoRow()
-            TimeTableTodoRow()
-            TimeTableTodoRow()
+    //  MARK: - Properties
 
+    @StateObject var timeTableViewModel: TimeTableViewModel
+
+    init(timeTableViewModel: StateObject<TimeTableViewModel>) {
+        _timeTableViewModel = timeTableViewModel
+    }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                TimeTableTodoRow(
+                    index: index,
+                    date: timeTableViewModel.thisWeek[index],
+                    todoList: $timeTableViewModel.todoListByDate[index],
+                    timeTableViewModel: timeTableViewModel
+                )
+                .background(
+                    index == Date.now.indexOfWeek() ? RadialGradient(
+                        gradient: Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]),
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 150
+                    ).opacity(0.5) : RadialGradient(
+                        colors: [.white],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 150
+                    ).opacity(0.5)
+                )
+                .onDrop(of: [.text], delegate: TodoDropDelegate(
+                    index: index,
+                    timeTableViewModel: timeTableViewModel
+                ))
+            }
             Spacer()
         }
-    }
-}
-
-struct TimeTableTodoRow: View {
-    var body: some View {
-        HStack(spacing: 0) {
-            VStack(spacing: 0) {
-                Text("일")
-                    .font(.pretendard(size: 14, weight: .bold))
-                    .padding(.top, 12)
-                    .padding(.bottom, 7)
-                Text("10")
-                    .font(.pretendard(size: 14, weight: .bold))
-            }
-            .padding(.trailing, 24)
-
-            ScrollView(.horizontal) {
-                HStack(spacing: 8) {
-                    TimeTableTodoItem()
-                    TimeTableTodoItem()
-                    TimeTableTodoItem()
-                    TimeTableTodoItem()
-                }
-                .padding(1)
-            }
+        .onAppear {
+            timeTableViewModel.fetchTodoList()
         }
-        .frame(width: 336, height: 74)
-        .padding(.leading, 24)
-        .padding(.trailing, 30)
     }
 }
 
-struct TimeTableTodoItem: View {
-    var body: some View {
-        ZStack {
-            Text("가나다라마바")
-                .font(.pretendard(size: 16, weight: .regular))
-                .padding([.top, .leading, .trailing], 10)
-                .padding(.bottom, 4)
-                .background(Color(0xFDFDFD))
-                .cornerRadius(8)
-        }
-        .frame(width: 64, height: 58)
-        .background(Color(0xFDFDFD))
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]), lineWidth: 2)
-        )
-    }
-}
+struct TodoDropDelegate: DropDelegate {
+    let index: Int
+    let timeTableViewModel: TimeTableViewModel
 
-struct TimeTableTodoView_Previews: PreviewProvider {
-    static var previews: some View {
-        TimeTableTodoView()
+    func dropEntered(info: DropInfo) {}
+
+    func dropExited(info: DropInfo) {}
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        return DropProposal(operation: .move)
+    }
+
+    func validateDrop(info: DropInfo) -> Bool {
+        return info.hasItemsConforming(to: [.text])
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        timeTableViewModel.updateDraggingTodo(index: index)
+        return true
     }
 }
