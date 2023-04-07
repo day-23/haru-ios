@@ -87,11 +87,7 @@ final class CheckListViewModel: ObservableObject {
         if let selectedTag = selectedTag {
             fetchTodoListByTag(tag: selectedTag)
         }
-        fetchTodoListByFlag()
-        fetchTodoListByCompletedInMain()
-        fetchTodoListByTodayTodoAndUntilToday()
-        fetchTodoListWithAnyTag()
-        fetchTodoListWithoutTag()
+        fetchAllTodoList()
     }
 
     func fetchTodoListByTag(tag: Tag) {
@@ -179,6 +175,25 @@ final class CheckListViewModel: ObservableObject {
             case let .success(success):
                 withAnimation(.easeInOut(duration: 0.2)) {
                     self.todoListWithoutTag = success
+                }
+            case let .failure(failure):
+                print("[Debug] \(failure) (\(#fileID), \(#function))")
+            }
+        }
+    }
+
+    func fetchAllTodoList() {
+        todoService.fetchAllTodoList { result in
+            switch result {
+            case let .success(success):
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    self.todoListByFlag = success.flaggedTodos
+                    self.todoListByCompleted = success.completedTodos
+                    self.todoListByFlagWithToday = success.todayFlaggedTodos
+                    self.todoListByTodayTodo = success.todayTodos
+                    self.todoListByUntilToday = success.endDatedTodos
+                    self.todoListWithAnyTag = success.taggedTodos
+                    self.todoListWithoutTag = success.untaggedTodos
                 }
             case let .failure(failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")

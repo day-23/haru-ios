@@ -107,7 +107,7 @@ struct TodoService {
             parameters: parameters,
             encoding: JSONEncoding.default,
             headers: headers
-        ).responseDecodable(of: Response.self) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(
