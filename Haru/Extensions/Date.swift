@@ -21,6 +21,18 @@ public extension Date {
         Calendar.current.component(.day, from: self)
     }
     
+    var hour: Int {
+        Calendar.current.component(.hour, from: self)
+    }
+    
+    var minute: Int {
+        Calendar.current.component(.minute, from: self)
+    }
+    
+    var second: Int {
+        Calendar.current.component(.second, from: self)
+    }
+    
     internal func getAllDates() -> [Date] {
         let calendar = Calendar.current
 
@@ -100,10 +112,13 @@ public extension Date {
     
     func weekOfYear() -> Int {
         let calendar = Calendar.current
-        return calendar.component(.weekOfYear, from: Date.now)
+        return calendar.component(.weekOfYear, from: self)
     }
     
     func indexOfWeek() -> Int? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        
         let calendar = Calendar.current
         guard let startOfWeek = calendar.date(
             from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)
@@ -116,7 +131,7 @@ public extension Date {
             let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
             datesOfWeek.append(date)
         }
-        return datesOfWeek.firstIndex(where: { $0.compare(self) == .orderedSame })
+        return datesOfWeek.firstIndex(where: { dateFormatter.string(from: $0) == dateFormatter.string(from: self) })
     }
     
     internal func localization(dateFormat: String = Constants.dateFormat) -> Date? {

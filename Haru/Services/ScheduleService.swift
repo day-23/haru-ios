@@ -50,30 +50,25 @@ final class ScheduleService {
             let pagination: Pagination
         }
 
-        let paramFormatter = DateFormatter()
-        paramFormatter.dateFormat = Constants.dateFormat
-
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
         let parameters: Parameters = [
-            "startDate": paramFormatter.string(from: startDate),
-            "endDate": paramFormatter.string(from: endDate),
+            "startDate": Self.formatter.string(from: startDate),
+            "endDate": Self.formatter.string(from: endDate),
         ]
 
         AF.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
-            method: .get,
+            method: .post,
             parameters: parameters,
-            encoding: URLEncoding.queryString,
+            encoding: JSONEncoding.default,
             headers: headers
-        )
-        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
-
             case let .failure(error):
                 completion(.failure(error))
             }
@@ -96,20 +91,16 @@ final class ScheduleService {
             let pagination: Pagination
         }
 
-        let paramFormatter = DateFormatter()
-        paramFormatter.dateFormat = Constants.dateFormat
-
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
         let parameters: Parameters = [
-            "startDate": paramFormatter.string(from: startDate),
-            "endDate": paramFormatter.string(from: endDate),
+            "startDate": Self.formatter.string(from: startDate),
+            "endDate": Self.formatter.string(from: endDate),
         ]
 
         return try await withCheckedThrowingContinuation { continuation in
-
             AF.request(
                 ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
                 method: .post,

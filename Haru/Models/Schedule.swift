@@ -10,24 +10,24 @@ import Foundation
 
 struct Schedule: Identifiable, Codable {
     let id: String
-    private(set) var content: String // 일정 제목
-    private(set) var memo: String
-    private(set) var isAllDay: Bool
+    var content: String // 일정 제목
+    var memo: String
+    var isAllDay: Bool
 
-    private(set) var repeatStart: Date
-    private(set) var repeatEnd: Date
+    var repeatStart: Date
+    var repeatEnd: Date
 
-    private(set) var repeatOption: String?
-    private(set) var repeatValue: String?
+    var repeatOption: String?
+    var repeatValue: String?
 
-    private(set) var category: Category?
+    var category: Category?
 
-    private(set) var alarms: [Alarm]
+    var alarms: [Alarm]
 
     // MARK: - Dates
 
     let createdAt: Date?
-    private(set) var updatedAt: Date?
+    var updatedAt: Date?
 }
 
 // MARK: - extension
@@ -35,13 +35,5 @@ struct Schedule: Identifiable, Codable {
 extension Schedule: Productivity, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
         lhs.id == rhs.id
-    }
-
-    mutating func setRepeatStart(_ newer: Date) {
-        repeatStart = newer
-    }
-
-    mutating func setRepeatEnd(_ newer: Date) {
-        repeatEnd = newer
     }
 }

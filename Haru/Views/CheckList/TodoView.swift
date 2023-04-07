@@ -158,6 +158,7 @@ struct TodoView: View {
                         disabled = false
                     }
                 }
+                .padding(.leading, todo.subTodos.isEmpty ? 6 : 0)
                 .padding(.trailing, 14)
                 .disabled(disabled)
 

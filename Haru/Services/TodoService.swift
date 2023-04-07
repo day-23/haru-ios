@@ -147,6 +147,7 @@ struct TodoService {
             }
         }
 
+        //  FIXME: - 이는 현재 시간 기준 UTC +00:00으로 계산하여 보내기 때문에, 딱 오늘까지인지 아닌지 계산하는데 문제가 있음.
         let formatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyyMMdd"
@@ -278,6 +279,49 @@ struct TodoService {
             case let .success(response):
                 let data = response.data
                 completion(.success((todos: data.todos, completedTodos: data.completedTodos)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func fetchTodoListByRange(
+        startDate: Date,
+        endDate: Date,
+        completion: @escaping (Result<[Todo], Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Todo]
+            let pagination: Pagination
+
+            struct Pagination: Codable {
+                let totalItems: Int
+                let startDate: Date
+                let endDate: Date
+            }
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "startDate": Self.formatter.string(from: startDate),
+            "endDate": Self.formatter.string(from: endDate),
+        ]
+
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/date",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
             case let .failure(error):
                 completion(.failure(error))
             }
