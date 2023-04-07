@@ -37,7 +37,7 @@ enum Tab: Int, CaseIterable {
     var view: AnyView {
         switch self {
         case .sns:
-            return AnyView(Text("SNS SubView"))
+            return AnyView(SNSView())
         case .calendar:
             return AnyView(
                 CalendarMainView()
