@@ -56,6 +56,7 @@ struct TimeTableTodoRow: View {
                             TimeTableTodoItem(
                                 todo: todo
                             )
+                            .transition(.scale)
                             .onDrag {
                                 timeTableViewModel.draggingTodo = todo
                                 return NSItemProvider(object: todo.id as NSString)

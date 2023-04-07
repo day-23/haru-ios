@@ -299,7 +299,7 @@ final class TimeTableViewModel: ObservableObject {
     func updateDraggingTodo(
         index: Int
     ) {
-        guard let draggingTodo = draggingTodo else {
+        guard var draggingTodo = draggingTodo else {
             return
         }
 
@@ -347,8 +347,17 @@ final class TimeTableViewModel: ObservableObject {
                 switch result {
                 case .success:
                     withAnimation {
+                        draggingTodo.endDate = updatedEndDate
                         self.todoListByDate[i].remove(at: j)
                         self.todoListByDate[index].append(draggingTodo)
+                        self.todoListByDate[index].sort { v1, v2 in
+                            guard let endDate1 = v1.endDate,
+                                  let endDate2 = v2.endDate
+                            else {
+                                return false
+                            }
+                            return endDate1 < endDate2
+                        }
                     }
                 case .failure(let failure):
                     print("[Debug] \(failure) (\(#fileID), \(#function))")
