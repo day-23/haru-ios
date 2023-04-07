@@ -165,4 +165,19 @@ class CalendarHelper {
         let calendar = Calendar.current
         return calendar.isDate(date1, inSameDayAs: date2)
     }
+
+    class func removeTimeData(date: Date) -> Date {
+        let calendar = Calendar.current
+        return calendar.startOfDay(for: date)
+    }
+
+    class func getInfiniteDate() -> Date {
+        let dateString = "2200-01-01T00:00:00.000Z"
+        let dateFormatter = DateFormatter()
+
+        dateFormatter.dateFormat = Constants.dateFormat
+
+        guard let date = dateFormatter.date(from: dateString) else { return Date() }
+        return date
+    }
 }

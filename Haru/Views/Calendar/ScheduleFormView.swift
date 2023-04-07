@@ -124,7 +124,7 @@ struct ScheduleFormView: View {
                     }
                     .foregroundColor(scheduleFormVM.isAllDay ? .black : .gray2)
                     .padding(.horizontal, 20)
-
+                    
                     HStack {
                         VStack(alignment: .center) {
                             DatePicker(
@@ -154,6 +154,7 @@ struct ScheduleFormView: View {
                             DatePicker(
                                 "",
                                 selection: $scheduleFormVM.repeatEnd,
+                                in: scheduleFormVM.repeatStart...,
                                 displayedComponents: [.date]
                             )
                             .datePickerStyle(.compact)
@@ -203,32 +204,108 @@ struct ScheduleFormView: View {
                             .padding(.horizontal, 55)
                             .padding(.vertical, 6)
                     }
+                    
                     Divider()
                 }
                 
                 // 반복 설정
-//                Group {
-//                    Label {
-//                        Toggle(isOn: $scheduleFormVM.repeatOption.animation(), label: {
-//                            HStack {
-//                                Text("반복 설정")
-//                                    .font(.pretendard(size: 14, weight: .medium))
-//                                Spacer()
-//                            }
-//                        })
-//                        .toggleStyle(MyToggleStyle())
-//                    } icon: {
-//                        Image("repeat")
-//                            .renderingMode(.template)
-//                            .resizable()
-//                            .frame(width: 28, height: 28)
-//                    }
-//                    .padding(.horizontal, 20)
-//                    .foregroundColor(scheduleFormVM.repeatOption ? .mainBlack : .gray2)
-//
-//                    Divider()
-//                }
-                
+                if !scheduleFormVM.overWeek {
+                    Group {
+                        Label {
+                            Toggle(isOn: $scheduleFormVM.isSelectedRepeat.animation(), label: {
+                                HStack {
+                                    Text("반복 설정")
+                                        .font(.pretendard(size: 14, weight: .medium))
+                                    Spacer()
+                                }
+                            })
+                            .toggleStyle(MyToggleStyle())
+                        } icon: {
+                            Image("repeat")
+                                .renderingMode(.template)
+                                .resizable()
+                                .frame(width: 28, height: 28)
+                        }
+                        .padding(.horizontal, 20)
+                        .foregroundColor(scheduleFormVM.isSelectedRepeat ? .mainBlack : .gray2)
+                        
+                        if scheduleFormVM.isSelectedRepeat {
+                            Picker("", selection: $scheduleFormVM.repeatOption.animation()) {
+                                ForEach(getRepeatOption(), id: \.self) {
+                                    Text($0.rawValue)
+                                        .font(.pretendard(size: 14, weight: .medium))
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .padding(.horizontal, 55)
+                            
+                            if scheduleFormVM.repeatOption == .everyYear {
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
+                                    ForEach(scheduleFormVM.repeatYear.indices, id: \.self) { index in
+                                        DayButton(content: scheduleFormVM.repeatYear[index].content, isClicked: scheduleFormVM.repeatYear[index].isClicked) {
+                                            scheduleFormVM.toggleDay(repeatOption: .everyYear, index: index)
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal, 55)
+                            } else if !scheduleFormVM.overDay, scheduleFormVM.repeatOption == .everyMonth {
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
+                                    ForEach(scheduleFormVM.repeatMonth.indices, id: \.self) { index in
+                                        DayButton(content: scheduleFormVM.repeatMonth[index].content, isClicked: scheduleFormVM.repeatMonth[index].isClicked) {
+                                            scheduleFormVM.toggleDay(repeatOption: .everyMonth, index: index)
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal, 55)
+                            } else if !scheduleFormVM.overDay, scheduleFormVM.repeatOption == .everySecondWeek ||
+                                scheduleFormVM.repeatOption == .everyWeek
+                            {
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
+                                    ForEach(scheduleFormVM.repeatWeek.indices, id: \.self) { index in
+                                        DayButton(content: scheduleFormVM.repeatWeek[index].content, isClicked: scheduleFormVM.repeatWeek[index].isClicked) {
+                                            scheduleFormVM.toggleDay(repeatOption: .everyWeek, index: index)
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal, 55)
+                            }
+                            
+                            Label {
+                                Toggle(isOn: $scheduleFormVM.isSelectedRepeatEnd.animation()) {
+                                    HStack {
+                                        HStack {
+                                            Text("반복 종료일")
+                                                .font(.pretendard(size: 14, weight: .medium))
+                                                .foregroundColor(scheduleFormVM.isSelectedRepeatEnd ? .mainBlack : .gray2)
+                                            Spacer()
+                                        }
+                                        Spacer()
+                                        if scheduleFormVM.isSelectedRepeatEnd {
+                                            DatePicker(
+                                                selection: $scheduleFormVM.realRepeatEnd,
+                                                in: scheduleFormVM.repeatEnd...,
+                                                displayedComponents: [.date]
+                                            ) {}
+                                                .labelsHidden()
+                                                .scaleEffect(0.75)
+                                                .padding(.vertical, -5)
+                                        }
+                                    }
+                                }
+                                .toggleStyle(MyToggleStyle())
+                            } icon: {
+                                Image(systemName: "calendar.badge.clock")
+                                    .renderingMode(.template)
+                                    .frame(width: 28, height: 28)
+                                    .hidden()
+                            }
+                            .padding(.horizontal, 20)
+                        }
+                    }
+                    
+                    Divider()
+                }
+                    
                 // 메모 추가
                 Group {
                     Label {
@@ -305,5 +382,10 @@ struct ScheduleFormView: View {
                 }
             }
         }
+    }
+    
+    func getRepeatOption() -> [RepeatOption] {
+        let optionCnt = RepeatOption.allCases.count
+        return RepeatOption.allCases.suffix(scheduleFormVM.overDay ? optionCnt - 1 : optionCnt)
     }
 }

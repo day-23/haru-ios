@@ -488,9 +488,6 @@ struct TodoAddView: View {
                     .padding(.vertical, 20)
                 }
             }
-            .onAppear {
-                UIDatePicker.appearance().minuteInterval = 5
-            }
         }
         .padding(.top, isModalVisible ? 0 : 16)
         .onDisappear {

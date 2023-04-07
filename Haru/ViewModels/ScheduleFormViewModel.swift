@@ -11,8 +11,29 @@ import SwiftUI
 final class ScheduleFormViewModel: ObservableObject {
     // TODO: 반복 설정, 하루종일 설정
     
+    // 추가 or 수정
+    var scheduleId: String?
+    var mode: ScheduleFormMode
+    
     @Published var repeatStart: Date
     @Published var repeatEnd: Date
+    @Published var realRepeatEnd: Date
+    
+    // 시작과 끝이 7일 이상인가
+    var overWeek: Bool {
+        let startDate = CalendarHelper.removeTimeData(date: repeatStart)
+        let endDate = CalendarHelper.removeTimeData(date: repeatEnd)
+        
+        return startDate.distance(to: endDate) >= 86400.0 * 7
+    }
+    
+    // 시작과 끝이 1일 이상인가
+    var overDay: Bool {
+        let startDate = CalendarHelper.removeTimeData(date: repeatStart)
+        let endDate = CalendarHelper.removeTimeData(date: repeatEnd)
+    
+        return startDate.distance(to: endDate) >= 86400.0
+    }
     
     @Published var content: String = ""
     @Published var memo: String = ""
@@ -21,13 +42,155 @@ final class ScheduleFormViewModel: ObservableObject {
     @Published var isSelectedAlarm: Bool = false
     @Published var selectIdxList = [Bool](repeating: false, count: 4) // 선택된 알람
     
-    @Published var repeatOption: String?
-    @Published var repeatValue: String?
+    @Published var isSelectedRepeat: Bool = false
+    @Published var repeatOption: RepeatOption = .everyDay
+    
+    @Published var repeatDay: String = "1"
+
+    @Published var repeatWeek: [Day] = [Day(content: "일"), Day(content: "월"), Day(content: "화"),
+                                        Day(content: "수"), Day(content: "목"), Day(content: "금"), Day(content: "토")]
+    {
+        didSet {
+            if mode == .edit {
+                return
+            }
+
+            var nextStartDate = repeatStart
+            var nextEndDate = repeatEnd
+            let day = 60 * 60 * 24
+            let calendar = Calendar.current
+            let pattern = repeatWeek.map { $0.isClicked ? true : false }
+
+            if pattern.filter({ $0 }).isEmpty {
+                return
+            }
+
+            var index = (calendar.component(.weekday, from: nextEndDate) - 1) % 7
+            if repeatOption == .everyWeek {
+                while !pattern[index] {
+                    nextStartDate = nextStartDate.addingTimeInterval(TimeInterval(day))
+                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+                    index = (index + 1) % 7
+                }
+
+                (repeatStart, repeatEnd) = (nextStartDate, nextEndDate)
+            } else if repeatOption == .everySecondWeek {
+                if index == 0 {
+                    nextStartDate = nextStartDate.addingTimeInterval(TimeInterval(day * 7))
+                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
+                }
+
+                while !pattern[index] {
+                    nextStartDate = nextStartDate.addingTimeInterval(TimeInterval(day))
+                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+                    index = (index + 1) % 7
+
+                    if index == 0 {
+                        nextStartDate = nextStartDate.addingTimeInterval(TimeInterval(day * 7))
+                        nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
+                    }
+                }
+
+                (repeatStart, repeatEnd) = (nextStartDate, nextEndDate)
+            }
+        }
+    }
+
+    @Published var repeatMonth: [Day] = (1 ... 31).map { Day(content: "\($0)") } {
+        didSet {
+            if mode == .edit {
+                return
+            }
+
+            var nextStartDate = repeatStart
+            var nextEndDate = repeatEnd
+            let day = 60 * 60 * 24
+            let calendar = Calendar.current
+            let pattern = repeatMonth.map { $0.isClicked ? true : false }
+
+            if pattern.filter({ $0 }).isEmpty {
+                return
+            }
+
+            let year = calendar.component(.year, from: nextEndDate)
+            let month = calendar.component(.month, from: nextEndDate)
+
+            let dateComponents = DateComponents(year: year, month: month)
+            guard let dateInMonth = calendar.date(from: dateComponents),
+                  let range = calendar.range(of: .day, in: .month, for: dateInMonth)
+            else {
+                return
+            }
+
+            let upperBound = range.upperBound - 1
+            var index = (calendar.component(.day, from: nextEndDate) - 1) % upperBound
+            while !pattern[index] {
+                nextStartDate = nextStartDate.addingTimeInterval(TimeInterval(day))
+                nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+                index = (index + 1) % upperBound
+            }
+            
+            (repeatStart, repeatEnd) = (nextStartDate, nextEndDate)
+        }
+    }
+
+    @Published var repeatYear: [Day] = (1 ... 12).map { Day(content: "\($0)월") } {
+        didSet {
+            if mode == .edit {
+                return
+            }
+
+            var nextStartDate = repeatStart
+            var nextEndDate = repeatEnd
+            let calendar = Calendar.current
+            let pattern = repeatYear.map { $0.isClicked ? true : false }
+
+            if pattern.filter({ $0 }).isEmpty {
+                return
+            }
+
+            var index = (calendar.component(.month, from: nextEndDate) - 1) % 12
+            while !pattern[index] {
+                if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
+                    nextStartDate = next
+                    nextEndDate = next
+                    index = (index + 1) % 12
+                } else {
+                    return
+                }
+            }
+
+            (repeatStart, repeatEnd) = (nextStartDate, nextEndDate)
+        }
+    }
+
+    @Published var isSelectedRepeatEnd: Bool = false
+    
+    var selectedRepeatEnd: Date? {
+        if isSelectedRepeat { return repeatEnd }
+        return nil
+    }
+
+    var repeatValue: String? {
+        // TODO: 연속된 반복인지 단일 반복인지
+        if isSelectedRepeat {
+            var value: [Day] = []
+            switch repeatOption {
+            case .everyDay:
+                return repeatDay
+            case .everyWeek, .everySecondWeek:
+                value = repeatWeek
+            case .everyMonth:
+                value = repeatMonth
+            case .everyYear:
+                value = repeatYear
+            }
+            return value.reduce("") { $0 + ($1.isClicked ? "1" : "0") }
+        }
+        return nil
+    }
     
     @Published var selectionCategory: Int? // 선택한 카테고리의 인덱스 번호
-    
-    var scheduleId: String?
-    var mode: ScheduleFormMode
     
     var selectedAlarm: [Date] {
         var result = [Date]()
@@ -69,23 +232,39 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.repeatStart = selectionList.first?.date ?? Date()
         self.repeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+        self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
         self.mode = mode
         print("scheduleVM init")
+    }
+    
+    func toggleDay(repeatOption: RepeatOption, index: Int) {
+        switch repeatOption {
+        case .everyDay:
+            break
+        case .everyWeek, .everySecondWeek:
+            repeatWeek[index].isClicked.toggle()
+        case .everyMonth:
+            repeatMonth[index].isClicked.toggle()
+        case .everyYear:
+            repeatYear[index].isClicked.toggle()
+        }
     }
     
     /**
      * Request.Schedule 만들기
      */
     func createSchedule() -> Request.Schedule {
+        // TODO: 연속
+        
         Request.Schedule(
             content: content,
             memo: memo,
             isAllDay: isAllDay,
             repeatStart: repeatStart,
-            repeatEnd: repeatEnd,
-            repeatOption: repeatOption,
-            repeatValue: repeatValue,
+            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
+            repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
+            repeatValue: isSelectedRepeat ? repeatValue : nil,
             categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
             alarms: selectedAlarm
         )

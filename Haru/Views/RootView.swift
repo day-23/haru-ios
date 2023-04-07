@@ -26,6 +26,7 @@ struct RootView: View {
         }
         .onAppear {
             UITabBar.appearance().backgroundColor = .white
+            UIDatePicker.appearance().minuteInterval = 5
         }
     }
 }
