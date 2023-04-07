@@ -142,26 +142,33 @@ struct TimeTableScheduleView: View {
                                    frame: frame
                                )
                             {
-                                ScheduleItemView(schedule: $schedule)
-                                    .opacity(schedule.id == "PREVIEW" ? 0.5 : 1)
-                                    .frame(width: frame.width, height: frame.height)
-                                    .position(x: position.x, y: position.y)
-                                    .onDrop(of: [.text], delegate: CellDropDelegate(
-                                        dayIndex: schedule.data.repeatStart.indexOfWeek()!,
-                                        hourIndex: schedule.data.repeatStart.hour,
-                                        minuteIndex: schedule.data.repeatStart.minute / 5,
-                                        timeTableViewModel: _timeTableViewModel
-                                    ))
-                                    .onDrag {
-                                        let scheduleId = schedule.id
-                                        timeTableViewModel.draggingSchedule = schedule
-                                        timeTableViewModel.scheduleList = timeTableViewModel.scheduleList.filter {
-                                            $0.id != schedule.id
+                                if schedule.id == "PREVIEW" {
+                                    ScheduleItemView(schedule: $schedule)
+                                        .opacity(0.5)
+                                        .frame(width: frame.width, height: frame.height)
+                                        .position(x: position.x, y: position.y)
+                                } else {
+                                    ScheduleItemView(schedule: $schedule)
+                                        .frame(width: frame.width, height: frame.height)
+                                        .position(x: position.x, y: position.y)
+                                        .onDrop(of: [.text], delegate: CellDropDelegate(
+                                            dayIndex: schedule.data.repeatStart.indexOfWeek()!,
+                                            hourIndex: schedule.data.repeatStart.hour,
+                                            minuteIndex: schedule.data.repeatStart.minute / 5,
+                                            timeTableViewModel: _timeTableViewModel
+                                        ))
+                                        .onDrag {
+                                            let scheduleId = schedule.id
+                                            timeTableViewModel.draggingSchedule = schedule
+                                            timeTableViewModel.scheduleList = timeTableViewModel.scheduleList.filter {
+                                                $0.id != schedule.id
+                                            }
+                                            return NSItemProvider(object: scheduleId as NSString)
+                                        } preview: {
+                                            ScheduleItemView(schedule: $schedule)
+                                                .frame(width: frame.width, height: frame.height)
                                         }
-                                        return NSItemProvider(object: scheduleId as NSString)
-                                    } preview: {
-                                        EmptyView()
-                                    }
+                                }
                             }
                         }
                     }
