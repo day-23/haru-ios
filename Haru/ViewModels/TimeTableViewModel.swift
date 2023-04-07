@@ -185,34 +185,29 @@ final class TimeTableViewModel: ObservableObject {
         }
     }
 
-    func updatePreview(
+    func insertPreview(
         date: Date
     ) {
         guard let draggingSchedule else {
             return
         }
 
-        if let index = scheduleList.firstIndex(where: { $0.id == "PREVIEW" }) {
-            let diff = draggingSchedule.data.repeatEnd.diffToMinute(other: draggingSchedule.data.repeatStart)
-            scheduleList[index].data.repeatStart = date
-            scheduleList[index].data.repeatEnd = date.advanced(by: TimeInterval(60 * diff))
-        } else {
-            scheduleList.append(
-                ScheduleCell(
-                    id: "PREVIEW",
-                    data: draggingSchedule.data,
-                    weight: draggingSchedule.weight,
-                    order: draggingSchedule.order
-                )
+        scheduleList.append(
+            ScheduleCell(
+                id: "PREVIEW",
+                data: draggingSchedule.data,
+                weight: draggingSchedule.weight,
+                order: draggingSchedule.order
             )
-        }
+        )
+        let diff = draggingSchedule.data.repeatEnd.diffToMinute(other: draggingSchedule.data.repeatStart)
+        scheduleList[scheduleList.count - 1].data.repeatStart = date
+        scheduleList[scheduleList.count - 1].data.repeatEnd = date.advanced(by: TimeInterval(60 * diff))
         findUnion()
     }
 
     func removePreview() {
-        if let index = scheduleList.firstIndex(where: { $0.id == "PREVIEW" }) {
-            scheduleList.remove(at: index)
-        }
+        scheduleList = scheduleList.filter { $0.id != "PREVIEW" }
     }
 
     //  MARK: - Read

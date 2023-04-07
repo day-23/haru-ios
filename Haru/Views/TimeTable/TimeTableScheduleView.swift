@@ -285,11 +285,10 @@ struct CellDropDelegate: DropDelegate {
     }
 
     func dropExited(info: DropInfo) {
-        print("Exited")
+        timeTableViewModel.removePreview()
     }
 
     func dropEntered(info: DropInfo) {
-        print("Entered")
         let year = CellDropDelegate.thisWeek[dayIndex].year
         let month = CellDropDelegate.thisWeek[dayIndex].month
         let day = CellDropDelegate.thisWeek[dayIndex].day
@@ -298,7 +297,7 @@ struct CellDropDelegate: DropDelegate {
             return
         }
 
-        timeTableViewModel.updatePreview(date: date)
+        timeTableViewModel.insertPreview(date: date)
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
