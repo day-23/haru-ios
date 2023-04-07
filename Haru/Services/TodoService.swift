@@ -285,6 +285,49 @@ struct TodoService {
         }
     }
 
+    func fetchTodoListByRange(
+        startDate: Date,
+        endDate: Date,
+        completion: @escaping (Result<[Todo], Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Todo]
+            let pagination: Pagination
+
+            struct Pagination: Codable {
+                let totalItems: Int
+                let startDate: Date
+                let endDate: Date
+            }
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "startDate": Self.formatter.string(from: startDate),
+            "endDate": Self.formatter.string(from: endDate),
+        ]
+
+        AF.request(
+            TodoService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/date",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     //  MARK: - Todo Update API
 
     func updateTodo(

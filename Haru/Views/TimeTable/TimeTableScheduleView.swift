@@ -10,6 +10,14 @@ import SwiftUI
 struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
 
+    private let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d"
+        return formatter
+    }()
+
+    private let week = ["일", "월", "화", "수", "목", "금", "토"]
+
     private let column = [GridItem(.fixed(31)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
@@ -21,100 +29,142 @@ struct TimeTableScheduleView: View {
     @State private var cellWidth: CGFloat? = nil
     private var cellHeight: CGFloat = 72
     private var minuteInterval: Double = 5.0
-    private let showHourTextWidth = 31
     private let borderWidth = 1
+    private var fixed: Double = 31
 
     init(timeTableViewModel: StateObject<TimeTableViewModel>) {
         _timeTableViewModel = timeTableViewModel
     }
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(
-                columns: column,
-                spacing: 0
-            ) {
-                ForEach(range.indices, id: \.self) { index in
-                    if index % 8 == 0 {
-                        VStack {
-                            Spacer()
-                            Text("\(index / 8 + 1)")
-                                .font(.pretendard(size: 8, weight: .medium))
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                    } else {
-                        Rectangle()
-                            .foregroundColor(.white)
-                            .border(Color(0xededed))
-                            .frame(height: cellHeight)
-                            .background(
-                                GeometryReader(content: { proxy in
-                                    Color.clear.onAppear {
-                                        if cellWidth == nil {
-                                            cellWidth = proxy.size.width
-                                        }
-                                    }
-                                })
+        Group {
+            VStack {
+                LazyVGrid(columns: column) {
+                    Text("")
+
+                    ForEach(week, id: \.self) { day in
+                        Text(day)
+                            .font(.pretendard(size: 14, weight: .medium))
+                            .foregroundColor(
+                                day == "일" ? Color(0xf71e58) : (day == "토" ? Color(0x1dafff) : Color(0x191919))
                             )
-                            .overlay {
-                                VStack(spacing: 0) {
-                                    ForEach(0 ..< (60 / Int(minuteInterval)), id: \.self) {
-                                        minuteIndex in
-                                        Rectangle()
-                                            .foregroundColor(Color(0xffffff, opacity: 0.001))
-                                            .onDrop(of: [.text], delegate: CellDropDelegate(
-                                                dayIndex: index % 8 - 1,
-                                                hourIndex: index / 8,
-                                                minuteIndex: minuteIndex,
-                                                dragging: $timeTableViewModel.draggingSchedule
-                                            ) { date in
-                                                guard let draggingSchedule = timeTableViewModel.draggingSchedule else {
-                                                    return
-                                                }
-
-                                                let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
-                                                    draggingSchedule.data.repeatStart
-                                                )
-
-                                                timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
-                                            })
-                                    }
-                                }
-                            }
                     }
+                }
+
+                Divider()
+                    .padding(.leading, 40)
+                    .foregroundColor(Color(0xdbdbdb))
+
+                LazyVGrid(columns: column) {
+                    Text("")
+
+                    ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                        if timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth {
+                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                                .font(.pretendard(size: 14, weight: .medium))
+                                .foregroundColor(
+                                    index == 0 ? Color(0xfdbbcd) : (index == 6 ? Color(0xbbe7ff) : Color(0xbababa))
+                                )
+                        } else {
+                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                                .font(.pretendard(size: 14, weight: .medium))
+                                .foregroundColor(
+                                    index == 0 ? Color(0xf71e58) : (index == 6 ? Color(0x1dafff) : Color(0x191919))
+                                )
+                        }
+                    }
+                }
+
+                if !timeTableViewModel.scheduleListWithoutTime.isEmpty {
+                    TimeTableScheduleTopView(timeTableViewModel: _timeTableViewModel)
                 }
             }
-            .overlay(content: {
-                if cellWidth != nil {
-                    ForEach(timeTableViewModel.scheduleList) { schedule in
-                        if let scheduleIndex = getScheduleIndex(schedule: schedule.data.repeatStart),
-                           let frame = calcFrame(
-                               weight: schedule.weight,
-                               duration: schedule.data.repeatEnd.diffToMinute(other: schedule.data.repeatStart)
-                           ),
-                           let position = calcPosition(
-                               row: scheduleIndex.row,
-                               column: scheduleIndex.column,
-                               minuteIndex: scheduleIndex.minuteIndex,
-                               weight: schedule.weight,
-                               order: schedule.order,
-                               frame: frame
-                           )
-                        {
-                            ScheduleItemView(schedule: schedule)
-                                .frame(width: frame.width, height: frame.height)
-                                .position(x: position.x, y: position.y)
-                                .onDrag {
-                                    timeTableViewModel.draggingSchedule = schedule
-                                    return NSItemProvider(object: schedule.id as NSString)
-                                } preview: {
-                                    ScheduleItemView(schedule: schedule)
-                                        .frame(width: frame.width, height: frame.height)
+
+            ScrollView {
+                LazyVGrid(
+                    columns: column,
+                    spacing: 0
+                ) {
+                    ForEach(range.indices, id: \.self) { index in
+                        if index % 8 == 0 {
+                            VStack {
+                                Spacer()
+                                Text("\(index / 8 + 1)")
+                                    .font(.pretendard(size: 10, weight: .medium))
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                            }
+                        } else {
+                            Rectangle()
+                                .foregroundColor(.white)
+                                .border(Color(0xededed))
+                                .frame(height: cellHeight)
+                                .background(
+                                    GeometryReader(content: { proxy in
+                                        Color.clear.onAppear {
+                                            if cellWidth == nil {
+                                                cellWidth = proxy.size.width
+                                            }
+                                        }
+                                    })
+                                )
+                                .overlay {
+                                    VStack(spacing: 0) {
+                                        ForEach(0 ..< (60 / Int(minuteInterval)), id: \.self) {
+                                            minuteIndex in
+                                            Rectangle()
+                                                .foregroundColor(Color(0xffffff, opacity: 0.001))
+                                                .onDrop(of: [.text], delegate: CellDropDelegate(
+                                                    dayIndex: index % 8 - 1,
+                                                    hourIndex: index / 8,
+                                                    minuteIndex: minuteIndex,
+                                                    timeTableViewModel: _timeTableViewModel
+                                                ))
+                                        }
+                                    }
                                 }
                         }
                     }
                 }
-            })
+                .overlay(content: {
+                    if cellWidth != nil {
+                        ForEach($timeTableViewModel.scheduleList) { $schedule in
+                            if let scheduleIndex = getScheduleIndex(schedule: schedule.data.repeatStart),
+                               let frame = calcFrame(
+                                   weight: schedule.weight,
+                                   duration: schedule.data.repeatEnd.diffToMinute(other: schedule.data.repeatStart)
+                               ),
+                               let position = calcPosition(
+                                   row: scheduleIndex.row,
+                                   column: scheduleIndex.column,
+                                   minuteIndex: scheduleIndex.minuteIndex,
+                                   weight: schedule.weight,
+                                   order: schedule.order,
+                                   frame: frame
+                               )
+                            {
+                                if timeTableViewModel.draggingSchedule?.id != schedule.id {
+                                    ScheduleItemView(schedule: $schedule)
+                                        .opacity(schedule.id == "PREVIEW" ? 0.5 : 1)
+                                        .frame(width: frame.width, height: frame.height)
+                                        .position(x: position.x, y: position.y)
+                                        .onDrop(of: [.text], delegate: CellDropDelegate(
+                                            dayIndex: schedule.data.repeatStart.indexOfWeek()!,
+                                            hourIndex: schedule.data.repeatStart.hour,
+                                            minuteIndex: schedule.data.repeatStart.minute / 5,
+                                            timeTableViewModel: _timeTableViewModel
+                                        ))
+                                        .onDrag {
+                                            timeTableViewModel.draggingSchedule = schedule
+                                            return NSItemProvider(object: schedule.id as NSString)
+                                        } preview: {
+                                            EmptyView()
+                                        }
+                                }
+                            }
+                        }
+                    }
+                })
+            }
         }
     }
 }
@@ -165,7 +215,7 @@ private extension TimeTableScheduleView {
         let width = cellWidth * CGFloat(1.0 / Double(weight))
 
         var x = CGFloat(column) * cellWidth
-        x += CGFloat(showHourTextWidth) + CGFloat(borderWidth * 8)
+        x += CGFloat(fixed) + CGFloat(borderWidth * 8)
         x -= width == cellWidth ?
             width * 0.5 :
             width * Double(weight) - width * 0.5
@@ -200,8 +250,19 @@ struct CellDropDelegate: DropDelegate {
     var dayIndex: Int
     var hourIndex: Int
     var minuteIndex: Int
-    @Binding var dragging: ScheduleCell?
-    var completion: (Date) -> Void
+    @StateObject var timeTableViewModel: TimeTableViewModel
+
+    init(
+        dayIndex: Int,
+        hourIndex: Int,
+        minuteIndex: Int,
+        timeTableViewModel: StateObject<TimeTableViewModel>
+    ) {
+        self.dayIndex = dayIndex
+        self.hourIndex = hourIndex
+        self.minuteIndex = minuteIndex
+        _timeTableViewModel = timeTableViewModel
+    }
 
     private static var dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -225,9 +286,21 @@ struct CellDropDelegate: DropDelegate {
         return datesOfWeek
     }
 
-    func dropEntered(info: DropInfo) {}
+    func dropExited(info: DropInfo) {
+        timeTableViewModel.removePreview()
+    }
 
-    func dropExited(info: DropInfo) {}
+    func dropEntered(info: DropInfo) {
+        let year = CellDropDelegate.thisWeek[dayIndex].year
+        let month = CellDropDelegate.thisWeek[dayIndex].month
+        let day = CellDropDelegate.thisWeek[dayIndex].day
+        let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
+        guard let date = Calendar.current.date(from: components) else {
+            return
+        }
+
+        timeTableViewModel.insertPreview(date: date)
+    }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
         return DropProposal(operation: .move)
@@ -238,41 +311,28 @@ struct CellDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        if dragging == nil {
+        if timeTableViewModel.draggingSchedule == nil {
             return false
         }
 
-        let calendar = Calendar.current
-        let year = calendar.component(.year, from: CellDropDelegate.thisWeek[dayIndex])
-        let month = calendar.component(.month, from: CellDropDelegate.thisWeek[dayIndex])
-        let day = calendar.component(.day, from: CellDropDelegate.thisWeek[dayIndex])
+        let year = CellDropDelegate.thisWeek[dayIndex].year
+        let month = CellDropDelegate.thisWeek[dayIndex].month
+        let day = CellDropDelegate.thisWeek[dayIndex].day
         let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
         guard let date = Calendar.current.date(from: components) else {
             return false
         }
-        completion(date)
-        return true
-    }
-}
 
-struct ScheduleItemView: View {
-    @State var schedule: ScheduleCell
-
-    private let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd, H:mm"
-        return formatter
-    }()
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(Color(0x000000, opacity: 0.5))
-
-            Text("\(formatter.string(from: schedule.data.repeatStart))")
-                .foregroundColor(.white)
-                .font(.system(size: 8))
+        guard let draggingSchedule = timeTableViewModel.draggingSchedule else {
+            return false
         }
-        .cornerRadius(10)
+
+        let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
+            draggingSchedule.data.repeatStart
+        )
+
+        timeTableViewModel.removePreview()
+        timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
+        return true
     }
 }
