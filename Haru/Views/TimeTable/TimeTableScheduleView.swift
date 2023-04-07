@@ -143,14 +143,20 @@ struct TimeTableScheduleView: View {
                                )
                             {
                                 ScheduleItemView(schedule: $schedule)
+                                    .opacity(schedule.id == "PREVIEW" ? 0.5 : 1)
                                     .frame(width: frame.width, height: frame.height)
                                     .position(x: position.x, y: position.y)
+                                    .onDrop(of: [.text], delegate: CellDropDelegate(
+                                        dayIndex: schedule.data.repeatStart.indexOfWeek()!,
+                                        hourIndex: schedule.data.repeatStart.hour,
+                                        minuteIndex: schedule.data.repeatStart.minute / 5,
+                                        timeTableViewModel: _timeTableViewModel
+                                    ))
                                     .onDrag {
                                         timeTableViewModel.draggingSchedule = schedule
                                         return NSItemProvider(object: schedule.id as NSString)
                                     } preview: {
-                                        ScheduleItemView(schedule: $schedule)
-                                            .frame(width: frame.width, height: frame.height)
+                                        EmptyView()
                                     }
                             }
                         }
@@ -278,9 +284,22 @@ struct CellDropDelegate: DropDelegate {
         return datesOfWeek
     }
 
-    func dropEntered(info: DropInfo) {}
+    func dropExited(info: DropInfo) {
+        print("Exited")
+    }
 
-    func dropExited(info: DropInfo) {}
+    func dropEntered(info: DropInfo) {
+        print("Entered")
+        let year = CellDropDelegate.thisWeek[dayIndex].year
+        let month = CellDropDelegate.thisWeek[dayIndex].month
+        let day = CellDropDelegate.thisWeek[dayIndex].day
+        let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
+        guard let date = Calendar.current.date(from: components) else {
+            return
+        }
+
+        timeTableViewModel.updatePreview(date: date)
+    }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
         return DropProposal(operation: .move)
@@ -311,6 +330,7 @@ struct CellDropDelegate: DropDelegate {
             draggingSchedule.data.repeatStart
         )
 
+        timeTableViewModel.removePreview()
         timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
         return true
     }

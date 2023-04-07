@@ -26,7 +26,6 @@ struct ScheduleItemView: View {
 }
 
 extension ScheduleItemView {
-    //  FIXME: - 민재형한테 리스폰스로 카테고리 들어오게 만들어달라고 부탁하기
     func color() -> Color {
         guard let color = schedule.data.category?.color,
               let hex = Int(color.suffix(6), radix: 16)
