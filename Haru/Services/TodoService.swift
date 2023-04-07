@@ -147,6 +147,7 @@ struct TodoService {
             }
         }
 
+        //  FIXME: - 이는 현재 시간 기준 UTC +00:00으로 계산하여 보내기 때문에, 딱 오늘까지인지 아닌지 계산하는데 문제가 있음.
         let formatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyyMMdd"
