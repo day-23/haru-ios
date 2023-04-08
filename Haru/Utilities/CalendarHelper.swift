@@ -180,4 +180,20 @@ class CalendarHelper {
         guard let date = dateFormatter.date(from: dateString) else { return Date() }
         return date
     }
+
+    class func getDayofWeek(date: Date) -> Int {
+        let calendar = Calendar.current
+        let dayOfWeek = calendar.component(.weekday, from: Date()) - 1
+        return dayOfWeek
+    }
+    
+    func getClosestIdxDate(idx: Int, curDate: Date) -> Date? {
+        let calendar = Calendar.current
+        var dateComponents = DateComponents()
+        dateComponents.weekday = idx
+
+        var closestDay = calendar.nextDate(after: curDate.addingTimeInterval(TimeInterval(-1)), matching: dateComponents, matchingPolicy: .nextTime)
+
+        return closestDay
+    }
 }

@@ -603,6 +603,24 @@ final class CalendarViewModel: ObservableObject {
     }
     
     func repeatEveryWeek(dateList: [DateValue], schedule: Schedule) {
-        
+        // TODO: repeatWeek 관련 로직 구현
+//        var repeatValue = [1, 1, 1, 1, 1, 1, 1]
+//
+//        var initStartDate = dateFormatter.date(from: "2023 04 12 00:00 Wed")!
+//        var offset = calendar.component(.weekday, from: initStartDate) - 1
+//
+//        for _ in 0 ... 4 {
+//            for idx in repeatValue.indices {
+//                if repeatValue[(idx + offset) % 7] == 1 {
+//                    guard let result = getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: initStartDate) else {
+//                        print("[Debug] error")
+//                        continue
+//                    }
+//                    print(result)
+//                }
+//            }
+//            initStartDate = calendar.date(byAdding: .weekOfYear, value: 1, to: initStartDate)!
+//            print()
+//        }
     }
 }
