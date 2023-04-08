@@ -105,6 +105,7 @@ final class CalendarViewModel: ObservableObject {
             let result = (beforeRepeat.0.sorted {
                 $0.repeatStart < $1.repeatStart
             }, beforeRepeat.1)
+            
             DispatchQueue.main.async {
                 (self.productivityList, self.viewProductivityList) = self.fittingCalendar(dateList: dateList, scheduleList: result.0, todoList: result.1)
             }
@@ -536,12 +537,10 @@ final class CalendarViewModel: ObservableObject {
         var result = [Schedule]()
         for sch in repeatScheduleList {
             // make schedule
-            if let repeatValue = sch.repeatValue {
-                if repeatValue.first == "T" {
-                    // TODO: 연속된 일정 반복 처리
-                } else {
-                    result.append(contentsOf: singleRepeatSchedule(dateList: dateList, oriRepeatSch: sch))
-                }
+            if sch.repeatValue?.first == "T" {
+                // TODO: 연속된 일정 반복 처리
+            } else {
+                result.append(contentsOf: singleRepeatSchedule(dateList: dateList, oriRepeatSch: sch))
             }
         }
         return result
@@ -601,5 +600,9 @@ final class CalendarViewModel: ObservableObject {
             result.append(Schedule.createRepeatSchedule(schedule: schedule, repeatStart: date, repeatEnd: calendar.date(from: dateComponents) ?? date))
         }
         return result
+    }
+    
+    func repeatEveryWeek(dateList: [DateValue], schedule: Schedule) {
+        
     }
 }
