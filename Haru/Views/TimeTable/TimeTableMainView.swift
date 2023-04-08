@@ -27,7 +27,7 @@ struct TimeTableMainView: View {
                     Text("\(String(timeTableViewModel.currentYear))년")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
-                        .padding(.leading, 40)
+                        .padding(.leading, 30)
                     Text("\(timeTableViewModel.currentMonth)월")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))

@@ -22,8 +22,8 @@ struct CalendarDateView: View {
         ZStack {
             VStack(spacing: 10) {
                 // 최상단 바
-                HStack(spacing: 20) {
-                    HStack(spacing: 12) {
+                HStack(spacing: 15) {
+                    HStack(spacing: 10) {
                         Text("\(CalendarHelper.extraDate(calendarVM.monthOffest)[0])년")
                             .font(.pretendard(size: 28, weight: .bold))
                         
