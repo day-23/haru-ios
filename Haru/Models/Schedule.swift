@@ -34,6 +34,23 @@ struct Schedule: Identifiable, Codable {
 
 extension Schedule: Productivity, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
-        lhs.id == rhs.id
+        lhs.id == rhs.id && lhs.repeatStart == rhs.repeatStart
+    }
+}
+
+extension Schedule {
+    static func createRepeatSchedule(schedule: Schedule, repeatStart: Date, repeatEnd: Date) -> Schedule {
+        Schedule(
+            id: schedule.id,
+            content: schedule.content,
+            memo: schedule.memo,
+            isAllDay: schedule.isAllDay,
+            repeatStart: repeatStart,
+            repeatEnd: repeatEnd,
+            repeatOption: schedule.repeatOption,
+            repeatValue: schedule.repeatValue,
+            category: schedule.category,
+
+            alarms: schedule.alarms, createdAt: schedule.createdAt)
     }
 }

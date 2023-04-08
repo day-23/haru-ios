@@ -87,7 +87,24 @@ final class CalendarViewModel: ObservableObject {
         guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
         
         Task {
-            let result = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            
+            var repeatScheduleList = [Schedule]()
+            var idx = 0
+            while idx < beforeRepeat.0.count {
+                let sch = beforeRepeat.0[idx]
+                if sch.repeatValue != nil {
+                    repeatScheduleList.append(sch)
+                    beforeRepeat.0.remove(at: idx)
+                } else {
+                    idx += 1
+                }
+            }
+            
+            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(dateList: dateList, repeatScheduleList: repeatScheduleList))
+            let result = (beforeRepeat.0.sorted {
+                $0.repeatStart < $1.repeatStart
+            }, beforeRepeat.1)
             DispatchQueue.main.async {
                 (self.productivityList, self.viewProductivityList) = self.fittingCalendar(dateList: dateList, scheduleList: result.0, todoList: result.1)
             }
@@ -300,7 +317,7 @@ final class CalendarViewModel: ObservableObject {
         // 최종 결과
         var result = [[Int: [Productivity]]](repeating: [:], count: dateList.count) // 날짜별
 
-        var result_ = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: prodCnt), count: numberOfWeeks) // 순서
+        var result_ = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: prodCnt), count: numberOfWeeks) // 달력에 보여질 결과물
 
         if !allCategoryOff {
             fittingScheduleList(dateList, scheduleList, prodCnt, result: &result, result_: &result_)
@@ -508,7 +525,7 @@ final class CalendarViewModel: ObservableObject {
     }
     
     // MARK: - 반복 일정 만들어주기
-    
+
     /**
      * 반복인 일정들만 repeatSchList에 받아와서 반복 (일정)데이터 만들어서 리턴
      */
@@ -519,12 +536,70 @@ final class CalendarViewModel: ObservableObject {
         var result = [Schedule]()
         for sch in repeatScheduleList {
             // make schedule
-//            result.append(contentsOf: solFunc(oriRepeatSch: sch))
+            if let repeatValue = sch.repeatValue {
+                if repeatValue.first == "T" {
+                    // TODO: 연속된 일정 반복 처리
+                } else {
+                    result.append(contentsOf: singleRepeatSchedule(dateList: dateList, oriRepeatSch: sch))
+                }
+            }
         }
         return result
     }
-    
-//    func solFunc(oriRepeatSch: Schedule) -> [Schedule] {
-//
-//    }
+
+    // 하루치 일정의 반복 (repeatValue: 0,1)
+    func singleRepeatSchedule(dateList: [DateValue], oriRepeatSch: Schedule) -> [Schedule] {
+        switch oriRepeatSch.repeatOption {
+        case "매일":
+            return repeatEveryDay(dateList: dateList, schedule: oriRepeatSch)
+        case "매주":
+            return [Schedule]()
+        case "2주마다":
+            return [Schedule]()
+        case "매달":
+            return [Schedule]()
+        case "매년":
+            return [Schedule]()
+        default:
+            return [Schedule]()
+        }
+    }
+
+    func repeatEveryDay(dateList: [DateValue], schedule: Schedule) -> [Schedule] {
+        guard let firstDate = dateList.first?.date else { return [] }
+        guard let lastDate = dateList.last?.date else { return [] }
+
+        var startDate = firstDate > schedule.repeatStart ? firstDate : schedule.repeatStart
+        var endDate = lastDate > schedule.repeatEnd ? schedule.repeatEnd : lastDate
+
+        // 제대로 된 repeatStart와 repeatEnd 만들기
+        let calendar = Calendar.current
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: startDate)
+
+        // Set the hour and minute components
+        dateComponents.hour = schedule.repeatStart.hour
+        dateComponents.minute = schedule.repeatStart.minute
+
+        startDate = calendar.date(from: dateComponents) ?? Date()
+
+        dateComponents = calendar.dateComponents([.year, .month, .day], from: endDate)
+
+        // Set the hour and minute components
+        dateComponents.hour = schedule.repeatEnd.hour
+        dateComponents.minute = schedule.repeatEnd.minute
+
+        endDate = calendar.date(from: dateComponents) ?? Date()
+
+        var result = [Schedule]()
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+
+        for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+            dateComponents.hour = schedule.repeatEnd.hour
+            dateComponents.minute = schedule.repeatEnd.minute
+
+            result.append(Schedule.createRepeatSchedule(schedule: schedule, repeatStart: date, repeatEnd: calendar.date(from: dateComponents) ?? date))
+        }
+        return result
+    }
 }
