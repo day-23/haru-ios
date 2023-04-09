@@ -552,9 +552,9 @@ final class CalendarViewModel: ObservableObject {
         case "매일":
             return repeatEveryDay(dateList: dateList, schedule: oriRepeatSch)
         case "매주":
-            return [Schedule]()
+            return repeatEveryWeek(dateList: dateList, schedule: oriRepeatSch, weekTerm: 1)
         case "2주마다":
-            return [Schedule]()
+            return repeatEveryWeek(dateList: dateList, schedule: oriRepeatSch, weekTerm: 2)
         case "매달":
             return [Schedule]()
         case "매년":
@@ -565,33 +565,23 @@ final class CalendarViewModel: ObservableObject {
     }
 
     func repeatEveryDay(dateList: [DateValue], schedule: Schedule) -> [Schedule] {
-        guard let firstDate = dateList.first?.date else { return [] }
-        guard let lastDate = dateList.last?.date else { return [] }
+        guard let firstDate = dateList.first?.date else {
+            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
+            return []
+        }
+        guard let lastDate = dateList.last?.date else {
+            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
+            return []
+        }
 
-        var startDate = firstDate > schedule.repeatStart ? firstDate : schedule.repeatStart
-        var endDate = lastDate > schedule.repeatEnd ? schedule.repeatEnd : lastDate
-
-        // 제대로 된 repeatStart와 repeatEnd 만들기
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
         let calendar = Calendar.current
-        var dateComponents = calendar.dateComponents([.year, .month, .day], from: startDate)
-
-        // Set the hour and minute components
-        dateComponents.hour = schedule.repeatStart.hour
-        dateComponents.minute = schedule.repeatStart.minute
-
-        startDate = calendar.date(from: dateComponents) ?? Date()
-
-        dateComponents = calendar.dateComponents([.year, .month, .day], from: endDate)
-
-        // Set the hour and minute components
-        dateComponents.hour = schedule.repeatEnd.hour
-        dateComponents.minute = schedule.repeatEnd.minute
-
-        endDate = calendar.date(from: dateComponents) ?? Date()
-
+        var dateComponents: DateComponents
+        
         var result = [Schedule]()
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
-
+        
         for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
             dateComponents.hour = schedule.repeatEnd.hour
@@ -602,25 +592,61 @@ final class CalendarViewModel: ObservableObject {
         return result
     }
     
-    func repeatEveryWeek(dateList: [DateValue], schedule: Schedule) {
+    func repeatEveryWeek(dateList: [DateValue], schedule: Schedule, weekTerm: Int) -> [Schedule] {
         // TODO: repeatWeek 관련 로직 구현
-//        var repeatValue = [1, 1, 1, 1, 1, 1, 1]
-//
-//        var initStartDate = dateFormatter.date(from: "2023 04 12 00:00 Wed")!
-//        var offset = calendar.component(.weekday, from: initStartDate) - 1
-//
-//        for _ in 0 ... 4 {
-//            for idx in repeatValue.indices {
-//                if repeatValue[(idx + offset) % 7] == 1 {
-//                    guard let result = getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: initStartDate) else {
-//                        print("[Debug] error")
-//                        continue
-//                    }
-//                    print(result)
-//                }
-//            }
-//            initStartDate = calendar.date(byAdding: .weekOfYear, value: 1, to: initStartDate)!
-//            print()
-//        }
+        guard let firstDate = dateList.first?.date else {
+            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
+            return []
+        }
+        guard let lastDate = dateList.last?.date else {
+            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
+            return []
+        }
+        
+        var result = [Schedule]()
+
+        var (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        
+        let offset = calendar.component(.weekday, from: startDate) - 1
+        
+        var repeatValue = [Int]()
+        for i in schedule.repeatValue! {
+            if i.isNumber {
+                repeatValue.append(Int(String(i))!)
+            }
+        }
+        
+        // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
+        for _ in 0 ... 5 {
+            for idx in repeatValue.indices {
+                if repeatValue[(idx + offset) % 7] == 1 {
+                    guard let repeatStart = CalendarHelper.getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: startDate) else {
+                        print("[Error] getClosestIdxDate 함수 에러 \(#fileID) \(#function)")
+                        continue
+                    }
+                    
+                    if repeatStart > endDate {
+                        break
+                    }
+                    
+                    dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatStart)
+                    dateComponents.hour = endDate.hour
+                    dateComponents.minute = endDate.minute
+                    guard let repeatEnd = calendar.date(from: dateComponents) else {
+                        print("[Error] endDate의 hour: \(endDate.hour) \(endDate.minute) \(#fileID) \(#function)")
+                        continue
+                    }
+                    result.append(Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd))
+                }
+            }
+            if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
+                startDate = nextStartDate
+            }
+        }
+        
+        return result
     }
 }
