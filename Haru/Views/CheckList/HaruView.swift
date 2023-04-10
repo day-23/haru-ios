@@ -14,7 +14,7 @@ struct HaruView: View {
 
     let formatter: DateFormatter = {
         let formatter: DateFormatter = .init()
-        formatter.dateFormat = "M월 d일 EEE요일"
+        formatter.dateFormat = "M월 d일 EEE"
         return formatter
     }()
 
