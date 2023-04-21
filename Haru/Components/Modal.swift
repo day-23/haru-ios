@@ -35,7 +35,7 @@ struct Modal<Content>: View where Content: View {
                     }
                     .frame(maxWidth: .infinity, minHeight: proxy1.size.height * ratio + 40, maxHeight: proxy1.size.height * ratio + 40)
                     .background(Color.white)
-                    .cornerRadius(20)
+                    .cornerRadius(40)
                     .shadow(radius: 10)
                     .position(x: proxy1.size.width * 0.5, y: proxy1.size.height * (1 - ratio) + modalOffset.height + (proxy1.size.height * ratio) * 0.5)
                     .gesture(
