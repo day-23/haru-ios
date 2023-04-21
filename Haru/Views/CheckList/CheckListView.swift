@@ -53,13 +53,8 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                HStack(spacing: 0) {
-                                    StarButton(isClicked: true)
-                                    Text(DefaultTag.important.rawValue)
-                                        .font(.pretendard(size: 14, weight: .bold))
-                                        .padding(.leading, 6)
-                                }
-                                .padding(.leading, 29)
+                                TagView(tag: Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
+                                    .padding(.leading, 21)
                             }
 
                             Divider()
@@ -114,13 +109,9 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderFlag()
                                     } header: {
-                                        HStack(spacing: 0) {
-                                            StarButton(isClicked: true)
-                                            Text(DefaultTag.completed.rawValue)
-                                                .font(.pretendard(size: 14, weight: .bold))
-                                                .padding(.leading, 6)
-                                        }
-                                        .padding(.leading, 29)
+                                        TagView(tag: tag,
+                                                isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue)
+                                            .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
