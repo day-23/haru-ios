@@ -31,8 +31,18 @@ struct TodoView: View {
                 break
             }
         }
-        res = "\(res)  "
+        res = "\(res) "
         return res
+    }
+
+    private var showExtraInfo: Bool {
+        todo.tags.count > 0 ||
+            todo.endDate != nil ||
+            todo.todayTodo ||
+            todo.alarms.count > 0 ||
+            todo.repeatValue != nil ||
+            todo.repeatOption != nil ||
+            !todo.memo.isEmpty
     }
 
     let formatter: DateFormatter = {
@@ -60,7 +70,7 @@ struct TodoView: View {
     }()
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(alignment: showExtraInfo ? .top : .center, spacing: 0) {
             if !todo.subTodos.isEmpty {
                 Button {
                     checkListViewModel.updateFolded(todo: todo) { _ in }
@@ -168,17 +178,11 @@ struct TodoView: View {
                     .strikethrough(todo.completed)
                     .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
 
-                if todo.tags.count > 0 ||
-                    todo.endDate != nil ||
-                    todo.todayTodo ||
-                    todo.alarms.count > 0 ||
-                    todo.repeatValue != nil ||
-                    todo.repeatOption != nil ||
-                    !todo.memo.isEmpty
-                {
+                if showExtraInfo {
                     HStack(spacing: 0) {
                         if !tagString.isEmpty {
                             Text(tagString)
+                                .frame(alignment: .leading)
                         }
 
                         if let todoDate = todo.endDate {
