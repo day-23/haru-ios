@@ -26,7 +26,7 @@ struct Modal<Content>: View where Content: View {
                     VStack {
                         RoundedRectangle(cornerRadius: 40)
                             .frame(width: 82, height: 6)
-                            .padding()
+                            .padding([.top, .horizontal])
                             .foregroundColor(Color(0x33333F))
                         content()
                             .padding(.bottom)
