@@ -77,7 +77,7 @@ struct TodoView: View {
                 } label: {
                     Image("toggle")
                         .renderingMode(.template)
-                        .frame(width: 28, height: 28)
+                        .frame(width: 20, height: 28)
                         .rotationEffect(Angle(degrees: !todo.folded ? 90 : 0))
                         .foregroundColor(Color(0x646464, opacity: todo.completed ? 0.5 : 1))
                 }
