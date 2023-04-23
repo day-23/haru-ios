@@ -9,23 +9,28 @@ import SwiftUI
 
 struct ListView<Content>: View where Content: View {
     @ViewBuilder let content: () -> Content
-    let offsetChanged: (CGFloat?) -> Void
+    let offsetChanged: (CGPoint?) -> Void
 
     var body: some View {
         ScrollView {
-            //  LazyVStack {
-            VStack {
-                content()
-            }
+            ZStack {
+                //  LazyVStack {
+                VStack {
+                    content()
 
-            GeometryReader { geometry in
-                Color.clear.preference(
-                    key: OffsetKey.self,
-                    value: geometry.frame(in: .global).minY
-                )
-                .frame(height: 0)
+                    Spacer(minLength: 60)
+                }
+
+                GeometryReader { geometry in
+                    Color.clear.preference(
+                        key: OffsetKey.self,
+                        value: geometry.frame(in: .named("scroll")).origin
+                    )
+                    .frame(height: 0)
+                }
             }
         }
+        .coordinateSpace(name: "scroll")
         .onPreferenceChange(OffsetKey.self) { value in
             DispatchQueue.main.async {
                 offsetChanged(value)
@@ -35,8 +40,8 @@ struct ListView<Content>: View where Content: View {
 }
 
 struct OffsetKey: PreferenceKey {
-    static let defaultValue: CGFloat? = nil
-    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+    static let defaultValue: CGPoint? = nil
+    static func reduce(value: inout CGPoint?, nextValue: () -> CGPoint?) {
         value = value ?? nextValue()
     }
 }

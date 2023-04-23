@@ -5,6 +5,11 @@
 //  Created by 최정민 on 2023/03/06.
 //
 
+//  TODO: Todo가 추가되면, Todo가 추가된 화면을 쫓아가도록 수정
+//  TODO: Date Picker Component 추가
+//  TODO: 오늘 나의 하루로 체크되어 있으면, 완료 체크 애니메이션이 안되는 문제 해결 필요
+//  TODO: 수정시에 아무런 변경사항이 없다면 체크 버튼을 비활성화하는 방법을 선택
+
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -15,8 +20,7 @@ struct CheckListView: View {
     @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
-    @State private var minOffset: CGFloat?
-    @State private var maxOffset: CGFloat?
+    @State private var bottomOffset: CGFloat?
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -26,8 +30,7 @@ struct CheckListView: View {
                     withAnimation {
                         viewModel.selectedTag = tag
                         prevOffset = nil
-                        minOffset = nil
-                        maxOffset = nil
+                        bottomOffset = nil
                     }
                 }
                 .padding(.bottom, 10)
@@ -239,39 +242,33 @@ struct CheckListView: View {
         }
     }
 
-    func changeOffset(_ value: CGFloat?) {
-        if self.prevOffset == nil || self.prevOffset == 0 {
+    func changeOffset(_ value: CGPoint?) {
+        if self.prevOffset == nil {
             self.viewIsShown = true
-            self.prevOffset = value
-            self.minOffset = value
-            self.maxOffset = value
+            self.prevOffset = value?.y
+            self.bottomOffset = value?.y
             return
         }
-        self.offset = value
+        self.offset = value?.y
 
-        guard let prevOffset = self.prevOffset,
-              let offset = self.offset,
-              let minOffset = self.minOffset,
-              let maxOffset = self.maxOffset
+        guard let prevOffset,
+              let offset,
+              let bottomOffset
         else {
             return
         }
 
         withAnimation(.easeInOut(duration: 0.25)) {
-//            if maxOffset - offset < UIScreen.main.bounds.height {
-//                self.viewIsShown = true
-//            } else if offset < minOffset + 200 {
-//                self.viewIsShown = false
-//            } else {}
-
-            if prevOffset > offset {
+            if offset >= 0 {
+                self.viewIsShown = true
+            } else if prevOffset > offset {
                 self.viewIsShown = false
             } else {
                 self.viewIsShown = true
             }
             self.prevOffset = offset
         }
-        self.minOffset = min(minOffset, offset)
-        self.maxOffset = max(maxOffset, offset)
+
+        self.bottomOffset = min(bottomOffset, offset)
     }
 }
