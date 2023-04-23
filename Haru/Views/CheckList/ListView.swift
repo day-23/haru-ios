@@ -18,7 +18,7 @@ struct ListView<Content>: View where Content: View {
                 VStack {
                     content()
 
-                    Spacer(minLength: 60)
+                    Spacer(minLength: 80)
                 }
 
                 GeometryReader { geometry in
