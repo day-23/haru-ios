@@ -77,7 +77,7 @@ struct TodoView: View {
                 } label: {
                     Image("toggle")
                         .renderingMode(.template)
-                        .frame(width: 20, height: 20)
+                        .frame(width: 28, height: 28)
                         .rotationEffect(Angle(degrees: !todo.folded ? 90 : 0))
                         .foregroundColor(Color(0x646464, opacity: todo.completed ? 0.5 : 1))
                 }
@@ -169,7 +169,7 @@ struct TodoView: View {
                     }
                 }
                 .padding(.leading, todo.subTodos.isEmpty ? 6 : 0)
-                .padding(.trailing, 14)
+                .padding(.trailing, 8)
                 .disabled(disabled)
 
             VStack(alignment: .leading, spacing: 0) {
@@ -241,13 +241,12 @@ struct TodoView: View {
             }
 
             Spacer()
-
             StarButton(isClicked: todo.flag)
                 .onTapGesture {
                     checkListViewModel.updateFlag(todo: todo) { _ in }
                 }
         }
-        .frame(maxWidth: .infinity, minHeight: 48)
+        .frame(maxWidth: .infinity)
         .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
         .padding(.trailing, 20)
         .background(backgroundColor)
