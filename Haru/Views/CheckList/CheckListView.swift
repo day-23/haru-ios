@@ -48,7 +48,7 @@ struct CheckListView: View {
                 //  체크 리스트
                 if !viewModel.isEmpty {
                     if viewModel.selectedTag == nil {
-                        ListView {
+                        ListView(checkListViewModel: viewModel) {
                             ListSectionView(
                                 checkListViewModel: viewModel,
                                 todoAddViewModel: addViewModel,
@@ -104,7 +104,7 @@ struct CheckListView: View {
                     } else {
                         if let tag = viewModel.selectedTag {
                             if tag.id == DefaultTag.completed.rawValue {
-                                ListView {
+                                ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
@@ -120,7 +120,7 @@ struct CheckListView: View {
                                     self.changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.unclassified.rawValue {
-                                ListView {
+                                ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
@@ -137,7 +137,7 @@ struct CheckListView: View {
                                 }
                             } else if tag.id == DefaultTag.completed.rawValue {
                                 //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
-                                ListView {
+                                ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
@@ -154,7 +154,7 @@ struct CheckListView: View {
                                 }
                             } else {
                                 //  Tag 클릭시
-                                ListView {
+                                ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,

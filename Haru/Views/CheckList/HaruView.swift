@@ -27,7 +27,7 @@ struct HaruView: View {
             ).ignoresSafeArea()
                 .opacity(0.5)
 
-            ListView {
+            ListView(checkListViewModel: viewModel) {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,

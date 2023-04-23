@@ -39,6 +39,12 @@ final class CheckListViewModel: ObservableObject {
     @Published var todoListWithAnyTag: [Todo] = []
     @Published var todoListWithoutTag: [Todo] = []
 
+    //  add or update로 변경된 TodoId
+    @Published var justAddedTodoId: String?
+
+    //  현재 보여지고 있는 todoList의 offset
+    @Published var todoListOffsetMap: [String: CGFloat] = [:]
+
     var isEmpty: Bool {
         return (todoListByTag.isEmpty &&
             todoListByFlag.isEmpty &&
@@ -58,9 +64,11 @@ final class CheckListViewModel: ObservableObject {
     ) {
         todoService.addTodo(todo: todo) { result in
             switch result {
-            case let .success(todo):
+            case let .success(addedTodo):
+                self.selectedTag = nil
+                self.justAddedTodoId = addedTodo.id
                 self.fetchTodoList()
-                completion(.success(todo))
+                completion(.success(addedTodo))
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
                 completion(.failure(error))
@@ -212,6 +220,7 @@ final class CheckListViewModel: ObservableObject {
                                todo: todo) { result in
             switch result {
             case .success:
+                self.justAddedTodoId = todoId
                 self.fetchTodoList()
                 completion(.success(true))
             case let .failure(failure):

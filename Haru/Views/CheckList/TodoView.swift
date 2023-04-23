@@ -250,6 +250,17 @@ struct TodoView: View {
         .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
         .padding(.trailing, 20)
         .background(backgroundColor)
+        .overlay(content: {
+            GeometryReader { proxy in
+                Color.clear.onAppear {
+                    print("todoId: \(todo.id)\tcontent: \(todo.content)\t\(proxy.frame(in: .global).midY)")
+                    checkListViewModel.todoListOffsetMap = checkListViewModel.todoListOffsetMap.merging([(todo.id, proxy.frame(in: .global).midY)], uniquingKeysWith: { first, _ in
+                        first
+                    })
+                }
+                .frame(height: 0)
+            }
+        })
         .contextMenu {
             Button(action: {
                 checkListViewModel.deleteTodo(todoId: todo.id) { _ in
