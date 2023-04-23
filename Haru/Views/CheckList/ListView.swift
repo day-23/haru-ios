@@ -17,7 +17,6 @@ struct ListView<Content>: View where Content: View {
                 //  LazyVStack {
                 VStack {
                     content()
-
                     Spacer(minLength: 80)
                 }
 

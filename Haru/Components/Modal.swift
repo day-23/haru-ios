@@ -33,7 +33,7 @@ struct Modal<Content>: View where Content: View {
                             .padding(.bottom, 17)
                         Spacer()
                     }
-                    .frame(maxWidth: .infinity, minHeight: proxy1.size.height * ratio + 40, maxHeight: proxy1.size.height * ratio + 40)
+                    .frame(maxWidth: .infinity, minHeight: proxy1.size.height * ratio + 40, maxHeight: proxy1.size.height * ratio + (40 * 2))
                     .background(Color.white)
                     .cornerRadius(40)
                     .shadow(radius: 10)

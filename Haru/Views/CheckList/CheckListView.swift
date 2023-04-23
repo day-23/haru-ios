@@ -8,10 +8,10 @@
 //  TODO: Todo가 추가되면, Todo가 추가된 화면을 쫓아가도록 수정
 //  TODO: Date Picker Component 추가
 //  TODO: 오늘 나의 하루로 체크되어 있으면, 완료 체크 애니메이션이 안되는 문제 해결 필요
+//  TODO: 반복일정 날짜 체크시 오류 있음, 수정 필요
 //  TODO: 수정시에 아무런 변경사항이 없다면 체크 버튼을 비활성화하는 방법을 선택
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct CheckListView: View {
     @StateObject var viewModel: CheckListViewModel

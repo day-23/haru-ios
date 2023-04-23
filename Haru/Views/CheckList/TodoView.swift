@@ -31,7 +31,7 @@ struct TodoView: View {
                 break
             }
         }
-        res = "\(res) "
+        res = "\(res)"
         return res
     }
 
@@ -183,6 +183,7 @@ struct TodoView: View {
                         if !tagString.isEmpty {
                             Text(tagString)
                                 .frame(alignment: .leading)
+                            Text("  ")
                         }
 
                         if let todoDate = todo.endDate {
