@@ -32,7 +32,7 @@ struct CustomDatePicker: View {
             .foregroundColor(Color(0x646464))
             .padding(.vertical, 4)
             .padding(.horizontal, 12)
-            .background(Color(0xF1F1F5))
+            .background(Color(0xf1f1f5))
             .cornerRadius(10)
             .overlay {
                 if isClicked {
@@ -44,9 +44,6 @@ struct CustomDatePicker: View {
                             }
 
                         Picker(selection: $selection)
-                            .position(x: UIScreen.main.bounds.width / 2,
-                                      y: tapLocation.y > UIScreen.main.bounds.height / 2 ?
-                                          tapLocation.y - 210 : tapLocation.y + 210)
                     }
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                 }
@@ -63,7 +60,24 @@ struct CustomDatePicker: View {
 private struct Picker: View {
     @Binding var selection: Date
 
-    @State var dateList: [[Date]] = Array(repeating: Array(repeating: Date.now, count: 7), count: 6)
+    @State private var index: Int = 0
+    @State private var now: Date = .now
+    private var dateList: [Date?] {
+        var dateList: [Date?] = Array(repeating: nil, count: 42)
+        let thisMonth = now.getAllDates()
+
+        guard var offset = thisMonth.first?.indexOfWeek() else {
+            return dateList
+        }
+
+        var index = offset
+        while index < offset + thisMonth.count {
+            dateList[index] = thisMonth[index - offset]
+            index += 1
+        }
+        return dateList
+    }
+
     private let days = ["일", "월", "화", "수", "목", "금", "토"]
 
     private let formatter: DateFormatter = {
@@ -78,10 +92,16 @@ private struct Picker: View {
         return formatter
     }()
 
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        return formatter
+    }()
+
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Text(formatter.string(from: selection))
+                Text(formatter.string(from: now))
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.white)
                     .padding(.leading, 24)
@@ -91,25 +111,54 @@ private struct Picker: View {
             .frame(height: 70)
             .background(.clear)
 
-            TabView {
+            TabView(selection: $index) {
                 ForEach(-20 ... 20, id: \.self) { _ in
                     VStack {
                         VStack {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
-                                Group {
-                                    ForEach(days, id: \.self) { day in
-                                        Text(day)
-                                    }
+                                ForEach(days, id: \.self) { day in
+                                    Text(day)
                                 }
                                 .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(Color(0xACACAC))
+                                .foregroundColor(Color(0xacacac))
                             }
 
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
-                                ForEach((1 ... 42).indices, id: \.self) { day in
-                                    Text("\(day.hashValue)")
-                                        .frame(width: 22, height: 20)
+                                ForEach(dateList, id: \.self) { day in
+                                    if let day {
+                                        if dateFormatter.string(from: day) == dateFormatter.string(from: selection) {
+                                            Text(day.day.description)
+                                                .frame(width: 22, height: 20)
+                                                .font(.system(size: 16, weight: .medium))
+                                                .foregroundColor(.white)
+                                                .background(
+                                                    Circle()
+                                                        .frame(width: 28, height: 28)
+                                                        .foregroundStyle(
+                                                            LinearGradient(
+                                                                colors: [Color(0xd2d7ff), Color(0xaad7ff)],
+                                                                startPoint: .top,
+                                                                endPoint: .bottom
+                                                            )
+                                                        )
+                                                )
+                                        } else {
+                                            Text(day.day.description)
+                                                .frame(width: 22, height: 20)
+                                                .font(.system(size: 16, weight: .medium))
+                                                .foregroundColor(
+                                                    dateFormatter.string(from: day) == dateFormatter.string(from: .now) ?
+                                                        Color(0x1dafff) : Color(0x646464)
+                                                )
+                                        }
+                                    } else {
+                                        Text("")
+                                            .frame(width: 22, height: 20)
+                                            .font(.system(size: 16, weight: .medium))
+                                            .foregroundColor(Color(0x646464))
+                                    }
                                 }
+                                .padding(3)
                             }
                         }
                         .padding(.all, 27)
@@ -126,7 +175,7 @@ private struct Picker: View {
                 .background(.clear)
         }
         .frame(width: 300, height: 350)
-        .background(RadialGradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)],
+        .background(RadialGradient(colors: [Color(0xaad7ff), Color(0xd2d7ff)],
                                    center: .center,
                                    startRadius: 20,
                                    endRadius: 200))

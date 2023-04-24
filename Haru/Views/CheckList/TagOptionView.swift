@@ -92,7 +92,7 @@ struct TagOptionView: View {
     }
 }
 
-struct TagOptionItem: View {
+private struct TagOptionItem: View {
     var tag: Tag
 
     var body: some View {
@@ -104,6 +104,7 @@ struct TagOptionItem: View {
             Menu {
                 Button {} label: {
                     Label("Delete", systemImage: "trash")
+                        .foregroundColor(Color(0xF71E58))
                 }
             } label: {
                 Image("ellipsis")
