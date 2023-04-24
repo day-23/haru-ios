@@ -5,6 +5,7 @@
 //  Created by 최정민 on 2023/03/06.
 //
 
+//  TODO: Tag 설정창 열기
 //  TODO: Todo가 추가되면, Todo가 추가된 화면을 쫓아가도록 수정
 //  TODO: Date Picker Component 추가
 //  TODO: 오늘 나의 하루로 체크되어 있으면, 완료 체크 애니메이션이 안되는 문제 해결 필요
@@ -17,6 +18,7 @@ struct CheckListView: View {
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
     @State private var isModalVisible: Bool = false
+    @State private var isTagManageModalVisible: Bool = false
     @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
@@ -24,16 +26,28 @@ struct CheckListView: View {
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            VStack {
-                //  태그 리스트
-                TagListView(viewModel: viewModel) { tag in
-                    withAnimation {
-                        viewModel.selectedTag = tag
-                        prevOffset = nil
-                        bottomOffset = nil
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    //  태그 리스트
+                    TagListView(viewModel: viewModel) { tag in
+                        withAnimation {
+                            viewModel.selectedTag = tag
+                            prevOffset = nil
+                            bottomOffset = nil
+                        }
                     }
+
+                    //  태그 설정창
+                    Image("option-button")
+                        .frame(width: 28, height: 28)
+                        .onTapGesture {
+                            withAnimation {
+                                isTagManageModalVisible = true
+                            }
+                        }
                 }
                 .padding(.bottom, 10)
+                .padding(.trailing, 20)
 
                 //  오늘 나의 하루
                 NavigationLink {
@@ -44,6 +58,7 @@ struct CheckListView: View {
                 } label: {
                     HaruLinkView()
                 }
+                .padding(.bottom, 12)
 
                 //  체크 리스트
                 if !viewModel.isEmpty {
@@ -199,43 +214,65 @@ struct CheckListView: View {
                 }
                 .transition(.modal)
                 .zIndex(2)
-            } else {
-                if viewIsShown {
-                    HStack(alignment: .bottom, spacing: 0) {
-                        TextField("", text: $addViewModel.content)
-                            .placeholder(when: addViewModel.content.isEmpty) {
-                                Text("간편 추가")
-                                    .foregroundColor(Color(0x646464))
-                            }
-                            .font(.pretendard(size: 14, weight: .medium))
-                            .foregroundColor(Color(0x646464))
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 12)
-                            .background(Color(0xf1f1f5))
-                            .cornerRadius(8)
-                            .padding(.trailing, 18)
-                            .onSubmit {
-                                addViewModel.addSimpleTodo()
-                            }
-
-                        Button {
-                            withAnimation {
-                                isModalVisible = true
-                                addViewModel.mode = .add
-                            }
-                        } label: {
-                            Image("add-button")
-                                .shadow(radius: 10, x: 5, y: 0)
+            } else if isTagManageModalVisible {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            isTagManageModalVisible = false
                         }
                     }
-                    .zIndex(5)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 10)
+
+                TagOptionView(
+                    checkListViewModel: viewModel,
+                    isActive: $isTagManageModalVisible
+                )
+                .position(
+                    x: UIScreen.main.bounds.width - UIScreen.main.bounds.width * 0.915 + (UIScreen.main.bounds.width * 0.915 * 0.5),
+                    y: UIScreen.main.bounds.height * 0.4
+                )
+                .zIndex(2)
+                .transition(
+                    .asymmetric(insertion: .push(from: .trailing), removal: .push(from: .leading))
+                )
+
+            } else if viewIsShown {
+                HStack(alignment: .bottom, spacing: 0) {
+                    TextField("", text: $addViewModel.content)
+                        .placeholder(when: addViewModel.content.isEmpty) {
+                            Text("간편 추가")
+                                .foregroundColor(Color(0x646464))
+                        }
+                        .font(.pretendard(size: 14, weight: .medium))
+                        .foregroundColor(Color(0x646464))
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 12)
+                        .background(Color(0xf1f1f5))
+                        .cornerRadius(8)
+                        .padding(.trailing, 18)
+                        .onSubmit {
+                            addViewModel.addSimpleTodo()
+                        }
+
+                    Button {
+                        withAnimation {
+                            isModalVisible = true
+                            addViewModel.mode = .add
+                        }
+                    } label: {
+                        Image("add-button")
+                            .shadow(radius: 10, x: 5, y: 0)
+                    }
                 }
+                .zIndex(5)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
             }
         }
         .onAppear {
             isModalVisible = false
+            isTagManageModalVisible = false
             viewModel.selectedTag = nil
             viewModel.fetchTodoList()
             viewModel.fetchTags()

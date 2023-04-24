@@ -253,7 +253,6 @@ struct TodoView: View {
         .overlay(content: {
             GeometryReader { proxy in
                 Color.clear.onAppear {
-                    print("todoId: \(todo.id)\tcontent: \(todo.content)\t\(proxy.frame(in: .global).midY)")
                     checkListViewModel.todoListOffsetMap = checkListViewModel.todoListOffsetMap.merging([(todo.id, proxy.frame(in: .global).midY)], uniquingKeysWith: { first, _ in
                         first
                     })

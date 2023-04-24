@@ -99,6 +99,7 @@
 		13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */; };
 		13D9B5AD29D5DDA100109C0E /* TimeTableTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */; };
 		13D9B5AF29D5E6E400109C0E /* TimeTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */; };
+		13FB7E9A29F65A7E006DEE87 /* TagOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13FB7E9929F65A7E006DEE87 /* TagOptionView.swift */; };
 		6F54DF4929DC6B02002FAD7F /* ProfileInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF4829DC6B02002FAD7F /* ProfileInfoView.swift */; };
 		6F54DF4B29DC813D002FAD7F /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF4A29DC813D002FAD7F /* MediaView.swift */; };
 		6F54DF4D29DD63C2002FAD7F /* SNSViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF4C29DD63C2002FAD7F /* SNSViewModel.swift */; };
@@ -209,6 +210,7 @@
 		13AFA8B529D6CB2100DC1011 /* TimeTableScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableScheduleView.swift; sourceTree = "<group>"; };
 		13D9B5AC29D5DDA100109C0E /* TimeTableTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableTodoView.swift; sourceTree = "<group>"; };
 		13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableViewModel.swift; sourceTree = "<group>"; };
+		13FB7E9929F65A7E006DEE87 /* TagOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagOptionView.swift; sourceTree = "<group>"; };
 		6F54DF4829DC6B02002FAD7F /* ProfileInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoView.swift; sourceTree = "<group>"; };
 		6F54DF4A29DC813D002FAD7F /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		6F54DF4C29DD63C2002FAD7F /* SNSViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNSViewModel.swift; sourceTree = "<group>"; };
@@ -472,6 +474,7 @@
 				1306674E29CEE19C00AACEE6 /* SubTodoView.swift */,
 				1306674F29CEE19C00AACEE6 /* HaruView.swift */,
 				1306675029CEE19C00AACEE6 /* HaruLinkView.swift */,
+				13FB7E9929F65A7E006DEE87 /* TagOptionView.swift */,
 			);
 			path = CheckList;
 			sourceTree = "<group>";
@@ -661,6 +664,7 @@
 				1306677A29CEE19C00AACEE6 /* HaruView.swift in Sources */,
 				134F5FF629DF20160072704B /* TimeTableTodoItem.swift in Sources */,
 				1306677829CEE19C00AACEE6 /* TagListView.swift in Sources */,
+				13FB7E9A29F65A7E006DEE87 /* TagOptionView.swift in Sources */,
 				1306675329CEE19C00AACEE6 /* RootView.swift in Sources */,
 				1306677B29CEE19C00AACEE6 /* HaruLinkView.swift in Sources */,
 				1306670F29CEE13200AACEE6 /* Request.swift in Sources */,
