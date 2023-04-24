@@ -54,6 +54,11 @@ struct TagOptionView: View {
                         .font(.pretendard(size: 20, weight: .medium))
                         .foregroundColor(Color(0x1DAFFF))
                         .padding(.vertical, 13)
+                        .onTapGesture {
+                            withAnimation {
+                                isActive = false
+                            }
+                        }
                 }
                 .frame(width: width, height: height * 0.86)
                 .background(Color(0xFDFDFD))
@@ -96,9 +101,16 @@ struct TagOptionItem: View {
 
             Spacer()
 
-            Image("ellipsis")
-                .renderingMode(.template)
-                .frame(width: 28, height: 28)
+            Menu {
+                Button {} label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            } label: {
+                Image("ellipsis")
+                    .renderingMode(.template)
+                    .foregroundColor(Color(0x646464))
+                    .frame(width: 28, height: 28)
+            }
         }
     }
 }
