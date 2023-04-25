@@ -226,16 +226,41 @@ final class ScheduleFormViewModel: ObservableObject {
 
     // MARK: init
 
-    init(calendarVM: CalendarViewModel, mode: ScheduleFormMode = .add) {
+    init(calendarVM: CalendarViewModel) {
         self.calendarVM = calendarVM
-        let selectionList = calendarVM.selectionSet.sorted(by: <)
         
+        let selectionList = calendarVM.selectionSet.sorted(by: <)
         self.repeatStart = selectionList.first?.date ?? Date()
         self.repeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
-        self.mode = mode
-        print("scheduleVM init")
+        self.mode = .add
+    }
+    
+    init(calendarVM: CalendarViewModel, schedule: Schedule) {
+        self.calendarVM = calendarVM
+        self.mode = .edit
+        
+        self.scheduleId = schedule.id
+        
+        self.repeatStart = schedule.repeatStart
+        self.repeatEnd = schedule.repeatEnd
+        self.realRepeatEnd = schedule.repeatEnd
+        
+        self.content = schedule.content
+        self.memo = schedule.memo
+        
+        self.isAllDay = schedule.isAllDay
+        
+        if let category = schedule.category {
+            self.selectionCategory = categoryList.firstIndex(where: { other in
+                category.id == other.id
+            })
+        } else {
+            self.selectionCategory = nil
+        }
+        
+        self.isSelectedAlarm = !schedule.alarms.isEmpty
     }
     
     func toggleDay(repeatOption: RepeatOption, index: Int) {
@@ -276,6 +301,7 @@ final class ScheduleFormViewModel: ObservableObject {
         
         repeatStart = schedule.repeatStart
         repeatEnd = schedule.repeatEnd
+        realRepeatEnd = schedule.repeatEnd
         
         content = schedule.content
         memo = schedule.memo
@@ -291,18 +317,6 @@ final class ScheduleFormViewModel: ObservableObject {
         }
         
         isSelectedAlarm = !schedule.alarms.isEmpty
-        
-        schedule.alarms.forEach { alarm in
-            if alarm.time == repeatStart {
-                selectIdxList[0] = true
-            } else if alarm.time == Calendar.current.date(byAdding: .minute, value: -10, to: repeatStart) {
-                selectIdxList[1] = true
-            } else if alarm.time == Calendar.current.date(byAdding: .hour, value: -1, to: repeatStart) {
-                selectIdxList[2] = true
-            } else if alarm.time == Calendar.current.date(byAdding: .day, value: -1, to: repeatStart) {
-                selectIdxList[3] = true
-            }
-        }
     }
     
     /**

@@ -677,6 +677,13 @@ final class CalendarViewModel: ObservableObject {
                     }
                     
                     dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatStart)
+                    dateComponents.hour = startDate.hour
+                    dateComponents.minute = startDate.minute
+                    guard let repeatStart = calendar.date(from: dateComponents) else {
+                        print("[Error] startDate의 hour: \(startDate.hour) \(startDate.minute) \(#fileID) \(#function)")
+                        continue
+                    }
+                    
                     dateComponents.hour = endDate.hour
                     dateComponents.minute = endDate.minute
                     guard let repeatEnd = calendar.date(from: dateComponents) else {

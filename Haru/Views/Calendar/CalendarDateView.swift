@@ -167,7 +167,7 @@ struct CalendarDateView: View {
                     .onTapGesture {
                         isDayModalVisible = false
                     }
-                CalendarDayView(calendarViewModel: calendarVM, scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM))
+                CalendarDayView(calendarViewModel: calendarVM)
                     .zIndex(2)
             }
             
