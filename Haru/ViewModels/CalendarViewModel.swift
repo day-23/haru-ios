@@ -105,6 +105,8 @@ final class CalendarViewModel: ObservableObject {
             }
             
             beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: firstDate, lastDate: lastDate, repeatScheduleList: repeatScheduleList))
+            // beforeRepeat.1.append(...)
+            
             let result = (beforeRepeat.0.sorted {
                 $0.repeatStart < $1.repeatStart
             }, beforeRepeat.1)
@@ -187,14 +189,33 @@ final class CalendarViewModel: ObservableObject {
         }
         
         Task {
-            let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            
+            // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
+            var repeatScheduleList = [Schedule]()
+            var idx = 0
+            while idx < beforeRepeat.0.count {
+                let sch = beforeRepeat.0[idx]
+                if sch.repeatValue != nil {
+                    repeatScheduleList.append(sch)
+                    beforeRepeat.0.remove(at: idx)
+                } else {
+                    idx += 1
+                }
+            }
+            
+            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
+            let result = (beforeRepeat.0.sorted {
+                $0.repeatStart < $1.repeatStart
+            }, beforeRepeat.1)
             
             DispatchQueue.main.async {
-                (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+                (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: result.0, todoList: result.1)
             }
         }
     }
     
+    // 수정 및 저장과 같은 이벤트가 있을 때 새로고침을 위한 함수
     func getRefreshProductivityList() {
         guard let startDate = pivotDateList.first else { return }
         guard let endDate = pivotDateList.last else { return }
@@ -210,10 +231,28 @@ final class CalendarViewModel: ObservableObject {
         }
         
         Task {
-            let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            
+            // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
+            var repeatScheduleList = [Schedule]()
+            var idx = 0
+            while idx < beforeRepeat.0.count {
+                let sch = beforeRepeat.0[idx]
+                if sch.repeatValue != nil {
+                    repeatScheduleList.append(sch)
+                    beforeRepeat.0.remove(at: idx)
+                } else {
+                    idx += 1
+                }
+            }
+            
+            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
+            let result = (beforeRepeat.0.sorted {
+                $0.repeatStart < $1.repeatStart
+            }, beforeRepeat.1)
             
             DispatchQueue.main.async {
-                (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+                (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: result.0, todoList: result.1)
             }
         }
     }
@@ -230,10 +269,28 @@ final class CalendarViewModel: ObservableObject {
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
 
         Task {
-            let (schList, todoList) = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
+            
+            // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
+            var repeatScheduleList = [Schedule]()
+            var idx = 0
+            while idx < beforeRepeat.0.count {
+                let sch = beforeRepeat.0[idx]
+                if sch.repeatValue != nil {
+                    repeatScheduleList.append(sch)
+                    beforeRepeat.0.remove(at: idx)
+                } else {
+                    idx += 1
+                }
+            }
+            
+            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
+            let result = (beforeRepeat.0.sorted {
+                $0.repeatStart < $1.repeatStart
+            }, beforeRepeat.1)
             
             DispatchQueue.main.async {
-                let result = self.fittingOffsetDay(startDate, endDate, scheduleList: schList, todoList: todoList)
+                let prodList = self.fittingOffsetDay(startDate, endDate, scheduleList: result.0, todoList: result.1)
             
                 var addedDateList = [Date]()
                 addedDateList.append(contentsOf: stride(from: startDate, through: endDate, by: dayDurationInSeconds))
@@ -241,17 +298,17 @@ final class CalendarViewModel: ObservableObject {
                 if isRight {
                     self.pivotDateList.append(contentsOf: addedDateList)
                     self.pivotDateList.removeFirst(5)
-                    self.scheduleList.append(contentsOf: result.0)
+                    self.scheduleList.append(contentsOf: prodList.0)
                     self.scheduleList.removeFirst(5)
-                    self.todoList.append(contentsOf: result.1)
+                    self.todoList.append(contentsOf: prodList.1)
                     self.todoList.removeFirst(5)
                     
                 } else {
                     self.pivotDateList.insert(contentsOf: addedDateList, at: 0)
                     self.pivotDateList.removeLast(5)
-                    self.scheduleList.insert(contentsOf: result.0, at: 0)
+                    self.scheduleList.insert(contentsOf: prodList.0, at: 0)
                     self.scheduleList.removeLast(5)
-                    self.todoList.insert(contentsOf: result.1, at: 0)
+                    self.todoList.insert(contentsOf: prodList.1, at: 0)
                     self.todoList.removeLast(5)
                 }
                 completion()
@@ -570,15 +627,6 @@ final class CalendarViewModel: ObservableObject {
     }
 
     func repeatEveryDay(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
-//        guard let firstDate = dateList.first?.date else {
-//            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
-//            return []
-//        }
-//        guard let lastDate = dateList.last?.date else {
-//            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
-//            return []
-//        }
-
         let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
         
         let calendar = Calendar.current
@@ -598,14 +646,6 @@ final class CalendarViewModel: ObservableObject {
     }
     
     func repeatEveryWeek(firstDate: Date, lastDate: Date, schedule: Schedule, weekTerm: Int) -> [Schedule] {
-//        guard let firstDate = dateList.first?.date else {
-//            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
-//            return []
-//        }
-//        guard let lastDate = dateList.last?.date else {
-//            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
-//            return []
-//        }
         
         var result = [Schedule]()
 
