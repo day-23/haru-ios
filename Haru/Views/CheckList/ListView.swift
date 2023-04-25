@@ -40,8 +40,10 @@ struct ListView<Content>: View where Content: View {
             .onChange(of: checkListViewModel.todoListOffsetMap) { newValue in
                 guard let justAddedTodoId = checkListViewModel.justAddedTodoId
                 else { return }
-                proxy.scrollTo(justAddedTodoId, anchor: .center)
-                checkListViewModel.justAddedTodoId = nil
+                withAnimation {
+                    proxy.scrollTo(justAddedTodoId, anchor: .center)
+                    checkListViewModel.justAddedTodoId = nil
+                }
             }
         }
     }

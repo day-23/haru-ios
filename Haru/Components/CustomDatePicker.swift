@@ -43,7 +43,10 @@ struct CustomDatePicker: View {
                                 isClicked = false
                             }
 
-                        Picker(selection: $selection)
+                        Picker(
+                            selection: $selection,
+                            now: selection
+                        )
                     }
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                 }
@@ -60,13 +63,14 @@ struct CustomDatePicker: View {
 private struct Picker: View {
     @Binding var selection: Date
 
+    @State var now: Date
     @State private var index: Int = 0
-    @State private var now: Date = .now
+
     private var dateList: [Date?] {
         var dateList: [Date?] = Array(repeating: nil, count: 42)
         let thisMonth = now.getAllDates()
 
-        guard var offset = thisMonth.first?.indexOfWeek() else {
+        guard let offset = thisMonth.first?.indexOfWeek() else {
             return dateList
         }
 
@@ -99,22 +103,20 @@ private struct Picker: View {
     }()
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
                 Text(formatter.string(from: now))
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.pretendard(size: 20, weight: .bold))
                     .foregroundColor(.white)
-                    .padding(.leading, 24)
-                    .padding(.top, 28)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             }
-            .frame(height: 70)
+            .padding(.top, 28)
+            .padding(.leading, 24)
             .background(.clear)
 
             TabView(selection: $index) {
-                ForEach(-20 ... 20, id: \.self) { _ in
-                    VStack {
-                        VStack {
+                ForEach(-2 ... 2, id: \.self) { _ in
+                    VStack(spacing: 0) {
+                        VStack(spacing: 0) {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                                 ForEach(days, id: \.self) { day in
                                     Text(day)
@@ -122,6 +124,8 @@ private struct Picker: View {
                                 .font(.system(size: 16, weight: .medium))
                                 .foregroundColor(Color(0xacacac))
                             }
+
+                            Spacer(minLength: 9)
 
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                                 ForEach(dateList, id: \.self) { day in
@@ -150,6 +154,9 @@ private struct Picker: View {
                                                     dateFormatter.string(from: day) == dateFormatter.string(from: .now) ?
                                                         Color(0x1dafff) : Color(0x646464)
                                                 )
+                                                .onTapGesture {
+                                                    //  TODO: selection 변경하기
+                                                }
                                         }
                                     } else {
                                         Text("")
