@@ -28,6 +28,10 @@ struct Schedule: Identifiable, Codable {
 
     let createdAt: Date?
     var updatedAt: Date?
+
+    // MARK: 프론트를 위한 필드
+
+    var realRepeatEnd: Date?
 }
 
 // MARK: - extension

@@ -245,7 +245,7 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.repeatStart = schedule.repeatStart
         self.repeatEnd = schedule.repeatEnd
-        self.realRepeatEnd = schedule.repeatEnd
+        self.realRepeatEnd = schedule.realRepeatEnd != nil ? schedule.realRepeatEnd! : schedule.repeatEnd
         
         self.content = schedule.content
         self.memo = schedule.memo
@@ -261,6 +261,77 @@ final class ScheduleFormViewModel: ObservableObject {
         }
         
         self.isSelectedAlarm = !schedule.alarms.isEmpty
+
+        self.repeatOption = .everyDay
+        if let option = RepeatOption.allCases.first(where: { $0.rawValue == schedule.repeatOption }) {
+            self.repeatOption = option
+        }
+        
+        self.isSelectedRepeat = schedule.repeatOption != nil
+        self.isSelectedRepeatEnd = schedule.realRepeatEnd != nil && schedule.realRepeatEnd!.year < 2200 ? true : false
+        
+        self.repeatDay = isSelectedRepeat &&
+            schedule.repeatOption == RepeatOption.everyDay.rawValue
+            ? (schedule.repeatValue ?? "1") : "1"
+        initRepeatWeek(schedule: schedule)
+        initRepeatMonth(schedule: schedule)
+        initRepeatYear(schedule: schedule)
+    }
+    
+    func initRepeatWeek(schedule: Schedule) {
+        if schedule.repeatOption != RepeatOption.everyWeek.rawValue,
+           schedule.repeatOption != RepeatOption.everySecondWeek.rawValue
+        {
+            return
+        }
+
+        if let scheduleRepeatWeek = schedule.repeatValue {
+            for i in repeatWeek.indices {
+                repeatWeek[i].isClicked = scheduleRepeatWeek[
+                    scheduleRepeatWeek.index(scheduleRepeatWeek.startIndex, offsetBy: i)
+                ] == "0" ? false : true
+            }
+        } else {
+            for i in repeatWeek.indices {
+                repeatWeek[i].isClicked = false
+            }
+        }
+    }
+
+    func initRepeatMonth(schedule: Schedule) {
+        if schedule.repeatOption != RepeatOption.everyMonth.rawValue {
+            return
+        }
+
+        if let scheduleRepeatMonth = schedule.repeatValue {
+            for i in repeatMonth.indices {
+                repeatMonth[i].isClicked = scheduleRepeatMonth[
+                    scheduleRepeatMonth.index(scheduleRepeatMonth.startIndex, offsetBy: i)
+                ] == "0" ? false : true
+            }
+        } else {
+            for i in repeatMonth.indices {
+                repeatMonth[i].isClicked = false
+            }
+        }
+    }
+
+    func initRepeatYear(schedule: Schedule) {
+        if schedule.repeatOption != RepeatOption.everyYear.rawValue {
+            return
+        }
+
+        if let scheduleRepeatYear = schedule.repeatValue {
+            for i in repeatYear.indices {
+                repeatYear[i].isClicked = scheduleRepeatYear[
+                    scheduleRepeatYear.index(scheduleRepeatYear.startIndex, offsetBy: i)
+                ] == "0" ? false : true
+            }
+        } else {
+            for i in repeatYear.indices {
+                repeatYear[i].isClicked = false
+            }
+        }
     }
     
     func toggleDay(repeatOption: RepeatOption, index: Int) {
