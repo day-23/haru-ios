@@ -79,16 +79,19 @@ final class CalendarViewModel: ObservableObject {
         getCurMonthSchList(dateList)
     }
 
+    // MARK: 달력에 해당하는 월에 맞는 스케줄 + 할일 표시해주기 위한 함수
+
     func getCurMonthSchList(_ dateList: [DateValue]) {
         productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
         viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: maxOrder), count: numberOfWeeks)
         
-        guard let startDate = Calendar.current.date(byAdding: .day, value: -1, to: dateList[0].date) else { return }
+        guard let firstDate = dateList.first?.date, let startDate = Calendar.current.date(byAdding: .day, value: -1, to: firstDate) else { return }
         guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
         
         Task {
             var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
             
+            // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
             var repeatScheduleList = [Schedule]()
             var idx = 0
             while idx < beforeRepeat.0.count {
@@ -101,7 +104,7 @@ final class CalendarViewModel: ObservableObject {
                 }
             }
             
-            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(dateList: dateList, repeatScheduleList: repeatScheduleList))
+            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: firstDate, lastDate: lastDate, repeatScheduleList: repeatScheduleList))
             let result = (beforeRepeat.0.sorted {
                 $0.repeatStart < $1.repeatStart
             }, beforeRepeat.1)
@@ -112,6 +115,7 @@ final class CalendarViewModel: ObservableObject {
         }
     }
     
+    // 드래그해서 선택한 날짜를 위한 로직
     func addSelectedItems(from value: DragGesture.Value, _ cellWidth: Double, _ cellHeight: Double) {
         let index = Int(value.location.y / cellHeight) * 7 + Int(value.location.x / cellWidth)
         var isRangeChanged = (true, true)
@@ -531,7 +535,8 @@ final class CalendarViewModel: ObservableObject {
      * 반복인 일정들만 repeatSchList에 받아와서 반복 (일정)데이터 만들어서 리턴
      */
     func makeRepeatSchedule(
-        dateList: [DateValue],
+        firstDate: Date,
+        lastDate: Date,
         repeatScheduleList: [Schedule]
     ) -> [Schedule] {
         var result = [Schedule]()
@@ -540,21 +545,21 @@ final class CalendarViewModel: ObservableObject {
             if sch.repeatValue?.first == "T" {
                 // TODO: 연속된 일정 반복 처리
             } else {
-                result.append(contentsOf: singleRepeatSchedule(dateList: dateList, oriRepeatSch: sch))
+                result.append(contentsOf: singleRepeatSchedule(firstDate: firstDate, lastDate: lastDate, oriRepeatSch: sch))
             }
         }
         return result
     }
 
     // 하루치 일정의 반복 (repeatValue: 0,1)
-    func singleRepeatSchedule(dateList: [DateValue], oriRepeatSch: Schedule) -> [Schedule] {
+    func singleRepeatSchedule(firstDate: Date, lastDate: Date, oriRepeatSch: Schedule) -> [Schedule] {
         switch oriRepeatSch.repeatOption {
         case "매일":
-            return repeatEveryDay(dateList: dateList, schedule: oriRepeatSch)
+            return repeatEveryDay(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매주":
-            return repeatEveryWeek(dateList: dateList, schedule: oriRepeatSch, weekTerm: 1)
+            return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
         case "2주마다":
-            return repeatEveryWeek(dateList: dateList, schedule: oriRepeatSch, weekTerm: 2)
+            return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
         case "매달":
             return [Schedule]()
         case "매년":
@@ -564,15 +569,15 @@ final class CalendarViewModel: ObservableObject {
         }
     }
 
-    func repeatEveryDay(dateList: [DateValue], schedule: Schedule) -> [Schedule] {
-        guard let firstDate = dateList.first?.date else {
-            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
-            return []
-        }
-        guard let lastDate = dateList.last?.date else {
-            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
-            return []
-        }
+    func repeatEveryDay(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
+//        guard let firstDate = dateList.first?.date else {
+//            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
+//            return []
+//        }
+//        guard let lastDate = dateList.last?.date else {
+//            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
+//            return []
+//        }
 
         let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
         
@@ -592,16 +597,15 @@ final class CalendarViewModel: ObservableObject {
         return result
     }
     
-    func repeatEveryWeek(dateList: [DateValue], schedule: Schedule, weekTerm: Int) -> [Schedule] {
-        // TODO: repeatWeek 관련 로직 구현
-        guard let firstDate = dateList.first?.date else {
-            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
-            return []
-        }
-        guard let lastDate = dateList.last?.date else {
-            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
-            return []
-        }
+    func repeatEveryWeek(firstDate: Date, lastDate: Date, schedule: Schedule, weekTerm: Int) -> [Schedule] {
+//        guard let firstDate = dateList.first?.date else {
+//            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
+//            return []
+//        }
+//        guard let lastDate = dateList.last?.date else {
+//            print("[Error] dateList 값에 문제가 있음 \(#fileID) \(#function)")
+//            return []
+//        }
         
         var result = [Schedule]()
 
@@ -623,7 +627,7 @@ final class CalendarViewModel: ObservableObject {
         for _ in 0 ... 5 {
             for idx in repeatValue.indices {
                 if repeatValue[(idx + offset) % 7] == 1 {
-                    guard let repeatStart = CalendarHelper.getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: startDate) else {
+                    guard let repeatStart = CalendarHelper.getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: calendar.startOfDay(for: startDate)) else {
                         print("[Error] getClosestIdxDate 함수 에러 \(#fileID) \(#function)")
                         continue
                     }
