@@ -11,6 +11,12 @@ import Foundation
 struct TodoService {
     //  MARK: - Properties
 
+    enum RepeatAt: String {
+        case front
+        case middle
+        case back
+    }
+
     private static let baseURL = Constants.baseURL + "todo/"
 
     private static let formatter: DateFormatter = {
@@ -418,6 +424,33 @@ struct TodoService {
         }
     }
 
+    func updateTodoWithRepeat(
+        todoId: String,
+        todo: Request.Todo,
+        at: RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todo/\(todoId)/repeat/\(at.rawValue)",
+            method: .put,
+            parameters: todo,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     func updateFlag(
         todoId: String,
         flag: Bool,
@@ -702,19 +735,28 @@ struct TodoService {
 
     func completeTodoWithRepeat(
         todoId: String,
-        todo: Request.Todo,
+        nextEndDate endDate: Date,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
+        var params: [String: Any] = [
+            "endDate": Self.formatter.string(from: endDate),
+        ]
+
+        if at == .middle {
+            params["completedDate"] = Self.formatter.string(from: .now)
+        }
+
         AF.request(
             Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)/repeat",
+                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)/repeat/\(at.rawValue)",
             method: .patch,
-            parameters: todo,
-            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            parameters: params,
+            encoding: JSONEncoding.default,
             headers: headers
         ).response { response in
             switch response.result {

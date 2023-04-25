@@ -332,11 +332,15 @@ final class CheckListViewModel: ObservableObject {
 
     func completeTodoWithRepeat(
         todoId: String,
-        todo: Request.Todo,
+        nextEndDate: Date,
+        at: TodoService.RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.completeTodoWithRepeat(todoId: todoId,
-                                           todo: todo) { result in
+        todoService.completeTodoWithRepeat(
+            todoId: todoId,
+            nextEndDate: nextEndDate,
+            at: .front
+        ) { result in
             switch result {
             case let .success(success):
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
