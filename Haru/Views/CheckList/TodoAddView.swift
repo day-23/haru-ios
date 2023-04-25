@@ -186,6 +186,40 @@ struct TodoAddView: View {
                         Divider()
                     }
                     
+                    //  알림 설정
+                    Group {
+                        Label {
+                            Toggle(isOn: $viewModel.isSelectedAlarm.animation()) {
+                                HStack {
+                                    Text("알림\(viewModel.isSelectedAlarm ? "" : " 설정")")
+                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .frame(alignment: .leading)
+                                        .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
+                                    
+                                    Spacer()
+                                    
+                                    if viewModel.isSelectedAlarm {
+                                        CustomDatePicker(selection: $viewModel.alarm)
+                                    }
+                                }
+                            }
+                            .tint(LinearGradient(
+                                gradient: Gradient(colors: [Constants.gradientStart,
+                                                            Constants.gradientEnd]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ))
+                        } icon: {
+                            Image("alarm")
+                                .renderingMode(.template)
+                                .padding(.trailing, 10)
+                                .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
+                        }
+                        .padding(.horizontal, 20)
+                        
+                        Divider()
+                    }
+                    
                     //  마감 설정
                     Group {
                         Label {
@@ -255,40 +289,6 @@ struct TodoAddView: View {
                             }
                             .padding(.horizontal, 20)
                         }
-                        
-                        Divider()
-                    }
-                    
-                    //  알림 설정
-                    Group {
-                        Label {
-                            Toggle(isOn: $viewModel.isSelectedAlarm.animation()) {
-                                HStack {
-                                    Text("알림\(viewModel.isSelectedAlarm ? "" : " 설정")")
-                                        .font(.pretendard(size: 14, weight: .medium))
-                                        .frame(alignment: .leading)
-                                        .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
-                                    
-                                    Spacer()
-                                    
-                                    if viewModel.isSelectedAlarm {
-                                        CustomDatePicker(selection: $viewModel.alarm)
-                                    }
-                                }
-                            }
-                            .tint(LinearGradient(
-                                gradient: Gradient(colors: [Constants.gradientStart,
-                                                            Constants.gradientEnd]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ))
-                        } icon: {
-                            Image("alarm")
-                                .renderingMode(.template)
-                                .padding(.trailing, 10)
-                                .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
-                        }
-                        .padding(.horizontal, 20)
                         
                         Divider()
                     }

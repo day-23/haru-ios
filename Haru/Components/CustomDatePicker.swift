@@ -51,7 +51,7 @@ struct CustomDatePicker: View {
                         if !isDateClicked {
                             isDateClicked = true
                         }
-                    } 
+                    }
                     .popover(isPresented: $isDateClicked, arrowDirection: .unknown) {
                         if pastCutoffDate {
                             DatePicker(
@@ -95,14 +95,5 @@ struct CustomDatePicker: View {
                     }
             }
         }
-    }
-}
-
-struct CustomDatePicker_Previews: PreviewProvider {
-    static var previews: some View {
-        CustomDatePicker(
-            selection: .constant(.now),
-            displayedComponents: [.date, .hourAndMinute]
-        )
     }
 }
