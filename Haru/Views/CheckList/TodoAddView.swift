@@ -199,14 +199,10 @@ struct TodoAddView: View {
                                     Spacer()
                                     
                                     if viewModel.isSelectedEndDate {
-                                        DatePicker(
+                                        CustomDatePicker(
                                             selection: $viewModel.endDate,
                                             displayedComponents: [.date]
-                                        ) {}
-                                            .labelsHidden()
-                                            .padding(.vertical, -5)
-                                            .scaleEffect(0.75)
-                                            .padding(.trailing, -10)
+                                        )
                                     }
                                 }
                             }
@@ -236,13 +232,10 @@ struct TodoAddView: View {
                                         Spacer()
                                         
                                         if viewModel.isAllDay {
-                                            DatePicker(
+                                            CustomDatePicker(
                                                 selection: $viewModel.endDate,
                                                 displayedComponents: [.hourAndMinute]
-                                            ) {}
-                                                .labelsHidden()
-                                                .padding(.vertical, -5)
-                                                .scaleEffect(0.75)
+                                            )
                                         }
                                     }
                                 }
@@ -279,10 +272,7 @@ struct TodoAddView: View {
                                     Spacer()
                                     
                                     if viewModel.isSelectedAlarm {
-                                        DatePicker(selection: $viewModel.alarm) {}
-                                            .labelsHidden()
-                                            .padding(.vertical, -5)
-                                            .scaleEffect(0.75)
+                                        CustomDatePicker(selection: $viewModel.alarm)
                                     }
                                 }
                             }
@@ -382,14 +372,11 @@ struct TodoAddView: View {
                                             .foregroundColor(viewModel.isSelectedRepeatEnd ? Color(0x191919) : Color(0xACACAC))
                                         Spacer()
                                         if viewModel.isSelectedRepeatEnd {
-                                            DatePicker(
+                                            CustomDatePicker(
                                                 selection: $viewModel.repeatEnd,
-                                                in: viewModel.endDate...,
-                                                displayedComponents: [.date]
-                                            ) {}
-                                                .labelsHidden()
-                                                .scaleEffect(0.75)
-                                                .padding(.vertical, -5)
+                                                displayedComponents: [.date],
+                                                pastCutoffDate: true
+                                            )
                                         }
                                     }
                                 }
