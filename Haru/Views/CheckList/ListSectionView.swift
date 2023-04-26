@@ -59,6 +59,7 @@ struct ListSectionView<Content>: View where Content: View {
         } header: {
             HStack {
                 header()
+                    .padding(.top, 1)
                 Spacer()
             }
             .background(itemBackgroundColor)
