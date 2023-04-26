@@ -23,6 +23,7 @@ struct Request: Codable {
         var repeatEnd: Date?
         var tags: [String]
         var subTodos: [String]
+        var subTodosCompleted: [Bool]?
     }
 
     struct Schedule: Codable {

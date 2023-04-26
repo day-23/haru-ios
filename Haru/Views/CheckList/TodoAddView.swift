@@ -14,6 +14,7 @@ struct TodoAddView: View {
     @FocusState private var tagInFocus: Bool
     @State private var isClicked = false
     @State private var deleteButtonTapped = false
+    @State private var updateButtonTapped = false
 
     init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
         self.viewModel = viewModel
@@ -453,13 +454,17 @@ struct TodoAddView: View {
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
+                        //  TODO: update dialog 띄워서 묻기
                         Button {
+                            if viewModel.isSelectedRepeat {
+                                updateButtonTapped = true
+                                return
+                            }
+                            
                             viewModel.updateTodo { result in
                                 switch result {
                                 case .success:
-                                    withAnimation {
-                                        dismissAction.callAsFunction()
-                                    }
+                                    dismissAction.callAsFunction()
                                 case let .failure(failure):
                                     print("[Debug] \(failure) (\(#fileID), \(#function))")
                                 }
@@ -468,6 +473,31 @@ struct TodoAddView: View {
                             Image("confirm")
                                 .renderingMode(.template)
                                 .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
+                        }
+                        .confirmationDialog("반복하는 할 일 수정", isPresented: $updateButtonTapped) {
+                            Button("선택된 할 일만 수정하기") {
+                                //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
+                                viewModel.updateTodoWithRepeat(
+                                    at: .front)
+                                { result in
+                                    switch result {
+                                    case .success:
+                                        dismissAction.callAsFunction()
+                                    case let .failure(failure):
+                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    }
+                                }
+                            }
+                            Button("할 일 수정하기") {
+                                viewModel.updateTodo { result in
+                                    switch result {
+                                    case .success:
+                                        dismissAction.callAsFunction()
+                                    case let .failure(failure):
+                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -499,7 +529,7 @@ struct TodoAddView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 20)
-                .confirmationDialog("삭제", isPresented: $deleteButtonTapped) {
+                .confirmationDialog("반복되는 할 일 삭제", isPresented: $deleteButtonTapped) {
                     Button("선택된 할 일만 삭제하기") {
                         //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
                         viewModel.deleteTodoWithRepeat(
@@ -513,7 +543,7 @@ struct TodoAddView: View {
                             }
                         }
                     }
-                    Button("반복하는 할 일 삭제하기", role: .destructive) {
+                    Button("할 일 삭제하기", role: .destructive) {
                         viewModel.deleteTodo { result in
                             switch result {
                             case .success:

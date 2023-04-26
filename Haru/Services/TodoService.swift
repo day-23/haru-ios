@@ -409,7 +409,8 @@ struct TodoService {
         ]
 
         AF.request(
-            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .put,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: Self.encoder),

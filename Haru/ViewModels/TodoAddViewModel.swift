@@ -252,7 +252,8 @@ final class TodoAddViewModel: ObservableObject {
             tags: tagList.map { $0.content },
             subTodos: subTodoList
                 .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-                .map { $0.content }
+                .map { $0.content },
+            subTodosCompleted: subTodoList.isEmpty ? nil : subTodoList.map { $0.completed }
         )
     }
 
@@ -303,7 +304,7 @@ final class TodoAddViewModel: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         guard let todoId = todo?.id else {
-            print("[Debug] todoId가 입력되지 않았습니다. (\(#fileID), \(#function))")
+            print("[Debug] todo를 찾을 수 없습니다. (\(#fileID), \(#function))")
             return
         }
 
@@ -316,6 +317,29 @@ final class TodoAddViewModel: ObservableObject {
                 completion(.success(success))
             case let .failure(failure):
                 completion(.failure(failure))
+            }
+        }
+    }
+
+    func updateTodoWithRepeat(
+        at: TodoService.RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        guard let todo else {
+            print("[Debug] todo를 찾을 수 없습니다. (\(#fileID), \(#function))")
+            return
+        }
+
+        checkListViewModel.updateTodoWithRepeat(
+            todoId: todo.id,
+            todo: createTodoData(),
+            at: at
+        ) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
             }
         }
     }
