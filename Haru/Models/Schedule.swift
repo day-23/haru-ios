@@ -54,7 +54,9 @@ extension Schedule {
             repeatOption: schedule.repeatOption,
             repeatValue: schedule.repeatValue,
             category: schedule.category,
-
-            alarms: schedule.alarms, createdAt: schedule.createdAt)
+            alarms: schedule.alarms,
+            createdAt: schedule.createdAt,
+            realRepeatEnd: schedule.repeatEnd
+        )
     }
 }
