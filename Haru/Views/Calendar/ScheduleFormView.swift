@@ -382,6 +382,18 @@ struct ScheduleFormView: View {
                 }
             }
         }
+        .toolbar {
+            if !isSchModalVisible {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        print("hi")
+                    } label: {
+                        Image("confirm")
+                            .frame(width: 28, height: 28)
+                    }
+                }
+            }
+        }
     }
     
     func getRepeatOption() -> [RepeatOption] {
