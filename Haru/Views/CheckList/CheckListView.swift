@@ -5,8 +5,6 @@
 //  Created by 최정민 on 2023/03/06.
 //
 
-//  TODO: Date Picker Component 추가
-//  TODO: Todo가 추가되면, Todo가 추가된 화면을 쫓아가도록 수정
 //  TODO: 오늘 나의 하루로 체크되어 있으면, 완료 체크 애니메이션이 안되는 문제 해결 필요
 //  TODO: 반복일정 날짜 체크시 오류 있음, 수정 필요
 //  TODO: 수정시에 아무런 변경사항이 없다면 체크 버튼을 비활성화하는 방법을 선택
@@ -21,7 +19,6 @@ struct CheckListView: View {
     @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
-    @State private var bottomOffset: CGFloat?
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -32,7 +29,6 @@ struct CheckListView: View {
                         withAnimation {
                             viewModel.selectedTag = tag
                             prevOffset = nil
-                            bottomOffset = nil
                         }
                     }
 
@@ -282,14 +278,12 @@ struct CheckListView: View {
         if self.prevOffset == nil {
             self.viewIsShown = true
             self.prevOffset = value?.y
-            self.bottomOffset = value?.y
             return
         }
         self.offset = value?.y
 
         guard let prevOffset,
-              let offset,
-              let bottomOffset
+              let offset
         else {
             return
         }
@@ -304,7 +298,5 @@ struct CheckListView: View {
             }
             self.prevOffset = offset
         }
-
-        self.bottomOffset = min(bottomOffset, offset)
     }
 }

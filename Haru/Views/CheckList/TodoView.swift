@@ -91,8 +91,10 @@ struct TodoView: View {
                     if (todo.repeatOption == nil &&
                         todo.repeatValue == nil) || todo.completed
                     {
-                        checkListViewModel.completeTodo(todoId: todo.id,
-                                                        completed: !todo.completed) { result in
+                        checkListViewModel.completeTodo(
+                            todoId: todo.id,
+                            completed: !todo.completed
+                        ) { result in
                             switch result {
                             case .success:
                                 successCompletion(todoId: todo.id)
@@ -107,17 +109,15 @@ struct TodoView: View {
                         //  만약 반복이 끝났다면, nextEndDate == nil
                         guard let nextEndDate = try todo.nextEndDate() else {
                             //  반복이 끝났음
-                            //  !!!: - 반복이 끝났을 때 어떠한 데이터를 넘겨줘야하는지에 대해서 정보가 없음. -> 민재형한테 물어보기
-                            checkListViewModel.completeTodoWithRepeat(
+                            checkListViewModel.completeTodo(
                                 todoId: todo.id,
-                                nextEndDate: .now, // 반복이 끝났을 때 어떠한 데이터를 넘겨줘야 함.
-                                at: .front
+                                completed: !todo.completed
                             ) { result in
                                 switch result {
                                 case .success:
                                     successCompletion(todoId: todo.id)
                                 case .failure(let failure):
-                                    print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
+                                    print("[Debug] 반복하는 할 일 마지막 반복 완료 실패, \(failure) (\(#fileID), \(#function))")
                                 }
                             }
                             return
