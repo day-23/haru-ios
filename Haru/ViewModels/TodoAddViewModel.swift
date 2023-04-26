@@ -12,7 +12,7 @@ final class TodoAddViewModel: ObservableObject {
 
     private let checkListViewModel: CheckListViewModel
     var mode: TodoAddMode
-    var todoId: String?
+    var todo: Todo?
 
     @Published var content: String = ""
 
@@ -287,10 +287,14 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func createSubTodo() {
-        subTodoList.append(SubTodo(id: UUID().uuidString,
-                                   content: "",
-                                   subTodoOrder: -1,
-                                   completed: false))
+        subTodoList.append(
+            SubTodo(
+                id: UUID().uuidString,
+                content: "",
+                subTodoOrder: -1,
+                completed: false
+            )
+        )
     }
 
     //  MARK: - Update
@@ -298,7 +302,7 @@ final class TodoAddViewModel: ObservableObject {
     func updateTodo(
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        guard let todoId = todoId else {
+        guard let todoId = todo?.id else {
             print("[Debug] todoId가 입력되지 않았습니다. (\(#fileID), \(#function))")
             return
         }
@@ -467,7 +471,7 @@ final class TodoAddViewModel: ObservableObject {
     //  MARK: - Remove
 
     func deleteTodo(completion: @escaping (Result<Bool, Error>) -> Void) {
-        guard let todoId = todoId else {
+        guard let todoId = todo?.id else {
             print("[Debug] todoID가 없습니다. (\(#fileID), \(#function))")
             return
         }
@@ -479,6 +483,60 @@ final class TodoAddViewModel: ObservableObject {
             case let .failure(failure):
                 completion(.failure(failure))
             }
+        }
+    }
+
+    func deleteTodoWithRepeat(
+        at: TodoService.RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        if at == .front {
+            guard let todo else {
+                print("[Debug] todo를 찾을 수 없습니다. (\(#fileID), \(#function))")
+                return
+            }
+
+            do {
+                guard let date = try todo.nextEndDate() else {
+                    checkListViewModel.deleteTodo(
+                        todoId: todo.id
+                    ) { result in
+                        switch result {
+                        case .success:
+                            completion(.success(true))
+                        case let .failure(error):
+                            completion(.failure(error))
+                        }
+                    }
+                    return
+                }
+
+                checkListViewModel.deleteTodoWithRepeat(
+                    todoId: todo.id,
+                    date: date,
+                    at: at
+                ) { result in
+                    switch result {
+                    case .success:
+                        completion(.success(true))
+                    case let .failure(error):
+                        completion(.failure(error))
+                    }
+                }
+            } catch {
+                switch error {
+                case RepeatError.invalid:
+                    print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                case RepeatError.calculation:
+                    print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                default:
+                    print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                }
+            }
+        } else if at == .middle {
+            //  TODO: todo가 반복하는 할 일의 중간에 있는 경우,
+        } else if at == .back {
+            //  TODO: todo가 반복하는 할 일의 끝에 있는 경우,
         }
     }
 

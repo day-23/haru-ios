@@ -13,6 +13,7 @@ struct TodoAddView: View {
     @Binding var isModalVisible: Bool
     @FocusState private var tagInFocus: Bool
     @State private var isClicked = false
+    @State private var deleteButtonTapped = false
 
     init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
         self.viewModel = viewModel
@@ -474,6 +475,11 @@ struct TodoAddView: View {
             
             if !isModalVisible {
                 Button {
+                    if viewModel.isSelectedRepeat {
+                        deleteButtonTapped = true
+                        return
+                    }
+                    
                     viewModel.deleteTodo { result in
                         switch result {
                         case .success:
@@ -493,6 +499,30 @@ struct TodoAddView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 20)
+                .confirmationDialog("삭제", isPresented: $deleteButtonTapped) {
+                    Button("선택된 할 일만 삭제하기") {
+                        viewModel.deleteTodoWithRepeat(
+                            at: .front
+                        ) { result in
+                            switch result {
+                            case .success:
+                                dismissAction.callAsFunction()
+                            case let .failure(failure):
+                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
+                    }
+                    Button("반복하는 할 일 삭제하기", role: .destructive) {
+                        viewModel.deleteTodo { result in
+                            switch result {
+                            case .success:
+                                dismissAction.callAsFunction()
+                            case let .failure(failure):
+                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
+                    }
+                }
             }
         }
     }

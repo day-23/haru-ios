@@ -788,6 +788,46 @@ struct TodoService {
         }
     }
 
+    func deleteTodoWithRepeat(
+        todoId: String,
+        date: Date,
+        at: RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var params: Parameters = [:]
+
+        if at == .front || at == .middle {
+            params["endDate"] = Self.formatter.string(from: date)
+            if at == .middle {
+                params["removedDate"] = Self.formatter.string(from: .now)
+            }
+        }
+
+        if at == .back {
+            params["repeatEnd"] = Self.formatter.string(from: date)
+        }
+
+        AF.request(
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todo/\(todoId)/repeat/\(at.rawValue)",
+            method: .delete,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     func deleteTag(
         todoId: String,
         tagId: String,

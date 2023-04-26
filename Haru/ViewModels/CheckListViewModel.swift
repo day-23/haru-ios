@@ -431,6 +431,29 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
+    func deleteTodoWithRepeat(
+        todoId: String,
+        date: Date,
+        at: TodoService.RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.deleteTodoWithRepeat(
+            todoId: todoId,
+            date: date,
+            at: at
+        ) { result in
+            switch result {
+            case let .success(success):
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                    self.fetchTodoList()
+                    completion(.success(success))
+                }
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     func deleteSubTodo(
         todoId: String,
         subTodoId: String,

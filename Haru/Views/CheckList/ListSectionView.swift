@@ -26,7 +26,7 @@ struct ListSectionView<Content>: View where Content: View {
                         TodoAddView(viewModel: todoAddViewModel)
                             .onAppear {
                                 todoAddViewModel.mode = .edit
-                                todoAddViewModel.todoId = todo.id
+                                todoAddViewModel.todo = todo
                                 todoAddViewModel.applyTodoData(todo: todo)
                             }
                     } label: {
