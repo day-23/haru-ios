@@ -192,7 +192,7 @@ class CalendarHelper {
         var dateComponents = DateComponents()
         dateComponents.weekday = idx
 
-        var closestDay = calendar.nextDate(after: curDate.addingTimeInterval(TimeInterval(-1)), matching: dateComponents, matchingPolicy: .nextTime)
+        let closestDay = calendar.nextDate(after: curDate.addingTimeInterval(TimeInterval(-1)), matching: dateComponents, matchingPolicy: .nextTime)
 
         return closestDay
     }

@@ -635,18 +635,35 @@ final class CalendarViewModel: ObservableObject {
         var result = [Schedule]()
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         
+        var prevRepeatEnd: Date? = startDate
+        var nextRepeatEnd: Date? = schedule.repeatEnd
         for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
 
-            result.append(Schedule.createRepeatSchedule(schedule: schedule, repeatStart: date, repeatEnd: calendar.date(from: dateComponents) ?? date))
+            var nextDateComp = dateComponents
+            nextDateComp.day! += 1
+            if let nextRepEnd = calendar.date(from: nextDateComp), schedule.repeatEnd >= nextRepEnd {
+                nextRepeatEnd = nextRepEnd
+            }
+            
+            result.append(
+                Schedule.createRepeatSchedule(
+                    schedule: schedule,
+                    repeatStart: date,
+                    repeatEnd: calendar.date(from: dateComponents) ?? date,
+                    prevRepeatEnd: prevRepeatEnd,
+                    nextRepeatEnd: nextRepeatEnd
+                )
+            )
+            
+            prevRepeatEnd = calendar.date(from: dateComponents)
         }
         return result
     }
     
     func repeatEveryWeek(firstDate: Date, lastDate: Date, schedule: Schedule, weekTerm: Int) -> [Schedule] {
-        
         var result = [Schedule]()
 
         var (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
@@ -690,7 +707,7 @@ final class CalendarViewModel: ObservableObject {
                         print("[Error] endDate의 hour: \(endDate.hour) \(endDate.minute) \(#fileID) \(#function)")
                         continue
                     }
-                    result.append(Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd))
+                    result.append(Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd, prevRepeatEnd: nil, nextRepeatEnd: nil))
                 }
             }
             if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {

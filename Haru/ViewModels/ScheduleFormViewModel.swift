@@ -226,6 +226,7 @@ final class ScheduleFormViewModel: ObservableObject {
 
     // MARK: init
 
+    // 추가 시 scheduleVM 생성자
     init(calendarVM: CalendarViewModel) {
         self.calendarVM = calendarVM
         
@@ -237,6 +238,7 @@ final class ScheduleFormViewModel: ObservableObject {
         self.mode = .add
     }
     
+    // 수정 시 scheduleVM 생성자
     init(calendarVM: CalendarViewModel, schedule: Schedule) {
         self.calendarVM = calendarVM
         self.mode = .edit
