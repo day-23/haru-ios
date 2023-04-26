@@ -501,6 +501,7 @@ struct TodoAddView: View {
                 .padding(.bottom, 20)
                 .confirmationDialog("삭제", isPresented: $deleteButtonTapped) {
                     Button("선택된 할 일만 삭제하기") {
+                        //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
                         viewModel.deleteTodoWithRepeat(
                             at: .front
                         ) { result in

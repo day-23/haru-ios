@@ -490,12 +490,12 @@ final class TodoAddViewModel: ObservableObject {
         at: TodoService.RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        if at == .front {
-            guard let todo else {
-                print("[Debug] todo를 찾을 수 없습니다. (\(#fileID), \(#function))")
-                return
-            }
+        guard let todo else {
+            print("[Debug] todo를 찾을 수 없습니다. (\(#fileID), \(#function))")
+            return
+        }
 
+        if at == .front || at == .middle {
             do {
                 guard let date = try todo.nextEndDate() else {
                     checkListViewModel.deleteTodo(
@@ -533,10 +533,29 @@ final class TodoAddViewModel: ObservableObject {
                     print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
                 }
             }
-        } else if at == .middle {
-            //  TODO: todo가 반복하는 할 일의 중간에 있는 경우,
         } else if at == .back {
             //  TODO: todo가 반복하는 할 일의 끝에 있는 경우,
+            //  1. 무한히 반복하는 할 일의 경우 -> 이런 경우가 있는지에 대해 이야기 필요함
+            //  2. 그냥 반복하는 할 일의 끝인 경우 -> repeatEnd를 전달.
+            guard let todoRepeatEnd = todo.repeatEnd else {
+                //  1번 케이스
+                return
+            }
+
+            //  2번 케이스
+            let dayInSeconds: TimeInterval = 24 * 60 * 60
+            checkListViewModel.deleteTodoWithRepeat(
+                todoId: todo.id,
+                date: todoRepeatEnd.addingTimeInterval(-dayInSeconds),
+                at: .back
+            ) { result in
+                switch result {
+                case .success:
+                    completion(.success(true))
+                case let .failure(error):
+                    completion(.failure(error))
+                }
+            }
         }
     }
 
