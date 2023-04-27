@@ -362,7 +362,7 @@ struct ScheduleFormView: View {
                                     .frame(width: 28, height: 28)
                             }
                             .foregroundColor(.red)
-                        }.actionSheet(isPresented: $showActionSheet, content: getActionSheet)
+                        }.actionSheet(isPresented: $showActionSheet, content: getDeleteActionSheet)
                         
                         Spacer()
                         Button {
@@ -419,14 +419,37 @@ struct ScheduleFormView: View {
         return RepeatOption.allCases.suffix(scheduleFormVM.overDay ? optionCnt - 1 : optionCnt)
     }
     
-    // 함수구현부
-    func getActionSheet() -> ActionSheet {
+    func getDeleteActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 삭제하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 삭제하시겠습니까?")
-        let deleteButton: ActionSheet.Button = .destructive(Text("이 이벤트만 삭제")) {
+        let deleteButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "이 이벤트만 삭제" : "이 이벤트 삭제")) {
             scheduleFormVM.deleteTargetSchedule()
         }
         let deleteAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 삭제")) {
             scheduleFormVM.deleteSchedule()
+            dismissAction.callAsFunction()
+        }
+        let cancleButton: ActionSheet.Button = .cancel()
+            
+        switch actionSheetOption {
+        case .isRepeat:
+            return ActionSheet(title: title,
+                               message: nil,
+                               buttons: [deleteButton, deleteAllButton, cancleButton])
+
+        case .isNotRepeat:
+            return ActionSheet(title: title,
+                               message: nil,
+                               buttons: [deleteButton, cancleButton])
+        }
+    }
+    
+    func getEditActionSheet() -> ActionSheet {
+        let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 편집하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 편집하시겠습니까?")
+        let deleteButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "이 이벤트만 편집" : "이 이벤트 편집")) {
+            scheduleFormVM.deleteTargetSchedule()
+        }
+        let deleteAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 편집")) {
+            scheduleFormVM.updateSchedule()
             dismissAction.callAsFunction()
         }
         let cancleButton: ActionSheet.Button = .cancel()

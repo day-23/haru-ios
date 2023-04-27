@@ -360,7 +360,6 @@ final class ScheduleFormViewModel: ObservableObject {
      * Request.Schedule 만들기
      */
     func createSchedule() -> Request.Schedule {
-        // TODO: 연속
         let calendar = Calendar.current
         var dateComponents: DateComponents
 
@@ -378,6 +377,33 @@ final class ScheduleFormViewModel: ObservableObject {
             repeatValue: isSelectedRepeat ? repeatValue : nil,
             categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
             alarms: selectedAlarm
+        )
+    }
+    
+    /**
+     * Request.RepeatSchedule 만들기
+     */
+    func createRepeatSchedule(nextRepeatStart: Date? = nil, changedDate: Date? = nil, preRepeatEnd: Date? = nil) -> Request.RepeatSchedule {
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+
+        dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
+        dateComponents.hour = repeatEnd.hour
+        dateComponents.minute = repeatEnd.minute
+        
+        return Request.RepeatSchedule(
+            content: content,
+            memo: memo,
+            isAllDay: isAllDay,
+            repeatStart: repeatStart,
+            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
+            repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
+            repeatValue: isSelectedRepeat ? repeatValue : nil,
+            categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
+            alarms: selectedAlarm,
+            nextRepeatStart: nextRepeatStart,
+            changedDate: changedDate,
+            preRepeatEnd: preRepeatEnd
         )
     }
     
@@ -458,6 +484,46 @@ final class ScheduleFormViewModel: ObservableObject {
                 self.calendarVM.getRefreshProductivityList()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    /**
+     * 반복 일정 하나만 편집하기
+     */
+    func updateTargetSchedule() {
+        if repeatStart == realRepeatStart {
+            let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
+            scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else if repeatEnd == realRepeatEnd {
+            let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
+            scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else {
+            let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: repeatStart)
+            scheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
             }
         }
     }
