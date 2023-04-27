@@ -478,8 +478,8 @@ struct TodoAddView: View {
                             Button("선택된 할 일만 수정하기") {
                                 //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
                                 viewModel.updateTodoWithRepeat(
-                                    at: .front)
-                                { result in
+                                    at: .front
+                                ) { result in
                                     switch result {
                                     case .success:
                                         dismissAction.callAsFunction()

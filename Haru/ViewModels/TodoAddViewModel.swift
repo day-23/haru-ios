@@ -93,8 +93,8 @@ final class TodoAddViewModel: ObservableObject {
             var index = (calendar.component(.weekday, from: nextEndDate) - 1) % 7
             if repeatOption == .everyWeek {
                 while !pattern[index] {
-                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
                     index = (index + 1) % 7
+                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
                 }
 
                 endDate = nextEndDate
@@ -104,8 +104,8 @@ final class TodoAddViewModel: ObservableObject {
                 }
 
                 while !pattern[index] {
-                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
                     index = (index + 1) % 7
+                    nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
 
                     if index == 0 {
                         nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
@@ -145,8 +145,8 @@ final class TodoAddViewModel: ObservableObject {
             let upperBound = range.upperBound - 1
             var index = (calendar.component(.day, from: nextEndDate) - 1) % upperBound
             while !pattern[index] {
-                nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
                 index = (index + 1) % upperBound
+                nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
             }
 
             endDate = nextEndDate
@@ -170,8 +170,8 @@ final class TodoAddViewModel: ObservableObject {
             var index = (calendar.component(.month, from: nextEndDate) - 1) % 12
             while !pattern[index] {
                 if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
-                    nextEndDate = next
                     index = (index + 1) % 12
+                    nextEndDate = next
                 } else {
                     return
                 }
@@ -330,16 +330,75 @@ final class TodoAddViewModel: ObservableObject {
             return
         }
 
-        checkListViewModel.updateTodoWithRepeat(
-            todoId: todo.id,
-            todo: createTodoData(),
-            at: at
-        ) { result in
-            switch result {
-            case .success:
-                completion(.success(true))
-            case let .failure(error):
-                completion(.failure(error))
+        //  Case front: endDate 계산하여 넘겨주기, 만약 다음 날짜가 없다면? 그냥 업데이트로 진행
+        //  Case middle: endDate 계산하여 넘겨주기
+        //  Case back: preRepeatEnd 계산하여 넘겨주기
+        if at == .front || at == .middle {
+            do {
+                guard let endDate = try todo.nextEndDate() else {
+                    checkListViewModel.updateTodo(
+                        todoId: todo.id,
+                        todo: createTodoData()
+                    ) { result in
+                        switch result {
+                        case let .success(success):
+                            completion(.success(success))
+                        case let .failure(error):
+                            completion(.failure(error))
+                        }
+                    }
+                    return
+                }
+
+                checkListViewModel.updateTodoWithRepeat(
+                    todoId: todo.id,
+                    todo: createTodoData(),
+                    date: endDate,
+                    at: at
+                ) { result in
+                    switch result {
+                    case let .success(success):
+                        completion(.success(success))
+                    case let .failure(error):
+                        completion(.failure(error))
+                    }
+                }
+            } catch {
+                switch error {
+                case RepeatError.invalid:
+                    print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                case RepeatError.calculation:
+                    print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                default:
+                    print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                }
+            }
+        } else if at == .back {
+            do {
+                let prevRepeatEnd = try todo.prevEndDate()
+
+                checkListViewModel.updateTodoWithRepeat(
+                    todoId: todo.id,
+                    todo: createTodoData(),
+                    date: prevRepeatEnd,
+                    at: at
+                ) { result in
+                    switch result {
+                    case let .success(success):
+                        completion(.success(success))
+                    case let .failure(error):
+                        completion(.failure(error))
+                    }
+                }
+            } catch {
+                switch error {
+                case RepeatError.invalid:
+                    print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                case RepeatError.calculation:
+                    print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                default:
+                    print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                }
             }
         }
     }
@@ -495,12 +554,12 @@ final class TodoAddViewModel: ObservableObject {
     //  MARK: - Remove
 
     func deleteTodo(completion: @escaping (Result<Bool, Error>) -> Void) {
-        guard let todoId = todo?.id else {
-            print("[Debug] todoID가 없습니다. (\(#fileID), \(#function))")
+        guard let todo else {
+            print("[Debug] todo를 찾을 수 없습니다. (\(#fileID), \(#function))")
             return
         }
 
-        checkListViewModel.deleteTodo(todoId: todoId) { result in
+        checkListViewModel.deleteTodo(todoId: todo.id) { result in
             switch result {
             case .success:
                 completion(.success(true))
@@ -567,17 +626,29 @@ final class TodoAddViewModel: ObservableObject {
             }
 
             //  2번 케이스
-            let dayInSeconds: TimeInterval = 24 * 60 * 60
-            checkListViewModel.deleteTodoWithRepeat(
-                todoId: todo.id,
-                date: todoRepeatEnd.addingTimeInterval(-dayInSeconds),
-                at: .back
-            ) { result in
-                switch result {
-                case .success:
-                    completion(.success(true))
-                case let .failure(error):
-                    completion(.failure(error))
+            do {
+                let repeatEnd = try todo.prevEndDate()
+
+                checkListViewModel.deleteTodoWithRepeat(
+                    todoId: todo.id,
+                    date: repeatEnd,
+                    at: .back
+                ) { result in
+                    switch result {
+                    case .success:
+                        completion(.success(true))
+                    case let .failure(error):
+                        completion(.failure(error))
+                    }
+                }
+            } catch {
+                switch error {
+                case RepeatError.invalid:
+                    print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                case RepeatError.calculation:
+                    print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                default:
+                    print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
                 }
             }
         }

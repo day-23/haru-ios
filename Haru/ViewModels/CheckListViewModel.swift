@@ -232,13 +232,14 @@ final class CheckListViewModel: ObservableObject {
     func updateTodoWithRepeat(
         todoId: String,
         todo: Request.Todo,
+        date: Date,
         at: TodoService.RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        //  FIXME: 수정 필요
         todoService.updateTodoWithRepeat(
             todoId: todoId,
             todo: todo,
+            date: date,
             at: at
         ) { result in
             switch result {
