@@ -423,7 +423,7 @@ struct ScheduleFormView: View {
     func getActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 삭제하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 삭제하시겠습니까?")
         let deleteButton: ActionSheet.Button = .destructive(Text("이 이벤트만 삭제")) {
-            print("삼분할 하기")
+            scheduleFormVM.deleteTargetSchedule()
         }
         let deleteAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 삭제")) {
             scheduleFormVM.deleteSchedule()

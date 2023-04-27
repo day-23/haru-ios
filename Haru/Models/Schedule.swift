@@ -35,7 +35,7 @@ struct Schedule: Identifiable, Codable {
     var realRepeatEnd: Date?
 
     var prevRepeatEnd: Date?
-    var nextRepeatEnd: Date?
+    var nextRepeatStart: Date?
 }
 
 // MARK: - extension
@@ -47,7 +47,7 @@ extension Schedule: Productivity, Equatable {
 }
 
 extension Schedule {
-    static func createRepeatSchedule(schedule: Schedule, repeatStart: Date, repeatEnd: Date, prevRepeatEnd: Date?, nextRepeatEnd: Date?) -> Schedule {
+    static func createRepeatSchedule(schedule: Schedule, repeatStart: Date, repeatEnd: Date, prevRepeatEnd: Date?, nextRepeatStart: Date?) -> Schedule {
         Schedule(
             id: schedule.id,
             content: schedule.content,
@@ -63,7 +63,7 @@ extension Schedule {
             realRepeatStart: schedule.repeatStart,
             realRepeatEnd: schedule.repeatEnd,
             prevRepeatEnd: prevRepeatEnd,
-            nextRepeatEnd: nextRepeatEnd
+            nextRepeatStart: nextRepeatStart
         )
     }
 }

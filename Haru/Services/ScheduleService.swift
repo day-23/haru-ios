@@ -241,11 +241,15 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
+        let parameters: Parameters = [
+            "repeatStart": Self.formatter.string(from: repeatStart),
+        ]
+
         AF.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/front",
             method: .delete,
-            parameters: repeatStart,
-            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            parameters: parameters,
+            encoding: JSONEncoding.default,
             headers: headers
         ).response { response in
             switch response.result {
@@ -263,7 +267,7 @@ final class ScheduleService {
         ]
 
         let parameters: Parameters = [
-            "removedDaet": Self.formatter.string(from: removedDate),
+            "removedDate": Self.formatter.string(from: removedDate),
             "repeatStart": Self.formatter.string(from: repeatStart),
         ]
 
@@ -288,11 +292,15 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
+        let parameters: Parameters = [
+            "repeatEnd": Self.formatter.string(from: repeatEnd),
+        ]
+
         AF.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/back",
             method: .delete,
-            parameters: repeatEnd,
-            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            parameters: parameters,
+            encoding: JSONEncoding.default,
             headers: headers
         ).response { response in
             switch response.result {

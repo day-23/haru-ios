@@ -17,6 +17,9 @@ final class ScheduleFormViewModel: ObservableObject {
     
     @Published var repeatStart: Date
     @Published var repeatEnd: Date
+    var realRepeatStart: Date?
+    var prevRepeatEnd: Date?
+    var nextRepeatStart: Date?
     @Published var realRepeatEnd: Date
     
     // 시작과 끝이 7일 이상인가
@@ -247,7 +250,11 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.repeatStart = schedule.repeatStart
         self.repeatEnd = schedule.repeatEnd
+        self.realRepeatStart = schedule.realRepeatStart != nil ? schedule.realRepeatStart : schedule.repeatStart
         self.realRepeatEnd = schedule.realRepeatEnd != nil ? schedule.realRepeatEnd! : schedule.repeatEnd
+        
+        self.prevRepeatEnd = schedule.prevRepeatEnd
+        self.nextRepeatStart = schedule.nextRepeatStart
         
         self.content = schedule.content
         self.memo = schedule.memo
@@ -354,13 +361,19 @@ final class ScheduleFormViewModel: ObservableObject {
      */
     func createSchedule() -> Request.Schedule {
         // TODO: 연속
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+
+        dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
+        dateComponents.hour = repeatEnd.hour
+        dateComponents.minute = repeatEnd.minute
         
-        Request.Schedule(
+        return Request.Schedule(
             content: content,
             memo: memo,
             isAllDay: isAllDay,
             repeatStart: repeatStart,
-            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
+            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
             repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
             repeatValue: isSelectedRepeat ? repeatValue : nil,
             categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
@@ -460,6 +473,45 @@ final class ScheduleFormViewModel: ObservableObject {
                 self.calendarVM.getRefreshProductivityList()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    /**
+     * 반복 일정 하나만 삭제하기
+     */
+    func deleteTargetSchedule() {
+        // front 호출
+        if repeatStart == realRepeatStart {
+            print(nextRepeatStart)
+            scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId, repeatStart: nextRepeatStart ?? repeatStart) { result in
+                switch result {
+                case .success(let success):
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else if repeatEnd == realRepeatEnd {
+            scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
+                switch result {
+                case .success(let success):
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else {
+            scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId, removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
+                switch result {
+                case .success(let success):
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
             }
         }
     }
