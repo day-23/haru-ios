@@ -709,7 +709,68 @@ final class CalendarViewModel: ObservableObject {
                         print("[Error] endDate의 hour: \(endDate.hour) \(endDate.minute) \(#fileID) \(#function)")
                         continue
                     }
-                    result.append(Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd, prevRepeatEnd: nil, nextRepeatStart: nil))
+                    
+                    // nextRepeatStart와 prevRepeatEnd 찾기
+                    let day = 60 * 60 * 24
+                    var nextRepeatStart: Date = repeatStart.addingTimeInterval(TimeInterval(day))
+                    var prevRepeatEnd: Date = repeatEnd.addingTimeInterval(TimeInterval(-day))
+                    var index = (calendar.component(.weekday, from: repeatStart)) % 7
+                    var revIndex = (calendar.component(.weekday, from: repeatEnd) - 2)
+                    revIndex = revIndex < 0 ? 6 : revIndex
+                    if weekTerm == 1 {
+                        while repeatValue[index] == 0 {
+                            nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
+                            index = (index + 1) % 7
+                        }
+                        
+                        while repeatValue[revIndex] == 0 {
+                            prevRepeatEnd = prevRepeatEnd.addingTimeInterval(TimeInterval(-day))
+                            if revIndex - 1 < 0 {
+                                revIndex = 6
+                            } else {
+                                revIndex = revIndex - 1
+                            }
+                        }
+                    } else if weekTerm == 2 {
+                        if index == 0 {
+                            nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
+                        }
+                        if revIndex == 0 {
+                            prevRepeatEnd = prevRepeatEnd.addingTimeInterval(TimeInterval(-(day * 7)))
+                        }
+
+                        while repeatValue[index] == 0 {
+                            nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
+                            index = (index + 1) % 7
+
+                            if index == 0 {
+                                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
+                            }
+                        }
+                        
+                        while repeatValue[revIndex] == 0 {
+                            prevRepeatEnd = prevRepeatEnd.addingTimeInterval(TimeInterval(-day))
+                            if revIndex - 1 < 0 {
+                                revIndex = 6
+                            } else {
+                                revIndex = revIndex - 1
+                            }
+                            
+                            if revIndex == 0 {
+                                prevRepeatEnd = prevRepeatEnd.addingTimeInterval(TimeInterval(-(day * 7)))
+                            }
+                        }
+                    }
+                    
+                    result.append(
+                        Schedule.createRepeatSchedule(
+                            schedule: schedule,
+                            repeatStart: repeatStart,
+                            repeatEnd: repeatEnd,
+                            prevRepeatEnd: prevRepeatEnd,
+                            nextRepeatStart: nextRepeatStart
+                        )
+                    )
                 }
             }
             if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {

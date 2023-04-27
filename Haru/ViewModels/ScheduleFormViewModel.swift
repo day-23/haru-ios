@@ -483,10 +483,9 @@ final class ScheduleFormViewModel: ObservableObject {
     func deleteTargetSchedule() {
         // front 호출
         if repeatStart == realRepeatStart {
-            print(nextRepeatStart)
             scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
-                case .success(let success):
+                case .success:
                     self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
                     self.calendarVM.getRefreshProductivityList()
                 case .failure(let failure):
@@ -496,7 +495,7 @@ final class ScheduleFormViewModel: ObservableObject {
         } else if repeatEnd == realRepeatEnd {
             scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
-                case .success(let success):
+                case .success:
                     self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
                     self.calendarVM.getRefreshProductivityList()
                 case .failure(let failure):
@@ -506,7 +505,7 @@ final class ScheduleFormViewModel: ObservableObject {
         } else {
             scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId, removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
-                case .success(let success):
+                case .success:
                     self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
                     self.calendarVM.getRefreshProductivityList()
                 case .failure(let failure):
