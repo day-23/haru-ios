@@ -387,7 +387,7 @@ struct TodoAddView: View {
                                             CustomDatePicker(
                                                 selection: $viewModel.repeatEnd,
                                                 displayedComponents: [.date],
-                                                pastCutoffDate: true
+                                                pastCutoffDate: viewModel.endDate
                                             )
                                         }
                                     }

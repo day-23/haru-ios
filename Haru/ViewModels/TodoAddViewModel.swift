@@ -44,6 +44,12 @@ final class TodoAddViewModel: ObservableObject {
             withAnimation {
                 buttonDisabledList = newButtonDisabledList
             }
+
+            if isSelectedRepeatEnd {
+                if repeatEnd.compare(endDate) == .orderedAscending {
+                    repeatEnd = endDate
+                }
+            }
         }
     }
 
@@ -63,6 +69,8 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     //  isAllDay : endDate에 시간을 포함하여 계산해야하는지에 대한 데이터
+    //           : true -> 시간을 포함한다.
+    //           : false -> 시간을 포함하지 않는다.
     @Published var isAllDay: Bool = false
 
     @Published var alarm: Date = .init()
