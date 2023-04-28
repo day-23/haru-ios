@@ -180,4 +180,46 @@ class CalendarHelper {
         guard let date = dateFormatter.date(from: dateString) else { return Date() }
         return date
     }
+
+    class func getDayofWeek(date: Date) -> Int {
+        let calendar = Calendar.current
+        let dayOfWeek = calendar.component(.weekday, from: Date()) - 1
+        return dayOfWeek
+    }
+    
+    class func getClosestIdxDate(idx: Int, curDate: Date) -> Date? {
+        let calendar = Calendar.current
+        var dateComponents = DateComponents()
+        dateComponents.weekday = idx
+
+        let closestDay = calendar.nextDate(after: curDate.addingTimeInterval(TimeInterval(-1)), matching: dateComponents, matchingPolicy: .nextTime)
+
+        return closestDay
+    }
+    
+    // 반복 시작일과 반복 종료일 계산
+    class func fittingStartEndDate(firstDate: Date, repeatStart:Date, lastDate: Date, repeatEnd: Date) -> (Date, Date) {
+        var startDate = firstDate > repeatStart ? firstDate : repeatStart
+        var endDate = lastDate > repeatEnd ? repeatEnd : lastDate
+
+        // 제대로 된 repeatStart와 repeatEnd 만들기
+        let calendar = Calendar.current
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: startDate)
+
+        // Set the hour and minute components
+        dateComponents.hour = repeatStart.hour
+        dateComponents.minute = repeatStart.minute
+
+        startDate = calendar.date(from: dateComponents) ?? Date()
+
+        dateComponents = calendar.dateComponents([.year, .month, .day], from: endDate)
+
+        // Set the hour and minute components
+        dateComponents.hour = repeatEnd.hour
+        dateComponents.minute = repeatEnd.minute
+
+        endDate = calendar.date(from: dateComponents) ?? Date()
+
+        return (startDate, endDate)
+    }
 }

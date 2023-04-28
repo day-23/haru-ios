@@ -15,6 +15,19 @@ final class ScheduleFormViewModel: ObservableObject {
     var scheduleId: String?
     var mode: ScheduleFormMode
     
+    // 초기 값
+    var tmpRepeatStart: Date
+    var tmpRepeatEnd: Date
+    var tmpRepeatOption: String?
+    var tmpRepeatValue: String?
+    var tmpIsSelectedRepeatEnd: Bool
+    var tmpRealRepeatEnd: Date
+    
+    // 수정 시 필요한 추가 정보
+    var realRepeatStart: Date?
+    var prevRepeatEnd: Date?
+    var nextRepeatStart: Date?
+    
     @Published var repeatStart: Date
     @Published var repeatEnd: Date
     @Published var realRepeatEnd: Date
@@ -226,16 +239,132 @@ final class ScheduleFormViewModel: ObservableObject {
 
     // MARK: init
 
-    init(calendarVM: CalendarViewModel, mode: ScheduleFormMode = .add) {
+    // add 시 scheduleVM 생성자
+    init(calendarVM: CalendarViewModel) {
         self.calendarVM = calendarVM
-        let selectionList = calendarVM.selectionSet.sorted(by: <)
         
+        let selectionList = calendarVM.selectionSet.sorted(by: <)
         self.repeatStart = selectionList.first?.date ?? Date()
         self.repeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
-        self.mode = mode
-        print("scheduleVM init")
+        self.mode = .add
+        
+        self.tmpRepeatStart = selectionList.first?.date ?? Date()
+        self.tmpRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+        self.tmpRepeatOption = nil
+        self.tmpRepeatValue = nil
+        self.tmpIsSelectedRepeatEnd = false
+        self.tmpRealRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+    }
+    
+    // 수정 시 scheduleVM 생성자
+    init(calendarVM: CalendarViewModel, schedule: Schedule) {
+        self.calendarVM = calendarVM
+        self.mode = .edit
+        
+        self.scheduleId = schedule.id
+        
+        self.repeatStart = schedule.repeatStart
+        self.repeatEnd = schedule.repeatEnd
+        self.realRepeatStart = schedule.realRepeatStart != nil ? schedule.realRepeatStart : schedule.repeatStart
+        self.realRepeatEnd = schedule.realRepeatEnd != nil ? schedule.realRepeatEnd! : schedule.repeatEnd
+        
+        self.tmpRepeatStart = schedule.repeatStart
+        self.tmpRepeatEnd = schedule.repeatEnd
+        self.tmpRepeatOption = schedule.repeatOption
+        self.tmpRepeatValue = schedule.repeatValue
+        self.tmpIsSelectedRepeatEnd = schedule.repeatOption != nil ? true : false
+        self.tmpRealRepeatEnd = schedule.realRepeatEnd ?? schedule.repeatEnd
+        
+        self.prevRepeatEnd = schedule.prevRepeatEnd
+        self.nextRepeatStart = schedule.nextRepeatStart
+        
+        self.content = schedule.content
+        self.memo = schedule.memo
+        
+        self.isAllDay = schedule.isAllDay
+        
+        if let category = schedule.category {
+            self.selectionCategory = categoryList.firstIndex(where: { other in
+                category.id == other.id
+            })
+        } else {
+            self.selectionCategory = nil
+        }
+        
+        self.isSelectedAlarm = !schedule.alarms.isEmpty
+
+        self.repeatOption = .everyDay
+        if let option = RepeatOption.allCases.first(where: { $0.rawValue == schedule.repeatOption }) {
+            self.repeatOption = option
+        }
+        
+        self.isSelectedRepeat = schedule.repeatOption != nil
+        self.isSelectedRepeatEnd = schedule.realRepeatEnd != nil && schedule.realRepeatEnd!.year < 2200 ? true : false
+        
+        self.repeatDay = isSelectedRepeat &&
+            schedule.repeatOption == RepeatOption.everyDay.rawValue
+            ? (schedule.repeatValue ?? "1") : "1"
+        initRepeatWeek(schedule: schedule)
+        initRepeatMonth(schedule: schedule)
+        initRepeatYear(schedule: schedule)
+    }
+    
+    func initRepeatWeek(schedule: Schedule) {
+        if schedule.repeatOption != RepeatOption.everyWeek.rawValue,
+           schedule.repeatOption != RepeatOption.everySecondWeek.rawValue
+        {
+            return
+        }
+
+        if let scheduleRepeatWeek = schedule.repeatValue {
+            for i in repeatWeek.indices {
+                repeatWeek[i].isClicked = scheduleRepeatWeek[
+                    scheduleRepeatWeek.index(scheduleRepeatWeek.startIndex, offsetBy: i)
+                ] == "0" ? false : true
+            }
+        } else {
+            for i in repeatWeek.indices {
+                repeatWeek[i].isClicked = false
+            }
+        }
+    }
+
+    func initRepeatMonth(schedule: Schedule) {
+        if schedule.repeatOption != RepeatOption.everyMonth.rawValue {
+            return
+        }
+
+        if let scheduleRepeatMonth = schedule.repeatValue {
+            for i in repeatMonth.indices {
+                repeatMonth[i].isClicked = scheduleRepeatMonth[
+                    scheduleRepeatMonth.index(scheduleRepeatMonth.startIndex, offsetBy: i)
+                ] == "0" ? false : true
+            }
+        } else {
+            for i in repeatMonth.indices {
+                repeatMonth[i].isClicked = false
+            }
+        }
+    }
+
+    func initRepeatYear(schedule: Schedule) {
+        if schedule.repeatOption != RepeatOption.everyYear.rawValue {
+            return
+        }
+
+        if let scheduleRepeatYear = schedule.repeatValue {
+            for i in repeatYear.indices {
+                repeatYear[i].isClicked = scheduleRepeatYear[
+                    scheduleRepeatYear.index(scheduleRepeatYear.startIndex, offsetBy: i)
+                ] == "0" ? false : true
+            }
+        } else {
+            for i in repeatYear.indices {
+                repeatYear[i].isClicked = false
+            }
+        }
     }
     
     func toggleDay(repeatOption: RepeatOption, index: Int) {
@@ -255,18 +384,50 @@ final class ScheduleFormViewModel: ObservableObject {
      * Request.Schedule 만들기
      */
     func createSchedule() -> Request.Schedule {
-        // TODO: 연속
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+
+        dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
+        dateComponents.hour = repeatEnd.hour
+        dateComponents.minute = repeatEnd.minute
         
-        Request.Schedule(
+        return Request.Schedule(
             content: content,
             memo: memo,
             isAllDay: isAllDay,
-            repeatStart: repeatStart,
-            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
+            repeatStart: isSelectedRepeat ? (realRepeatStart ?? repeatStart) : repeatStart,
+            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
             repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
             repeatValue: isSelectedRepeat ? repeatValue : nil,
             categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
             alarms: selectedAlarm
+        )
+    }
+    
+    /**
+     * Request.RepeatSchedule 만들기
+     */
+    func createRepeatSchedule(nextRepeatStart: Date? = nil, changedDate: Date? = nil, preRepeatEnd: Date? = nil) -> Request.RepeatSchedule {
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+
+        dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
+        dateComponents.hour = repeatEnd.hour
+        dateComponents.minute = repeatEnd.minute
+        
+        return Request.RepeatSchedule(
+            content: content,
+            memo: memo,
+            isAllDay: isAllDay,
+            repeatStart: repeatStart,
+            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
+            repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
+            repeatValue: isSelectedRepeat ? repeatValue : nil,
+            categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
+            alarms: selectedAlarm,
+            nextRepeatStart: nextRepeatStart,
+            changedDate: changedDate,
+            preRepeatEnd: preRepeatEnd
         )
     }
     
@@ -276,6 +437,7 @@ final class ScheduleFormViewModel: ObservableObject {
         
         repeatStart = schedule.repeatStart
         repeatEnd = schedule.repeatEnd
+        realRepeatEnd = schedule.repeatEnd
         
         content = schedule.content
         memo = schedule.memo
@@ -291,18 +453,6 @@ final class ScheduleFormViewModel: ObservableObject {
         }
         
         isSelectedAlarm = !schedule.alarms.isEmpty
-        
-        schedule.alarms.forEach { alarm in
-            if alarm.time == repeatStart {
-                selectIdxList[0] = true
-            } else if alarm.time == Calendar.current.date(byAdding: .minute, value: -10, to: repeatStart) {
-                selectIdxList[1] = true
-            } else if alarm.time == Calendar.current.date(byAdding: .hour, value: -1, to: repeatStart) {
-                selectIdxList[2] = true
-            } else if alarm.time == Calendar.current.date(byAdding: .day, value: -1, to: repeatStart) {
-                selectIdxList[3] = true
-            }
-        }
     }
     
     /**
@@ -363,6 +513,46 @@ final class ScheduleFormViewModel: ObservableObject {
     }
     
     /**
+     * 반복 일정 하나만 편집하기
+     */
+    func updateTargetSchedule() {
+        if tmpRepeatStart == realRepeatStart {
+            let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
+            scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else if tmpRepeatEnd == realRepeatEnd {
+            let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
+            scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else {
+            let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: repeatStart)
+            scheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        }
+    }
+    
+    /**
      * 일정 삭제하기
      */
     func deleteSchedule() {
@@ -373,6 +563,44 @@ final class ScheduleFormViewModel: ObservableObject {
                 self.calendarVM.getRefreshProductivityList()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    /**
+     * 반복 일정 하나만 삭제하기
+     */
+    func deleteTargetSchedule() {
+        // front 호출
+        if tmpRepeatStart == realRepeatStart {
+            scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId, repeatStart: nextRepeatStart ?? repeatStart) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else if tmpRepeatEnd == realRepeatEnd {
+            scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else {
+            scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId, removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
+                switch result {
+                case .success:
+                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                    self.calendarVM.getRefreshProductivityList()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
             }
         }
     }
