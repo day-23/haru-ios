@@ -395,7 +395,7 @@ final class ScheduleFormViewModel: ObservableObject {
             content: content,
             memo: memo,
             isAllDay: isAllDay,
-            repeatStart: realRepeatStart ?? repeatStart,
+            repeatStart: isSelectedRepeat ? (realRepeatStart ?? repeatStart) : repeatStart,
             repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
             repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
             repeatValue: isSelectedRepeat ? repeatValue : nil,

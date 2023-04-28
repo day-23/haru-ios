@@ -349,7 +349,7 @@ struct ScheduleFormView: View {
                                 isSchModalVisible = false // dismiss
                             case .edit:
                                 showDeleteActionSheet = true
-                                actionSheetOption = scheduleFormVM.isSelectedRepeat ? .isRepeat : .isNotRepeat
+                                actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
                             }
                         } label: {
                             HStack {
@@ -403,7 +403,7 @@ struct ScheduleFormView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showEditActionSheet = true
-                        actionSheetOption = scheduleFormVM.isSelectedRepeat ? .isRepeat : .isNotRepeat
+                        actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
                     } label: {
                         Image("confirm")
                             .colorMultiply(.mainBlack)
