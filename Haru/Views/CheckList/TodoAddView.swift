@@ -337,7 +337,11 @@ struct TodoAddView: View {
                             if viewModel.repeatOption == .everyYear {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
                                     ForEach(viewModel.repeatYear.indices, id: \.self) { index in
-                                        DayButton(content: viewModel.repeatYear[index].content, isClicked: viewModel.repeatYear[index].isClicked) {
+                                        DayButton(
+                                            content: viewModel.repeatYear[index].content,
+                                            isClicked: viewModel.repeatYear[index].isClicked,
+                                            disabled: viewModel.buttonDisabledList[index]
+                                        ) {
                                             viewModel.toggleDay(repeatOption: .everyYear, index: index)
                                         }
                                     }
@@ -346,7 +350,10 @@ struct TodoAddView: View {
                             } else if viewModel.repeatOption == .everyMonth {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
                                     ForEach(viewModel.repeatMonth.indices, id: \.self) { index in
-                                        DayButton(content: viewModel.repeatMonth[index].content, isClicked: viewModel.repeatMonth[index].isClicked) {
+                                        DayButton(
+                                            content: viewModel.repeatMonth[index].content,
+                                            isClicked: viewModel.repeatMonth[index].isClicked
+                                        ) {
                                             viewModel.toggleDay(repeatOption: .everyMonth, index: index)
                                         }
                                     }
@@ -357,7 +364,10 @@ struct TodoAddView: View {
                             {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                                     ForEach(viewModel.repeatWeek.indices, id: \.self) { index in
-                                        DayButton(content: viewModel.repeatWeek[index].content, isClicked: viewModel.repeatWeek[index].isClicked) {
+                                        DayButton(
+                                            content: viewModel.repeatWeek[index].content,
+                                            isClicked: viewModel.repeatWeek[index].isClicked
+                                        ) {
                                             viewModel.toggleDay(repeatOption: .everyWeek, index: index)
                                         }
                                     }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 final class TodoAddViewModel: ObservableObject {
     // MARK: - Properties
@@ -25,11 +26,33 @@ final class TodoAddViewModel: ObservableObject {
 
     @Published var isTodayTodo: Bool = false
 
-    @Published var endDate: Date = .init()
+    @Published var endDate: Date = .init() {
+        didSet {
+            let day = endDate.day
+
+            var newButtonDisabledList = Array(repeating: false, count: 12)
+            if day == 30 {
+                newButtonDisabledList[1] = true
+            } else if day == 31 {
+                newButtonDisabledList[1] = true
+                newButtonDisabledList[3] = true
+                newButtonDisabledList[5] = true
+                newButtonDisabledList[8] = true
+                newButtonDisabledList[10] = true
+            }
+
+            withAnimation {
+                buttonDisabledList = newButtonDisabledList
+            }
+        }
+    }
+
     var selectedEndDate: Date? {
         if isSelectedEndDate { return endDate }
         return nil
     }
+
+    @Published var buttonDisabledList: [Bool] = Array(repeating: false, count: 12)
 
     @Published var isSelectedEndDate: Bool = false {
         didSet {
