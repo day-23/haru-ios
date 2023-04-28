@@ -282,7 +282,7 @@ struct TodoView: View {
                         }
                     }
                 } label: {
-                    Label("선택된 할 일만 삭제하기", systemImage: "trash")
+                    Label("이 이벤트만 삭제", systemImage: "trash")
                 }
 
                 Button {
@@ -290,7 +290,7 @@ struct TodoView: View {
                         checkListViewModel.fetchTodoList()
                     }
                 } label: {
-                    Label("할 일 삭제하기", systemImage: "trash")
+                    Label("모든 이벤트 삭제", systemImage: "trash")
                 }
             }
         }

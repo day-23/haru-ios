@@ -474,8 +474,8 @@ struct TodoAddView: View {
                                 .renderingMode(.template)
                                 .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
                         }
-                        .confirmationDialog("반복하는 할 일 수정", isPresented: $updateButtonTapped) {
-                            Button("선택된 할 일만 수정하기") {
+                        .confirmationDialog("반복하는 할 일 편집", isPresented: $updateButtonTapped) {
+                            Button("이 이벤트만 편집") {
                                 //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
                                 viewModel.updateTodoWithRepeat(
                                     at: .front
@@ -488,7 +488,7 @@ struct TodoAddView: View {
                                     }
                                 }
                             }
-                            Button("할 일 수정하기") {
+                            Button("모든 이벤트 편집") {
                                 viewModel.updateTodo { result in
                                     switch result {
                                     case .success:
@@ -530,7 +530,7 @@ struct TodoAddView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 20)
                 .confirmationDialog("반복되는 할 일 삭제", isPresented: $deleteButtonTapped) {
-                    Button("선택된 할 일만 삭제하기") {
+                    Button("이 이벤트만 삭제") {
                         //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
                         viewModel.deleteTodoWithRepeat(
                             at: .front
@@ -543,7 +543,7 @@ struct TodoAddView: View {
                             }
                         }
                     }
-                    Button("할 일 삭제하기", role: .destructive) {
+                    Button("모든 이벤트 삭제", role: .destructive) {
                         viewModel.deleteTodo { result in
                             switch result {
                             case .success:
