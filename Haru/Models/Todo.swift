@@ -156,8 +156,36 @@ extension Todo {
             let pattern = repeatValue.map { $0 == "1" ? true : false }
 
             //  pattern 인덱스가 0~11인데, 아래의 반환값은 1~12이므로 다음 달을 가르키게 됨
+            let day = endDate.day
             var index = calendar.component(.month, from: endDate) % 12
-            if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
+            if var next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
+                while day != next.day {
+                    guard let range = calendar.range(of: .day, in: .month, for: next) else {
+                        throw RepeatError.calculation
+                    }
+
+                    let upperBound = range.upperBound
+                    if day <= upperBound {
+                        let components = DateComponents(
+                            year: next.year,
+                            month: next.month,
+                            day: day,
+                            hour: endDate.hour,
+                            minute: endDate.minute
+                        )
+
+                        guard let altNext = Calendar.current.date(from: components) else {
+                            throw RepeatError.calculation
+                        }
+                        next = altNext
+                    } else {
+                        guard let altNext = calendar.date(byAdding: .month, value: 1, to: next) else {
+                            throw RepeatError.calculation
+                        }
+                        next = altNext
+                    }
+                }
+
                 nextEndDate = next
             } else {
                 throw RepeatError.calculation
@@ -165,8 +193,36 @@ extension Todo {
             let startIndex = index
 
             while !pattern[index] {
-                if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
+                if var next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
                     index = (index + 1) % 12
+
+                    while day != next.day {
+                        guard let range = calendar.range(of: .day, in: .month, for: next) else {
+                            throw RepeatError.calculation
+                        }
+
+                        let upperBound = range.upperBound
+                        if day <= upperBound {
+                            let components = DateComponents(
+                                year: next.year,
+                                month: next.month,
+                                day: day,
+                                hour: endDate.hour,
+                                minute: endDate.minute
+                            )
+
+                            guard let altNext = Calendar.current.date(from: components) else {
+                                throw RepeatError.calculation
+                            }
+                            next = altNext
+                        } else {
+                            guard let altNext = calendar.date(byAdding: .month, value: 1, to: next) else {
+                                throw RepeatError.calculation
+                            }
+                            next = altNext
+                        }
+                    }
+
                     nextEndDate = next
                 } else {
                     throw RepeatError.calculation
@@ -315,24 +371,51 @@ extension Todo {
 
             //  pattern 인덱스가 0~11인데, 아래의 반환값은 1~12이므로 다음 달을 가르키게 됨
             //  따라서, 이전 달을 가르키기 위해 -2를 더한다.
+            let day = endDate.day
             var index = calendar.component(.month, from: endDate) - 2
             if index < 0 {
                 index = 11
             }
-            if let next = calendar.date(byAdding: .month, value: -1, to: prevEndDate) {
-                prevEndDate = next
+            if var prev = calendar.date(byAdding: .month, value: -1, to: prevEndDate) {
+                while day != prev.day {
+                    guard let range = calendar.range(of: .day, in: .month, for: prev) else {
+                        throw RepeatError.calculation
+                    }
+
+                    let upperBound = range.upperBound
+                    if day <= upperBound {
+                        let components = DateComponents(
+                            year: prev.year,
+                            month: prev.month,
+                            day: day,
+                            hour: endDate.hour,
+                            minute: endDate.minute
+                        )
+
+                        guard let altPrev = Calendar.current.date(from: components) else {
+                            throw RepeatError.calculation
+                        }
+                        prev = altPrev
+                    } else {
+                        guard let altPrev = calendar.date(byAdding: .month, value: -1, to: prev) else {
+                            throw RepeatError.calculation
+                        }
+                        prev = altPrev
+                    }
+                }
+                prevEndDate = prev
             } else {
                 throw RepeatError.calculation
             }
             let startIndex = index
 
             while !pattern[index] {
-                if let next = calendar.date(byAdding: .month, value: -1, to: prevEndDate) {
+                if let prev = calendar.date(byAdding: .month, value: -1, to: prevEndDate) {
                     index -= 1
                     if index < 0 {
                         index = 11
                     }
-                    prevEndDate = next
+                    prevEndDate = prev
                 } else {
                     throw RepeatError.calculation
                 }
