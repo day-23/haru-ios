@@ -17,6 +17,8 @@ final class ScheduleFormViewModel: ObservableObject {
     
     @Published var repeatStart: Date
     @Published var repeatEnd: Date
+    var tmpRepeatStart: Date
+    var tmpRepeatEnd: Date
     var realRepeatStart: Date?
     var prevRepeatEnd: Date?
     var nextRepeatStart: Date?
@@ -239,6 +241,9 @@ final class ScheduleFormViewModel: ObservableObject {
         self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
         self.mode = .add
+        
+        self.tmpRepeatStart = selectionList.first?.date ?? Date()
+        self.tmpRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
     }
     
     // 수정 시 scheduleVM 생성자
@@ -252,6 +257,9 @@ final class ScheduleFormViewModel: ObservableObject {
         self.repeatEnd = schedule.repeatEnd
         self.realRepeatStart = schedule.realRepeatStart != nil ? schedule.realRepeatStart : schedule.repeatStart
         self.realRepeatEnd = schedule.realRepeatEnd != nil ? schedule.realRepeatEnd! : schedule.repeatEnd
+        
+        self.tmpRepeatStart = schedule.repeatStart
+        self.tmpRepeatEnd = schedule.repeatEnd
         
         self.prevRepeatEnd = schedule.prevRepeatEnd
         self.nextRepeatStart = schedule.nextRepeatStart
@@ -371,7 +379,7 @@ final class ScheduleFormViewModel: ObservableObject {
             content: content,
             memo: memo,
             isAllDay: isAllDay,
-            repeatStart: repeatStart,
+            repeatStart: realRepeatStart ?? repeatStart,
             repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
             repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
             repeatValue: isSelectedRepeat ? repeatValue : nil,
@@ -492,7 +500,7 @@ final class ScheduleFormViewModel: ObservableObject {
      * 반복 일정 하나만 편집하기
      */
     func updateTargetSchedule() {
-        if repeatStart == realRepeatStart {
+        if tmpRepeatStart == realRepeatStart {
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
             scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -503,7 +511,7 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if repeatEnd == realRepeatEnd {
+        } else if tmpRepeatEnd == realRepeatEnd {
             let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
             scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -548,7 +556,7 @@ final class ScheduleFormViewModel: ObservableObject {
      */
     func deleteTargetSchedule() {
         // front 호출
-        if repeatStart == realRepeatStart {
+        if tmpRepeatStart == realRepeatStart {
             scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
@@ -558,7 +566,7 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if repeatEnd == realRepeatEnd {
+        } else if tmpRepeatEnd == realRepeatEnd {
             scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
                 case .success:

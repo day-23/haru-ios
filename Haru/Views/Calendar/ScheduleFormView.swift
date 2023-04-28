@@ -21,7 +21,8 @@ struct ScheduleFormView: View {
     
     var selectedIndex: Int
     
-    @State var showActionSheet: Bool = false
+    @State var showDeleteActionSheet: Bool = false
+    @State var showEditActionSheet: Bool = false
     @State var actionSheetOption: ActionSheetOption = .isNotRepeat
         
     enum ActionSheetOption {
@@ -347,10 +348,8 @@ struct ScheduleFormView: View {
                             case .add:
                                 isSchModalVisible = false // dismiss
                             case .edit:
-                                showActionSheet = true
+                                showDeleteActionSheet = true
                                 actionSheetOption = scheduleFormVM.isSelectedRepeat ? .isRepeat : .isNotRepeat
-//                                scheduleFormVM.deleteSchedule()
-//                                dismissAction.callAsFunction()
                             }
                         } label: {
                             HStack {
@@ -362,7 +361,7 @@ struct ScheduleFormView: View {
                                     .frame(width: 28, height: 28)
                             }
                             .foregroundColor(.red)
-                        }.actionSheet(isPresented: $showActionSheet, content: getDeleteActionSheet)
+                        }.actionSheet(isPresented: $showDeleteActionSheet, content: getDeleteActionSheet)
                         
                         Spacer()
                         Button {
@@ -403,12 +402,14 @@ struct ScheduleFormView: View {
             if !isSchModalVisible {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        print("hi")
+                        showEditActionSheet = true
+                        actionSheetOption = scheduleFormVM.isSelectedRepeat ? .isRepeat : .isNotRepeat
                     } label: {
                         Image("confirm")
                             .colorMultiply(.mainBlack)
                             .frame(width: 28, height: 28)
                     }
+                    .actionSheet(isPresented: $showEditActionSheet, content: getEditActionSheet)
                 }
             }
         }
@@ -446,14 +447,14 @@ struct ScheduleFormView: View {
     func getEditActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 편집하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 편집하시겠습니까?")
         let deleteButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "이 이벤트만 편집" : "이 이벤트 편집")) {
-            scheduleFormVM.deleteTargetSchedule()
+            scheduleFormVM.updateTargetSchedule()
         }
         let deleteAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 편집")) {
             scheduleFormVM.updateSchedule()
             dismissAction.callAsFunction()
         }
         let cancleButton: ActionSheet.Button = .cancel()
-            
+
         switch actionSheetOption {
         case .isRepeat:
             return ActionSheet(title: title,
