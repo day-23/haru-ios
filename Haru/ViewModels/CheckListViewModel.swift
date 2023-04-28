@@ -229,6 +229,28 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
+    func updateTodoWithRepeat(
+        todoId: String,
+        todo: Request.Todo,
+        date: Date,
+        at: TodoService.RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.updateTodoWithRepeat(
+            todoId: todoId,
+            todo: todo,
+            date: date,
+            at: at
+        ) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     func updateFlag(
         todo: Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -419,6 +441,29 @@ final class CheckListViewModel: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.deleteTodo(todoId: todoId) { result in
+            switch result {
+            case let .success(success):
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                    self.fetchTodoList()
+                    completion(.success(success))
+                }
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deleteTodoWithRepeat(
+        todoId: String,
+        date: Date,
+        at: TodoService.RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.deleteTodoWithRepeat(
+            todoId: todoId,
+            date: date,
+            at: at
+        ) { result in
             switch result {
             case let .success(success):
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {

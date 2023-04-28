@@ -10,7 +10,7 @@ import SwiftUI
 struct CustomDatePicker: View {
     @Binding var selection: Date
     var displayedComponents: [DatePicker.Components]
-    var pastCutoffDate: Bool
+    var pastCutoffDate: Date?
 
     @State private var isDateClicked: Bool = false
     @State private var isTimeClicked: Bool = false
@@ -18,7 +18,7 @@ struct CustomDatePicker: View {
     init(
         selection: Binding<Date>,
         displayedComponents: [DatePicker.Components] = [.date, .hourAndMinute],
-        pastCutoffDate: Bool = false
+        pastCutoffDate: Date? = nil
     ) {
         _selection = selection
         self.displayedComponents = displayedComponents
@@ -53,11 +53,11 @@ struct CustomDatePicker: View {
                         }
                     }
                     .popover(isPresented: $isDateClicked, arrowDirection: .unknown) {
-                        if pastCutoffDate {
+                        if let pastCutoffDate {
                             DatePicker(
                                 "",
                                 selection: $selection,
-                                in: selection...,
+                                in: pastCutoffDate...,
                                 displayedComponents: .date
                             )
                             .datePickerStyle(.wheel)

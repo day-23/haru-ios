@@ -13,6 +13,8 @@ struct TodoAddView: View {
     @Binding var isModalVisible: Bool
     @FocusState private var tagInFocus: Bool
     @State private var isClicked = false
+    @State private var deleteButtonTapped = false
+    @State private var updateButtonTapped = false
 
     init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
         self.viewModel = viewModel
@@ -51,6 +53,7 @@ struct TodoAddView: View {
                                     .renderingMode(.template)
                                     .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
                             }
+                            .disabled(viewModel.isFieldEmpty)
                         }
                         .padding(.horizontal, 33)
                         .padding(.bottom, 27)
@@ -335,7 +338,11 @@ struct TodoAddView: View {
                             if viewModel.repeatOption == .everyYear {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
                                     ForEach(viewModel.repeatYear.indices, id: \.self) { index in
-                                        DayButton(content: viewModel.repeatYear[index].content, isClicked: viewModel.repeatYear[index].isClicked) {
+                                        DayButton(
+                                            content: viewModel.repeatYear[index].content,
+                                            isClicked: viewModel.repeatYear[index].isClicked,
+                                            disabled: viewModel.buttonDisabledList[index]
+                                        ) {
                                             viewModel.toggleDay(repeatOption: .everyYear, index: index)
                                         }
                                     }
@@ -344,7 +351,10 @@ struct TodoAddView: View {
                             } else if viewModel.repeatOption == .everyMonth {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
                                     ForEach(viewModel.repeatMonth.indices, id: \.self) { index in
-                                        DayButton(content: viewModel.repeatMonth[index].content, isClicked: viewModel.repeatMonth[index].isClicked) {
+                                        DayButton(
+                                            content: viewModel.repeatMonth[index].content,
+                                            isClicked: viewModel.repeatMonth[index].isClicked
+                                        ) {
                                             viewModel.toggleDay(repeatOption: .everyMonth, index: index)
                                         }
                                     }
@@ -355,7 +365,10 @@ struct TodoAddView: View {
                             {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                                     ForEach(viewModel.repeatWeek.indices, id: \.self) { index in
-                                        DayButton(content: viewModel.repeatWeek[index].content, isClicked: viewModel.repeatWeek[index].isClicked) {
+                                        DayButton(
+                                            content: viewModel.repeatWeek[index].content,
+                                            isClicked: viewModel.repeatWeek[index].isClicked
+                                        ) {
                                             viewModel.toggleDay(repeatOption: .everyWeek, index: index)
                                         }
                                     }
@@ -375,7 +388,7 @@ struct TodoAddView: View {
                                             CustomDatePicker(
                                                 selection: $viewModel.repeatEnd,
                                                 displayedComponents: [.date],
-                                                pastCutoffDate: true
+                                                pastCutoffDate: viewModel.endDate
                                             )
                                         }
                                     }
@@ -452,13 +465,17 @@ struct TodoAddView: View {
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
+                        //  TODO: update dialog 띄워서 묻기
                         Button {
+                            if viewModel.isSelectedRepeat {
+                                updateButtonTapped = true
+                                return
+                            }
+                            
                             viewModel.updateTodo { result in
                                 switch result {
                                 case .success:
-                                    withAnimation {
-                                        dismissAction.callAsFunction()
-                                    }
+                                    dismissAction.callAsFunction()
                                 case let .failure(failure):
                                     print("[Debug] \(failure) (\(#fileID), \(#function))")
                                 }
@@ -468,12 +485,43 @@ struct TodoAddView: View {
                                 .renderingMode(.template)
                                 .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
                         }
+                        .disabled(viewModel.isFieldEmpty)
+                        .confirmationDialog("반복하는 할 일 편집", isPresented: $updateButtonTapped) {
+                            Button("이 이벤트만 편집") {
+                                //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
+                                viewModel.updateTodoWithRepeat(
+                                    at: .front
+                                ) { result in
+                                    switch result {
+                                    case .success:
+                                        dismissAction.callAsFunction()
+                                    case let .failure(failure):
+                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    }
+                                }
+                            }
+                            Button("모든 이벤트 편집") {
+                                viewModel.updateTodo { result in
+                                    switch result {
+                                    case .success:
+                                        dismissAction.callAsFunction()
+                                    case let .failure(failure):
+                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
             
             if !isModalVisible {
                 Button {
+                    if viewModel.isSelectedRepeat {
+                        deleteButtonTapped = true
+                        return
+                    }
+                    
                     viewModel.deleteTodo { result in
                         switch result {
                         case .success:
@@ -493,6 +541,31 @@ struct TodoAddView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 20)
+                .confirmationDialog("반복되는 할 일 삭제", isPresented: $deleteButtonTapped) {
+                    Button("이 이벤트만 삭제") {
+                        //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
+                        viewModel.deleteTodoWithRepeat(
+                            at: .front
+                        ) { result in
+                            switch result {
+                            case .success:
+                                dismissAction.callAsFunction()
+                            case let .failure(failure):
+                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
+                    }
+                    Button("모든 이벤트 삭제", role: .destructive) {
+                        viewModel.deleteTodo { result in
+                            switch result {
+                            case .success:
+                                dismissAction.callAsFunction()
+                            case let .failure(failure):
+                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
+                    }
+                }
             }
         }
     }
