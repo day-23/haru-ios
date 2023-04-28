@@ -422,10 +422,10 @@ struct ScheduleFormView: View {
     
     func getDeleteActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 삭제하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 삭제하시겠습니까?")
-        let deleteButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "이 이벤트만 삭제" : "이 이벤트 삭제")) {
+        let deleteButton: ActionSheet.Button = .destructive(Text("이 이벤트만 삭제")) {
             scheduleFormVM.deleteTargetSchedule()
         }
-        let deleteAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 삭제")) {
+        let deleteAllButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "모든 이벤트 삭제" : "이 이벤트 삭제")) {
             scheduleFormVM.deleteSchedule()
             dismissAction.callAsFunction()
         }
@@ -440,16 +440,17 @@ struct ScheduleFormView: View {
         case .isNotRepeat:
             return ActionSheet(title: title,
                                message: nil,
-                               buttons: [deleteButton, cancleButton])
+                               buttons: [deleteAllButton, cancleButton])
         }
     }
     
     func getEditActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 편집하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 편집하시겠습니까?")
-        let deleteButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "이 이벤트만 편집" : "이 이벤트 편집")) {
+        let editButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "이 이벤트만 편집" : "이 이벤트 편집")) {
+            scheduleFormVM.isSelectedRepeat = false
             scheduleFormVM.updateTargetSchedule()
         }
-        let deleteAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 편집")) {
+        let editAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 편집")) {
             scheduleFormVM.updateSchedule()
             dismissAction.callAsFunction()
         }
@@ -457,14 +458,23 @@ struct ScheduleFormView: View {
 
         switch actionSheetOption {
         case .isRepeat:
-            return ActionSheet(title: title,
-                               message: nil,
-                               buttons: [deleteButton, deleteAllButton, cancleButton])
-
+            if scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue ||
+                scheduleFormVM.tmpIsSelectedRepeatEnd != scheduleFormVM.isSelectedRepeat ||
+                scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd
+            {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [editAllButton, cancleButton])
+            } else {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [editButton, editAllButton, cancleButton])
+            }
+            
         case .isNotRepeat:
             return ActionSheet(title: title,
                                message: nil,
-                               buttons: [deleteButton, cancleButton])
+                               buttons: [editButton, cancleButton])
         }
     }
 }

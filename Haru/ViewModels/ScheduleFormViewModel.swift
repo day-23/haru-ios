@@ -15,13 +15,21 @@ final class ScheduleFormViewModel: ObservableObject {
     var scheduleId: String?
     var mode: ScheduleFormMode
     
-    @Published var repeatStart: Date
-    @Published var repeatEnd: Date
+    // 초기 값
     var tmpRepeatStart: Date
     var tmpRepeatEnd: Date
+    var tmpRepeatOption: String?
+    var tmpRepeatValue: String?
+    var tmpIsSelectedRepeatEnd: Bool
+    var tmpRealRepeatEnd: Date
+    
+    // 수정 시 필요한 추가 정보
     var realRepeatStart: Date?
     var prevRepeatEnd: Date?
     var nextRepeatStart: Date?
+    
+    @Published var repeatStart: Date
+    @Published var repeatEnd: Date
     @Published var realRepeatEnd: Date
     
     // 시작과 끝이 7일 이상인가
@@ -231,7 +239,7 @@ final class ScheduleFormViewModel: ObservableObject {
 
     // MARK: init
 
-    // 추가 시 scheduleVM 생성자
+    // add 시 scheduleVM 생성자
     init(calendarVM: CalendarViewModel) {
         self.calendarVM = calendarVM
         
@@ -244,6 +252,10 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.tmpRepeatStart = selectionList.first?.date ?? Date()
         self.tmpRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+        self.tmpRepeatOption = nil
+        self.tmpRepeatValue = nil
+        self.tmpIsSelectedRepeatEnd = false
+        self.tmpRealRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
     }
     
     // 수정 시 scheduleVM 생성자
@@ -260,6 +272,10 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.tmpRepeatStart = schedule.repeatStart
         self.tmpRepeatEnd = schedule.repeatEnd
+        self.tmpRepeatOption = schedule.repeatOption
+        self.tmpRepeatValue = schedule.repeatValue
+        self.tmpIsSelectedRepeatEnd = schedule.repeatOption != nil ? true : false
+        self.tmpRealRepeatEnd = schedule.realRepeatEnd ?? schedule.repeatEnd
         
         self.prevRepeatEnd = schedule.prevRepeatEnd
         self.nextRepeatStart = schedule.nextRepeatStart
