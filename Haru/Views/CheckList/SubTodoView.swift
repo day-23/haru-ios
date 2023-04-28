@@ -27,7 +27,7 @@ struct SubTodoView: View {
                         }
                     }
                 }
-                .padding(.trailing, 14)
+                .padding(.trailing, 8)
 
             Text(subTodo.content)
                 .strikethrough(subTodo.completed)
@@ -36,7 +36,7 @@ struct SubTodoView: View {
 
             Spacer()
         }
-        .frame(maxWidth: .infinity, minHeight: 36)
+        .frame(maxWidth: .infinity)
         .padding(.leading, 70)
         .padding(.trailing, 20)
         .background(backgroundColor)

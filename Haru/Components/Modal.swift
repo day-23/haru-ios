@@ -26,16 +26,16 @@ struct Modal<Content>: View where Content: View {
                     VStack {
                         RoundedRectangle(cornerRadius: 40)
                             .frame(width: 82, height: 6)
-                            .padding()
+                            .padding([.top, .horizontal])
                             .foregroundColor(Color(0x33333F))
                         content()
                             .padding(.bottom)
                             .padding(.bottom, 17)
                         Spacer()
                     }
-                    .frame(maxWidth: .infinity, minHeight: proxy1.size.height * ratio + 40, maxHeight: proxy1.size.height * ratio + 40)
+                    .frame(maxWidth: .infinity, minHeight: proxy1.size.height * ratio + 40, maxHeight: proxy1.size.height * ratio + (40 * 2))
                     .background(Color.white)
-                    .cornerRadius(20)
+                    .cornerRadius(40)
                     .shadow(radius: 10)
                     .position(x: proxy1.size.width * 0.5, y: proxy1.size.height * (1 - ratio) + modalOffset.height + (proxy1.size.height * ratio) * 0.5)
                     .gesture(

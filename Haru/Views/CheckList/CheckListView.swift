@@ -6,31 +6,39 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct CheckListView: View {
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
     @State private var isModalVisible: Bool = false
+    @State private var isTagManageModalVisible: Bool = false
     @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
-    @State private var minOffset: CGFloat?
-    @State private var maxOffset: CGFloat?
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            VStack {
-                //  태그 리스트
-                TagListView(viewModel: viewModel) { tag in
-                    withAnimation {
-                        viewModel.selectedTag = tag
-                        prevOffset = nil
-                        minOffset = nil
-                        maxOffset = nil
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    //  태그 리스트
+                    TagListView(viewModel: viewModel) { tag in
+                        withAnimation {
+                            viewModel.selectedTag = tag
+                            prevOffset = nil
+                        }
                     }
+
+                    //  태그 설정창
+                    Image("option-button")
+                        .frame(width: 28, height: 28)
+                        .onTapGesture {
+                            withAnimation {
+                                isTagManageModalVisible = true
+                            }
+                        }
                 }
                 .padding(.bottom, 10)
+                .padding(.trailing, 20)
 
                 //  오늘 나의 하루
                 NavigationLink {
@@ -41,11 +49,12 @@ struct CheckListView: View {
                 } label: {
                     HaruLinkView()
                 }
+                .padding(.bottom, 12)
 
                 //  체크 리스트
                 if !viewModel.isEmpty {
                     if viewModel.selectedTag == nil {
-                        ListView {
+                        ListView(checkListViewModel: viewModel) {
                             ListSectionView(
                                 checkListViewModel: viewModel,
                                 todoAddViewModel: addViewModel,
@@ -53,13 +62,8 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                HStack(spacing: 0) {
-                                    StarButton(isClicked: true)
-                                    Text(DefaultTag.important.rawValue)
-                                        .font(.pretendard(size: 14, weight: .bold))
-                                        .padding(.leading, 6)
-                                }
-                                .padding(.leading, 29)
+                                TagView(tag: Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
+                                    .padding(.leading, 21)
                             }
 
                             Divider()
@@ -106,7 +110,7 @@ struct CheckListView: View {
                     } else {
                         if let tag = viewModel.selectedTag {
                             if tag.id == DefaultTag.completed.rawValue {
-                                ListView {
+                                ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
@@ -114,19 +118,15 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderFlag()
                                     } header: {
-                                        HStack(spacing: 0) {
-                                            StarButton(isClicked: true)
-                                            Text(DefaultTag.completed.rawValue)
-                                                .font(.pretendard(size: 14, weight: .bold))
-                                                .padding(.leading, 6)
-                                        }
-                                        .padding(.leading, 29)
+                                        TagView(tag: tag,
+                                                isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue)
+                                            .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.unclassified.rawValue {
-                                ListView {
+                                ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
@@ -143,7 +143,7 @@ struct CheckListView: View {
                                 }
                             } else if tag.id == DefaultTag.completed.rawValue {
                                 //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
-                                ListView {
+                                ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
@@ -160,7 +160,7 @@ struct CheckListView: View {
                                 }
                             } else {
                                 //  Tag 클릭시
-                                ListView {
+                                ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
@@ -205,82 +205,94 @@ struct CheckListView: View {
                 }
                 .transition(.modal)
                 .zIndex(2)
-            } else {
-                if viewIsShown {
-                    HStack(alignment: .bottom, spacing: 0) {
-                        TextField("", text: $addViewModel.content)
-                            .placeholder(when: addViewModel.content.isEmpty) {
-                                Text("간편 추가")
-                                    .foregroundColor(Color(0x646464))
-                            }
-                            .font(.pretendard(size: 14, weight: .medium))
-                            .foregroundColor(Color(0x646464))
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 12)
-                            .background(Color(0xf1f1f5))
-                            .cornerRadius(8)
-                            .padding(.trailing, 18)
-                            .onSubmit {
-                                addViewModel.addSimpleTodo()
-                            }
-
-                        Button {
-                            withAnimation {
-                                isModalVisible = true
-                                addViewModel.mode = .add
-                            }
-                        } label: {
-                            Image("add-button")
-                                .shadow(radius: 10, x: 5, y: 0)
+            } else if isTagManageModalVisible {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            isTagManageModalVisible = false
                         }
                     }
-                    .zIndex(5)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 10)
+
+                TagOptionView(
+                    checkListViewModel: viewModel,
+                    isActive: $isTagManageModalVisible
+                )
+                .position(
+                    x: UIScreen.main.bounds.width - UIScreen.main.bounds.width * 0.915 + (UIScreen.main.bounds.width * 0.915 * 0.5),
+                    y: UIScreen.main.bounds.height * 0.4
+                )
+                .zIndex(2)
+                .transition(
+                    .asymmetric(insertion: .push(from: .trailing), removal: .push(from: .leading))
+                )
+
+            } else if viewIsShown {
+                HStack(alignment: .bottom, spacing: 0) {
+                    TextField("", text: $addViewModel.content)
+                        .placeholder(when: addViewModel.content.isEmpty) {
+                            Text("간편 추가")
+                                .foregroundColor(Color(0x646464))
+                        }
+                        .font(.pretendard(size: 14, weight: .medium))
+                        .foregroundColor(Color(0x646464))
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 12)
+                        .background(Color(0xf1f1f5))
+                        .cornerRadius(8)
+                        .padding(.trailing, 18)
+                        .onSubmit {
+                            addViewModel.addSimpleTodo()
+                        }
+
+                    Button {
+                        withAnimation {
+                            isModalVisible = true
+                            addViewModel.mode = .add
+                        }
+                    } label: {
+                        Image("add-button")
+                            .shadow(radius: 10, x: 5, y: 0)
+                    }
                 }
+                .zIndex(5)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
             }
         }
         .onAppear {
             isModalVisible = false
+            isTagManageModalVisible = false
             viewModel.selectedTag = nil
             viewModel.fetchTodoList()
             viewModel.fetchTags()
         }
     }
 
-    func changeOffset(_ value: CGFloat?) {
-        if self.prevOffset == nil || self.prevOffset == 0 {
+    func changeOffset(_ value: CGPoint?) {
+        if self.prevOffset == nil {
             self.viewIsShown = true
-            self.prevOffset = value
-            self.minOffset = value
-            self.maxOffset = value
+            self.prevOffset = value?.y
             return
         }
-        self.offset = value
+        self.offset = value?.y
 
-        guard let prevOffset = self.prevOffset,
-              let offset = self.offset,
-              let minOffset = self.minOffset,
-              let maxOffset = self.maxOffset
+        guard let prevOffset,
+              let offset
         else {
             return
         }
 
         withAnimation(.easeInOut(duration: 0.25)) {
-//            if maxOffset - offset < UIScreen.main.bounds.height {
-//                self.viewIsShown = true
-//            } else if offset < minOffset + 200 {
-//                self.viewIsShown = false
-//            } else {}
-
-            if prevOffset > offset {
+            if offset >= 0 {
+                self.viewIsShown = true
+            } else if prevOffset > offset {
                 self.viewIsShown = false
             } else {
                 self.viewIsShown = true
             }
             self.prevOffset = offset
         }
-        self.minOffset = min(minOffset, offset)
-        self.maxOffset = max(maxOffset, offset)
     }
 }

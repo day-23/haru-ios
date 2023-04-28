@@ -27,7 +27,7 @@ struct HaruView: View {
             ).ignoresSafeArea()
                 .opacity(0.5)
 
-            ListView {
+            ListView(checkListViewModel: viewModel) {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
@@ -36,13 +36,11 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    HStack(spacing: 0) {
-                        StarButton(isClicked: true)
-                        Text("중요")
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .padding(.leading, 6)
-                    }
-                    .padding(.leading, 29)
+                    TagView(
+                        tag: Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue),
+                        isSelected: true
+                    )
+                    .padding(.leading, 21)
                 }
 
                 Divider()

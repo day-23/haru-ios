@@ -39,6 +39,12 @@ final class CheckListViewModel: ObservableObject {
     @Published var todoListWithAnyTag: [Todo] = []
     @Published var todoListWithoutTag: [Todo] = []
 
+    //  add or update로 변경된 TodoId
+    @Published var justAddedTodoId: String?
+
+    //  현재 보여지고 있는 todoList의 offset
+    @Published var todoListOffsetMap: [String: CGFloat] = [:]
+
     var isEmpty: Bool {
         return (todoListByTag.isEmpty &&
             todoListByFlag.isEmpty &&
@@ -58,9 +64,11 @@ final class CheckListViewModel: ObservableObject {
     ) {
         todoService.addTodo(todo: todo) { result in
             switch result {
-            case let .success(todo):
+            case let .success(addedTodo):
+                self.selectedTag = nil
+                self.justAddedTodoId = addedTodo.id
                 self.fetchTodoList()
-                completion(.success(todo))
+                completion(.success(addedTodo))
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
                 completion(.failure(error))
@@ -212,10 +220,33 @@ final class CheckListViewModel: ObservableObject {
                                todo: todo) { result in
             switch result {
             case .success:
+                self.justAddedTodoId = todoId
                 self.fetchTodoList()
                 completion(.success(true))
             case let .failure(failure):
                 completion(.failure(failure))
+            }
+        }
+    }
+
+    func updateTodoWithRepeat(
+        todoId: String,
+        todo: Request.Todo,
+        date: Date,
+        at: TodoService.RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.updateTodoWithRepeat(
+            todoId: todoId,
+            todo: todo,
+            date: date,
+            at: at
+        ) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
             }
         }
     }
@@ -323,11 +354,15 @@ final class CheckListViewModel: ObservableObject {
 
     func completeTodoWithRepeat(
         todoId: String,
-        todo: Request.Todo,
+        nextEndDate: Date,
+        at: TodoService.RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.completeTodoWithRepeat(todoId: todoId,
-                                           todo: todo) { result in
+        todoService.completeTodoWithRepeat(
+            todoId: todoId,
+            nextEndDate: nextEndDate,
+            at: .front
+        ) { result in
             switch result {
             case let .success(success):
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -406,6 +441,29 @@ final class CheckListViewModel: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.deleteTodo(todoId: todoId) { result in
+            switch result {
+            case let .success(success):
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                    self.fetchTodoList()
+                    completion(.success(success))
+                }
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deleteTodoWithRepeat(
+        todoId: String,
+        date: Date,
+        at: TodoService.RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        todoService.deleteTodoWithRepeat(
+            todoId: todoId,
+            date: date,
+            at: at
+        ) { result in
             switch result {
             case let .success(success):
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {

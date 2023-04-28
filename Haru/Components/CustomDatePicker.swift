@@ -9,10 +9,21 @@ import SwiftUI
 
 struct CustomDatePicker: View {
     @Binding var selection: Date
-    var displayedComponents: [DatePicker.Components] = [.date]
+    var displayedComponents: [DatePicker.Components]
+    var pastCutoffDate: Date?
 
-    @State private var isClicked: Bool = false
-    @State private var tapLocation: CGPoint = .zero
+    @State private var isDateClicked: Bool = false
+    @State private var isTimeClicked: Bool = false
+
+    init(
+        selection: Binding<Date>,
+        displayedComponents: [DatePicker.Components] = [.date, .hourAndMinute],
+        pastCutoffDate: Date? = nil
+    ) {
+        _selection = selection
+        self.displayedComponents = displayedComponents
+        self.pastCutoffDate = pastCutoffDate
+    }
 
     private let formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -27,116 +38,62 @@ struct CustomDatePicker: View {
     }()
 
     var body: some View {
-        Text(formatter.string(from: selection))
-            .font(.system(size: 14, weight: .medium))
-            .foregroundColor(Color(0x646464))
-            .padding(.vertical, 4)
-            .padding(.horizontal, 12)
-            .background(Color(0xF1F1F5))
-            .cornerRadius(10)
-            .overlay {
-                if isClicked {
-                    ZStack {
-                        Color.black.opacity(0.0001)
-                            .edgesIgnoringSafeArea(.all)
-                            .onTapGesture {
-                                isClicked = false
-                            }
-
-                        Picker(selection: $selection)
-                            .position(x: UIScreen.main.bounds.width / 2,
-                                      y: tapLocation.y > UIScreen.main.bounds.height / 2 ?
-                                          tapLocation.y - 210 : tapLocation.y + 210)
-                    }
-                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-                }
-            }
-            .onTapGesture(coordinateSpace: .global) { location in
-                if !isClicked {
-                    isClicked = true
-                    tapLocation = location
-                }
-            }
-    }
-}
-
-private struct Picker: View {
-    @Binding var selection: Date
-
-    @State var dateList: [[Date]] = Array(repeating: Array(repeating: Date.now, count: 7), count: 6)
-    private let days = ["일", "월", "화", "수", "목", "금", "토"]
-
-    private let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy년 M월"
-        return formatter
-    }()
-
-    private let dayFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d"
-        return formatter
-    }()
-
-    var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
+        HStack(spacing: 8) {
+            if displayedComponents.contains(.date) {
                 Text(formatter.string(from: selection))
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.leading, 24)
-                    .padding(.top, 28)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            }
-            .frame(height: 70)
-            .background(.clear)
-
-            TabView {
-                ForEach(-20 ... 20, id: \.self) { _ in
-                    VStack {
-                        VStack {
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
-                                Group {
-                                    ForEach(days, id: \.self) { day in
-                                        Text(day)
-                                    }
-                                }
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(Color(0xACACAC))
-                            }
-
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
-                                ForEach((1 ... 42).indices, id: \.self) { day in
-                                    Text("\(day.hashValue)")
-                                        .frame(width: 22, height: 20)
-                                }
-                            }
+                    .font(.pretendard(size: 14, weight: .medium))
+                    .foregroundColor(Color(0x646464))
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 12)
+                    .background(Color(0xf1f1f5))
+                    .cornerRadius(10)
+                    .onTapGesture { _ in
+                        if !isDateClicked {
+                            isDateClicked = true
                         }
-                        .padding(.all, 27)
                     }
-                    .frame(height: 254)
-                    .background(.white)
-                }
+                    .popover(isPresented: $isDateClicked, arrowDirection: .unknown) {
+                        if let pastCutoffDate {
+                            DatePicker(
+                                "",
+                                selection: $selection,
+                                in: pastCutoffDate...,
+                                displayedComponents: .date
+                            )
+                            .datePickerStyle(.wheel)
+                        } else {
+                            DatePicker(
+                                "",
+                                selection: $selection,
+                                displayedComponents: .date
+                            )
+                            .datePickerStyle(.wheel)
+                        }
+                    }
             }
-            .tabViewStyle(.page)
 
-            Rectangle()
-                .frame(height: 26)
-                .foregroundStyle(.clear)
-                .background(.clear)
+            if displayedComponents.contains(.hourAndMinute) {
+                Text(timeFormatter.string(from: selection))
+                    .font(.pretendard(size: 14, weight: .medium))
+                    .foregroundColor(Color(0x646464))
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 12)
+                    .background(Color(0xf1f1f5))
+                    .cornerRadius(10)
+                    .onTapGesture { _ in
+                        if !isTimeClicked {
+                            isTimeClicked = true
+                        }
+                    }
+                    .popover(isPresented: $isTimeClicked, arrowDirection: .unknown) {
+                        DatePicker(
+                            "",
+                            selection: $selection,
+                            displayedComponents: .hourAndMinute
+                        )
+                        .datePickerStyle(.wheel)
+                    }
+            }
         }
-        .frame(width: 300, height: 350)
-        .background(RadialGradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)],
-                                   center: .center,
-                                   startRadius: 20,
-                                   endRadius: 200))
-        .cornerRadius(10)
-        .shadow(color: Color(0x000000, opacity: 0.16), radius: 20)
-    }
-}
-
-struct CustomDatePicker_Previews: PreviewProvider {
-    static var previews: some View {
-        CustomDatePicker(selection: .constant(.now))
     }
 }
