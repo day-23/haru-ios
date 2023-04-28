@@ -136,23 +136,17 @@ struct ScheduleFormView: View {
                     
                     HStack {
                         VStack(alignment: .center) {
-                            DatePicker(
-                                "",
+                            CustomDatePicker(
                                 selection: $scheduleFormVM.repeatStart,
                                 displayedComponents: [.date]
                             )
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
                             .transition(.picker)
                             
                             if !scheduleFormVM.isAllDay {
-                                DatePicker(
-                                    "",
+                                CustomDatePicker(
                                     selection: $scheduleFormVM.repeatStart,
                                     displayedComponents: [.hourAndMinute]
                                 )
-                                .datePickerStyle(.compact)
-                                .labelsHidden()
                                 .transition(.picker)
                             }
                         }
@@ -160,30 +154,24 @@ struct ScheduleFormView: View {
                         Spacer()
                         
                         VStack(alignment: .center) {
-                            DatePicker(
-                                "",
+                            CustomDatePicker(
                                 selection: $scheduleFormVM.repeatEnd,
-                                in: scheduleFormVM.repeatStart...,
-                                displayedComponents: [.date]
+                                displayedComponents: [.date],
+                                pastCutoffDate: scheduleFormVM.repeatStart
                             )
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
                             .transition(.picker)
                             
                             if !scheduleFormVM.isAllDay {
-                                DatePicker(
-                                    "",
+                                CustomDatePicker(
                                     selection: $scheduleFormVM.repeatEnd,
                                     displayedComponents: [.hourAndMinute]
                                 )
-                                .datePickerStyle(.compact)
-                                .labelsHidden()
                                 .transition(.picker)
                             }
                         }
                     }
                     .padding(.horizontal, 20)
-                    .scaleEffect(0.8)
+                    
                     
                     Divider()
                 }
@@ -290,14 +278,12 @@ struct ScheduleFormView: View {
                                         }
                                         Spacer()
                                         if scheduleFormVM.isSelectedRepeatEnd {
-                                            DatePicker(
+                                            CustomDatePicker(
                                                 selection: $scheduleFormVM.realRepeatEnd,
-                                                in: scheduleFormVM.repeatEnd...,
-                                                displayedComponents: [.date]
-                                            ) {}
-                                                .labelsHidden()
-                                                .scaleEffect(0.75)
-                                                .padding(.vertical, -5)
+                                                displayedComponents: [.date],
+                                                pastCutoffDate: scheduleFormVM.repeatEnd
+                                            )
+                                            .padding(.vertical, -5)
                                         }
                                     }
                                 }
