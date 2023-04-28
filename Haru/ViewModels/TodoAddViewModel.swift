@@ -59,7 +59,6 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     @Published var buttonDisabledList: [Bool] = Array(repeating: false, count: 12)
-
     @Published var isSelectedEndDate: Bool = false {
         didSet {
             if !isSelectedEndDate && isSelectedRepeat {
@@ -229,6 +228,11 @@ final class TodoAddViewModel: ObservableObject {
                 value = repeatMonth
             case .everyYear:
                 value = repeatYear
+                for (idx, v) in buttonDisabledList.enumerated() {
+                    if v {
+                        value[idx].isClicked = false
+                    }
+                }
             }
             return value.reduce("") { $0 + ($1.isClicked ? "1" : "0") }
         }
