@@ -53,6 +53,7 @@ struct TodoAddView: View {
                                     .renderingMode(.template)
                                     .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
                             }
+                            .disabled(viewModel.isFieldEmpty)
                         }
                         .padding(.horizontal, 33)
                         .padding(.bottom, 27)
@@ -484,6 +485,7 @@ struct TodoAddView: View {
                                 .renderingMode(.template)
                                 .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
                         }
+                        .disabled(viewModel.isFieldEmpty)
                         .confirmationDialog("반복하는 할 일 편집", isPresented: $updateButtonTapped) {
                             Button("이 이벤트만 편집") {
                                 //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
