@@ -10,6 +10,8 @@ import Foundation
 // TODO: currentMonth가 Int 형인지 Date 형인지 구분할 수 있게 이름 짓기
 
 class CalendarHelper {
+    static let calendar = Calendar.current
+
     /**
      * 일주일의 요일을 표시해주기 위한 함수
      */
@@ -186,7 +188,7 @@ class CalendarHelper {
         let dayOfWeek = calendar.component(.weekday, from: Date()) - 1
         return dayOfWeek
     }
-    
+
     class func getClosestIdxDate(idx: Int, curDate: Date) -> Date? {
         let calendar = Calendar.current
         var dateComponents = DateComponents()
@@ -196,9 +198,9 @@ class CalendarHelper {
 
         return closestDay
     }
-    
+
     // 반복 시작일과 반복 종료일 계산
-    class func fittingStartEndDate(firstDate: Date, repeatStart:Date, lastDate: Date, repeatEnd: Date) -> (Date, Date) {
+    class func fittingStartEndDate(firstDate: Date, repeatStart: Date, lastDate: Date, repeatEnd: Date) -> (Date, Date) {
         var startDate = firstDate > repeatStart ? firstDate : repeatStart
         var endDate = lastDate > repeatEnd ? repeatEnd : lastDate
 
@@ -221,5 +223,19 @@ class CalendarHelper {
         endDate = calendar.date(from: dateComponents) ?? Date()
 
         return (startDate, endDate)
+    }
+
+    class func numberOfDaysInMonth(date: Date) -> Int {
+        let startDateComponents = DateComponents(year: date.year, month: date.month, day: 1)
+        guard let startDate = calendar.date(from: startDateComponents) else {
+            fatalError("Invalid date components")
+        }
+
+        // 해당 월의 마지막 날짜를 가져옵니다.
+        guard let range = calendar.range(of: .day, in: .month, for: startDate) else {
+            fatalError("Invalid date range")
+        }
+
+        return range.count
     }
 }
