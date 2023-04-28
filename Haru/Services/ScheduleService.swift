@@ -200,24 +200,11 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        let parameters: Parameters = [
-            "content": schedule.content,
-            "memo": schedule.memo,
-            "categoryId": schedule.categoryId,
-            "alarms": schedule.alarms,
-            "isAllDay": schedule.isAllDay,
-            "repeatOption": schedule.repeatOption,
-            "repeatValue": schedule.repeatValue,
-            "repeatStart": Self.formatter.string(from: schedule.repeatStart),
-            "repeatEnd": Self.formatter.string(from: schedule.repeatEnd),
-            "nextRepeatStart": Self.formatter.string(from: schedule.nextRepeatStart!),
-        ]
-
         AF.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/front",
             method: .put,
-            parameters: parameters,
-            encoding: JSONEncoding.default,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
             headers: headers
         ).response { response in
             switch response.result {
@@ -233,26 +220,12 @@ final class ScheduleService {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
-        
-        let parameters: Parameters = [
-            "content": schedule.content,
-            "memo": schedule.memo,
-            "categoryId": schedule.categoryId,
-            "alarms": schedule.alarms,
-            "isAllDay": schedule.isAllDay,
-            "repeatOption": schedule.repeatOption,
-            "repeatValue": schedule.repeatValue,
-            "repeatStart": Self.formatter.string(from: schedule.repeatStart),
-            "repeatEnd": Self.formatter.string(from: schedule.repeatEnd),
-            "changedDate" : Self.formatter.string(from: schedule.changedDate!),
-            "nextRepeatStart": Self.formatter.string(from: schedule.nextRepeatStart!),
-        ]
 
         AF.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/middle",
             method: .put,
-            parameters: parameters,
-            encoding: JSONEncoding.default,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
             headers: headers
         ).response { response in
             switch response.result {

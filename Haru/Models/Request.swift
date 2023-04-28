@@ -43,9 +43,9 @@ struct Request: Codable {
             try container.encode(self.isAllDay, forKey: Request.Schedule.CodingKeys.isAllDay)
             try container.encode(self.repeatStart, forKey: Request.Schedule.CodingKeys.repeatStart)
             try container.encode(self.repeatEnd, forKey: Request.Schedule.CodingKeys.repeatEnd)
-            try container.encodeIfPresent(self.repeatOption, forKey: Request.Schedule.CodingKeys.repeatOption)
-            try container.encodeIfPresent(self.repeatValue, forKey: Request.Schedule.CodingKeys.repeatValue)
-            try container.encodeIfPresent(self.categoryId, forKey: Request.Schedule.CodingKeys.categoryId)
+            try container.encode(self.repeatOption, forKey: Request.Schedule.CodingKeys.repeatOption)
+            try container.encode(self.repeatValue, forKey: Request.Schedule.CodingKeys.repeatValue)
+            try container.encode(self.categoryId, forKey: Request.Schedule.CodingKeys.categoryId)
             try container.encode(self.alarms, forKey: Request.Schedule.CodingKeys.alarms)
         }
     }
@@ -71,10 +71,14 @@ struct Request: Codable {
             try container.encode(self.isAllDay, forKey: Request.RepeatSchedule.CodingKeys.isAllDay)
             try container.encode(self.repeatStart, forKey: Request.RepeatSchedule.CodingKeys.repeatStart)
             try container.encode(self.repeatEnd, forKey: Request.RepeatSchedule.CodingKeys.repeatEnd)
-            try container.encodeIfPresent(self.repeatOption, forKey: Request.RepeatSchedule.CodingKeys.repeatOption)
-            try container.encodeIfPresent(self.repeatValue, forKey: Request.RepeatSchedule.CodingKeys.repeatValue)
-            try container.encodeIfPresent(self.categoryId, forKey: Request.RepeatSchedule.CodingKeys.categoryId)
+            try container.encode(self.repeatOption, forKey: Request.RepeatSchedule.CodingKeys.repeatOption)
+            try container.encode(self.repeatValue, forKey: Request.RepeatSchedule.CodingKeys.repeatValue)
+            try container.encode(self.categoryId, forKey: Request.RepeatSchedule.CodingKeys.categoryId)
             try container.encode(self.alarms, forKey: Request.RepeatSchedule.CodingKeys.alarms)
+
+            try container.encodeIfPresent(self.nextRepeatStart, forKey: Request.RepeatSchedule.CodingKeys.nextRepeatStart)
+            try container.encodeIfPresent(self.changedDate, forKey: Request.RepeatSchedule.CodingKeys.changedDate)
+            try container.encodeIfPresent(self.preRepeatEnd, forKey: Request.RepeatSchedule.CodingKeys.preRepeatEnd)
         }
     }
 
