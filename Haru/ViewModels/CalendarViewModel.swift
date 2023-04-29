@@ -780,4 +780,18 @@ final class CalendarViewModel: ObservableObject {
         
         return result
     }
+    
+    // TODO: 매월, 매년 반복 작업 로직 작성
+    func repeatEveryMonth(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
+        var result = [Schedule]()
+        
+        var (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
+        let calendar = Calendar.current
+        var dateComponent: DateComponents
+        
+        // startDate의 일의 idx 가져오기
+        
+        return result
+    }
 }

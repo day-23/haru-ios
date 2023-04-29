@@ -172,7 +172,6 @@ struct ScheduleFormView: View {
                     }
                     .padding(.horizontal, 20)
                     
-                    
                     Divider()
                 }
                 
@@ -432,11 +431,11 @@ struct ScheduleFormView: View {
     
     func getEditActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 편집하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 편집하시겠습니까?")
-        let editButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "이 이벤트만 편집" : "이 이벤트 편집")) {
+        let editButton: ActionSheet.Button = .destructive(Text("이 이벤트만 편집")) {
             scheduleFormVM.isSelectedRepeat = false
             scheduleFormVM.updateTargetSchedule()
         }
-        let editAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 편집")) {
+        let editAllButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "모든 이벤트 편집" : "이 이벤트 편집")) {
             scheduleFormVM.updateSchedule()
             dismissAction.callAsFunction()
         }
@@ -460,7 +459,7 @@ struct ScheduleFormView: View {
         case .isNotRepeat:
             return ActionSheet(title: title,
                                message: nil,
-                               buttons: [editButton, cancleButton])
+                               buttons: [editAllButton, cancleButton])
         }
     }
 }
