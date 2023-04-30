@@ -456,6 +456,14 @@ struct ScheduleFormView: View {
                 return ActionSheet(title: title,
                                    message: nil,
                                    buttons: [editAllButton, cancleButton])
+            } else if scheduleFormVM.tmpRepeatStart.month != scheduleFormVM.repeatStart.month ||
+                scheduleFormVM.tmpRepeatStart.day != scheduleFormVM.repeatStart.day ||
+                scheduleFormVM.tmpRepeatEnd.month != scheduleFormVM.repeatEnd.month ||
+                scheduleFormVM.tmpRepeatEnd.day != scheduleFormVM.repeatEnd.day
+            {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [editButton, cancleButton])
             } else {
                 return ActionSheet(title: title,
                                    message: nil,

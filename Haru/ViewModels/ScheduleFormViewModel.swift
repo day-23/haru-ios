@@ -465,7 +465,7 @@ final class ScheduleFormViewModel: ObservableObject {
      */
     func addSchedule() {
         let schedule = createSchedule()
-        
+    
         scheduleService.addSchedule(schedule) { result in
             switch result {
             case .success:

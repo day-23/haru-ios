@@ -3,6 +3,7 @@
 //  Haru
 //
 //  Created by 최정민 on 2023/03/06.
+//  Updated by 이준호 on 2023/05/01. createRepeatTodo 함수 작성
 //
 
 import Foundation
@@ -32,13 +33,18 @@ struct Todo: Identifiable, Codable {
     let createdAt: Date
     var updatedAt: Date?
     var deletedAt: Date?
+
+    // MARK: 반복 api를 위한 필드 (임의로 프론트에서 넣어주는 값들) 추후에 DTO를 새로 작성할 필요성 있음
+
+    var realRepeatStart: Date?
+    var realRepeatEnd: Date?
 }
 
 //  MARK: - Extensions
 
 extension Todo: Equatable {
     static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id && lhs.endDate == rhs.endDate
     }
 }
 
@@ -47,9 +53,9 @@ extension Todo {
     //  만약, 반복이 끝난다면 nil을 리턴한다.
     func nextEndDate() throws -> Date? {
         //  !!!: - 입력시에 마감일이 없으면 어떻게 해결할지에 대해서
-        guard let repeatOption = repeatOption,
-              let repeatValue = repeatValue,
-              let endDate = endDate
+        guard let repeatOption,
+              let repeatValue,
+              let endDate
         else {
             throw RepeatError.invalid
         }
@@ -236,7 +242,7 @@ extension Todo {
             throw RepeatError.invalid
         }
 
-        guard let repeatEnd = repeatEnd else {
+        guard let repeatEnd else {
             return nextEndDate
         }
         return nextEndDate.compare(repeatEnd) == .orderedAscending ? nextEndDate : nil
@@ -245,9 +251,9 @@ extension Todo {
 
 extension Todo {
     func prevEndDate() throws -> Date {
-        guard let repeatOption = repeatOption,
-              let repeatValue = repeatValue,
-              let endDate = endDate
+        guard let repeatOption,
+              let repeatValue,
+              let endDate
         else {
             throw RepeatError.invalid
         }
@@ -429,6 +435,33 @@ extension Todo {
         }
 
         return prevEndDate
+    }
+}
+
+extension Todo {
+    static func createRepeatTodo(
+        todo: Todo,
+        endDate: Date
+    ) -> Todo {
+        Todo(
+            id: todo.id,
+            content: todo.content,
+            memo: todo.memo,
+            todayTodo: todo.todayTodo,
+            flag: todo.flag,
+            endDate: endDate,
+            isAllDay: todo.isAllDay,
+            repeatOption: todo.repeatOption,
+            repeatValue: todo.repeatValue,
+            repeatEnd: todo.repeatEnd,
+            todoOrder: todo.todoOrder,
+            completed: todo.completed,
+            folded: todo.folded,
+            subTodos: todo.subTodos,
+            tags: todo.tags,
+            alarms: todo.alarms,
+            createdAt: todo.createdAt
+        )
     }
 }
 

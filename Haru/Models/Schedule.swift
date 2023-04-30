@@ -29,7 +29,7 @@ struct Schedule: Identifiable, Codable {
     let createdAt: Date?
     var updatedAt: Date?
 
-    // MARK: 프론트를 위한 필드
+    // MARK: 반복 api를 위한 필드 (임의로 프론트에서 넣어주는 값들) 추후에 DTO를 새로 작성할 필요성 있음
 
     var realRepeatStart: Date?
     var realRepeatEnd: Date?
