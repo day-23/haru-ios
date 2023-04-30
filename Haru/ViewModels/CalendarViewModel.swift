@@ -807,11 +807,19 @@ final class CalendarViewModel: ObservableObject {
                     continue
                 }
                 
+                var nextRepeatStart: Date? = nil
+                do {
+                    nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: date)
+                } catch(let error) {
+                    print("[Debug] \(error) \(#fileID) \(#function)")
+                }
+                
                 result.append(
                     Schedule.createRepeatSchedule(
                         schedule: schedule,
                         repeatStart: date,
-                        repeatEnd: repeatEnd
+                        repeatEnd: repeatEnd,
+                        nextRepeatStart: nextRepeatStart
                     )
                 )
             }
