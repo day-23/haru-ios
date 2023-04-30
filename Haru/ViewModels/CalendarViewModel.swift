@@ -793,32 +793,47 @@ final class CalendarViewModel: ObservableObject {
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         
         guard let repeatValue = schedule.repeatValue else {
-            print("[Debug] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
             return result
         }
         
         for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
             if repeatValue[repeatValue.index(repeatValue.startIndex, offsetBy: date.day - 1)] == "1" {
                 dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
-                dateComponents.hour = endDate.hour
-                dateComponents.minute = endDate.minute
-                guard let repeatEnd = calendar.date(from: dateComponents) else {
-                    print("[Error] endDate의 hour: \(endDate.hour) \(endDate.minute) \(#fileID) \(#function)")
+                dateComponents.hour = schedule.repeatStart.hour
+                dateComponents.minute = schedule.repeatStart.minute
+                guard let curRepeatStart = calendar.date(from: dateComponents) else {
+                    print("[Error] schedule.repeatStart가 Date 타입이 아닙니다. \(#fileID) \(#function)")
                     continue
                 }
                 
-                var nextRepeatStart: Date? = nil
+                dateComponents.hour = schedule.repeatEnd.hour
+                dateComponents.minute = schedule.repeatEnd.minute
+                guard let curRepeatEnd = calendar.date(from: dateComponents) else {
+                    print("[Error] schedule.repeatEnd가 Date 타입이 아닙니다. \(#fileID) \(#function)")
+                    continue
+                }
+                
+                var nextRepeatStart: Date?
                 do {
-                    nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: date)
-                } catch(let error) {
-                    print("[Debug] \(error) \(#fileID) \(#function)")
+                    nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: curRepeatStart)
+                } catch (let error) {
+                    print("[Error] \(error) \(#fileID) \(#function)")
+                }
+                
+                var prevRepeatEnd: Date?
+                do {
+                    prevRepeatEnd = try schedule.prevRepeatEndDate(curRepeatEnd: curRepeatEnd)
+                } catch (let error) {
+                    print("[Error] \(error) \(#fileID) \(#function)")
                 }
                 
                 result.append(
                     Schedule.createRepeatSchedule(
                         schedule: schedule,
-                        repeatStart: date,
-                        repeatEnd: repeatEnd,
+                        repeatStart: curRepeatStart,
+                        repeatEnd: curRepeatEnd,
+                        prevRepeatEnd: prevRepeatEnd,
                         nextRepeatStart: nextRepeatStart
                     )
                 )
