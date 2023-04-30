@@ -10,6 +10,11 @@ import SwiftUI
 
 final class ScheduleFormViewModel: ObservableObject {
     // TODO: 반복 설정, 하루종일 설정
+    @Published var setRepeatTime: Bool = false {
+        didSet {
+            print("hi")
+        }
+    }
     
     // 추가 or 수정
     var scheduleId: String?

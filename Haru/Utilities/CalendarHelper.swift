@@ -198,6 +198,7 @@ class CalendarHelper {
     }
     
     // 반복 시작일과 반복 종료일 계산
+    // startDate는 repeatStart의 hour, minute를 계산해서 넘긴다
     class func fittingStartEndDate(firstDate: Date, repeatStart:Date, lastDate: Date, repeatEnd: Date) -> (Date, Date) {
         var startDate = firstDate > repeatStart ? firstDate : repeatStart
         var endDate = lastDate > repeatEnd ? repeatEnd : lastDate
