@@ -75,11 +75,17 @@ final class ScheduleService {
         }
     }
 
-    func fetchScheduleListAsync(
+    func fetchScheduleAndTodo(
         _ startDate: Date,
-        _ endDate: Date
-    ) async throws -> [Schedule] {
+        _ endDate: Date,
+        _ completion: @escaping (Result<([Schedule], [Todo]), Error>) -> Void
+    ) {
         struct Response: Codable {
+            struct Data: Codable {
+                let schedules: [Schedule]
+                let todos: [Todo]
+            }
+
             struct Pagination: Codable {
                 let totalItems: Int
                 let startDate: Date
@@ -87,7 +93,7 @@ final class ScheduleService {
             }
 
             let success: Bool
-            let data: [Schedule]
+            let data: Data
             let pagination: Pagination
         }
 
@@ -100,21 +106,19 @@ final class ScheduleService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(
-                ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
-                method: .post,
-                parameters: parameters,
-                encoding: JSONEncoding.default,
-                headers: headers
-            )
-            .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
-                switch response.result {
-                case let .success(response):
-                    continuation.resume(returning: response.data)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
+        AF.request(
+            ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date/all",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data.schedules, response.data.todos)))
+            case let .failure(error):
+                completion(.failure(error))
             }
         }
     }
