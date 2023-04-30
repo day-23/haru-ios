@@ -183,7 +183,7 @@ class CalendarHelper {
     // 일: 1, 월:2 ...
     class func getDayofWeek(date: Date) -> Int {
         let calendar = Calendar.current
-        let dayOfWeek = calendar.component(.weekday, from: Date())
+        let dayOfWeek = calendar.component(.weekday, from: date)
         return dayOfWeek
     }
 
