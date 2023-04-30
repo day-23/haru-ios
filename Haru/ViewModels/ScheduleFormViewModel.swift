@@ -191,7 +191,7 @@ final class ScheduleFormViewModel: ObservableObject {
 
     var repeatValue: String? {
         // TODO: 연속된 반복인지 단일 반복인지
-        if isSelectedRepeat {
+        if isSelectedRepeat, !overDay {
             var value: [Day] = []
             switch repeatOption {
             case .everyDay:
@@ -204,6 +204,9 @@ final class ScheduleFormViewModel: ObservableObject {
                 value = repeatYear
             }
             return value.reduce("") { $0 + ($1.isClicked ? "1" : "0") }
+        } else if isSelectedRepeat, overDay {
+            let timeInterval = repeatEnd.timeIntervalSinceReferenceDate - repeatStart.timeIntervalSinceReferenceDate
+            return "T\(timeInterval)"
         }
         return nil
     }
@@ -401,7 +404,7 @@ final class ScheduleFormViewModel: ObservableObject {
             memo: memo,
             isAllDay: isAllDay,
             repeatStart: isSelectedRepeat ? (realRepeatStart ?? repeatStart) : repeatStart,
-            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
+            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate(repeatEnd: repeatEnd)) : repeatEnd,
             repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
             repeatValue: isSelectedRepeat ? repeatValue : nil,
             categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
@@ -425,7 +428,7 @@ final class ScheduleFormViewModel: ObservableObject {
             memo: memo,
             isAllDay: isAllDay,
             repeatStart: repeatStart,
-            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate()) : repeatEnd,
+            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate(repeatEnd: repeatEnd)) : repeatEnd,
             repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
             repeatValue: isSelectedRepeat ? repeatValue : nil,
             categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
