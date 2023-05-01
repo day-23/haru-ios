@@ -361,6 +361,24 @@ extension Todo {
         case RepeatOption.everyYear.rawValue:
             let pattern = repeatValue.map { $0 == "1" ? true : false }
 
+            if endDate.month == 2, endDate.day == 29, pattern[1] {
+                if pattern.filter({ $0 }).count == 1 {
+                    let components = DateComponents(
+                        year: endDate.year - 4,
+                        month: endDate.month,
+                        day: endDate.day,
+                        hour: endDate.hour,
+                        minute: endDate.minute
+                    )
+
+                    guard let altPrev = Calendar.current.date(from: components) else {
+                        throw RepeatError.calculation
+                    }
+                    prevEndDate = altPrev
+                    break
+                }
+            }
+
             //  pattern 인덱스가 0~11인데, 아래의 반환값은 1~12이므로 다음 달을 가르키게 됨
             //  따라서, 이전 달을 가르키기 위해 -2를 더한다.
             let day = endDate.day
@@ -369,32 +387,6 @@ extension Todo {
                 index = 11
             }
             if var prev = calendar.date(byAdding: .month, value: -1, to: prevEndDate) {
-                while day != prev.day {
-                    guard let range = calendar.range(of: .day, in: .month, for: prev) else {
-                        throw RepeatError.calculation
-                    }
-
-                    let upperBound = range.upperBound
-                    if day <= upperBound {
-                        let components = DateComponents(
-                            year: prev.year,
-                            month: prev.month,
-                            day: day,
-                            hour: endDate.hour,
-                            minute: endDate.minute
-                        )
-
-                        guard let altPrev = Calendar.current.date(from: components) else {
-                            throw RepeatError.calculation
-                        }
-                        prev = altPrev
-                    } else {
-                        guard let altPrev = calendar.date(byAdding: .month, value: -1, to: prev) else {
-                            throw RepeatError.calculation
-                        }
-                        prev = altPrev
-                    }
-                }
                 prevEndDate = prev
             } else {
                 throw RepeatError.calculation
@@ -402,10 +394,43 @@ extension Todo {
             let startIndex = index
 
             while !pattern[index] {
-                if let prev = calendar.date(byAdding: .month, value: -1, to: prevEndDate) {
+                if var prev = calendar.date(byAdding: .month, value: -1, to: prevEndDate) {
                     index -= 1
                     if index < 0 {
                         index = 11
+                    }
+
+                    while day != prev.day {
+                        guard let range = calendar.range(of: .day, in: .month, for: prev) else {
+                            throw RepeatError.calculation
+                        }
+
+                        let upperBound = range.upperBound - 1
+                        if day <= upperBound, pattern[index] {
+                            let components = DateComponents(
+                                year: prev.year,
+                                month: prev.month,
+                                day: day,
+                                hour: endDate.hour,
+                                minute: endDate.minute
+                            )
+
+                            guard let altPrev = Calendar.current.date(from: components) else {
+                                throw RepeatError.calculation
+                            }
+                            prev = altPrev
+                            break
+                        } else {
+                            guard let altPrev = calendar.date(byAdding: .month, value: 1, to: prev) else {
+                                throw RepeatError.calculation
+                            }
+                            prev = altPrev
+
+                            index -= 1
+                            if index < 0 {
+                                index = 11
+                            }
+                        }
                     }
                     prevEndDate = prev
                 } else {
