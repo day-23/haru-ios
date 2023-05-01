@@ -157,6 +157,7 @@ final class CheckListViewModel: ObservableObject {
                     self.todoListByFlagWithToday = success.flaggedTodos
                     self.todoListByTodayTodo = success.todayTodos
                     self.todoListByUntilToday = success.endDateTodos
+                    self.todoListByCompleted = success.completedTodos
                 }
             case let .failure(failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function)")

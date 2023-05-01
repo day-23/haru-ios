@@ -199,7 +199,14 @@ struct TodoService {
     }
 
     func fetchTodoListByTodayTodoAndUntilToday(
-        completion: @escaping (Result<(flaggedTodos: [Todo], todayTodos: [Todo], endDateTodos: [Todo]), Error>) -> Void
+        completion: @escaping (
+            Result<(
+                flaggedTodos: [Todo],
+                todayTodos: [Todo],
+                endDateTodos: [Todo],
+                completedTodos: [Todo]
+            ), Error>
+        ) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
@@ -209,6 +216,7 @@ struct TodoService {
                 let flaggedTodos: [Todo]
                 let todayTodos: [Todo]
                 let endDatedTodos: [Todo]
+                let completedTodos: [Todo]
             }
         }
 
@@ -234,7 +242,8 @@ struct TodoService {
                 completion(.success((
                     flaggedTodos: data.flaggedTodos,
                     todayTodos: data.todayTodos,
-                    endDateTodos: data.endDatedTodos
+                    endDateTodos: data.endDatedTodos,
+                    completedTodos: data.completedTodos
                 )))
             case let .failure(failure):
                 completion(.failure(failure))

@@ -76,6 +76,26 @@ struct HaruView: View {
                     )
                     .padding(.leading, 21)
                 }
+
+                Divider()
+
+                ListSectionView(
+                    checkListViewModel: viewModel,
+                    todoAddViewModel: addViewModel,
+                    todoList: $viewModel.todoListByCompleted,
+                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
+                ) {
+                    viewModel.updateOrderHaru()
+                } header: {
+                    TagView(
+                        tag: Tag(
+                            id: DefaultTag.completed.rawValue,
+                            content: DefaultTag.completed.rawValue
+                        ),
+                        isSelected: true
+                    )
+                    .padding(.leading, 21)
+                }
             } offsetChanged: { _ in }
         }
         .navigationBarBackButtonHidden()
@@ -95,5 +115,8 @@ struct HaruView: View {
             }
         }
         .toolbarBackground(Color(0xD9EAFD))
+        .onAppear {
+            viewModel.fetchTodoListByTodayTodoAndUntilToday()
+        }
     }
 }
