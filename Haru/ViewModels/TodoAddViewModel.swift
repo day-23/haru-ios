@@ -89,7 +89,12 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     @Published var repeatEnd: Date = .init()
-    @Published var isSelectedRepeatEnd: Bool = false
+    @Published var isSelectedRepeatEnd: Bool = false {
+        didSet {
+            repeatEnd = endDate
+        }
+    }
+
     @Published var repeatDay: String = "1" {
         didSet {
             if mode == .edit {
