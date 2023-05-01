@@ -116,7 +116,11 @@ struct HaruView: View {
         }
         .toolbarBackground(Color(0xD9EAFD))
         .onAppear {
+            viewModel.mode = .haru
             viewModel.fetchTodoListByTodayTodoAndUntilToday()
+        }
+        .onDisappear {
+            viewModel.mode = .default
         }
     }
 }

@@ -9,10 +9,18 @@ import Foundation
 import SwiftUI
 
 final class CheckListViewModel: ObservableObject {
+    //  MARK: - enums
+
+    enum Mode {
+        case `default`
+        case haru
+    }
+
     //  MARK: - Properties
 
     private let tagService: TagService = .init()
     private let todoService: TodoService = .init()
+    var mode: CheckListViewModel.Mode = .default
 
     @Published var selectedTag: Tag? = nil {
         didSet {
@@ -92,10 +100,15 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func fetchTodoList() {
-        if let selectedTag = selectedTag {
-            fetchTodoListByTag(tag: selectedTag)
+        switch mode {
+        case .default:
+            if let selectedTag = selectedTag {
+                fetchTodoListByTag(tag: selectedTag)
+            }
+            fetchAllTodoList()
+        case .haru:
+            fetchTodoListByTodayTodoAndUntilToday()
         }
-        fetchAllTodoList()
     }
 
     func fetchTodoListByTag(tag: Tag) {
