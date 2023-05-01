@@ -9,6 +9,7 @@ import Alamofire
 import Foundation
 
 final class CalendarService {
+    // TODO: calendarservice -> CalendarViewModel로 함수 이전시키기
     private var scheduleService: ScheduleService = .init()
 
     /**
