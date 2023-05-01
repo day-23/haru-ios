@@ -340,28 +340,6 @@ final class TodoAddViewModel: ObservableObject {
 
     //  MARK: - Update
 
-    func completeTodo(
-        completion: @escaping (Result<Bool, Error>) -> Void
-    ) {
-        guard let todo else {
-            print("[Debug] todo를 찾을 수 없습니다. (\(#fileID), \(#function))")
-            return
-        }
-
-        checkListViewModel.completeTodo(
-            todoId: todo.id,
-            completed: !todo.completed,
-            isDetailView: true
-        ) { result in
-            switch result {
-            case let .success(response):
-                completion(.success(response))
-            case let .failure(error):
-                completion(.failure(error))
-            }
-        }
-    }
-
     func updateTodo(
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
