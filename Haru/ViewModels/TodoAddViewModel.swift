@@ -373,6 +373,10 @@ final class TodoAddViewModel: ObservableObject {
         //  Case front: endDate 계산하여 넘겨주기, 만약 다음 날짜가 없다면? 그냥 업데이트로 진행
         //  Case middle: endDate 계산하여 넘겨주기
         //  Case back: preRepeatEnd 계산하여 넘겨주기
+
+        //  반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
+        //  아래 옵션을 false로 변경한다.
+        isSelectedRepeat = false
         if at == .front || at == .middle {
             do {
                 guard let endDate = try todo.nextEndDate() else {
