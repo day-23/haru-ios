@@ -12,7 +12,8 @@ final class CheckListViewModel: ObservableObject {
     //  MARK: - enums
 
     enum Mode {
-        case `default`
+        case main
+        case tag
         case haru
     }
 
@@ -20,7 +21,7 @@ final class CheckListViewModel: ObservableObject {
 
     private let tagService: TagService = .init()
     private let todoService: TodoService = .init()
-    var mode: CheckListViewModel.Mode = .default
+    var mode: CheckListViewModel.Mode = .main
 
     @Published var selectedTag: Tag? = nil {
         didSet {
@@ -31,7 +32,12 @@ final class CheckListViewModel: ObservableObject {
                     tag.id != "완료"
                 {
                     fetchTodoListByTag(tag: tag)
+                    mode = .tag
+                } else {
+                    mode = .main
                 }
+            } else {
+                mode = .main
             }
         }
     }
@@ -101,11 +107,12 @@ final class CheckListViewModel: ObservableObject {
 
     func fetchTodoList() {
         switch mode {
-        case .default:
+        case .main:
+            fetchAllTodoList()
+        case .tag:
             if let selectedTag = selectedTag {
                 fetchTodoListByTag(tag: selectedTag)
             }
-            fetchAllTodoList()
         case .haru:
             fetchTodoListByTodayTodoAndUntilToday()
         }
@@ -126,7 +133,8 @@ final class CheckListViewModel: ObservableObject {
                 switch result {
                 case let .success(success):
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        self.todoListByTag = success.todos
+                        self.todoListByFlag = success.flaggedTodos
+                        self.todoListByTag = success.unFlaggedTodos
                         self.todoListByCompleted = success.completedTodos
                     }
                 case let .failure(failure):

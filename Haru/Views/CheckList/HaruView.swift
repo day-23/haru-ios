@@ -120,7 +120,7 @@ struct HaruView: View {
             viewModel.fetchTodoListByTodayTodoAndUntilToday()
         }
         .onDisappear {
-            viewModel.mode = .default
+            viewModel.mode = .main
         }
     }
 }

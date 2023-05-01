@@ -337,14 +337,19 @@ struct TodoService {
 
     func fetchTodoListByTag(
         tag: Tag,
-        completion: @escaping (Result<(todos: [Todo], completedTodos: [Todo]), Error>) -> Void
+        completion: @escaping (Result<(
+            flaggedTodos: [Todo],
+            unFlaggedTodos: [Todo],
+            completedTodos: [Todo]
+        ), Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
             let data: Data
 
             struct Data: Codable {
-                let todos: [Todo]
+                let flaggedTodos: [Todo]
+                let unFlaggedTodos: [Todo]
                 let completedTodos: [Todo]
             }
         }
@@ -356,7 +361,11 @@ struct TodoService {
             switch response.result {
             case let .success(response):
                 let data = response.data
-                completion(.success((todos: data.todos, completedTodos: data.completedTodos)))
+                completion(.success((
+                    flaggedTodos: data.flaggedTodos,
+                    unFlaggedTodos: data.unFlaggedTodos,
+                    completedTodos: data.completedTodos
+                )))
             case let .failure(error):
                 completion(.failure(error))
             }
