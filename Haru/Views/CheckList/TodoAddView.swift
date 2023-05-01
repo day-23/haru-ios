@@ -12,7 +12,7 @@ struct TodoAddView: View {
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isModalVisible: Bool
     @FocusState private var tagInFocus: Bool
-    @State private var isClicked = false
+    @State private var completeButtonTapped = false
     @State private var deleteButtonTapped = false
     @State private var updateButtonTapped = false
 
@@ -63,11 +63,20 @@ struct TodoAddView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 0) {
                             if !isModalVisible {
-                                //  FIXME: 완료 API 호출해야 함.
-                                CompleteButton(isClicked: isClicked)
+                                CompleteButton(isClicked: completeButtonTapped)
                                     .onTapGesture {
-                                        withAnimation {
-                                            isClicked.toggle()
+                                        if viewModel.isSelectedRepeat {
+                                        } else {
+                                            viewModel.completeTodo { result in
+                                                switch result {
+                                                case .success:
+                                                    withAnimation {
+                                                        completeButtonTapped.toggle()
+                                                    }
+                                                case let .failure(error):
+                                                    print("[Debug] \(error) (\(#fileID), \(#function))")
+                                                }
+                                            }
                                         }
                                     }
                             }
@@ -566,6 +575,11 @@ struct TodoAddView: View {
                         }
                     }
                 }
+            }
+        }
+        .onChange(of: viewModel.todo) { _ in
+            withAnimation {
+                completeButtonTapped = viewModel.todo?.completed ?? false
             }
         }
     }

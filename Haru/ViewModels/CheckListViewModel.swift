@@ -340,14 +340,19 @@ final class CheckListViewModel: ObservableObject {
     func completeTodo(
         todoId: String,
         completed: Bool,
+        isDetailView: Bool = false,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.completeTodo(todoId: todoId,
-                                 completed: completed) { result in
+        todoService.completeTodo(
+            todoId: todoId,
+            completed: completed
+        ) { result in
             switch result {
             case let .success(success):
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.fetchTodoList()
+                if !isDetailView {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.fetchTodoList()
+                    }
                 }
                 completion(.success(success))
             case let .failure(failure):
