@@ -288,7 +288,7 @@ final class TodoAddViewModel: ObservableObject {
             subTodos: subTodoList
                 .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
                 .map { $0.content },
-            subTodosCompleted: subTodoList.isEmpty ? nil : subTodoList.map { $0.completed }
+            subTodosCompleted: subTodoList.isEmpty ? [] : subTodoList.map { $0.completed }
         )
     }
 

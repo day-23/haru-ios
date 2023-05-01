@@ -192,7 +192,7 @@ extension Todo {
                             throw RepeatError.calculation
                         }
 
-                        let upperBound = range.upperBound
+                        let upperBound = range.upperBound - 1
                         if day <= upperBound, pattern[index] {
                             let components = DateComponents(
                                 year: next.year,
@@ -212,10 +212,9 @@ extension Todo {
                                 throw RepeatError.calculation
                             }
                             next = altNext
+                            index = (index + 1) % 12
                         }
-                        index = (index + 1) % 12
                     }
-
                     nextEndDate = next
                 } else {
                     throw RepeatError.calculation
