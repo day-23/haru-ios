@@ -48,17 +48,6 @@ struct TagOptionView: View {
                         .padding(.leading, 44)
                         .padding(.trailing, 30)
                     }
-
-                    Text("완료")
-                        .frame(width: 110, alignment: .center)
-                        .font(.pretendard(size: 20, weight: .medium))
-                        .foregroundColor(Color(0x1DAFFF))
-                        .padding(.vertical, 13)
-                        .onTapGesture {
-                            withAnimation {
-                                isActive = false
-                            }
-                        }
                 }
                 .frame(width: width, height: height * 0.86)
                 .background(Color(0xFDFDFD))
@@ -75,10 +64,10 @@ struct TagOptionView: View {
         .gesture(
             DragGesture()
                 .onChanged { value in
-                    if value.startLocation.x - value.location.x > 0 || value.translation.height != 0 {
+                    if value.startLocation.x - value.location.x > 0 {
                         return
                     }
-                    offset = value.translation
+                    offset = CGSize(width: value.translation.width, height: offset.height)
                 }
                 .onEnded { value in
                     withAnimation {
