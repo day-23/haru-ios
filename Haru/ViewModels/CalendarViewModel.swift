@@ -1118,7 +1118,7 @@ final class CalendarViewModel: ObservableObject {
         
         let offset = calendar.component(.weekday, from: startDate) - 1
         
-        var repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
+        let repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
         
         // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
         for _ in 0 ... 5 {
@@ -1169,11 +1169,11 @@ final class CalendarViewModel: ObservableObject {
         var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
         let maxRepeatEndDate = calendar.date(from: dateComponents)!
 
-        var (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
         
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         
-        var repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
+        let repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
         
         for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
             if repeatValue[date.day - 1] == 1 {
