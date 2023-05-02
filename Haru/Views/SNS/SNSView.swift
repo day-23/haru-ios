@@ -19,14 +19,23 @@ struct SNSView: View {
     @StateObject var snsVM: SNSViewModel = .init()
 
     var body: some View {
-        ZStack {
-            VStack {
-                HStack {
-                    Spacer()
-                    NavigationLink {
-                        Text("친구피드")
-                    } label: {
-                        Text("친구피드")
+        VStack(alignment: .leading) {
+            // FIXME: 네비게이션바 완성되면 삭제하기
+            Group {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("HARU")
+                        Image(systemName: isSelecting ? "chevron.down" : "chevron.forward")
+
+                        Spacer()
+                        NavigationLink {
+                            FallowView()
+                        } label: {
+                            Image(systemName: "magnifyingglass")
+                                .renderingMode(.template)
+                                .foregroundColor(.mainBlack)
+                                .fontWeight(.bold)
+                        }
                     }
                     Spacer()
                     NavigationLink {
