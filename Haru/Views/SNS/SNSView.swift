@@ -18,23 +18,32 @@ struct SNSView: View {
 
     @StateObject var snsVM: SNSViewModel = .init()
 
+    @State var isSelecting: Bool = false
+
     var body: some View {
-        ZStack {
-            VStack {
+        VStack(alignment: .leading) {
+            VStack(spacing: 8) {
                 HStack {
-                    Spacer()
+                    Text("HARU")
+                    Image(systemName: isSelecting ? "chevron.down" : "chevron.forward")
+                }
+                .onTapGesture {
+                    isSelecting.toggle()
+                }
+
+                if isSelecting {
                     NavigationLink {
-                        Text("친구피드")
+                        // go some View
+                        Text("친구 피드")
                     } label: {
-                        Text("친구피드")
+                        Text("친구 피드")
                     }
-                    Spacer()
                     NavigationLink {
-                        Text("둘러보기")
+                        // go some View
+                        LookAroundView()
                     } label: {
                         Text("둘러보기")
                     }
-                    Spacer()
                     NavigationLink {
                         ProfileInfoView(snsVM: snsVM)
                             .onAppear {
@@ -43,11 +52,11 @@ struct SNSView: View {
                     } label: {
                         Text("내 기록")
                     }
-                    Spacer()
                 }
-
-                FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
             }
+            .padding(.leading, 20)
+
+            FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
         }
     }
 }

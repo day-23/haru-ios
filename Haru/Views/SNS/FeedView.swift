@@ -9,8 +9,9 @@ import SwiftUI
 
 struct Feed: Identifiable, Hashable {
     let id: String = UUID().uuidString
-    let imageURL: URL
-    let isLike: Bool
+    var content: String?
+    var imageURL: URL
+    var isLike: Bool
 }
 
 struct FeedView: View {
@@ -18,7 +19,7 @@ struct FeedView: View {
     var snsVM: SNSViewModel
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 16) {
             HStack {
                 ProfileImgView(imageUrl: URL(string: "https://item.kakaocdn.net/do/fd0050f12764b403e7863c2c03cd4d2d7154249a3890514a43687a85e6b6cc82")!)
                     .frame(width: 30, height: 30)
@@ -55,6 +56,13 @@ struct FeedView: View {
                     .foregroundColor(.gray2)
             }
             .padding(.horizontal, 20)
+            
+            if let content = feed.content {
+                Text(content)
+                    .lineLimit(nil)
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .padding(.horizontal, 20)
+            }
             Divider()
         }
     }
@@ -62,6 +70,6 @@ struct FeedView: View {
 
 struct FeedView_Previews: PreviewProvider {
     static var previews: some View {
-        FeedView(feed: Feed(imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true), snsVM: SNSViewModel())
+        FeedView(feed: Feed(content: "아이콘-텍스트 간격 10 텍스트/아이콘-아래줄 간격 20, 14pt", imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true), snsVM: SNSViewModel())
     }
 }

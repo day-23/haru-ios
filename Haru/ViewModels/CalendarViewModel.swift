@@ -512,17 +512,17 @@ final class CalendarViewModel: ObservableObject {
     /**
      * 반복인 일정들만 repeatSchList에 받아와서 반복 (일정)데이터 만들어서 리턴
      */
-    func makeRepeatSchedule(
-        dateList: [DateValue],
-        repeatScheduleList: [Schedule]
-    ) -> [Schedule] {
-        var result = [Schedule]()
-        for sch in repeatScheduleList {
+//    func makeRepeatSchedule(
+//        dateList: [DateValue],
+//        repeatScheduleList: [Schedule]
+//    ) -> [Schedule] {
+//        var result = [Schedule]()
+//        for sch in repeatScheduleList {
             // make schedule
 //            result.append(contentsOf: solFunc(oriRepeatSch: sch))
-        }
-        return result
-    }
+//        }
+//        return result
+//    }
     
 //    func solFunc(oriRepeatSch: Schedule) -> [Schedule] {
 //

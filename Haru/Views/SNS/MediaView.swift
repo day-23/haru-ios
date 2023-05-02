@@ -19,7 +19,21 @@ struct MediaView: View {
                     TagView(tag: Tag(id: UUID().uuidString, content: "홍대거리"))
                     TagView(tag: Tag(id: UUID().uuidString, content: "먹방"))
                 }
-                .padding(.horizontal, 20)
+            }.padding(.horizontal, 16)
+
+            let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 3)
+            let width = UIScreen.main.bounds.size.width / 3
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 3) {
+                ForEach(0 ..< 20, id: \.self) { _ in
+                    AsyncImage(url: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                    } placeholder: {
+                        Image(systemName: "wifi.slash")
+                    }
+                    .frame(width: width, height: width)
+                }
             }
         }
     }
