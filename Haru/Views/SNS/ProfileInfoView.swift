@@ -13,7 +13,7 @@ struct ProfileInfoView: View {
     @StateObject var snsVM: SNSViewModel
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 0) {
             HStack(spacing: 20) {
                 if let imageURL = snsVM.myProfileURL {
                     ProfileImgView(imageUrl: imageURL)
@@ -59,6 +59,9 @@ struct ProfileInfoView: View {
             }
             .padding(.horizontal, 20)
 
+            Spacer()
+                .frame(height: 20)
+
             HStack {
                 Spacer()
                 VStack {
@@ -83,6 +86,9 @@ struct ProfileInfoView: View {
                 }
                 Spacer()
             }
+
+            Spacer()
+                .frame(height: 20)
 
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
@@ -120,6 +126,8 @@ struct ProfileInfoView: View {
             }
 
             if isFeedSelected {
+                Spacer()
+                    .frame(height: 20)
                 FeedListView(snsVM: snsVM, feedList: $snsVM.myFeedList)
             } else {
                 MediaView()

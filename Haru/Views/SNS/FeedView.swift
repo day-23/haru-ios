@@ -37,13 +37,7 @@ struct FeedView: View {
             }
             .padding(.horizontal, 20)
 
-            AsyncImage(url: feed.imageURL) { image in
-                image
-                    .resizable()
-            } placeholder: {
-                Image(systemName: "wifi.slash")
-            }
-            .frame(width: 395, height: 390)
+            FeedImage(imageUrl: feed.imageURL)
 
             HStack(spacing: 22) {
                 Image(systemName: feed.isLike ? "heart.fill" : "heart")

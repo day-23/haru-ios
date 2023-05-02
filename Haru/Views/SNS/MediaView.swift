@@ -19,7 +19,10 @@ struct MediaView: View {
                     TagView(tag: Tag(id: UUID().uuidString, content: "홍대거리"))
                     TagView(tag: Tag(id: UUID().uuidString, content: "먹방"))
                 }
-            }.padding(.horizontal, 16)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            
 
             let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 3)
             let width = UIScreen.main.bounds.size.width / 3
@@ -36,6 +39,7 @@ struct MediaView: View {
                 }
             }
         }
+        .background(.white)
     }
 }
 
