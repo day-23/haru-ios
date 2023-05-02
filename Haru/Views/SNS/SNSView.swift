@@ -28,6 +28,16 @@ struct SNSView: View {
                     HStack {
                         Text("HARU")
                         Image(systemName: isSelecting ? "chevron.down" : "chevron.forward")
+
+                        Spacer()
+                        NavigationLink {
+                            FallowView()
+                        } label: {
+                            Image(systemName: "magnifyingglass")
+                                .renderingMode(.template)
+                                .foregroundColor(.mainBlack)
+                                .fontWeight(.bold)
+                        }
                     }
                     .onTapGesture {
                         isSelecting.toggle()
@@ -35,7 +45,7 @@ struct SNSView: View {
                     if isSelecting {
                         NavigationLink {
                             ProfileInfoView(isMine: false, snsVM: snsVM)
-                            
+
                         } label: {
                             Text("친구 피드")
                         }
@@ -55,7 +65,7 @@ struct SNSView: View {
                         }
                     }
                 }
-                .padding(.leading, 20)
+                .padding(.horizontal, 20)
             }
 
             FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
