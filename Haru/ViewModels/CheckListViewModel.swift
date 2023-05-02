@@ -23,6 +23,7 @@ final class CheckListViewModel: ObservableObject {
     private let todoService: TodoService = .init()
     var mode: CheckListViewModel.Mode = .main
 
+    @Published var tagContent: String = ""
     @Published var selectedTag: Tag? = nil {
         didSet {
             if let tag = selectedTag {
@@ -85,6 +86,21 @@ final class CheckListViewModel: ObservableObject {
                 completion(.success(addedTodo))
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func addTag(
+        content: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        tagService.createTag(content: content) { result in
+            switch result {
+            case .success:
+                self.fetchTags()
+                completion(.success(true))
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
@@ -512,6 +528,21 @@ final class CheckListViewModel: ObservableObject {
             switch result {
             case let .success(success):
                 completion(.success(success))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deleteTag(
+        tagId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        tagService.deleteTag(tagId: tagId) { result in
+            switch result {
+            case .success:
+                self.fetchTags()
+                completion(.success(true))
             case let .failure(error):
                 completion(.failure(error))
             }

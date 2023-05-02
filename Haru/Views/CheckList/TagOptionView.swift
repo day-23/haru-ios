@@ -11,9 +11,10 @@ struct TagOptionView: View {
     private let width = UIScreen.main.bounds.width * 0.915
     private let height = UIScreen.main.bounds.height * 0.8
 
-    var checkListViewModel: CheckListViewModel
+    @StateObject var checkListViewModel: CheckListViewModel
     @State private var offset = CGSize.zero
     @Binding var isActive: Bool
+    @State private var addButtonTapped = false
 
     var body: some View {
         ZStack {
@@ -30,23 +31,61 @@ struct TagOptionView: View {
                     ScrollView {
                         VStack(spacing: 9) {
                             HStack(spacing: 0) {
-                                Text("태그 추가")
+                                TextField("태그 추가", text: $checkListViewModel.tagContent)
                                     .font(.pretendard(size: 14, weight: .medium))
-                                    .foregroundColor(Color(0xACACAC))
+                                    .foregroundColor(
+                                        checkListViewModel.tagContent.isEmpty ? Color(0xACACAC) : Color(0x191919)
+                                    )
                                 Spacer()
 
-                                Image("plus")
-                                    .renderingMode(.template)
-                                    .frame(width: 28, height: 28)
+                                Button {
+                                    if addButtonTapped ||
+                                        checkListViewModel.tagContent.trimmingCharacters(in: .whitespaces).isEmpty
+                                    {
+                                        return
+                                    }
+                                    addButtonTapped = true
+
+                                    checkListViewModel.addTag(
+                                        content: checkListViewModel.tagContent
+                                    ) { result in
+                                        switch result {
+                                        case .success:
+                                            checkListViewModel.tagContent = ""
+                                            addButtonTapped = false
+                                        case .failure(let error):
+                                            print("[Debug] \(error) (\(#fileID), \(#function))")
+                                            addButtonTapped = false
+                                        }
+                                    }
+                                } label: {
+                                    Image("plus")
+                                        .renderingMode(.template)
+                                        .frame(width: 28, height: 28)
+                                        .foregroundColor(Color(0x191919))
+                                }
+                                .disabled(addButtonTapped)
                             }
 
-                            ForEach(checkListViewModel.tagList) { tag in
-                                TagOptionItem(tag: tag)
+                            ForEach($checkListViewModel.tagList) { $tag in
+                                TagOptionItem(tag: tag) {
+                                    checkListViewModel.deleteTag(
+                                        tagId: tag.id)
+                                    { result in
+                                        switch result {
+                                        case .success:
+                                            break
+                                        case .failure(let error):
+                                            print("[Debug] \(error) (\(#fileID) \(#function))")
+                                        }
+                                    }
+                                }
                             }
                         }
                         .padding(.top, 18)
                         .padding(.leading, 44)
                         .padding(.trailing, 30)
+                        .padding(.bottom)
                     }
                 }
                 .frame(width: width, height: height * 0.86)
@@ -83,6 +122,7 @@ struct TagOptionView: View {
 
 private struct TagOptionItem: View {
     var tag: Tag
+    var action: () -> Void
 
     var body: some View {
         HStack {
@@ -91,8 +131,10 @@ private struct TagOptionItem: View {
             Spacer()
 
             Menu {
-                Button {} label: {
-                    Label("Delete", systemImage: "trash")
+                Button {
+                    action()
+                } label: {
+                    Label("삭제", systemImage: "trash")
                         .foregroundColor(Color(0xF71E58))
                 }
             } label: {
