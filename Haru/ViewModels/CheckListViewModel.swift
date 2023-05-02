@@ -82,6 +82,7 @@ final class CheckListViewModel: ObservableObject {
             case let .success(addedTodo):
                 self.selectedTag = nil
                 self.justAddedTodoId = addedTodo.id
+                self.fetchTags()
                 self.fetchTodoList()
                 completion(.success(addedTodo))
             case let .failure(error):
@@ -260,6 +261,7 @@ final class CheckListViewModel: ObservableObject {
             case .success:
                 self.justAddedTodoId = todoId
                 self.fetchTodoList()
+                self.fetchTags()
                 completion(.success(true))
             case let .failure(failure):
                 completion(.failure(failure))
@@ -282,6 +284,9 @@ final class CheckListViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success:
+                self.justAddedTodoId = todoId
+                self.fetchTodoList()
+                self.fetchTags()
                 completion(.success(true))
             case let .failure(error):
                 completion(.failure(error))
@@ -541,6 +546,7 @@ final class CheckListViewModel: ObservableObject {
         tagService.deleteTag(tagId: tagId) { result in
             switch result {
             case .success:
+                self.fetchTodoList()
                 self.fetchTags()
                 completion(.success(true))
             case let .failure(error):
