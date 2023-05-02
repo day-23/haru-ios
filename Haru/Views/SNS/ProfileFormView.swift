@@ -13,8 +13,8 @@ struct ProfileFormView: View {
     @State var openPhoto: Bool = false
 
     @State var image: UIImage? = nil
-    @State var name: String = ""
-    @State var info: String = ""
+    @State var name: String
+    @State var info: String
 
     var body: some View {
         ZStack {
@@ -93,7 +93,7 @@ struct ProfileFormView: View {
 struct ProfileFormView_Previews: PreviewProvider {
     static var snsVM: SNSViewModel = .init()
     static var previews: some View {
-        ProfileFormView(snsVM: snsVM)
+        ProfileFormView(snsVM: snsVM, name: "게으른 민수", info: "안녕하세요.")
             .onAppear {
                 snsVM.fetchProfileImg()
             }

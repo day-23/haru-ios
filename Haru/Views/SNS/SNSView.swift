@@ -23,38 +23,40 @@ struct SNSView: View {
     var body: some View {
         VStack(alignment: .leading) {
             VStack(spacing: 8) {
-                HStack {
-                    Text("HARU")
-                    Image(systemName: isSelecting ? "chevron.down" : "chevron.forward")
-                }
-                .onTapGesture {
-                    isSelecting.toggle()
-                }
-
-                if isSelecting {
-                    NavigationLink {
-                        // go some View
-                        Text("친구 피드")
-                    } label: {
-                        Text("친구 피드")
+                // FIXME: 네비게이션바 완성되면 삭제하기
+                Group {
+                    HStack {
+                        Text("HARU")
+                        Image(systemName: isSelecting ? "chevron.down" : "chevron.forward")
                     }
-                    NavigationLink {
-                        // go some View
-                        LookAroundView()
-                    } label: {
-                        Text("둘러보기")
+                    .onTapGesture {
+                        isSelecting.toggle()
                     }
-                    NavigationLink {
-                        ProfileInfoView(snsVM: snsVM)
-                            .onAppear {
-                                snsVM.fetchProfileImg()
-                            }
-                    } label: {
-                        Text("내 기록")
+                    if isSelecting {
+                        NavigationLink {
+                            ProfileInfoView(isMine: false, snsVM: snsVM)
+                            
+                        } label: {
+                            Text("친구 피드")
+                        }
+                        NavigationLink {
+                            // go some View
+                            LookAroundView()
+                        } label: {
+                            Text("둘러보기")
+                        }
+                        NavigationLink {
+                            ProfileInfoView(isMine: true, snsVM: snsVM)
+                                .onAppear {
+                                    snsVM.fetchProfileImg()
+                                }
+                        } label: {
+                            Text("내 기록")
+                        }
                     }
                 }
+                .padding(.leading, 20)
             }
-            .padding(.leading, 20)
 
             FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
         }
