@@ -502,13 +502,16 @@ struct TodoAddView: View {
                                         }
                                     }
                                 }
-                                Button("모든 이벤트 편집") {
-                                    viewModel.updateTodo { result in
-                                        switch result {
-                                        case .success:
-                                            dismissAction.callAsFunction()
-                                        case let .failure(failure):
-                                            print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                
+                                if viewModel.isPreviousEndDateEqual {
+                                    Button("모든 이벤트 편집") {
+                                        viewModel.updateTodo { result in
+                                            switch result {
+                                            case .success:
+                                                dismissAction.callAsFunction()
+                                            case let .failure(failure):
+                                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                            }
                                         }
                                     }
                                 }

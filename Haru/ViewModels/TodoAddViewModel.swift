@@ -316,34 +316,38 @@ final class TodoAddViewModel: ObservableObject {
         return true
     }
 
-    var isPreviousStateEqual: Bool {
+    var isPreviousEndDateEqual: Bool {
         guard let todo else {
             return false
         }
 
-        var endDateIsEqual: Bool {
-            if isSelectedEndDate != (todo.endDate != nil) {
-                return false
-            }
+        if isSelectedEndDate != (todo.endDate != nil) {
+            return false
+        }
 
-            if !isSelectedEndDate {
-                return true
-            }
+        if !isSelectedEndDate {
+            return true
+        }
 
-            guard let prevStateEndDate = todo.endDate else {
-                return false
-            }
+        guard let prevStateEndDate = todo.endDate else {
+            return false
+        }
 
-            let formatter: DateFormatter = {
-                let formatter = DateFormatter()
-                if isAllDay == true && isAllDay == todo.isAllDay {
-                    formatter.dateFormat = "yyyyMMddhhmm"
-                } else {
-                    formatter.dateFormat = "yyyyMMdd"
-                }
-                return formatter
-            }()
-            return formatter.string(from: endDate) == formatter.string(from: prevStateEndDate)
+        let formatter: DateFormatter = {
+            let formatter = DateFormatter()
+            if isAllDay == true && isAllDay == todo.isAllDay {
+                formatter.dateFormat = "yyyyMMddhhmm"
+            } else {
+                formatter.dateFormat = "yyyyMMdd"
+            }
+            return formatter
+        }()
+        return formatter.string(from: endDate) == formatter.string(from: prevStateEndDate)
+    }
+
+    var isPreviousStateEqual: Bool {
+        guard let todo else {
+            return false
         }
 
         return (todo.content == content &&
@@ -355,7 +359,7 @@ final class TodoAddViewModel: ObservableObject {
                 lhs.id == rhs.id
             }) &&
             todo.todayTodo == isTodayTodo &&
-            endDateIsEqual &&
+            isPreviousEndDateEqual &&
             isPreviousRepeatStateEqual &&
             todo.memo == memo)
     }
