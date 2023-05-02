@@ -270,6 +270,92 @@ final class TodoAddViewModel: ObservableObject {
         return content.isEmpty
     }
 
+    var isPreviousStateEqual: Bool {
+        guard let todo else {
+            return false
+        }
+
+        var endDateIsEqual: Bool {
+            if isSelectedEndDate != (todo.endDate != nil) {
+                return false
+            }
+
+            if !isSelectedEndDate {
+                return true
+            }
+
+            guard let prevStateEndDate = todo.endDate else {
+                return false
+            }
+
+            let formatter: DateFormatter = {
+                let formatter = DateFormatter()
+                if isAllDay == true && isAllDay == todo.isAllDay {
+                    formatter.dateFormat = "yyyyMMddhhmm"
+                } else {
+                    formatter.dateFormat = "yyyyMMdd"
+                }
+                return formatter
+            }()
+            return formatter.string(from: endDate) == formatter.string(from: prevStateEndDate)
+        }
+
+        var repeatIsEqual: Bool {
+            if isSelectedRepeat != (todo.repeatOption != nil) {
+                return false
+            }
+
+            if !isSelectedRepeat {
+                return true
+            }
+
+            guard let prevStateRepeatOption = todo.repeatOption,
+                  repeatOption.rawValue == prevStateRepeatOption
+            else {
+                return false
+            }
+
+            guard let repeatValue,
+                  let prevStateRepeatValue = todo.repeatValue,
+                  repeatValue == prevStateRepeatValue
+            else {
+                return false
+            }
+
+            if isSelectedRepeatEnd != (todo.repeatEnd != nil) {
+                return false
+            }
+
+            if !isSelectedRepeatEnd {
+                return true
+            }
+
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyyMMdd"
+
+            guard let prevStateRepeatEnd = todo.repeatEnd,
+                  formatter.string(from: repeatEnd) == formatter.string(from: prevStateRepeatEnd)
+            else {
+                return false
+            }
+
+            return true
+        }
+
+        return (todo.content == content &&
+            todo.flag == flag &&
+            todo.subTodos.elementsEqual(subTodoList, by: { lhs, rhs in
+                lhs.id == rhs.id
+            }) &&
+            todo.tags.elementsEqual(tagList, by: { lhs, rhs in
+                lhs.id == rhs.id
+            }) &&
+            todo.todayTodo == isTodayTodo &&
+            endDateIsEqual &&
+            repeatIsEqual &&
+            todo.memo == memo)
+    }
+
     init(checkListViewModel: CheckListViewModel, mode: TodoAddMode = .add) {
         self.checkListViewModel = checkListViewModel
         self.mode = mode
