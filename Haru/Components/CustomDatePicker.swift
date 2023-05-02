@@ -60,14 +60,14 @@ struct CustomDatePicker: View {
                                 in: pastCutoffDate...,
                                 displayedComponents: .date
                             )
-                            .datePickerStyle(.wheel)
+                            .datePickerStyle(.graphical)
                         } else {
                             DatePicker(
                                 "",
                                 selection: $selection,
                                 displayedComponents: .date
                             )
-                            .datePickerStyle(.wheel)
+                            .datePickerStyle(.graphical)
                         }
                     }
             }

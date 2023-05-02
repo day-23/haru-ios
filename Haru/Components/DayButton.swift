@@ -20,7 +20,7 @@ struct DayButton: View {
             Text(content)
                 .foregroundColor(disabled ? Color(0xF71E58) : (isClicked ? Color(0x1DAFFF) : Color(0xACACAC)))
                 .font(.pretendard(size: 14, weight: .regular))
-                .disabled(disabled)
         }
+        .disabled(disabled)
     }
 }

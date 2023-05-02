@@ -65,7 +65,7 @@ struct TodoAddView: View {
                                 .font(.pretendard(size: 24, weight: .medium))
                                 .strikethrough(viewModel.todo?.completed ?? false)
                                 .foregroundColor(
-                                    (viewModel.todo?.completed ?? true) ? Color(0xACACAC) : Color(0x191919)
+                                    (viewModel.todo?.completed ?? false) ? Color(0xACACAC) : Color(0x191919)
                                 )
                                 .padding(.leading, 14)
                             
@@ -573,6 +573,9 @@ struct TodoAddView: View {
                     }
                 }
             }
+        }
+        .onDisappear {
+            viewModel.clear()
         }
     }
 }
