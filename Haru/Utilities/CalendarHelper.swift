@@ -248,4 +248,31 @@ class CalendarHelper {
 
         return (startDate, endDate)
     }
+
+    class func getDiffWeeks(date1: Date, date2: Date) -> Int {
+        let calendar = Calendar.current
+
+         let day = 60 * 60 * 24
+
+        var date1 = date1
+        var date2 = date2
+        
+        print(date1)
+        print(date2)
+        var dayOfWeek1 = calendar.component(.weekday, from: date1)
+        while dayOfWeek1 > 1 {
+            date1 = date1.addingTimeInterval(TimeInterval(-day))
+            dayOfWeek1 -= 1
+        }
+
+        var dayOfWeek2 = calendar.component(.weekday, from: date2)
+        while dayOfWeek2 > 1 {
+            date2 = date2.addingTimeInterval(TimeInterval(-day))
+            dayOfWeek2 -= 1
+        }
+
+        let components = calendar.dateComponents([.day], from: date1, to: date2)
+        print(components.day! / 7)
+        return components.day! / 7
+    }
 }

@@ -778,6 +778,7 @@ final class CalendarViewModel: ObservableObject {
         
         let calendar = Calendar.current
         var dateComponents: DateComponents
+        let day = 60 * 60 * 24
         
         let offset = calendar.component(.weekday, from: startDate) - 1
         
@@ -785,6 +786,13 @@ final class CalendarViewModel: ObservableObject {
         for i in schedule.repeatValue! {
             if i.isNumber {
                 repeatValue.append(Int(String(i))!)
+            }
+        }
+        
+        if weekTerm == 2, startDate.month != schedule.repeatStart.month || startDate.day != schedule.repeatStart.day {
+            let diff = CalendarHelper.getDiffWeeks(date1: schedule.repeatStart, date2: startDate)
+            if diff % 2 == 0 {
+                startDate = startDate.addingTimeInterval(TimeInterval(day * 7))
             }
         }
         
@@ -817,7 +825,7 @@ final class CalendarViewModel: ObservableObject {
                     }
                     
                     // nextRepeatStart와 prevRepeatEnd 찾기
-                    let day = 60 * 60 * 24
+                    
                     var nextRepeatStart: Date = repeatStart.addingTimeInterval(TimeInterval(day))
                     var prevRepeatEnd: Date = repeatEnd.addingTimeInterval(TimeInterval(-day))
                     var index = (calendar.component(.weekday, from: repeatStart)) % 7
@@ -967,6 +975,14 @@ final class CalendarViewModel: ObservableObject {
         
         let idx = CalendarHelper.getDayofWeek(date: schedule.repeatStart)
         var pivotRepStart = CalendarHelper.getClosestDayOfWeekDate(idx: idx, baseDate: startDate)
+        
+        // FIXME: 뭔가 이상함
+        if weekTerm == 2, startDate.month != schedule.repeatStart.month || startDate.day != schedule.repeatStart.day {
+            let diff = CalendarHelper.getDiffWeeks(date1: schedule.repeatStart, date2: startDate)
+            if diff % 2 == 0 {
+                pivotRepStart = pivotRepStart.addingTimeInterval(TimeInterval(day * 7))
+            }
+        }
         
         while pivotRepStart < endDate {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: pivotRepStart)
