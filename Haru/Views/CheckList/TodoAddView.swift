@@ -12,7 +12,6 @@ struct TodoAddView: View {
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isModalVisible: Bool
     @FocusState private var tagInFocus: Bool
-    @State private var isClicked = false
     @State private var deleteButtonTapped = false
     @State private var updateButtonTapped = false
 
@@ -62,19 +61,13 @@ struct TodoAddView: View {
                     //  Todo, SubTodo 입력 View
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 0) {
-                            if !isModalVisible {
-                                //  FIXME: 완료 API 호출해야 함.
-                                CompleteButton(isClicked: isClicked)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            isClicked.toggle()
-                                        }
-                                    }
-                            }
-                            
                             TextField("투두 입력", text: $viewModel.content)
                                 .font(.pretendard(size: 24, weight: .medium))
-                                .padding(.leading, isModalVisible ? 4 : 14)
+                                .strikethrough(viewModel.todo?.completed ?? false)
+                                .foregroundColor(
+                                    (viewModel.todo?.completed ?? false) ? Color(0xACACAC) : Color(0x191919)
+                                )
+                                .padding(.leading, 14)
                             
                             StarButton(isClicked: viewModel.flag)
                                 .onTapGesture {
@@ -90,6 +83,11 @@ struct TodoAddView: View {
                                 Image("dot")
                                 TextField("", text: $viewModel.subTodoList[index].content)
                                     .font(.pretendard(size: 20, weight: .medium))
+                                    .strikethrough(viewModel.subTodoList[index].completed)
+                                    .foregroundColor(
+                                        viewModel.subTodoList[index].completed ? Color(0xACACAC) : Color(0x191919)
+                                    )
+                                
                                 Button {
                                     viewModel.removeSubTodo(index: index)
                                 } label: {
@@ -103,22 +101,24 @@ struct TodoAddView: View {
                             Divider()
                         }
                         
-                        Button {
-                            viewModel.createSubTodo()
-                        } label: {
-                            Label {
-                                Text("하위 항목 추가")
-                                    .font(.pretendard(size: 20, weight: .medium))
-                            } icon: {
-                                Image("add-sub-todo")
-                                    .frame(width: 28, height: 28)
+                        if let completed = viewModel.todo?.completed, !completed {
+                            Button {
+                                viewModel.createSubTodo()
+                            } label: {
+                                Label {
+                                    Text("하위 항목 추가")
+                                        .font(.pretendard(size: 20, weight: .medium))
+                                } icon: {
+                                    Image("add-sub-todo")
+                                        .frame(width: 28, height: 28)
+                                }
                             }
+                            .padding(.leading, 14)
+                            .padding(.vertical, 7)
+                            .foregroundColor(Color(0xACACAC))
+                            
+                            Divider()
                         }
-                        .padding(.leading, 14)
-                        .padding(.vertical, 7)
-                        .foregroundColor(Color(0xACACAC))
-                        
-                        Divider()
                     }
                     .padding(.horizontal, 20)
                     
@@ -464,34 +464,15 @@ struct TodoAddView: View {
                         }
                     }
                     
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        //  TODO: update dialog 띄워서 묻기
-                        Button {
-                            if viewModel.isSelectedRepeat {
-                                updateButtonTapped = true
-                                return
-                            }
-                            
-                            viewModel.updateTodo { result in
-                                switch result {
-                                case .success:
-                                    dismissAction.callAsFunction()
-                                case let .failure(failure):
-                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                    if let complete = viewModel.todo?.completed, !complete {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                if viewModel.isSelectedRepeat {
+                                    updateButtonTapped = true
+                                    return
                                 }
-                            }
-                        } label: {
-                            Image("confirm")
-                                .renderingMode(.template)
-                                .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
-                        }
-                        .disabled(viewModel.isFieldEmpty)
-                        .confirmationDialog("반복하는 할 일 편집", isPresented: $updateButtonTapped) {
-                            Button("이 이벤트만 편집") {
-                                //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
-                                viewModel.updateTodoWithRepeat(
-                                    at: .front
-                                ) { result in
+                                
+                                viewModel.updateTodo { result in
                                     switch result {
                                     case .success:
                                         dismissAction.callAsFunction()
@@ -499,14 +480,39 @@ struct TodoAddView: View {
                                         print("[Debug] \(failure) (\(#fileID), \(#function))")
                                     }
                                 }
+                            } label: {
+                                Image("confirm")
+                                    .renderingMode(.template)
+                                    .foregroundColor(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
                             }
-                            Button("모든 이벤트 편집") {
-                                viewModel.updateTodo { result in
-                                    switch result {
-                                    case .success:
-                                        dismissAction.callAsFunction()
-                                    case let .failure(failure):
-                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            .disabled(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty)
+                            .confirmationDialog("반복하는 할 일 편집", isPresented: $updateButtonTapped) {
+                                if viewModel.isPreviousRepeatStateEqual {
+                                    Button("이 이벤트만 편집") {
+                                        //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
+                                        viewModel.updateTodoWithRepeat(
+                                            at: .front
+                                        ) { result in
+                                            switch result {
+                                            case .success:
+                                                dismissAction.callAsFunction()
+                                            case let .failure(failure):
+                                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                if viewModel.isPreviousEndDateEqual {
+                                    Button("모든 이벤트 편집") {
+                                        viewModel.updateTodo { result in
+                                            switch result {
+                                            case .success:
+                                                dismissAction.callAsFunction()
+                                            case let .failure(failure):
+                                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -567,6 +573,9 @@ struct TodoAddView: View {
                     }
                 }
             }
+        }
+        .onDisappear {
+            viewModel.clear()
         }
     }
 }

@@ -26,8 +26,14 @@ final class TodoAddViewModel: ObservableObject {
 
     @Published var isTodayTodo: Bool = false
 
+    private var isChangedEndDate = false
     @Published var endDate: Date = .init() {
         didSet {
+            if isPreviousEndDateEqual {
+                isChangedEndDate = false
+            } else {
+                isChangedEndDate = true
+            }
             let day = endDate.day
 
             var newButtonDisabledList = Array(repeating: false, count: 12)
@@ -89,20 +95,13 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     @Published var repeatEnd: Date = .init()
-    @Published var isSelectedRepeatEnd: Bool = false
-    @Published var repeatDay: String = "1" {
+    @Published var isSelectedRepeatEnd: Bool = false {
         didSet {
-            if mode == .edit {
-                return
-            }
-
-            guard let interval = Int(repeatDay) else { return }
-
-            let day = 60 * 60 * 24
-            endDate = Date.now.addingTimeInterval(TimeInterval(day * interval))
+            repeatEnd = endDate
         }
     }
 
+    @Published var repeatDay: String = "1"
     @Published var repeatWeek: [Day] = [Day(content: "일"), Day(content: "월"), Day(content: "화"),
                                         Day(content: "수"), Day(content: "목"), Day(content: "금"), Day(content: "토")]
     {
@@ -111,7 +110,10 @@ final class TodoAddViewModel: ObservableObject {
                 return
             }
 
-            var nextEndDate = isSelectedEndDate ? endDate : Date()
+            var nextEndDate: Date = .now
+            if isChangedEndDate {
+                nextEndDate = endDate
+            }
             let day = 60 * 60 * 24
             let calendar = Calendar.current
             let pattern = repeatWeek.map { $0.isClicked ? true : false }
@@ -126,8 +128,6 @@ final class TodoAddViewModel: ObservableObject {
                     index = (index + 1) % 7
                     nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
                 }
-
-                endDate = nextEndDate
             } else if repeatOption == .everySecondWeek {
                 if index == 0 {
                     nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
@@ -141,9 +141,8 @@ final class TodoAddViewModel: ObservableObject {
                         nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day * 7))
                     }
                 }
-
-                endDate = nextEndDate
             }
+            endDate = nextEndDate
         }
     }
 
@@ -153,7 +152,10 @@ final class TodoAddViewModel: ObservableObject {
                 return
             }
 
-            var nextEndDate = isSelectedEndDate ? endDate : Date()
+            var nextEndDate: Date = .now
+            if isChangedEndDate {
+                nextEndDate = endDate
+            }
             let day = 60 * 60 * 24
             let calendar = Calendar.current
             let pattern = repeatMonth.map { $0.isClicked ? true : false }
@@ -162,21 +164,22 @@ final class TodoAddViewModel: ObservableObject {
                 return
             }
 
-            let year = calendar.component(.year, from: nextEndDate)
-            let month = calendar.component(.month, from: nextEndDate)
-
-            let dateComponents = DateComponents(year: year, month: month)
-            guard let dateInMonth = calendar.date(from: dateComponents),
-                  let range = calendar.range(of: .day, in: .month, for: dateInMonth)
-            else {
+            guard let range = calendar.range(of: .day, in: .month, for: nextEndDate) else {
                 return
             }
 
-            let upperBound = range.upperBound - 1
+            var upperBound = range.upperBound - 1
             var index = (calendar.component(.day, from: nextEndDate) - 1) % upperBound
             while !pattern[index] {
                 index = (index + 1) % upperBound
+                let month = nextEndDate.month
                 nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
+                if month != nextEndDate.month {
+                    guard let range = calendar.range(of: .day, in: .month, for: nextEndDate) else {
+                        return
+                    }
+                    upperBound = range.upperBound - 1
+                }
             }
 
             endDate = nextEndDate
@@ -189,24 +192,42 @@ final class TodoAddViewModel: ObservableObject {
                 return
             }
 
-            var nextEndDate = isSelectedEndDate ? endDate : Date()
+            var nextEndDate: Date = .now
+            if isChangedEndDate {
+                nextEndDate = endDate
+            }
             let calendar = Calendar.current
             let pattern = repeatYear.map { $0.isClicked ? true : false }
-
             if pattern.filter({ $0 }).isEmpty {
                 return
             }
 
+            let day = nextEndDate.day
             var index = (calendar.component(.month, from: nextEndDate) - 1) % 12
             while !pattern[index] {
                 if let next = calendar.date(byAdding: .month, value: 1, to: nextEndDate) {
+                    guard let range = calendar.range(of: .day, in: .month, for: next) else {
+                        return
+                    }
+
+                    let upperBound = range.upperBound - 1
+                    let components = DateComponents(
+                        year: next.year,
+                        month: next.month,
+                        day: day <= upperBound ? day : upperBound,
+                        hour: endDate.hour,
+                        minute: endDate.minute
+                    )
+                    guard let altNext = calendar.date(from: components) else {
+                        return
+                    }
+
                     index = (index + 1) % 12
-                    nextEndDate = next
+                    nextEndDate = altNext
                 } else {
                     return
                 }
             }
-
             endDate = nextEndDate
         }
     }
@@ -265,6 +286,100 @@ final class TodoAddViewModel: ObservableObject {
         return content.isEmpty
     }
 
+    var isPreviousRepeatStateEqual: Bool {
+        guard let todo else {
+            return false
+        }
+
+        if isSelectedRepeat != (todo.repeatOption != nil) {
+            return false
+        }
+
+        if !isSelectedRepeat {
+            return true
+        }
+
+        guard let prevStateRepeatOption = todo.repeatOption,
+              repeatOption.rawValue == prevStateRepeatOption
+        else {
+            return false
+        }
+
+        guard let repeatValue,
+              let prevStateRepeatValue = todo.repeatValue,
+              repeatValue == prevStateRepeatValue
+        else {
+            return false
+        }
+
+        if isSelectedRepeatEnd != (todo.repeatEnd != nil) {
+            return false
+        }
+
+        if !isSelectedRepeatEnd {
+            return true
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+
+        guard let prevStateRepeatEnd = todo.repeatEnd,
+              formatter.string(from: repeatEnd) == formatter.string(from: prevStateRepeatEnd)
+        else {
+            return false
+        }
+
+        return true
+    }
+
+    var isPreviousEndDateEqual: Bool {
+        guard let todo else {
+            return false
+        }
+
+        if isSelectedEndDate != (todo.endDate != nil) {
+            return false
+        }
+
+        if !isSelectedEndDate {
+            return true
+        }
+
+        guard let prevStateEndDate = todo.endDate else {
+            return false
+        }
+
+        let formatter: DateFormatter = {
+            let formatter = DateFormatter()
+            if isAllDay == true && isAllDay == todo.isAllDay {
+                formatter.dateFormat = "yyyyMMddhhmm"
+            } else {
+                formatter.dateFormat = "yyyyMMdd"
+            }
+            return formatter
+        }()
+        return formatter.string(from: endDate) == formatter.string(from: prevStateEndDate)
+    }
+
+    var isPreviousStateEqual: Bool {
+        guard let todo else {
+            return false
+        }
+
+        return (todo.content == content &&
+            todo.flag == flag &&
+            todo.subTodos.elementsEqual(subTodoList, by: { lhs, rhs in
+                lhs.id == rhs.id
+            }) &&
+            todo.tags.elementsEqual(tagList, by: { lhs, rhs in
+                lhs.id == rhs.id
+            }) &&
+            todo.todayTodo == isTodayTodo &&
+            isPreviousEndDateEqual &&
+            isPreviousRepeatStateEqual &&
+            todo.memo == memo)
+    }
+
     init(checkListViewModel: CheckListViewModel, mode: TodoAddMode = .add) {
         self.checkListViewModel = checkListViewModel
         self.mode = mode
@@ -288,7 +403,8 @@ final class TodoAddViewModel: ObservableObject {
             subTodos: subTodoList
                 .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
                 .map { $0.content },
-            subTodosCompleted: subTodoList.isEmpty ? nil : subTodoList.map { $0.completed }
+            subTodosCompleted: mode == .add ? nil :
+                (subTodoList.isEmpty ? [] : subTodoList.map { $0.completed })
         )
     }
 
@@ -338,13 +454,13 @@ final class TodoAddViewModel: ObservableObject {
     func updateTodo(
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        guard let todoId = todo?.id else {
+        guard let todo else {
             print("[Debug] todo를 찾을 수 없습니다. (\(#fileID), \(#function))")
             return
         }
 
         checkListViewModel.updateTodo(
-            todoId: todoId,
+            todoId: todo.id,
             todo: createTodoData()
         ) { result in
             switch result {
@@ -368,6 +484,10 @@ final class TodoAddViewModel: ObservableObject {
         //  Case front: endDate 계산하여 넘겨주기, 만약 다음 날짜가 없다면? 그냥 업데이트로 진행
         //  Case middle: endDate 계산하여 넘겨주기
         //  Case back: preRepeatEnd 계산하여 넘겨주기
+
+        //  반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
+        //  아래 옵션을 false로 변경한다.
+        isSelectedRepeat = false
         if at == .front || at == .middle {
             do {
                 guard let endDate = try todo.nextEndDate() else {
@@ -562,6 +682,7 @@ final class TodoAddViewModel: ObservableObject {
 
         isTodayTodo = todo.todayTodo
 
+        isChangedEndDate = false
         endDate = todo.endDate ?? .init()
         isSelectedEndDate = todo.endDate != nil
         isAllDay = todo.isAllDay
@@ -704,6 +825,7 @@ final class TodoAddViewModel: ObservableObject {
         tagList = []
         isTodayTodo = false
 
+        isChangedEndDate = false
         endDate = .init()
         isSelectedEndDate = false
 

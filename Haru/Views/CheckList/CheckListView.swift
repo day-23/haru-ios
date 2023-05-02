@@ -151,9 +151,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
-                                        TagView(tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue)
-                                            .padding(.leading, 21)
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
+                                        )
+                                        .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
@@ -164,14 +166,55 @@ struct CheckListView: View {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
+                                        todoList: $viewModel.todoListByFlag
+                                    ) {
+                                        viewModel.updateOrderByTag(tagId: tag.id)
+                                    } header: {
+                                        TagView(
+                                            tag: Tag(
+                                                id: DefaultTag.important.rawValue,
+                                                content: DefaultTag.important.rawValue
+                                            ),
+                                            isSelected: true
+                                        )
+                                        .padding(.leading, 21)
+                                    }
+
+                                    Divider()
+
+                                    ListSectionView(
+                                        checkListViewModel: viewModel,
+                                        todoAddViewModel: addViewModel,
                                         todoList: $viewModel.todoListByTag
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {
-                                        TagView(tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == tag.id)
-                                            .padding(.leading, 21)
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: true
+                                        )
+                                        .padding(.leading, 21)
                                     }
+
+                                    Divider()
+
+                                    ListSectionView(
+                                        checkListViewModel: viewModel,
+                                        todoAddViewModel: addViewModel,
+                                        todoList: $viewModel.todoListByCompleted
+                                    ) {
+                                        viewModel.updateOrderByTag(tagId: tag.id)
+                                    } header: {
+                                        TagView(
+                                            tag: Tag(
+                                                id: DefaultTag.completed.rawValue,
+                                                content: DefaultTag.completed.rawValue
+                                            ),
+                                            isSelected: true
+                                        )
+                                        .padding(.leading, 21)
+                                    }
+
                                 } offsetChanged: {
                                     self.changeOffset($0)
                                 }
