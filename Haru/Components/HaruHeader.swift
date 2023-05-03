@@ -84,11 +84,3 @@ struct HaruHeader<SearchContent: View>: View {
         .frame(height: 42)
     }
 }
-
-struct HaruHeader_Previews: PreviewProvider {
-    static var previews: some View {
-        HaruHeader(toggleIsClicked: nil) {
-            Text("hi")
-        }
-    }
-}

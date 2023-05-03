@@ -11,13 +11,7 @@ struct CalendarMainView: View {
     @StateObject var calendarVM: CalendarViewModel = .init()
 
     var body: some View {
-        VStack(spacing: 0) {
-            HaruHeader {
-                // TODO: 검색 뷰 만들어지면 넣어주기
-                Text("검색")
-            }
-            CalendarDateView(calendarVM: calendarVM)
-        }
+        CalendarDateView(calendarVM: calendarVM)
     }
 }
 

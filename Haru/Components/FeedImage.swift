@@ -42,6 +42,6 @@ struct FeedImage: View {
 
 struct FeedImage_Previews: PreviewProvider {
     static var previews: some View {
-        FeedImage(imageUrl: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!)
+        FeedImage(imageUrl: URL(string: "https://cdn.hankooki.com/news/photo/202301/46144_62027_1673489105.jpg")!)
     }
 }
