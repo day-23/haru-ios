@@ -22,9 +22,9 @@ struct SNSView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            VStack(spacing: 8) {
-                // FIXME: 네비게이션바 완성되면 삭제하기
-                Group {
+            // FIXME: 네비게이션바 완성되면 삭제하기
+            Group {
+                VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("HARU")
                         Image(systemName: isSelecting ? "chevron.down" : "chevron.forward")

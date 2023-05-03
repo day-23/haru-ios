@@ -17,13 +17,14 @@ struct ProfileInfoView: View {
     @StateObject var snsVM: SNSViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
             // FIXME: 네비게이션바 완성되면 삭제하기
             Group {
-                VStack(spacing: 8) {
+                VStack(alignment: .leading,spacing: 8) {
                     HStack {
                         Text("HARU")
                         Image(systemName: "chevron.down")
+                        Spacer()
                     }
                     .onTapGesture {
                         dismissAction.callAsFunction()
