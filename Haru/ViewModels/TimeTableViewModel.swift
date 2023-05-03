@@ -23,7 +23,7 @@ final class TimeTableViewModel: ObservableObject {
     @Published var scheduleList: [ScheduleCell] = []
     @Published var scheduleListWithoutTime: [[ScheduleCell]] = Array(repeating: [], count: 7)
     var maxRowCount: Int {
-        return scheduleListWithoutTime.reduce(0) { acc, curr in
+        scheduleListWithoutTime.reduce(0) { acc, curr in
             max(acc, curr.reduce(0) { maxOrder, schedule in
                 max(maxOrder, schedule.order)
             })
@@ -296,24 +296,20 @@ final class TimeTableViewModel: ObservableObject {
         }
 
         //  FIXME: - Alarms 데이터 넣어야 함
-        scheduleService.updateSchedule(draggingSchedule.id,
-                                       Request.Schedule(content: draggingSchedule.data.content,
-                                                        memo: draggingSchedule.data.memo,
-                                                        isAllDay: draggingSchedule.data.isAllDay,
-                                                        repeatStart: startDate,
-                                                        repeatEnd: endDate,
-                                                        repeatOption: draggingSchedule.data.repeatOption,
-                                                        categoryId: draggingSchedule.data.category?.id,
-                                                        alarms: draggingSchedule.data.alarms.map(\.time))) { result in
+        scheduleService.updateSchedule(scheduleId: draggingSchedule.id,
+                                       schedule: Request.Schedule(content: draggingSchedule.data.content,
+                                                                  memo: draggingSchedule.data.memo,
+                                                                  isAllDay: draggingSchedule.data.isAllDay,
+                                                                  repeatStart: startDate,
+                                                                  repeatEnd: endDate,
+                                                                  repeatOption: draggingSchedule.data.repeatOption,
+                                                                  categoryId: draggingSchedule.data.category?.id,
+                                                                  alarms: draggingSchedule.data.alarms.map(\.time))) { result in
             switch result {
             case .success(let schedule):
-                if let index = self.scheduleList.firstIndex(where: { schedule in
-                    schedule.id == self.draggingSchedule?.id
-                }) {
-                    self.draggingSchedule?.data = schedule
-                    self.scheduleList[index] = self.draggingSchedule!
-                    self.draggingSchedule = nil
-                }
+                self.draggingSchedule?.data = schedule
+                self.scheduleList.append(self.draggingSchedule!)
+                self.draggingSchedule = nil
                 self.findUnion()
             case .failure(let failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
@@ -324,7 +320,7 @@ final class TimeTableViewModel: ObservableObject {
     func updateDraggingTodo(
         index: Int
     ) {
-        guard var draggingTodo = draggingTodo else {
+        guard var draggingTodo else {
             return
         }
 
@@ -361,12 +357,12 @@ final class TimeTableViewModel: ObservableObject {
                     flag: draggingTodo.flag,
                     endDate: updatedEndDate,
                     isAllDay: draggingTodo.isAllDay,
-                    alarms: draggingTodo.alarms.map { $0.time },
+                    alarms: draggingTodo.alarms.map(\.time),
                     repeatOption: draggingTodo.repeatOption,
                     repeatValue: draggingTodo.repeatValue,
                     repeatEnd: draggingTodo.repeatEnd,
-                    tags: draggingTodo.tags.map { $0.content },
-                    subTodos: draggingTodo.subTodos.map { $0.content }
+                    tags: draggingTodo.tags.map(\.content),
+                    subTodos: draggingTodo.subTodos.map(\.content)
                 )
             ) { result in
                 switch result {

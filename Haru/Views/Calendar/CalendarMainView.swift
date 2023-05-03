@@ -9,9 +9,16 @@ import SwiftUI
 
 struct CalendarMainView: View {
     @StateObject var calendarVM: CalendarViewModel = .init()
-
+    @State var tc : Bool = false
+    
     var body: some View {
-        CalendarDateView(calendarVM: calendarVM)
+        VStack(spacing: 0) {
+            HaruHeader(toggleIsClicked: $tc) {
+                // TODO: 검색 뷰 만들어지면 넣어주기
+                Text("검색")
+            }
+            CalendarDateView(calendarVM: calendarVM)
+        }
     }
 }
 

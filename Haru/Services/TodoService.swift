@@ -11,6 +11,12 @@ import Foundation
 struct TodoService {
     //  MARK: - Properties
 
+    enum RepeatAt: String {
+        case front
+        case middle
+        case back
+    }
+
     private static let baseURL = Constants.baseURL + "todo/"
 
     private static let formatter: DateFormatter = {
@@ -21,7 +27,7 @@ struct TodoService {
 
     private static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(TodoService.formatter)
+        decoder.dateDecodingStrategy = .formatted(Self.formatter)
         return decoder
     }()
 
@@ -47,14 +53,14 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL + (Global.shared.user?.id ?? "unknown"),
+            Self.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: todo,
-            encoder: JSONParameterEncoder(encoder: TodoService.encoder),
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
             headers: headers
         ).responseDecodable(
             of: Response.self,
-            decoder: TodoService.decoder
+            decoder: Self.decoder
         ) { response in
             switch response.result {
             case let .success(response):
@@ -66,6 +72,66 @@ struct TodoService {
     }
 
     //  MARK: - Todo Read API
+
+    func fetchAllTodoList(
+        completion: @escaping (Result<(
+            flaggedTodos: [Todo],
+            taggedTodos: [Todo],
+            untaggedTodos: [Todo],
+            completedTodos: [Todo],
+            todayTodos: [Todo],
+            todayFlaggedTodos: [Todo],
+            endDatedTodos: [Todo]
+        ), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: Data
+
+            struct Data: Codable {
+                let flaggedTodos: [Todo]
+                let taggedTodos: [Todo]
+                let untaggedTodos: [Todo]
+                let completedTodos: [Todo]
+                let todayTodos: [Todo]
+                let todayFlaggedTodos: [Todo]
+                let endDatedTodos: [Todo]
+            }
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "endDate": "\(Date.now.year)-\(Date.now.month < 10 ? "0" : "")\(Date.now.month)-\(Date.now.day < 10 ? "0" : "")\(Date.now.day)T00:00:00+09:00",
+        ]
+
+        AF.request(
+            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos/all",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(
+                    .success((
+                        flaggedTodos: response.data.flaggedTodos,
+                        taggedTodos: response.data.taggedTodos,
+                        untaggedTodos: response.data.untaggedTodos,
+                        completedTodos: response.data.completedTodos,
+                        todayTodos: response.data.todayTodos,
+                        todayFlaggedTodos: response.data.todayFlaggedTodos,
+                        endDatedTodos: response.data.endDatedTodos
+                    ))
+                )
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 
     func fetchTodoList(
         completion: @escaping (Result<[Todo], Error>) -> Void
@@ -84,8 +150,8 @@ struct TodoService {
         }
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos"
-        ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
+            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos"
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -114,9 +180,9 @@ struct TodoService {
         }
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/main"
-        ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 let data = response.data
@@ -133,8 +199,14 @@ struct TodoService {
     }
 
     func fetchTodoListByTodayTodoAndUntilToday(
-        today: Date,
-        completion: @escaping (Result<(flaggedTodos: [Todo], todayTodos: [Todo], endDateTodos: [Todo]), Error>) -> Void
+        completion: @escaping (
+            Result<(
+                flaggedTodos: [Todo],
+                todayTodos: [Todo],
+                endDateTodos: [Todo],
+                completedTodos: [Todo]
+            ), Error>
+        ) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
@@ -144,28 +216,34 @@ struct TodoService {
                 let flaggedTodos: [Todo]
                 let todayTodos: [Todo]
                 let endDatedTodos: [Todo]
+                let completedTodos: [Todo]
             }
         }
 
-        //  FIXME: - 이는 현재 시간 기준 UTC +00:00으로 계산하여 보내기 때문에, 딱 오늘까지인지 아닌지 계산하는데 문제가 있음.
-        let formatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyyMMdd"
-            formatter.timeZone = TimeZone(abbreviation: "UTC")
-            return formatter
-        }()
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "endDate": "\(Date.now.year)-\(Date.now.month < 10 ? "0" : "")\(Date.now.month)-\(Date.now.day < 10 ? "0" : "")\(Date.now.day)T00:00:00+09:00",
+        ]
 
         AF.request(
-            TodoService.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/today?endDate=\(formatter.string(from: today))"
-        ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/today",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 let data = response.data
                 completion(.success((
                     flaggedTodos: data.flaggedTodos,
                     todayTodos: data.todayTodos,
-                    endDateTodos: data.endDatedTodos
+                    endDateTodos: data.endDatedTodos,
+                    completedTodos: data.completedTodos
                 )))
             case let .failure(failure):
                 completion(.failure(failure))
@@ -182,9 +260,9 @@ struct TodoService {
         }
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/main/flag"
-        ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -203,9 +281,9 @@ struct TodoService {
         }
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/main/tag"
-        ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -224,9 +302,9 @@ struct TodoService {
         }
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/main/untag"
-        ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -245,9 +323,9 @@ struct TodoService {
         }
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/main/completed"
-        ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -259,26 +337,35 @@ struct TodoService {
 
     func fetchTodoListByTag(
         tag: Tag,
-        completion: @escaping (Result<(todos: [Todo], completedTodos: [Todo]), Error>) -> Void
+        completion: @escaping (Result<(
+            flaggedTodos: [Todo],
+            unFlaggedTodos: [Todo],
+            completedTodos: [Todo]
+        ), Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
             let data: Data
 
             struct Data: Codable {
-                let todos: [Todo]
+                let flaggedTodos: [Todo]
+                let unFlaggedTodos: [Todo]
                 let completedTodos: [Todo]
             }
         }
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)"
-        ).responseDecodable(of: Response.self, decoder: TodoService.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 let data = response.data
-                completion(.success((todos: data.todos, completedTodos: data.completedTodos)))
+                completion(.success((
+                    flaggedTodos: data.flaggedTodos,
+                    unFlaggedTodos: data.unFlaggedTodos,
+                    completedTodos: data.completedTodos
+                )))
             case let .failure(error):
                 completion(.failure(error))
             }
@@ -312,7 +399,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/date",
             method: .post,
             parameters: parameters,
@@ -340,10 +427,50 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .put,
             parameters: todo,
-            encoder: JSONParameterEncoder(encoder: TodoService.encoder),
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func updateTodoWithRepeat(
+        todoId: String,
+        todo: Request.Todo,
+        date: Date,
+        at: RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var params: Parameters = todo.dictionary
+        if at == .front || at == .middle {
+            params["nextEndDate"] = Self.formatter.string(from: date)
+            if at == .middle {
+                params["changedDate"] = Self.formatter.string(from: .now)
+            }
+        }
+        if at == .back {
+            params["preRepeatEnd"] = Self.formatter.string(from: date)
+        }
+
+        AF.request(
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todo/\(todoId)/repeat/\(at.rawValue)",
+            method: .put,
+            parameters: params,
+            encoding: JSONEncoding.default,
             headers: headers
         ).response { response in
             switch response.result {
@@ -369,7 +496,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/flag/\(todoId)",
+            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/flag/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
@@ -398,7 +525,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/folded/\(todoId)",
+            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/folded/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
@@ -432,7 +559,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos/",
             method: .patch,
             parameters: params,
@@ -467,7 +594,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos/today",
             method: .patch,
             parameters: params,
@@ -497,7 +624,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos",
             method: .patch,
             parameters: params,
@@ -527,7 +654,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos",
             method: .patch,
             parameters: params,
@@ -559,7 +686,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos/tag",
             method: .patch,
             parameters: params,
@@ -589,7 +716,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)",
             method: .patch,
             parameters: params,
@@ -620,7 +747,7 @@ struct TodoService {
         ]
 
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/complete/subtodo/\(subTodoId)",
             method: .patch,
             parameters: params,
@@ -639,19 +766,28 @@ struct TodoService {
 
     func completeTodoWithRepeat(
         todoId: String,
-        todo: Request.Todo,
+        nextEndDate endDate: Date,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
+        var params: [String: Any] = [
+            "endDate": Self.formatter.string(from: endDate),
+        ]
+
+        if at == .middle {
+            params["completedDate"] = Self.formatter.string(from: .now)
+        }
+
         AF.request(
-            TodoService.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)/repeat",
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)/repeat/\(at.rawValue)",
             method: .patch,
-            parameters: todo,
-            encoder: JSONParameterEncoder(encoder: TodoService.encoder),
+            parameters: params,
+            encoding: JSONEncoding.default,
             headers: headers
         ).response { response in
             switch response.result {
@@ -671,8 +807,48 @@ struct TodoService {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(
-            TodoService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .delete
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deleteTodoWithRepeat(
+        todoId: String,
+        date: Date,
+        at: RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var params: Parameters = [:]
+
+        if at == .front || at == .middle {
+            params["endDate"] = Self.formatter.string(from: date)
+            if at == .middle {
+                params["removedDate"] = Self.formatter.string(from: .now)
+            }
+        }
+
+        if at == .back {
+            params["repeatEnd"] = Self.formatter.string(from: date)
+        }
+
+        AF.request(
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todo/\(todoId)/repeat/\(at.rawValue)",
+            method: .delete,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -689,7 +865,7 @@ struct TodoService {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(todoId)/tag/\(tagId)",
             method: .delete
         ).response { response in
@@ -708,7 +884,7 @@ struct TodoService {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         AF.request(
-            TodoService.baseURL +
+            Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(todoId)/subtodo/\(subTodoId)",
             method: .delete
         ).response { response in

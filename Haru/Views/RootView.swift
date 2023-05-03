@@ -22,6 +22,7 @@ struct RootView: View {
                     Text(tab.title)
                 }
                 .tag(tab)
+                .navigationViewStyle(.stack)
             }
         }
         .onAppear {

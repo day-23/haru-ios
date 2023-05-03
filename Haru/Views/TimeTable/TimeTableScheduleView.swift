@@ -142,9 +142,13 @@ struct TimeTableScheduleView: View {
                                    frame: frame
                                )
                             {
-                                if timeTableViewModel.draggingSchedule?.id != schedule.id {
+                                if schedule.id == "PREVIEW" {
                                     ScheduleItemView(schedule: $schedule)
-                                        .opacity(schedule.id == "PREVIEW" ? 0.5 : 1)
+                                        .opacity(0.5)
+                                        .frame(width: frame.width, height: frame.height)
+                                        .position(x: position.x, y: position.y)
+                                } else {
+                                    ScheduleItemView(schedule: $schedule)
                                         .frame(width: frame.width, height: frame.height)
                                         .position(x: position.x, y: position.y)
                                         .onDrop(of: [.text], delegate: CellDropDelegate(
@@ -154,10 +158,15 @@ struct TimeTableScheduleView: View {
                                             timeTableViewModel: _timeTableViewModel
                                         ))
                                         .onDrag {
+                                            let scheduleId = schedule.id
                                             timeTableViewModel.draggingSchedule = schedule
-                                            return NSItemProvider(object: schedule.id as NSString)
+                                            timeTableViewModel.scheduleList = timeTableViewModel.scheduleList.filter {
+                                                $0.id != schedule.id
+                                            }
+                                            return NSItemProvider(object: scheduleId as NSString)
                                         } preview: {
-                                            EmptyView()
+                                            ScheduleItemView(schedule: $schedule)
+                                                .frame(width: frame.width, height: frame.height)
                                         }
                                 }
                             }

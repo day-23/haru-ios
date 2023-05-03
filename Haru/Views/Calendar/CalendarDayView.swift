@@ -14,14 +14,13 @@ struct CalendarDayView: View {
     @State var data = Array(0 ... 30)
 
     @StateObject var calendarViewModel: CalendarViewModel
-    @StateObject var scheduleFormVM: ScheduleFormViewModel
 
     @State var prevPageIndex: Int = 15
 
     var body: some View {
         Pager(page: page, data: self.data.indices, id: \.self) { index in
             // TODO: todoAddViewModel 이렇게 사용해도 되는지 물어보기
-            CalendarDayDetailView(calendarVM: calendarViewModel, scheduleVM: scheduleFormVM, todoAddViewModel: TodoAddViewModel(checkListViewModel: CheckListViewModel()), row: index)
+            CalendarDayDetailView(calendarVM: calendarViewModel, todoAddViewModel: TodoAddViewModel(checkListViewModel: CheckListViewModel()), row: index)
                 .frame(width: 330, height: 480)
                 .cornerRadius(20)
         }
@@ -61,11 +60,5 @@ struct CalendarDayView: View {
             print("\(prevPageIndex)")
         }
         .frame(height: 480, alignment: .center)
-    }
-}
-
-struct CalendarDayView_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarDayView(calendarViewModel: CalendarViewModel(), scheduleFormVM: ScheduleFormViewModel(calendarVM: CalendarViewModel()))
     }
 }

@@ -31,8 +31,18 @@ struct TodoView: View {
                 break
             }
         }
-        res = "\(res)  "
+        res = "\(res)"
         return res
+    }
+
+    private var showExtraInfo: Bool {
+        todo.tags.count > 0 ||
+            todo.endDate != nil ||
+            todo.todayTodo ||
+            todo.alarms.count > 0 ||
+            todo.repeatValue != nil ||
+            todo.repeatOption != nil ||
+            !todo.memo.isEmpty
     }
 
     let formatter: DateFormatter = {
@@ -60,14 +70,14 @@ struct TodoView: View {
     }()
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(alignment: showExtraInfo ? .top : .center, spacing: 0) {
             if !todo.subTodos.isEmpty {
                 Button {
                     checkListViewModel.updateFolded(todo: todo) { _ in }
                 } label: {
                     Image("toggle")
                         .renderingMode(.template)
-                        .frame(width: 20, height: 20)
+                        .frame(width: 20, height: 28)
                         .rotationEffect(Angle(degrees: !todo.folded ? 90 : 0))
                         .foregroundColor(Color(0x646464, opacity: todo.completed ? 0.5 : 1))
                 }
@@ -81,13 +91,16 @@ struct TodoView: View {
                     if (todo.repeatOption == nil &&
                         todo.repeatValue == nil) || todo.completed
                     {
-                        checkListViewModel.completeTodo(todoId: todo.id,
-                                                        completed: !todo.completed) { result in
+                        checkListViewModel.completeTodo(
+                            todoId: todo.id,
+                            completed: !todo.completed
+                        ) { result in
                             switch result {
                             case .success:
                                 successCompletion(todoId: todo.id)
                             case .failure(let failure):
                                 print("[Debug] 반복하지 않는 할 일 완료 실패 \(failure) (\(#fileID), \(#function))")
+                                disabled = false
                             }
                         }
                         return
@@ -97,53 +110,33 @@ struct TodoView: View {
                         //  만약 반복이 끝났다면, nextEndDate == nil
                         guard let nextEndDate = try todo.nextEndDate() else {
                             //  반복이 끝났음
-                            let data = Request.Todo(
-                                content: todo.content,
-                                memo: todo.memo,
-                                todayTodo: todo.todayTodo,
-                                flag: todo.flag,
-                                endDate: nil,
-                                isAllDay: todo.isAllDay,
-                                alarms: todo.alarms.map(\.time),
-                                repeatOption: todo.repeatOption,
-                                repeatValue: todo.repeatValue,
-                                repeatEnd: todo.repeatEnd,
-                                tags: todo.tags.map(\.content),
-                                subTodos: todo.subTodos.map(\.content))
-
-                            checkListViewModel.completeTodoWithRepeat(todoId: todo.id,
-                                                                      todo: data) { result in
+                            checkListViewModel.completeTodo(
+                                todoId: todo.id,
+                                completed: !todo.completed
+                            ) { result in
                                 switch result {
                                 case .success:
                                     successCompletion(todoId: todo.id)
                                 case .failure(let failure):
-                                    print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
+                                    print("[Debug] 반복하는 할 일 마지막 반복 완료 실패, \(failure) (\(#fileID), \(#function))")
+                                    disabled = false
                                 }
                             }
                             return
                         }
 
                         //  반복이 끝나지 않음. (무한히 반복하는 할 일 or 반복 마감일 이전)
-                        let data = Request.Todo(
-                            content: todo.content,
-                            memo: todo.memo,
-                            todayTodo: todo.todayTodo,
-                            flag: todo.flag,
-                            endDate: nextEndDate,
-                            isAllDay: todo.isAllDay,
-                            alarms: todo.alarms.map(\.time),
-                            repeatOption: todo.repeatOption,
-                            repeatValue: todo.repeatValue,
-                            repeatEnd: todo.repeatEnd,
-                            tags: todo.tags.map(\.content),
-                            subTodos: todo.subTodos.map(\.content))
-                        checkListViewModel.completeTodoWithRepeat(todoId: todo.id,
-                                                                  todo: data) { result in
+                        checkListViewModel.completeTodoWithRepeat(
+                            todoId: todo.id,
+                            nextEndDate: nextEndDate,
+                            at: .front
+                        ) { result in
                             switch result {
                             case .success:
                                 successCompletion(todoId: todo.id)
                             case .failure(let failure):
                                 print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
+                                disabled = false
                             }
                         }
                     } catch {
@@ -159,7 +152,7 @@ struct TodoView: View {
                     }
                 }
                 .padding(.leading, todo.subTodos.isEmpty ? 6 : 0)
-                .padding(.trailing, 14)
+                .padding(.trailing, 8)
                 .disabled(disabled)
 
             VStack(alignment: .leading, spacing: 0) {
@@ -168,17 +161,12 @@ struct TodoView: View {
                     .strikethrough(todo.completed)
                     .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
 
-                if todo.tags.count > 0 ||
-                    todo.endDate != nil ||
-                    todo.todayTodo ||
-                    todo.alarms.count > 0 ||
-                    todo.repeatValue != nil ||
-                    todo.repeatOption != nil ||
-                    !todo.memo.isEmpty
-                {
+                if showExtraInfo {
                     HStack(spacing: 0) {
                         if !tagString.isEmpty {
                             Text(tagString)
+                                .frame(alignment: .leading)
+                            Text("  ")
                         }
 
                         if let todoDate = todo.endDate {
@@ -236,24 +224,78 @@ struct TodoView: View {
             }
 
             Spacer()
-
             StarButton(isClicked: todo.flag)
                 .onTapGesture {
                     checkListViewModel.updateFlag(todo: todo) { _ in }
                 }
         }
-        .frame(maxWidth: .infinity, minHeight: 48)
+        .frame(maxWidth: .infinity)
         .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
         .padding(.trailing, 20)
         .background(backgroundColor)
-        .contextMenu {
-            Button(action: {
-                checkListViewModel.deleteTodo(todoId: todo.id) { _ in
-                    checkListViewModel.fetchTodoList()
+        .overlay(content: {
+            GeometryReader { proxy in
+                Color.clear.onAppear {
+                    checkListViewModel.todoListOffsetMap = checkListViewModel.todoListOffsetMap.merging([(todo.id, proxy.frame(in: .global).midY)], uniquingKeysWith: { first, _ in
+                        first
+                    })
                 }
-            }, label: {
-                Label("Delete", systemImage: "trash")
-            })
+                .frame(height: 0)
+            }
+        })
+        .contextMenu {
+            if todo.repeatOption == nil {
+                Button {
+                    checkListViewModel.deleteTodo(todoId: todo.id) { _ in
+                        checkListViewModel.fetchTodoList()
+                    }
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            } else {
+                Button {
+                    do {
+                        guard let date = try todo.nextEndDate() else {
+                            checkListViewModel.deleteTodo(todoId: todo.id) { _ in
+                                checkListViewModel.fetchTodoList()
+                            }
+                            return
+                        }
+
+                        checkListViewModel.deleteTodoWithRepeat(
+                            todoId: todo.id,
+                            date: date,
+                            at: .front
+                        ) { result in
+                            switch result {
+                            case .success:
+                                checkListViewModel.fetchTodoList()
+                            case .failure(let failure):
+                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            }
+                        }
+                    } catch {
+                        switch error {
+                        case RepeatError.invalid:
+                            print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                        case RepeatError.calculation:
+                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                        default:
+                            print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                        }
+                    }
+                } label: {
+                    Label("이 이벤트만 삭제", systemImage: "trash")
+                }
+
+                Button {
+                    checkListViewModel.deleteTodo(todoId: todo.id) { _ in
+                        checkListViewModel.fetchTodoList()
+                    }
+                } label: {
+                    Label("모든 이벤트 삭제", systemImage: "trash")
+                }
+            }
         }
     }
 

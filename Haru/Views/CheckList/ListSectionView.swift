@@ -26,7 +26,7 @@ struct ListSectionView<Content>: View where Content: View {
                         TodoAddView(viewModel: todoAddViewModel)
                             .onAppear {
                                 todoAddViewModel.mode = .edit
-                                todoAddViewModel.todoId = todo.id
+                                todoAddViewModel.todo = todo
                                 todoAddViewModel.applyTodoData(todo: todo)
                             }
                     } label: {
@@ -37,7 +37,6 @@ struct ListSectionView<Content>: View where Content: View {
                         )
                         .foregroundColor(.black)
                     }
-                    .id("\(todo.id) \(UUID().uuidString)")
 
                     if !todo.folded {
                         ForEach(todo.subTodos) { subTodo in
@@ -47,7 +46,6 @@ struct ListSectionView<Content>: View where Content: View {
                                 subTodo: subTodo,
                                 backgroundColor: itemBackgroundColor
                             )
-                            .id("\(subTodo.id) \(UUID().uuidString)")
                         }
                         .moveDisabled(true)
                     }
@@ -61,6 +59,7 @@ struct ListSectionView<Content>: View where Content: View {
         } header: {
             HStack {
                 header()
+                    .padding(.top, 1)
                 Spacer()
             }
             .background(itemBackgroundColor)

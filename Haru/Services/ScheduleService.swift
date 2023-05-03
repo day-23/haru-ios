@@ -153,9 +153,9 @@ final class ScheduleService {
      * 일정 업데이트 API
      */
     func updateSchedule(
-        _ scheduleId: String,
-        _ schedule: Request.Schedule,
-        _ completion: @escaping (Result<Schedule, Error>) -> Void
+        scheduleId: String?,
+        schedule: Request.Schedule,
+        completion: @escaping (Result<Schedule, Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
@@ -176,7 +176,7 @@ final class ScheduleService {
         decoder.dateDecodingStrategy = .formatted(formatter)
 
         AF.request(
-            ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(scheduleId)",
+            ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(scheduleId ?? "unknown")",
             method: .patch,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: encoder),
@@ -193,16 +193,58 @@ final class ScheduleService {
     }
 
     /**
-     *  달력에 표시될 일정 만드는 함수
+     * 일정 수정하기 (이 일정만 수정)
      */
-    func updateSchedule(scheduleId: String?, schedule: Request.Schedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    func updateRepeatFrontSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
         AF.request(
-            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")",
-            method: .patch,
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/front",
+            method: .put,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func updateRepeatMiddleSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/middle",
+            method: .put,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func updateRepeatBackSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/back",
+            method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
             headers: headers
@@ -217,12 +259,91 @@ final class ScheduleService {
     }
 
     /**
-     * 일정 삭제하기
+     * 일정 삭제하기 (모든 일정 삭제, 일반 삭제)
      */
     func deleteSchedule(scheduleId: String?, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         AF.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")",
             method: .delete
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    /**
+     * 일정 삭제하기 (이 일정만 삭제)
+     */
+    func deleteRepeatFrontSchedule(scheduleId: String?, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "repeatStart": Self.formatter.string(from: repeatStart),
+        ]
+
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/front",
+            method: .delete,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deleteRepeatMiddleSchedule(scheduleId: String?, removedDate: Date, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "removedDate": Self.formatter.string(from: removedDate),
+            "repeatStart": Self.formatter.string(from: repeatStart),
+        ]
+
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/middle",
+            method: .delete,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deleteRepeatBackSchedule(scheduleId: String?, repeatEnd: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "repeatEnd": Self.formatter.string(from: repeatEnd),
+        ]
+
+        AF.request(
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/back",
+            method: .delete,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:

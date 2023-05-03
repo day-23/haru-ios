@@ -8,34 +8,50 @@
 import SwiftUI
 
 struct ListView<Content>: View where Content: View {
+    @StateObject var checkListViewModel: CheckListViewModel
     @ViewBuilder let content: () -> Content
-    let offsetChanged: (CGFloat?) -> Void
+    let offsetChanged: (CGPoint?) -> Void
 
     var body: some View {
-        ScrollView {
-            LazyVStack {
-                content()
-            }
+        ScrollViewReader { proxy in
+            ScrollView {
+                ZStack {
+                    //  LazyVStack {
+                    VStack {
+                        content()
+                        Spacer(minLength: 80)
+                    }
 
-            GeometryReader { geometry in
-                Color.clear.preference(
-                    key: OffsetKey.self,
-                    value: geometry.frame(in: .global).minY
-                )
-                .frame(height: 0)
+                    GeometryReader { geometry in
+                        Color.clear.preference(
+                            key: OffsetKey.self,
+                            value: geometry.frame(in: .named("scroll")).origin
+                        )
+                        .frame(height: 0)
+                    }
+                }
             }
-        }
-        .onPreferenceChange(OffsetKey.self) { value in
-            DispatchQueue.main.async {
-                offsetChanged(value)
+            .coordinateSpace(name: "scroll")
+            .onPreferenceChange(OffsetKey.self) { value in
+                DispatchQueue.main.async {
+                    offsetChanged(value)
+                }
+            }
+            .onChange(of: checkListViewModel.todoListOffsetMap) { newValue in
+                guard let justAddedTodoId = checkListViewModel.justAddedTodoId
+                else { return }
+                withAnimation {
+                    proxy.scrollTo(justAddedTodoId, anchor: .center)
+                    checkListViewModel.justAddedTodoId = nil
+                }
             }
         }
     }
 }
 
 struct OffsetKey: PreferenceKey {
-    static let defaultValue: CGFloat? = nil
-    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+    static let defaultValue: CGPoint? = nil
+    static func reduce(value: inout CGPoint?, nextValue: () -> CGPoint?) {
         value = value ?? nextValue()
     }
 }

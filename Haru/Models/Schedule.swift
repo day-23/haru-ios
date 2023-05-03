@@ -28,12 +28,42 @@ struct Schedule: Identifiable, Codable {
 
     let createdAt: Date?
     var updatedAt: Date?
+
+    // MARK: 프론트를 위한 필드
+
+    var realRepeatStart: Date?
+    var realRepeatEnd: Date?
+
+    var prevRepeatEnd: Date?
+    var nextRepeatStart: Date?
 }
 
 // MARK: - extension
 
 extension Schedule: Productivity, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
-        lhs.id == rhs.id
+        lhs.id == rhs.id && lhs.repeatStart == rhs.repeatStart
+    }
+}
+
+extension Schedule {
+    static func createRepeatSchedule(schedule: Schedule, repeatStart: Date, repeatEnd: Date, prevRepeatEnd: Date? = nil, nextRepeatStart: Date? = nil) -> Schedule {
+        Schedule(
+            id: schedule.id,
+            content: schedule.content,
+            memo: schedule.memo,
+            isAllDay: schedule.isAllDay,
+            repeatStart: repeatStart,
+            repeatEnd: repeatEnd,
+            repeatOption: schedule.repeatOption,
+            repeatValue: schedule.repeatValue,
+            category: schedule.category,
+            alarms: schedule.alarms,
+            createdAt: schedule.createdAt,
+            realRepeatStart: schedule.repeatStart,
+            realRepeatEnd: schedule.repeatEnd,
+            prevRepeatEnd: prevRepeatEnd,
+            nextRepeatStart: nextRepeatStart
+        )
     }
 }

@@ -12,7 +12,7 @@ struct ScheduleFormView: View {
     @Environment(\.dismiss) var dismissAction
     @StateObject var scheduleFormVM: ScheduleFormViewModel
 
-    @Binding var isSchModalVisible: Bool
+    @Binding var isSchModalVisible: Bool // 일정 추가하는 경우 true
 
     @State private var showCategorySheet: Bool = false
     @State private var showingPopup: Bool = false
@@ -20,6 +20,15 @@ struct ScheduleFormView: View {
     @State private var selectedIdx: Int?
     
     var selectedIndex: Int
+    
+    @State var showDeleteActionSheet: Bool = false
+    @State var showEditActionSheet: Bool = false
+    @State var actionSheetOption: ActionSheetOption = .isNotRepeat
+        
+    enum ActionSheetOption {
+        case isRepeat
+        case isNotRepeat
+    }
 
     var body: some View {
         ScrollView {
@@ -127,23 +136,17 @@ struct ScheduleFormView: View {
                     
                     HStack {
                         VStack(alignment: .center) {
-                            DatePicker(
-                                "",
+                            CustomDatePicker(
                                 selection: $scheduleFormVM.repeatStart,
                                 displayedComponents: [.date]
                             )
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
                             .transition(.picker)
                             
                             if !scheduleFormVM.isAllDay {
-                                DatePicker(
-                                    "",
+                                CustomDatePicker(
                                     selection: $scheduleFormVM.repeatStart,
                                     displayedComponents: [.hourAndMinute]
                                 )
-                                .datePickerStyle(.compact)
-                                .labelsHidden()
                                 .transition(.picker)
                             }
                         }
@@ -151,30 +154,24 @@ struct ScheduleFormView: View {
                         Spacer()
                         
                         VStack(alignment: .center) {
-                            DatePicker(
-                                "",
+                            CustomDatePicker(
                                 selection: $scheduleFormVM.repeatEnd,
-                                in: scheduleFormVM.repeatStart...,
-                                displayedComponents: [.date]
+                                displayedComponents: [.date],
+                                pastCutoffDate: scheduleFormVM.repeatStart
                             )
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
                             .transition(.picker)
                             
                             if !scheduleFormVM.isAllDay {
-                                DatePicker(
-                                    "",
+                                CustomDatePicker(
                                     selection: $scheduleFormVM.repeatEnd,
                                     displayedComponents: [.hourAndMinute]
                                 )
-                                .datePickerStyle(.compact)
-                                .labelsHidden()
                                 .transition(.picker)
                             }
                         }
                     }
                     .padding(.horizontal, 20)
-                    .scaleEffect(0.8)
+                    
                     
                     Divider()
                 }
@@ -281,14 +278,12 @@ struct ScheduleFormView: View {
                                         }
                                         Spacer()
                                         if scheduleFormVM.isSelectedRepeatEnd {
-                                            DatePicker(
+                                            CustomDatePicker(
                                                 selection: $scheduleFormVM.realRepeatEnd,
-                                                in: scheduleFormVM.repeatEnd...,
-                                                displayedComponents: [.date]
-                                            ) {}
-                                                .labelsHidden()
-                                                .scaleEffect(0.75)
-                                                .padding(.vertical, -5)
+                                                displayedComponents: [.date],
+                                                pastCutoffDate: scheduleFormVM.repeatEnd
+                                            )
+                                            .padding(.vertical, -5)
                                         }
                                     }
                                 }
@@ -337,16 +332,23 @@ struct ScheduleFormView: View {
                         Button {
                             switch scheduleFormVM.mode {
                             case .add:
-                                isSchModalVisible = false
+                                isSchModalVisible = false // dismiss
                             case .edit:
-                                scheduleFormVM.deleteSchedule()
-                                dismissAction.callAsFunction()
+                                showDeleteActionSheet = true
+                                actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
                             }
                         } label: {
-                            Text(scheduleFormVM.mode == .add ? "취소" : "삭제")
-                                .font(.pretendard(size: 20, weight: .medium))
-                        }
-                        .tint(.mainBlack)
+                            HStack {
+                                Text(scheduleFormVM.mode == .add ? "취소" : "일정 삭제하기")
+                                    .font(.pretendard(size: 20, weight: .medium))
+                                
+                                Image("trash")
+                                    .renderingMode(.template)
+                                    .frame(width: 28, height: 28)
+                            }
+                            .foregroundColor(.red)
+                        }.actionSheet(isPresented: $showDeleteActionSheet, content: getDeleteActionSheet)
+                        
                         Spacer()
                         Button {
                             // TODO: 일정의 종료 시간이 일정의 시작 시간보다 빠르면 toast 알림창
@@ -382,10 +384,83 @@ struct ScheduleFormView: View {
                 }
             }
         }
+        .toolbar {
+            if !isSchModalVisible {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showEditActionSheet = true
+                        actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
+                    } label: {
+                        Image("confirm")
+                            .colorMultiply(.mainBlack)
+                            .frame(width: 28, height: 28)
+                    }
+                    .actionSheet(isPresented: $showEditActionSheet, content: getEditActionSheet)
+                }
+            }
+        }
     }
     
     func getRepeatOption() -> [RepeatOption] {
         let optionCnt = RepeatOption.allCases.count
         return RepeatOption.allCases.suffix(scheduleFormVM.overDay ? optionCnt - 1 : optionCnt)
+    }
+    
+    func getDeleteActionSheet() -> ActionSheet {
+        let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 삭제하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 삭제하시겠습니까?")
+        let deleteButton: ActionSheet.Button = .destructive(Text("이 이벤트만 삭제")) {
+            scheduleFormVM.deleteTargetSchedule()
+        }
+        let deleteAllButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "모든 이벤트 삭제" : "이 이벤트 삭제")) {
+            scheduleFormVM.deleteSchedule()
+            dismissAction.callAsFunction()
+        }
+        let cancleButton: ActionSheet.Button = .cancel()
+            
+        switch actionSheetOption {
+        case .isRepeat:
+            return ActionSheet(title: title,
+                               message: nil,
+                               buttons: [deleteButton, deleteAllButton, cancleButton])
+
+        case .isNotRepeat:
+            return ActionSheet(title: title,
+                               message: nil,
+                               buttons: [deleteAllButton, cancleButton])
+        }
+    }
+    
+    func getEditActionSheet() -> ActionSheet {
+        let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 편집하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 편집하시겠습니까?")
+        let editButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "이 이벤트만 편집" : "이 이벤트 편집")) {
+            scheduleFormVM.isSelectedRepeat = false
+            scheduleFormVM.updateTargetSchedule()
+        }
+        let editAllButton: ActionSheet.Button = .destructive(Text("모든 이벤트 편집")) {
+            scheduleFormVM.updateSchedule()
+            dismissAction.callAsFunction()
+        }
+        let cancleButton: ActionSheet.Button = .cancel()
+
+        switch actionSheetOption {
+        case .isRepeat:
+            if scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue ||
+                scheduleFormVM.tmpIsSelectedRepeatEnd != scheduleFormVM.isSelectedRepeat ||
+                scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd
+            {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [editAllButton, cancleButton])
+            } else {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [editButton, editAllButton, cancleButton])
+            }
+            
+        case .isNotRepeat:
+            return ActionSheet(title: title,
+                               message: nil,
+                               buttons: [editButton, cancleButton])
+        }
     }
 }

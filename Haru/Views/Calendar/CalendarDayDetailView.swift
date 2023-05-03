@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CalendarDayDetailView: View {
     var calendarVM: CalendarViewModel
-    @StateObject var scheduleVM: ScheduleFormViewModel
+//    @StateObject var scheduleVM: ScheduleFormViewModel
     var todoAddViewModel: TodoAddViewModel
     
     @State private var content: String = ""
@@ -56,11 +56,7 @@ struct CalendarDayDetailView: View {
                         
                         ForEach(calendarVM.scheduleList[row].indices, id: \.self) { index in
                             NavigationLink {
-                                ScheduleFormView(scheduleFormVM: scheduleVM, isSchModalVisible: .constant(false), selectedIndex: row)
-                                    .onAppear {
-                                        scheduleVM.mode = .edit
-                                        scheduleVM.initScheduleData(schedule: calendarVM.scheduleList[row][index])
-                                    }
+                                ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM, schedule: calendarVM.scheduleList[row][index]), isSchModalVisible: .constant(false), selectedIndex: row)
                             } label: {
                                 HStack(spacing: 20) {
                                     Circle()
@@ -135,7 +131,7 @@ struct CalendarDayDetailView: View {
                             .cornerRadius(8)
                         
                         Button {
-                            scheduleVM.addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
+                            ScheduleFormViewModel(calendarVM: calendarVM).addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
                             self.content = ""
                         } label: {
                             Image("plus-button")

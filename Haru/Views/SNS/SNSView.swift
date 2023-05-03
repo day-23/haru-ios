@@ -18,43 +18,36 @@ struct SNSView: View {
 
     @StateObject var snsVM: SNSViewModel = .init()
 
-    @State var isSelecting: Bool = false
+    @State var toggleIsClicked: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading) {
-            // FIXME: 네비게이션바 완성되면 삭제하기
-            Group {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("HARU")
-                        Image(systemName: isSelecting ? "chevron.down" : "chevron.forward")
+        ZStack {
+            VStack(alignment: .leading, spacing: 14) {
+                // FIXME: 네비게이션바 완성되면 삭제하기
+                HaruHeader(toggleIsClicked: $toggleIsClicked, backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])) {
+                    FallowView()
+                }
 
-                        Spacer()
-                        NavigationLink {
-                            FallowView()
-                        } label: {
-                            Image(systemName: "magnifyingglass")
-                                .renderingMode(.template)
-                                .foregroundColor(.mainBlack)
-                                .fontWeight(.bold)
-                        }
-                    }
-                    .onTapGesture {
-                        isSelecting.toggle()
-                    }
-                    if isSelecting {
+                FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
+            }
+
+            if toggleIsClicked {
+                VStack {
+                    Group {
                         NavigationLink {
                             ProfileInfoView(isMine: false, snsVM: snsVM)
-
+                            
                         } label: {
                             Text("친구 피드")
                         }
+                        Divider()
                         NavigationLink {
                             // go some View
                             LookAroundView()
                         } label: {
                             Text("둘러보기")
                         }
+                        Divider()
                         NavigationLink {
                             ProfileInfoView(isMine: true, snsVM: snsVM)
                                 .onAppear {
@@ -64,11 +57,15 @@ struct SNSView: View {
                             Text("내 기록")
                         }
                     }
+                    .foregroundColor(Color(0x191919))
                 }
-                .padding(.horizontal, 20)
+                .frame(width: 94, height: 96)
+                .padding(8)
+                .background(.white)
+                .cornerRadius(10)
+                .position(x: 60, y: 90)
+                .transition(.opacity.animation(.easeIn))
             }
-
-            FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
         }
     }
 }

@@ -14,7 +14,7 @@ struct HaruView: View {
 
     let formatter: DateFormatter = {
         let formatter: DateFormatter = .init()
-        formatter.dateFormat = "M월 d일 EEE요일"
+        formatter.dateFormat = "M월 d일 EEE"
         return formatter
     }()
 
@@ -27,7 +27,7 @@ struct HaruView: View {
             ).ignoresSafeArea()
                 .opacity(0.5)
 
-            ListView {
+            ListView(checkListViewModel: viewModel) {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
@@ -36,13 +36,11 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    HStack(spacing: 0) {
-                        StarButton(isClicked: true)
-                        Text("중요")
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .padding(.leading, 6)
-                    }
-                    .padding(.leading, 29)
+                    TagView(
+                        tag: Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue),
+                        isSelected: true
+                    )
+                    .padding(.leading, 21)
                 }
 
                 Divider()
@@ -78,6 +76,26 @@ struct HaruView: View {
                     )
                     .padding(.leading, 21)
                 }
+
+                Divider()
+
+                ListSectionView(
+                    checkListViewModel: viewModel,
+                    todoAddViewModel: addViewModel,
+                    todoList: $viewModel.todoListByCompleted,
+                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
+                ) {
+                    viewModel.updateOrderHaru()
+                } header: {
+                    TagView(
+                        tag: Tag(
+                            id: DefaultTag.completed.rawValue,
+                            content: DefaultTag.completed.rawValue
+                        ),
+                        isSelected: true
+                    )
+                    .padding(.leading, 21)
+                }
             } offsetChanged: { _ in }
         }
         .navigationBarBackButtonHidden()
@@ -97,5 +115,12 @@ struct HaruView: View {
             }
         }
         .toolbarBackground(Color(0xD9EAFD))
+        .onAppear {
+            viewModel.mode = .haru
+            viewModel.fetchTodoListByTodayTodoAndUntilToday()
+        }
+        .onDisappear {
+            viewModel.mode = .main
+        }
     }
 }
