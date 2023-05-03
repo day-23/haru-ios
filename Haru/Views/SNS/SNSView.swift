@@ -36,7 +36,7 @@ struct SNSView: View {
                     Group {
                         NavigationLink {
                             ProfileInfoView(isMine: false, snsVM: snsVM)
-                            
+
                         } label: {
                             Text("친구 피드")
                         }

@@ -8,12 +8,27 @@
 import SwiftUI
 
 struct HaruHeader<SearchContent: View>: View {
+    var toggleOn: Bool
+
     @Binding var toggleIsClicked: Bool
 
-    var backgroundColor: Color = .white
+    var backgroundColor: Color
     var backgroundGradient: Gradient?
-    @ViewBuilder var searchView: SearchContent // 검색 버튼 눌렀을 때 이동할 뷰를 넘겨주면 된다.
+    @ViewBuilder var searchView: () -> SearchContent // 검색 버튼 눌렀을 때 이동할 뷰를 넘겨주면 된다.
 
+    init(toggleIsClicked: Binding<Bool>? = nil, backgroundColor: Color = .white, backgroundGradient: Gradient? = nil, @ViewBuilder searchView: @escaping () -> SearchContent) {
+        _toggleIsClicked = toggleIsClicked ?? .constant(false)
+        self.backgroundColor = backgroundColor
+        self.backgroundGradient = backgroundGradient
+        self.searchView = searchView
+        
+        if toggleIsClicked == nil {
+            toggleOn = false
+        } else {
+            toggleOn = true
+        }
+    }
+    
     var body: some View {
         ZStack {
             if let backgroundGradient {
@@ -36,20 +51,22 @@ struct HaruHeader<SearchContent: View>: View {
                         .font(.pretendard(size: 20, weight: .bold))
                         .foregroundColor(Color(0x191919))
 
-                    Button {
-                        withAnimation {
-                            toggleIsClicked.toggle()
+                    if toggleOn {
+                        Button {
+                            withAnimation {
+                                toggleIsClicked.toggle()
+                            }
+                        } label: {
+                            Image("toggle")
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x646464))
+                                .rotationEffect(.degrees(toggleIsClicked ? 90 : 0))
                         }
-                    } label: {
-                        Image("toggle")
-                            .renderingMode(.template)
-                            .foregroundColor(Color(0x646464))
-                            .rotationEffect(.degrees(toggleIsClicked ? 90 : 0))
                     }
 
                     Spacer()
                     NavigationLink {
-                        searchView
+                        searchView()
                     } label: {
                         Image(systemName: "magnifyingglass")
                             .renderingMode(.template)
@@ -70,7 +87,7 @@ struct HaruHeader<SearchContent: View>: View {
 
 struct HaruHeader_Previews: PreviewProvider {
     static var previews: some View {
-        HaruHeader(toggleIsClicked: .constant(false)) {
+        HaruHeader(toggleIsClicked: nil) {
             Text("hi")
         }
     }
