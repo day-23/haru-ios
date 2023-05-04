@@ -235,10 +235,19 @@ final class TimeTableViewModel: ObservableObject {
                         if var start = schedule.repeatStart.indexOfWeek(),
                            var end = schedule.repeatEnd.indexOfWeek()
                         {
-                            if schedule.repeatStart.weekOfYear() < self.currentWeek {
+                            if schedule.repeatStart.year < self.currentYear {
+                                start = 0
+                            } else if schedule.repeatStart.year == self.currentYear,
+                                      schedule.repeatStart.weekOfYear() < self.currentWeek
+                            {
                                 start = 0
                             }
-                            if schedule.repeatEnd.weekOfYear() > self.currentWeek {
+
+                            if schedule.repeatEnd.year == self.currentYear,
+                               schedule.repeatEnd.weekOfYear() > self.currentWeek
+                            {
+                                end = 6
+                            } else if schedule.repeatEnd.year > self.currentYear {
                                 end = 6
                             }
 
@@ -297,14 +306,16 @@ final class TimeTableViewModel: ObservableObject {
 
         //  FIXME: - Alarms 데이터 넣어야 함
         scheduleService.updateSchedule(scheduleId: draggingSchedule.id,
-                                       schedule: Request.Schedule(content: draggingSchedule.data.content,
-                                                                  memo: draggingSchedule.data.memo,
-                                                                  isAllDay: draggingSchedule.data.isAllDay,
-                                                                  repeatStart: startDate,
-                                                                  repeatEnd: endDate,
-                                                                  repeatOption: draggingSchedule.data.repeatOption,
-                                                                  categoryId: draggingSchedule.data.category?.id,
-                                                                  alarms: draggingSchedule.data.alarms.map(\.time))) { result in
+                                       schedule: Request.Schedule(
+                                           content: draggingSchedule.data.content,
+                                           memo: draggingSchedule.data.memo,
+                                           isAllDay: draggingSchedule.data.isAllDay,
+                                           repeatStart: startDate,
+                                           repeatEnd: endDate,
+                                           repeatOption: draggingSchedule.data.repeatOption,
+                                           categoryId: draggingSchedule.data.category?.id,
+                                           alarms: draggingSchedule.data.alarms.map(\.time)
+                                       )) { result in
             switch result {
             case .success(let schedule):
                 self.draggingSchedule?.data = schedule
