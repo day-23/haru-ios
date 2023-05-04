@@ -41,10 +41,9 @@ struct TimeTableTodoRow: View {
                         .foregroundColor(
                             index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
                         )
-                        .padding(.horizontal, 6)
                 }
             }
-            .padding(.trailing, 24)
+            .frame(width: 60)
 
             if todoList.isEmpty {
                 EmptySectionView()
@@ -69,6 +68,5 @@ struct TimeTableTodoRow: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: 72)
-        .padding(.leading, 24)
     }
 }
