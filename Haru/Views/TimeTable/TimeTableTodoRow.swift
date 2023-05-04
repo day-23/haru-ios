@@ -13,7 +13,7 @@ struct TimeTableTodoRow: View {
     var index: Int
     var date: Date
     @Binding var todoList: [Todo]
-    var timeTableViewModel: TimeTableViewModel
+    @StateObject var timeTableViewModel: TimeTableViewModel
 
     var body: some View {
         HStack(spacing: 0) {
@@ -57,6 +57,7 @@ struct TimeTableTodoRow: View {
                                 todo: todo
                             )
                             .transition(.scale)
+                            .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 10))
                             .onDrag {
                                 timeTableViewModel.draggingTodo = todo
                                 return NSItemProvider(object: todo.id as NSString)

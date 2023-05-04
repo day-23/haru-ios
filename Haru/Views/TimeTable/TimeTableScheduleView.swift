@@ -160,13 +160,10 @@ struct TimeTableScheduleView: View {
                                         .onDrag {
                                             let scheduleId = schedule.id
                                             timeTableViewModel.draggingSchedule = schedule
-                                            timeTableViewModel.scheduleList = timeTableViewModel.scheduleList.filter {
-                                                $0.id != schedule.id
-                                            }
                                             return NSItemProvider(object: scheduleId as NSString)
                                         } preview: {
                                             ScheduleItemView(schedule: $schedule)
-                                                .frame(width: frame.width, height: frame.height)
+                                                .frame(width: 0.1, height: 0.1)
                                         }
                                 }
                             }

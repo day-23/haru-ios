@@ -303,6 +303,7 @@ final class TimeTableViewModel: ObservableObject {
         guard let draggingSchedule else {
             return
         }
+        scheduleList = scheduleList.filter { $0.id != draggingSchedule.id }
 
         //  FIXME: - Alarms 데이터 넣어야 함
         scheduleService.updateSchedule(scheduleId: draggingSchedule.id,
