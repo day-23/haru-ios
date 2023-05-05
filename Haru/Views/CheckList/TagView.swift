@@ -14,13 +14,18 @@ struct TagView: View {
     var body: some View {
         Text(tag.content)
             .font(.pretendard(size: 14, weight: .bold))
-            .foregroundColor(isSelected ? .white : Color(0x191919))
+            .foregroundColor(
+                isSelected
+                    ? .white
+                    : Color(0x191919)
+            )
             .bold()
             .padding(.vertical, 5)
             .padding(.horizontal, 10)
-            .background(isSelected ?
-                LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .leading, endPoint: .trailing) :
-                LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
+            .background(
+                isSelected
+                    ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .leading, endPoint: .trailing)
+                    : LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
             )
             .cornerRadius(10)
             .overlay(

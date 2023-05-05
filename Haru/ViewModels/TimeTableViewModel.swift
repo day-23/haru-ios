@@ -231,9 +231,9 @@ final class TimeTableViewModel: ObservableObject {
                     var data = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
 
                     // Schedule이 하루 종일이거나, 반복 일정이 아니면서 시작 날짜와 끝 날짜가 다를 경우.
-                    if schedule.isAllDay || (schedule.repeatOption == nil &&
-                        dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd)
-                    ) {
+                    if schedule.isAllDay
+                        || (schedule.repeatOption == nil && dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd))
+                    {
                         if var start = schedule.repeatStart.indexOfWeek(),
                            var end = schedule.repeatEnd.indexOfWeek()
                         {
@@ -261,10 +261,13 @@ final class TimeTableViewModel: ObservableObject {
 
                     // Schedule이 반복 일정일 경우
                     if schedule.repeatOption != nil {
-                        do {
-                            print(try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart))
-                        } catch {
-                            print(error)
+                        var end = schedule.repeatStart.indexOfWeek()
+                        if schedule.repeatStart.year < schedule.repeatEnd.year {
+                            end = 6
+                        } else if schedule.repeatStart.year == schedule.repeatEnd.year,
+                                  schedule.repeatEnd.weekOfYear() > self.currentWeek
+                        {
+                            end = 6
                         }
                     }
 
@@ -319,18 +322,20 @@ final class TimeTableViewModel: ObservableObject {
         scheduleList = scheduleList.filter { $0.id != draggingSchedule.id }
 
         //  FIXME: - Alarms 데이터 넣어야 함
-        scheduleService.updateSchedule(scheduleId: draggingSchedule.id,
-                                       schedule: Request.Schedule(
-                                           content: draggingSchedule.data.content,
-                                           memo: draggingSchedule.data.memo,
-                                           isAllDay: draggingSchedule.data.isAllDay,
-                                           repeatStart: startDate,
-                                           repeatEnd: endDate,
-                                           repeatOption: draggingSchedule.data.repeatOption,
-                                           repeatValue: draggingSchedule.data.repeatValue,
-                                           categoryId: draggingSchedule.data.category?.id,
-                                           alarms: draggingSchedule.data.alarms.map(\.time)
-                                       )) { result in
+        scheduleService.updateSchedule(
+            scheduleId: draggingSchedule.id,
+            schedule: Request.Schedule(
+                content: draggingSchedule.data.content,
+                memo: draggingSchedule.data.memo,
+                isAllDay: draggingSchedule.data.isAllDay,
+                repeatStart: startDate,
+                repeatEnd: endDate,
+                repeatOption: draggingSchedule.data.repeatOption,
+                repeatValue: draggingSchedule.data.repeatValue,
+                categoryId: draggingSchedule.data.category?.id,
+                alarms: draggingSchedule.data.alarms.map(\.time)
+            )
+        ) { result in
             switch result {
             case .success(let schedule):
                 self.draggingSchedule?.data = schedule

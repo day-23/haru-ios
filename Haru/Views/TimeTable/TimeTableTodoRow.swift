@@ -21,7 +21,11 @@ struct TimeTableTodoRow: View {
                 Text(week[index])
                     .font(.pretendard(size: 14, weight: .bold))
                     .foregroundColor(
-                        index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
+                        index == 0
+                            ? Color(0xF71E58)
+                            : (index == 6
+                                ? Color(0x1DAFFF)
+                                : Color(0x191919))
                     )
                     .padding(.bottom, 7)
 
@@ -39,7 +43,11 @@ struct TimeTableTodoRow: View {
                     Text("\(date.day)")
                         .font(.pretendard(size: 14, weight: .bold))
                         .foregroundColor(
-                            index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
+                            index == 0
+                                ? Color(0xF71E58)
+                                : (index == 6
+                                    ? Color(0x1DAFFF)
+                                    : Color(0x191919))
                         )
                 }
             }
