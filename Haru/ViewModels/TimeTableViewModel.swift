@@ -265,6 +265,7 @@ final class TimeTableViewModel: ObservableObject {
                         if let first = self.thisWeek.first,
                            let last = self.thisWeek.last
                         {
+                            // TODO: 단일 날짜, 2일 연속된 일정 구분 필요,
                             var date = schedule.repeatStart
                             if dateFormatter.string(from: date) < dateFormatter.string(from: first) {
                                 let dateComponents = DateComponents(
@@ -357,7 +358,9 @@ final class TimeTableViewModel: ObservableObject {
                     else {
                         continue
                     }
-                    self.todoListByDate[index].append(todo)
+                    if !todo.completed {
+                        self.todoListByDate[index].append(todo)
+                    }
                 }
             case .failure(let failure):
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
