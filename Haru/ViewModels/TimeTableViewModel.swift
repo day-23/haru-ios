@@ -229,9 +229,11 @@ final class TimeTableViewModel: ObservableObject {
                 self.scheduleListWithoutTime = Array(repeating: [], count: 7)
                 for schedule in scheduleList {
                     var data = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
-                    if schedule.isAllDay ||
+
+                    // Schedule이 하루 종일이거나, 반복 일정이 아니면서 시작 날짜와 끝 날짜가 다를 경우.
+                    if schedule.isAllDay || (schedule.repeatOption == nil &&
                         dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd)
-                    {
+                    ) {
                         if var start = schedule.repeatStart.indexOfWeek(),
                            var end = schedule.repeatEnd.indexOfWeek()
                         {
@@ -256,6 +258,17 @@ final class TimeTableViewModel: ObservableObject {
                         }
                         continue
                     }
+
+                    // Schedule이 반복 일정일 경우
+                    if schedule.repeatOption != nil {
+                        do {
+                            print(try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart))
+                        } catch {
+                            print(error)
+                        }
+                    }
+
+                    // 위의 모든 경우가 아닌 경우
                     self.scheduleList.append(data)
                 }
                 self.findUnion()
@@ -314,6 +327,7 @@ final class TimeTableViewModel: ObservableObject {
                                            repeatStart: startDate,
                                            repeatEnd: endDate,
                                            repeatOption: draggingSchedule.data.repeatOption,
+                                           repeatValue: draggingSchedule.data.repeatValue,
                                            categoryId: draggingSchedule.data.category?.id,
                                            alarms: draggingSchedule.data.alarms.map(\.time)
                                        )) { result in
