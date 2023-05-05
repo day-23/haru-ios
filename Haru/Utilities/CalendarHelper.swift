@@ -173,14 +173,25 @@ class CalendarHelper {
         return calendar.startOfDay(for: date)
     }
 
-    class func getInfiniteDate() -> Date {
-        let dateString = "2200-01-01T00:00:00.000Z"
+    class func getInfiniteDate(
+        _ repeatEnd: Date? = nil
+    ) -> Date {
         let dateFormatter = DateFormatter()
-
         dateFormatter.dateFormat = Constants.dateFormat
 
-        guard let date = dateFormatter.date(from: dateString) else { return Date() }
-        return date
+        if let repeatEnd {
+            let repeatEndString = repeatEnd.description
+            let tokens = repeatEndString.split(separator: " ")
+            let dateString = "2200-01-01T\(tokens[1]).000Z"
+
+            guard let date = dateFormatter.date(from: dateString) else { return Date() }
+            return date
+        } else {
+            let dateString = "2200-01-01T00:00:00.000Z"
+
+            guard let date = dateFormatter.date(from: dateString) else { return Date() }
+            return date
+        }
     }
 
     class func getDayofWeek(date: Date) -> Int {
