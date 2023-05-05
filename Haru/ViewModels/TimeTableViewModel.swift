@@ -287,6 +287,20 @@ final class TimeTableViewModel: ObservableObject {
                                 var repeatSchedule = schedule
                                 repeatSchedule.repeatStart = date
 
+                                let dateComponents = DateComponents(
+                                    year: date.year,
+                                    month: date.month,
+                                    day: date.day,
+                                    hour: schedule.repeatEnd.hour,
+                                    minute: schedule.repeatEnd.minute
+                                )
+
+                                guard let repeatEnd = Calendar.current.date(from: dateComponents)
+                                else {
+                                    return
+                                }
+                                repeatSchedule.repeatEnd = repeatEnd
+
                                 let cell = ScheduleCell(
                                     id: "\(self.scheduleList.count)",
                                     data: repeatSchedule,
