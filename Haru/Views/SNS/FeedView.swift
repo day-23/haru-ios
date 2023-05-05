@@ -15,7 +15,7 @@ struct Feed: Identifiable, Hashable {
 }
 
 struct FeedView: View {
-    var feed: Feed
+    var post: Post
     var snsVM: SNSViewModel
 
     var body: some View {
@@ -24,7 +24,7 @@ struct FeedView: View {
                 ProfileImgView(imageUrl: URL(string: "https://item.kakaocdn.net/do/fd0050f12764b403e7863c2c03cd4d2d7154249a3890514a43687a85e6b6cc82")!)
                     .frame(width: 30, height: 30)
 
-                Text("게으름민수")
+                Text("\(post.user.name)")
                     .font(.pretendard(size: 14, weight: .bold))
                     .foregroundColor(.mainBlack)
                 Text("1일 전")
@@ -37,10 +37,10 @@ struct FeedView: View {
             }
             .padding(.horizontal, 20)
 
-            FeedImage(imageUrl: feed.imageURL)
+            FeedImage(imageList: post.images)
 
             HStack(spacing: 22) {
-                Image(systemName: feed.isLike ? "heart.fill" : "heart")
+                Image(systemName: post.isLiked ? "heart.fill" : "heart")
                     .foregroundColor(.red)
                 Image(systemName: "ellipses.bubble")
                     .foregroundColor(.gray2)
@@ -51,7 +51,7 @@ struct FeedView: View {
             }
             .padding(.horizontal, 20)
             
-            if let content = feed.content {
+            if let content = post.content {
                 Text(content)
                     .lineLimit(nil)
                     .font(.pretendard(size: 14, weight: .regular))
@@ -62,8 +62,8 @@ struct FeedView: View {
     }
 }
 
-struct FeedView_Previews: PreviewProvider {
-    static var previews: some View {
-        FeedView(feed: Feed(content: "아이콘-텍스트 간격 10 텍스트/아이콘-아래줄 간격 20, 14pt", imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true), snsVM: SNSViewModel())
-    }
-}
+//struct FeedView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        FeedView(feed: Feed(content: "아이콘-텍스트 간격 10 텍스트/아이콘-아래줄 간격 20, 14pt", imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true), snsVM: SNSViewModel())
+//    }
+//}

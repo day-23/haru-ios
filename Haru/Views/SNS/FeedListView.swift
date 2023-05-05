@@ -9,13 +9,13 @@ import SwiftUI
 
 struct FeedListView: View {
     var snsVM: SNSViewModel
-    @Binding var feedList: [Feed]
+    var postList: [Post]
 
     var body: some View {
         ScrollView {
             LazyVStack {
-                ForEach(feedList) { feed in
-                    FeedView(feed: feed, snsVM: snsVM)
+                ForEach(postList) { post in
+                    FeedView(post: post, snsVM: snsVM)
                 }
             }
         }

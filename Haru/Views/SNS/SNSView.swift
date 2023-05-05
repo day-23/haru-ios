@@ -21,14 +21,16 @@ struct SNSView: View {
     @State var toggleIsClicked: Bool = false
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 14) {
-                // FIXME: 네비게이션바 완성되면 삭제하기
-                HaruHeader(toggleIsClicked: $toggleIsClicked, backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])) {
+                HaruHeader(
+                    toggleIsClicked: $toggleIsClicked,
+                    backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
+                ) {
                     FallowView()
                 }
 
-                FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
+                FeedListView(snsVM: snsVM, postList: snsVM.mainPostList)
             }
 
             if toggleIsClicked {
@@ -36,13 +38,11 @@ struct SNSView: View {
                     Group {
                         NavigationLink {
                             ProfileInfoView(isMine: false, snsVM: snsVM)
-
                         } label: {
                             Text("친구 피드")
                         }
                         Divider()
                         NavigationLink {
-                            // go some View
                             LookAroundView()
                         } label: {
                             Text("둘러보기")
@@ -66,6 +66,19 @@ struct SNSView: View {
                 .position(x: 60, y: 90)
                 .transition(.opacity.animation(.easeIn))
             }
+
+            NavigationLink {
+                PostFormView()
+            } label: {
+                Image("sns-add-button")
+                    .shadow(radius: 10, x: 5, y: 0)
+            }
+            .zIndex(5)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 10)
+        }
+        .onAppear {
+            snsVM.fetchAllPosts(currentPage: 1)
         }
     }
 }

@@ -180,7 +180,7 @@ struct ProfileInfoView: View {
             if isFeedSelected {
                 Spacer()
                     .frame(height: 20)
-                FeedListView(snsVM: snsVM, feedList: $snsVM.myFeedList)
+                FeedListView(snsVM: snsVM, postList: snsVM.mainPostList)
             } else {
                 MediaView()
             }

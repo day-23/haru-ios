@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct FeedImage: View {
-    var imageUrl: URL
-    var endPageNum: Int = 10
-    @State var pageNum: Int = 1
+    var imageList: [Post.Image]
+    @State var postPageNum: Int = 0
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            Text("\(pageNum)/\(endPageNum)")
+            Text("\(postPageNum + 1)/\(imageList.count)")
                 .font(.pretendard(size: 12, weight: .bold))
                 .foregroundColor(.mainBlack)
                 .padding(.all, 6)
@@ -23,9 +22,9 @@ struct FeedImage: View {
                 .offset(x: -10, y: 10)
                 .zIndex(2)
 
-            TabView(selection: $pageNum) {
-                ForEach(0 ... endPageNum, id: \.self) { _ in
-                    AsyncImage(url: imageUrl) { image in
+            TabView(selection: $postPageNum) {
+                ForEach(imageList.indices, id: \.self) { idx in
+                    AsyncImage(url: URL(string: imageList[idx].url)) { image in
                         image
                             .resizable()
                     } placeholder: {
@@ -40,8 +39,8 @@ struct FeedImage: View {
     }
 }
 
-struct FeedImage_Previews: PreviewProvider {
-    static var previews: some View {
-        FeedImage(imageUrl: URL(string: "https://cdn.hankooki.com/news/photo/202301/46144_62027_1673489105.jpg")!)
-    }
-}
+//struct FeedImage_Previews: PreviewProvider {
+//    static var previews: some View {
+//        FeedImage(imageUrl: URL(string: "https://cdn.hankooki.com/news/photo/202301/46144_62027_1673489105.jpg")!)
+//    }
+//}
