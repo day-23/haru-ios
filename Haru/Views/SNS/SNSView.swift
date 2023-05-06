@@ -18,45 +18,67 @@ struct SNSView: View {
 
     @StateObject var snsVM: SNSViewModel = .init()
 
-    var body: some View {
-        VStack(alignment: .leading) {
-            // FIXME: 네비게이션바 완성되면 삭제하기
-            Group {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("HARU")
-//                        Image(systemName: isSelecting ? "chevron.down" : "chevron.forward")
+    @State var toggleIsClicked: Bool = false
 
-                        Spacer()
-                        NavigationLink {
-//                            FallowView()
-                        } label: {
-                            Image(systemName: "magnifyingglass")
-                                .renderingMode(.template)
-                                .foregroundColor(.mainBlack)
-                                .fontWeight(.bold)
-                        }
-                    }
-                    Spacer()
-                    NavigationLink {
-                        Text("둘러보기")
-                    } label: {
-                        Text("둘러보기")
-                    }
-                    Spacer()
-                    NavigationLink {
-                        ProfileInfoView(snsVM: snsVM)
-                            .onAppear {
-                                snsVM.fetchProfileImg()
-                            }
-                    } label: {
-                        Text("내 기록")
-                    }
-                    Spacer()
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            VStack(alignment: .leading, spacing: 14) {
+                HaruHeader(
+                    toggleIsClicked: $toggleIsClicked,
+                    backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
+                ) {
+                    FallowView()
                 }
 
-                FeedListView(snsVM: snsVM, feedList: $snsVM.feedList)
+                FeedListView(snsVM: snsVM, postList: snsVM.mainPostList)
             }
+
+            if toggleIsClicked {
+                VStack {
+                    Group {
+                        NavigationLink {
+                            ProfileInfoView(isMine: false, snsVM: snsVM)
+                        } label: {
+                            Text("친구 피드")
+                        }
+                        Divider()
+                        NavigationLink {
+                            LookAroundView()
+                        } label: {
+                            Text("둘러보기")
+                        }
+                        Divider()
+                        NavigationLink {
+                            ProfileInfoView(isMine: true, snsVM: snsVM)
+                                .onAppear {
+                                    snsVM.fetchProfileImg()
+                                }
+                        } label: {
+                            Text("내 기록")
+                        }
+                    }
+                    .foregroundColor(Color(0x191919))
+                }
+                .frame(width: 94, height: 96)
+                .padding(8)
+                .background(.white)
+                .cornerRadius(10)
+                .position(x: 60, y: 90)
+                .transition(.opacity.animation(.easeIn))
+            }
+
+            NavigationLink {
+                PostFormView()
+            } label: {
+                Image("sns-add-button")
+                    .shadow(radius: 10, x: 5, y: 0)
+            }
+            .zIndex(5)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 10)
+        }
+        .onAppear {
+            snsVM.fetchAllPosts(currentPage: 1)
         }
     }
 }

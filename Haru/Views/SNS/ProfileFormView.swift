@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct ProfileFormView: View {
+    @Environment(\.dismiss) var dismissAction
+    
     @StateObject var snsVM: SNSViewModel
 
     @State var openPhoto: Bool = false
 
     @State var image: UIImage? = nil
-    @State var name: String = ""
-    @State var info: String = ""
+    @State var name: String
+    @State var info: String
 
     var body: some View {
         ZStack {
@@ -87,13 +89,30 @@ struct ProfileFormView: View {
                 .zIndex(2)
             }
         }
+        .customNavigationBar {
+            Text("프로필 편집")
+                .font(.pretendard(size: 20, weight: .bold))
+        } leftView: {
+            Button {
+                dismissAction.callAsFunction()
+            } label: {
+                Image("back-button")
+                    .frame(width: 28, height: 28)
+            }
+        } rightView: {
+            Image("confirm")
+                .renderingMode(.template)
+                .foregroundColor(Color(0x191919))
+        }
+
+
     }
 }
 
 struct ProfileFormView_Previews: PreviewProvider {
     static var snsVM: SNSViewModel = .init()
     static var previews: some View {
-        ProfileFormView(snsVM: snsVM)
+        ProfileFormView(snsVM: snsVM, name: "게으른 민수", info: "안녕하세요.")
             .onAppear {
                 snsVM.fetchProfileImg()
             }

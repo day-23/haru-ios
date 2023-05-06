@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct ProfileInfoView: View {
+    @Environment(\.dismiss) var dismissAction
+
     @State private var isFeedSelected: Bool = true
+    @State var isMine: Bool
+    @State var alreadyFallowing: Bool = true
 
     @StateObject var snsVM: SNSViewModel
 
@@ -23,7 +27,7 @@ struct ProfileInfoView: View {
                         Spacer()
                     }
                     .onTapGesture {
-//                        dismissAction.callAsFunction()
+                        dismissAction.callAsFunction()
                     }
                     .padding(.leading, 20)
                 }
@@ -52,11 +56,21 @@ struct ProfileInfoView: View {
                 Spacer()
 
                 VStack(spacing: 4) {
-                    NavigationLink {
-                        ProfileFormView(snsVM: snsVM)
-                    } label: {
-                        Text("프로필 편집")
-                            .foregroundColor(.mainBlack)
+                    if isMine {
+                        NavigationLink {
+                            ProfileFormView(snsVM: snsVM, name: "게이름민수", info: "노는게 제일 좋아")
+                        } label: {
+                            Text("프로필 편집")
+                                .foregroundColor(.mainBlack)
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .frame(width: 64, height: 16)
+                                .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 9)
+                                        .stroke(.gradation2, lineWidth: 1)
+                                )
+                        }
+                        Text("프로필 공유")
                             .font(.pretendard(size: 14, weight: .bold))
                             .frame(width: 64, height: 16)
                             .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
@@ -64,18 +78,41 @@ struct ProfileInfoView: View {
                                 RoundedRectangle(cornerRadius: 9)
                                     .stroke(.gradation2, lineWidth: 1)
                             )
+                    } else {
+                        if alreadyFallowing {
+                            Button {
+                                print("팔로우 취소")
+                            } label: {
+                                Text("팔로우 취소")
+                                    .foregroundColor(.mainBlack)
+                                    .font(.pretendard(size: 14, weight: .bold))
+                                    .frame(width: 64, height: 16)
+                                    .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 9)
+                                            .stroke(.gradation2, lineWidth: 1)
+                                    )
+                            }
+                        } else {
+                            Button {
+                                print("팔로우 신청")
+                            } label: {
+                                Text("팔로우 신청")
+                                    .foregroundColor(.mainBlack)
+                                    .font(.pretendard(size: 14, weight: .bold))
+                                    .frame(width: 64, height: 16)
+                                    .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
+                                    .background(Color(0xEDEDED))
+                                    .cornerRadius(10)
+                            }
+                        }
                     }
-                    Text("프로필 공유")
-                        .font(.pretendard(size: 14, weight: .bold))
-                        .frame(width: 64, height: 16)
-                        .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 9)
-                                .stroke(.gradation2, lineWidth: 1)
-                        )
                 }
             }
             .padding(.horizontal, 20)
+
+            Spacer()
+                .frame(height: 20)
 
             HStack {
                 Spacer()
@@ -101,6 +138,9 @@ struct ProfileInfoView: View {
                 }
                 Spacer()
             }
+
+            Spacer()
+                .frame(height: 20)
 
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
@@ -138,16 +178,19 @@ struct ProfileInfoView: View {
             }
 
             if isFeedSelected {
-                FeedListView(snsVM: snsVM, feedList: $snsVM.myFeedList)
+                Spacer()
+                    .frame(height: 20)
+                FeedListView(snsVM: snsVM, postList: snsVM.mainPostList)
             } else {
                 MediaView()
             }
         }
+        .navigationBarBackButtonHidden()
     }
 }
 
 struct ProfileInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileInfoView(snsVM: SNSViewModel())
+        ProfileInfoView(isMine: true, snsVM: SNSViewModel())
     }
 }
