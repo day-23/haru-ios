@@ -276,12 +276,12 @@ final class TimeTableViewModel: ObservableObject {
                                     minute: date.minute
                                 )
 
-                                guard let next = Calendar.current.date(from: dateComponents)?.addingTimeInterval(-TimeInterval(60 * 60 * 24))
+                                guard let next = Calendar.current.date(from: dateComponents)
                                 else {
                                     return
                                 }
 
-                                date = next
+                                date = next.addingTimeInterval(-TimeInterval(60 * 60 * 24))
                             }
 
                             while dateFormatter.string(from: date) <= dateFormatter.string(from: last) {

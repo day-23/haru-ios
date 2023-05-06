@@ -15,20 +15,20 @@ final class CalendarService {
     /**
      * 일정과 할일 가져오기
      */
-    func fetchScheduleAndTodo(_ startDate: Date, _ endDate: Date) async -> ([Schedule], [Todo]) {
-        print("call schedule & todo API")
-        do {
-            async let scheduleList = scheduleService.fetchScheduleListAsync(startDate, endDate)
-
-            // FIXME: struct Todo 변경되면 수정해주기
-            async let todoList = fetchTodoListAsync(startDate, endDate)
-
-            return try await (scheduleList, todoList)
-        } catch {
-            print("[Debug] \(error) \(#fileID) \(#function)")
-            return ([], [])
-        }
-    }
+//    func fetchScheduleAndTodo(_ startDate: Date, _ endDate: Date) async -> ([Schedule], [Todo]) {
+//        print("call schedule & todo API")
+//        do {
+    ////            async let scheduleList = scheduleService.fetchScheduleListAsync(startDate, endDate)
+//
+//            // FIXME: struct Todo 변경되면 수정해주기
+//            async let todoList = fetchTodoListAsync(startDate, endDate)
+//
+//            return try await (scheduleList, todoList)
+//        } catch {
+//            print("[Debug] \(error) \(#fileID) \(#function)")
+//            return ([], [])
+//        }
+//    }
 
     /**
      * 할일 가져오기 (나중에 TodoService로 옮기기)

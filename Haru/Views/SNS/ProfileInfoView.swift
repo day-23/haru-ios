@@ -13,7 +13,25 @@ struct ProfileInfoView: View {
     @StateObject var snsVM: SNSViewModel
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 0) {
+            // FIXME: 네비게이션바 완성되면 삭제하기
+            Group {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("HARU")
+                        Image(systemName: "chevron.down")
+                        Spacer()
+                    }
+                    .onTapGesture {
+//                        dismissAction.callAsFunction()
+                    }
+                    .padding(.leading, 20)
+                }
+                .padding(.bottom, 10)
+            }
+
+            // ---
+
             HStack(spacing: 20) {
                 if let imageURL = snsVM.myProfileURL {
                     ProfileImgView(imageUrl: imageURL)

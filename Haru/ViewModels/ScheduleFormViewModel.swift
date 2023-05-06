@@ -191,7 +191,7 @@ final class ScheduleFormViewModel: ObservableObject {
 
     var repeatValue: String? {
         // TODO: 연속된 반복인지 단일 반복인지
-        if isSelectedRepeat {
+        if isSelectedRepeat, !overDay {
             var value: [Day] = []
             switch repeatOption {
             case .everyDay:
@@ -204,6 +204,9 @@ final class ScheduleFormViewModel: ObservableObject {
                 value = repeatYear
             }
             return value.reduce("") { $0 + ($1.isClicked ? "1" : "0") }
+        } else if isSelectedRepeat, overDay {
+            let timeInterval = repeatEnd.timeIntervalSinceReferenceDate - repeatStart.timeIntervalSinceReferenceDate
+            return "T\(timeInterval)"
         }
         return nil
     }
@@ -465,7 +468,7 @@ final class ScheduleFormViewModel: ObservableObject {
      */
     func addSchedule() {
         let schedule = createSchedule()
-        
+    
         scheduleService.addSchedule(schedule) { result in
             switch result {
             case .success:
