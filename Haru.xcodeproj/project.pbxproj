@@ -121,6 +121,7 @@
 		6F8D8C442A027F4B00A32988 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C432A027F4B00A32988 /* Post.swift */; };
 		6F8D8C462A0281E500A32988 /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C452A0281E500A32988 /* PostService.swift */; };
 		6F8D8C482A02B80300A32988 /* PostFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C472A02B80300A32988 /* PostFormView.swift */; };
+		6FA3AFEE2A08CD4A00FD7F9D /* UserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */; };
 		6FD912C829D5F4DD00B4545F /* SlideOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD912C729D5F4DD00B4545F /* SlideOptionView.swift */; };
 		6FD912CC29D6D1DF00B4545F /* AlarmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD912CB29D6D1DF00B4545F /* AlarmView.swift */; };
 		6FE8908229DC5D4600A6B35C /* SNSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE8908129DC5D4600A6B35C /* SNSView.swift */; };
@@ -241,6 +242,7 @@
 		6F8D8C432A027F4B00A32988 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		6F8D8C452A0281E500A32988 /* PostService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
 		6F8D8C472A02B80300A32988 /* PostFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFormView.swift; sourceTree = "<group>"; };
+		6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewModel.swift; sourceTree = "<group>"; };
 		6FD912C729D5F4DD00B4545F /* SlideOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideOptionView.swift; sourceTree = "<group>"; };
 		6FD912CB29D6D1DF00B4545F /* AlarmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmView.swift; sourceTree = "<group>"; };
 		6FE8908129DC5D4600A6B35C /* SNSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNSView.swift; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 				1306677D29CEE1D300AACEE6 /* TodoAddViewModel.swift */,
 				13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */,
 				6F54DF4C29DD63C2002FAD7F /* SNSViewModel.swift */,
+				6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -626,6 +629,7 @@
 				13AFA8B629D6CB2100DC1011 /* TimeTableScheduleView.swift in Sources */,
 				130667A129CEE1F200AACEE6 /* AnyTransition.swift in Sources */,
 				1306678029CEE1D300AACEE6 /* CheckListViewModel.swift in Sources */,
+				6FA3AFEE2A08CD4A00FD7F9D /* UserProfileViewModel.swift in Sources */,
 				6FD912CC29D6D1DF00B4545F /* AlarmView.swift in Sources */,
 				1306676429CEE19C00AACEE6 /* CalendarDateItem.swift in Sources */,
 				130667A429CEE1F200AACEE6 /* Date.swift in Sources */,

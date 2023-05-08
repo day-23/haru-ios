@@ -9,6 +9,13 @@ import Foundation
 
 final class Global {
     static let shared: Global = .init()
-    var user: User? = User(id: "005224c0-eec1-4638-9143-58cbfc9688c5")
+    var user: User? = User(
+        id: "005224c0-eec1-4638-9143-58cbfc9688c5",
+        name: "정태성",
+        introduction: "",
+        postCount: 20,
+        followerCount: 1,
+        followingCount: 0
+    )
     private init() {}
 }

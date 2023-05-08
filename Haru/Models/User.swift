@@ -6,17 +6,14 @@
 //
 import Foundation
 
-struct User {
+struct User: Identifiable, Codable {
     let id: String
-//    private(set) var email: String
-//    private(set) var password: String
-//    private(set) var salt: String
-//    private(set) var name: String
-//    private(set) var age: Int
-//    private(set) var phone: String
-//    let createdAt: Date
-//    private(set) var updatedAt: Date
-//    private(set) var deletedAt: Date?
+    var name: String
+    var introduction: String
+    var profileImage: String?
+    var postCount: Int
+    var followerCount: Int
+    var followingCount: Int
 }
 
 //  MARK: - Extensions

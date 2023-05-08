@@ -14,17 +14,17 @@ struct ProfileService {
     /**
      * 프로필 사진 가져오기
      */
-    func fetchProfileImage(
+    func fetchUserProfile(
         userId: String,
-        completion: @escaping (Result<[ProfileImage], Error>) -> Void
+        completion: @escaping (Result<User, Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
-            let data: [ProfileImage]
+            let data: User
         }
 
         AF.request(
-            ProfileService.baseURL + userId + "/profile/images",
+            ProfileService.baseURL + userId + "/info",
             method: .get
         )
         .responseDecodable(of: Response.self) { response in
