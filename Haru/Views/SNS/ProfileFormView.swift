@@ -31,12 +31,12 @@ struct ProfileFormView: View {
                             .frame(width: 94, height: 94)
                             .clipShape(Circle())
                     } else {
-                        if let imageURL = URL(string: userProfileVM.user.profileImage ?? userProfileVM.defaultURL) {
-                            ProfileImgView(imageUrl: imageURL)
+                        if let profileImage = userProfileVM.user.profileImage {
+                            ProfileImgView(imageUrl: URL(string: profileImage))
                                 .frame(width: 94, height: 94)
                         } else {
-                            Image(systemName: "person")
-                                .renderingMode(.template)
+                            Image("default-profile-image")
+                                .resizable()
                                 .clipShape(Circle())
                                 .frame(width: 94, height: 94)
                         }

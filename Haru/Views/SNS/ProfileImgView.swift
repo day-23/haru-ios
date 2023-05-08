@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileImgView: View {
-    var imageUrl: URL
+    var imageUrl: URL?
 
     var body: some View {
         AsyncImage(url: imageUrl, content: { image in

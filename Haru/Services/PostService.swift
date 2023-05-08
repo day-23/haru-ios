@@ -62,4 +62,16 @@ final class PostService {
             }
         }
     }
+
+    func fetchTargetPosts(
+        targetId: String,
+        page: Int,
+        completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post]
+            let pagination: Post.Pagination
+        }
+    }
 }

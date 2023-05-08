@@ -16,9 +16,14 @@ struct ProfileInfoView: View {
         userProfileVM.user.id == Global.shared.user?.id
     }
 
-    @StateObject var snsVM: SNSViewModel
-    @StateObject var userProfileVM: UserProfileViewModel
+    var postVM: PostViewModel
+    var userProfileVM: UserProfileViewModel
 
+    init(postVM: PostViewModel, userProfileVM: UserProfileViewModel) {
+        self.postVM = postVM
+        self.userProfileVM = userProfileVM
+    }
+    
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -33,11 +38,12 @@ struct ProfileInfoView: View {
                 // ---
                 
                 HStack(spacing: 20) {
-                    if let imageURL = URL(string: userProfileVM.user.profileImage ?? userProfileVM.defaultURL) {
-                        ProfileImgView(imageUrl: imageURL)
+                    if let profileImage = userProfileVM.user.profileImage {
+                        ProfileImgView(imageUrl: URL(string: profileImage))
                             .frame(width: 62, height: 62)
                     } else {
-                        Image(systemName: "person")
+                        Image("default-profile-image")
+                            .resizable()
                             .clipShape(Circle())
                             .frame(width: 62, height: 62)
                     }
@@ -181,7 +187,7 @@ struct ProfileInfoView: View {
                 if isFeedSelected {
                     Spacer()
                         .frame(height: 20)
-                    FeedListView(snsVM: snsVM, postList: snsVM.mainPostList)
+                    FeedListView(postVM: postVM)
                 } else {
                     MediaView()
                 }
@@ -201,7 +207,11 @@ struct ProfileInfoView: View {
                         Text("둘러보기")
                     }
                 } thirdContent: {
-                    Text("내 기록")
+                    isMine ?
+                        Text("내 기록")
+                        .foregroundColor(Color(0x1DAFFF))
+                        :
+                        Text("친구 기록")
                         .foregroundColor(Color(0x1DAFFF))
                 }
             }

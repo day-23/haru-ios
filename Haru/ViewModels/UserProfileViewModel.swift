@@ -13,16 +13,15 @@ final class UserProfileViewModel: ObservableObject {
     var userId: String
 
     private let profileService: ProfileService = .init()
-    let defaultURL: String = "https://harus3.s3.ap-northeast-2.amazonaws.com/profile/1683173179099_KakaoTalk_Photo_2023-04-28-14-51-32.png"
 
     init(userId: String) {
         self.user = User(
             id: userId,
             name: "",
             introduction: "",
-            postCount: 0,
-            followerCount: 0,
-            followingCount: 0,
+            postCount: 100,
+            followerCount: 100,
+            followingCount: 100,
             isFollowing: false
         )
         self.userId = userId
@@ -33,6 +32,7 @@ final class UserProfileViewModel: ObservableObject {
         profileService.fetchUserProfile(userId: userId) { result in
             switch result {
             case .success(let success):
+                self.userId = success.id
                 self.user = success
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")

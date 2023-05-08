@@ -16,7 +16,7 @@ struct Sns: Identifiable, Hashable {
 struct SNSView: View {
     @State private var maxNumber: Int = 4
 
-    @StateObject var snsVM: SNSViewModel = .init()
+    @StateObject var postVM: PostViewModel = .init()
 
     @State var toggleIsClicked: Bool = false
 
@@ -29,7 +29,7 @@ struct SNSView: View {
                 ) {
                     FallowView()
                 }
-                FeedListView(snsVM: snsVM, postList: snsVM.mainPostList)
+                FeedListView(postVM: postVM)
             }
 
             if toggleIsClicked {
@@ -45,7 +45,7 @@ struct SNSView: View {
                 } thirdContent: {
                     NavigationLink {
                         ProfileInfoView(
-                            snsVM: snsVM,
+                            postVM: postVM,
                             userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
                         )
                     } label: {
@@ -65,7 +65,7 @@ struct SNSView: View {
             .padding(.bottom, 10)
         }
         .onAppear {
-            snsVM.fetchAllPosts(currentPage: 1)
+            postVM.fetchAllPosts(currentPage: 1)
         }
     }
 }

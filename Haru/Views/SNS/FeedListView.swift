@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct FeedListView: View {
-    var snsVM: SNSViewModel
-    var postList: [Post]
+    @StateObject var postVM: PostViewModel
 
     var body: some View {
         ScrollView {
-            LazyVStack {
-                ForEach(postList) { post in
-                    FeedView(post: post, snsVM: snsVM)
+            VStack {
+                ForEach(postVM.postList) { post in
+                    FeedView(post: post)
                 }
             }
         }

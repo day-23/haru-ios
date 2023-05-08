@@ -46,8 +46,13 @@ struct ProfileService {
         name: String,
         introduction: String,
         profileImage: UIImage?,
-        completion: @escaping (Result<Void, Error>) -> Void
+        completion: @escaping (Result<User, Error>) -> Void
     ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: User
+        }
+
         // TODO: multipart-form 사용해서 update 요청할 것
     }
 }
