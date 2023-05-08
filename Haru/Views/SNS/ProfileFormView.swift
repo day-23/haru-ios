@@ -9,14 +9,14 @@ import SwiftUI
 
 struct ProfileFormView: View {
     @Environment(\.dismiss) var dismissAction
-    
-    @StateObject var snsVM: SNSViewModel
+
+    @StateObject var userProfileVM: UserProfileViewModel
 
     @State var openPhoto: Bool = false
 
     @State var image: UIImage? = nil
     @State var name: String
-    @State var info: String
+    @State var introduction: String
 
     var body: some View {
         ZStack {
@@ -31,7 +31,7 @@ struct ProfileFormView: View {
                             .frame(width: 94, height: 94)
                             .clipShape(Circle())
                     } else {
-                        if let imageURL = snsVM.myProfileURL {
+                        if let imageURL = URL(string: userProfileVM.user.profileImage ?? userProfileVM.defaultURL) {
                             ProfileImgView(imageUrl: imageURL)
                                 .frame(width: 94, height: 94)
                         } else {
@@ -64,7 +64,7 @@ struct ProfileFormView: View {
                         HStack(spacing: 20) {
                             Text("자기소개")
                                 .font(.pretendard(size: 14, weight: .bold))
-                            TextField("자기소개를 입력하세요.", text: $info)
+                            TextField("자기소개를 입력하세요.", text: $introduction)
                                 .font(.pretendard(size: 14, weight: .regular))
                         }
                         Divider()
@@ -104,17 +104,15 @@ struct ProfileFormView: View {
                 .renderingMode(.template)
                 .foregroundColor(Color(0x191919))
         }
-
-
     }
 }
 
-struct ProfileFormView_Previews: PreviewProvider {
-    static var snsVM: SNSViewModel = .init()
-    static var previews: some View {
-        ProfileFormView(snsVM: snsVM, name: "게으른 민수", info: "안녕하세요.")
-            .onAppear {
-                snsVM.fetchProfileImg()
-            }
-    }
-}
+// struct ProfileFormView_Previews: PreviewProvider {
+//    static var snsVM: SNSViewModel = .init()
+//    static var previews: some View {
+//        ProfileFormView(snsVM: snsVM, name: "게으른 민수", introduction: "안녕하세요.")
+//            .onAppear {
+//                snsVM.fetchProfileImg()
+//            }
+//    }
+// }

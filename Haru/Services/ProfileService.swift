@@ -7,12 +7,13 @@
 
 import Alamofire
 import Foundation
+import UIKit
 
 struct ProfileService {
     private static let baseURL = Constants.baseURL + "post/"
 
     /**
-     * 프로필 사진 가져오기
+     * 유저 프로필 정보 가져오기
      */
     func fetchUserProfile(
         userId: String,
@@ -24,7 +25,7 @@ struct ProfileService {
         }
 
         AF.request(
-            ProfileService.baseURL + userId + "/info",
+            ProfileService.baseURL + (Global.shared.user?.id ?? "unknown") + "/info" + "/\(userId)",
             method: .get
         )
         .responseDecodable(of: Response.self) { response in
@@ -35,5 +36,18 @@ struct ProfileService {
                 completion(.failure(error))
             }
         }
+    }
+
+    /**
+     * 유저 프로필 변경
+     */
+    func updateUserProfile(
+        userId: String,
+        name: String,
+        introduction: String,
+        profileImage: UIImage?,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        // TODO: multipart-form 사용해서 update 요청할 것
     }
 }

@@ -29,42 +29,29 @@ struct SNSView: View {
                 ) {
                     FallowView()
                 }
-
                 FeedListView(snsVM: snsVM, postList: snsVM.mainPostList)
             }
 
             if toggleIsClicked {
-                VStack {
-                    Group {
-                        NavigationLink {
-                            ProfileInfoView(isMine: false, snsVM: snsVM)
-                        } label: {
-                            Text("친구 피드")
-                        }
-                        Divider()
-                        NavigationLink {
-                            LookAroundView()
-                        } label: {
-                            Text("둘러보기")
-                        }
-                        Divider()
-                        NavigationLink {
-                            ProfileInfoView(isMine: true, snsVM: snsVM)
-                                .onAppear {
-                                    snsVM.fetchProfileImg()
-                                }
-                        } label: {
-                            Text("내 기록")
-                        }
+                DropdownMenu {
+                    Text("친구피드")
+                        .foregroundColor(Color(0x1DAFFF))
+                } secondContent: {
+                    NavigationLink {
+                        LookAroundView()
+                    } label: {
+                        Text("둘러보기")
                     }
-                    .foregroundColor(Color(0x191919))
+                } thirdContent: {
+                    NavigationLink {
+                        ProfileInfoView(
+                            snsVM: snsVM,
+                            userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
+                        )
+                    } label: {
+                        Text("내 기록")
+                    }
                 }
-                .frame(width: 94, height: 96)
-                .padding(8)
-                .background(.white)
-                .cornerRadius(10)
-                .position(x: 60, y: 90)
-                .transition(.opacity.animation(.easeIn))
             }
 
             NavigationLink {

@@ -14,6 +14,9 @@ struct User: Identifiable, Codable {
     var postCount: Int
     var followerCount: Int
     var followingCount: Int
+
+    // FIXME: API 변경되면 수정해 줄 것
+    var isFollowing: Bool
 }
 
 //  MARK: - Extensions

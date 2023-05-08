@@ -27,10 +27,13 @@ struct FeedView: View {
                 Text("\(post.user.name)")
                     .font(.pretendard(size: 14, weight: .bold))
                     .foregroundColor(.mainBlack)
+
                 Text("1일 전")
                     .font(.pretendard(size: 10, weight: .regular))
                     .foregroundColor(.gray2)
+
                 Spacer()
+
                 Image("ellipsis")
                     .renderingMode(.template)
                     .foregroundColor(.gray1)
@@ -50,7 +53,7 @@ struct FeedView: View {
                     .foregroundColor(.gray2)
             }
             .padding(.horizontal, 20)
-            
+
             if let content = post.content {
                 Text(content)
                     .lineLimit(nil)
@@ -62,8 +65,8 @@ struct FeedView: View {
     }
 }
 
-//struct FeedView_Previews: PreviewProvider {
+// struct FeedView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        FeedView(feed: Feed(content: "아이콘-텍스트 간격 10 텍스트/아이콘-아래줄 간격 20, 14pt", imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true), snsVM: SNSViewModel())
 //    }
-//}
+// }
