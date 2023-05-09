@@ -11,11 +11,75 @@ import Foundation
 final class FollowService {
     private static let baseURL = Constants.baseURL + "follows/"
     
-//    func fetchFollower(
-//        userId: String,
-//        page: Int,
-//        completion: @escaping (Result<User, >)
-//    )
+    func fetchFollower(
+        userId: String,
+        page: Int,
+        completion: @escaping (Result<([User], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [User]
+            let pagination: Post.Pagination
+        }
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        let parameters: Parameters = [
+            "page": page,
+        ]
+        
+        AF.request(
+            FollowService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(userId)/follow",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
+            switch response.result {
+            case .success(let response):
+                completion(.success((response.data, response.pagination)))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func fetchFollowing(
+        userId: String,
+        page: Int,
+        completion: @escaping (Result<([User], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [User]
+            let pagination: Post.Pagination
+        }
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        let parameters: Parameters = [
+            "page": page,
+        ]
+        
+        AF.request(
+            FollowService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(userId)/following",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
+            switch response.result {
+            case .success(let response):
+                completion(.success((response.data, response.pagination)))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
     
     func addFollowing(
         followId: String,
@@ -55,7 +119,7 @@ final class FollowService {
         ]
         
         let parameters: Parameters = [
-            "followingId": followingId
+            "followingId": followingId,
         ]
         
         AF.request(
@@ -84,7 +148,7 @@ final class FollowService {
         ]
         
         let parameters: Parameters = [
-            "followId": followId
+            "followId": followId,
         ]
         
         AF.request(

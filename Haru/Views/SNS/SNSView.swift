@@ -27,7 +27,7 @@ struct SNSView: View {
                     toggleIsClicked: $toggleIsClicked,
                     backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
                 ) {
-                    FallowView()
+                    Text("검색창")
                 }
                 FeedListView(postVM: postVM)
             }

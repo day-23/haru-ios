@@ -12,6 +12,9 @@ final class UserProfileViewModel: ObservableObject {
     @Published var user: User
     var userId: String
 
+    @Published var followerList: [User] = []
+    @Published var followingList: [User] = []
+
     private let profileService: ProfileService = .init()
     private let followService: FollowService = .init()
 
@@ -70,11 +73,33 @@ final class UserProfileViewModel: ObservableObject {
 
     // MARK: - 팔로우를 위한 함수
 
+    func fetchFollower(currentPage: Int) {
+        followService.fetchFollower(userId: user.id, page: currentPage) { result in
+            switch result {
+            case .success(let success):
+                self.followerList = success.0
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func fetchFollowing(currentPage: Int) {
+        followService.fetchFollowing(userId: user.id, page: currentPage) { result in
+            switch result {
+            case .success(let success):
+                self.followingList = success.0
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
     /**
-     * 나의 계정에서 userProfileVM의 user에게 팔로우를 신청하는 수수
+     * 나의 계정에서 userProfileVM의 user에게 팔로우를 신청
      */
-    func addFollowing() {
-        followService.addFollowing(followId: user.id) { result in
+    func addFollowing(followId: String) {
+        followService.addFollowing(followId: followId) { result in
             switch result {
             case .success:
                 self.user.isFollowing = true
@@ -85,8 +110,8 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
-    func cancelFollowing() {
-        followService.cancelFollowing(followingId: user.id) { result in
+    func cancelFollowing(followingId: String) {
+        followService.cancelFollowing(followingId: followingId) { result in
             switch result {
             case .success:
                 self.user.isFollowing = false

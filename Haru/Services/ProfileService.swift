@@ -28,7 +28,7 @@ struct ProfileService {
             ProfileService.baseURL + (Global.shared.user?.id ?? "unknown") + "/info" + "/\(userId)",
             method: .get
         )
-        .responseDecodable(of: Response.self) { response in
+        .responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -52,6 +52,8 @@ struct ProfileService {
             let success: Bool
             let data: User
         }
+        
+        // TODO: 코드 작성해주기
     }
 
     /**
@@ -84,7 +86,7 @@ struct ProfileService {
             encoding: JSONEncoding.default,
             headers: headers
         )
-        .responseDecodable(of: Response.self) { response in
+        .responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))

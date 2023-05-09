@@ -26,7 +26,8 @@ struct ProfileInfoView: View {
                     toggleIsClicked: $toggleIsClicked,
                     backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
                 ) {
-                    FallowView()
+                    // TODO: 검색 뷰 만들어주기
+                    Text("검색창")
                 }
                 .padding(.bottom, 20)
                 
@@ -83,7 +84,7 @@ struct ProfileInfoView: View {
                         } else {
                             if userProfileVM.user.isFollowing {
                                 Button {
-                                    userProfileVM.cancelFollowing()
+                                    userProfileVM.cancelFollowing(followingId: userProfileVM.user.id)
                                 } label: {
                                     Text("팔로우 취소")
                                         .foregroundColor(.mainBlack)
@@ -97,7 +98,7 @@ struct ProfileInfoView: View {
                                 }
                             } else {
                                 Button {
-                                    userProfileVM.addFollowing()
+                                    userProfileVM.addFollowing(followId: userProfileVM.user.id)
                                 } label: {
                                     Text("팔로우 신청")
                                         .foregroundColor(.mainBlack)
@@ -127,7 +128,7 @@ struct ProfileInfoView: View {
                     Spacer()
                     
                     NavigationLink {
-                        FallowView()
+                        FollowView(userProfileVM: userProfileVM, isFollowing: true)
                     } label: {
                         VStack {
                             Text("\(userProfileVM.user.followingCount)")
@@ -141,7 +142,7 @@ struct ProfileInfoView: View {
                     Spacer()
                     
                     NavigationLink {
-                        FallowView()
+                        FollowView(userProfileVM: userProfileVM, isFollowing: false)
                     } label: {
                         VStack {
                             Text("\(userProfileVM.user.followerCount)")
@@ -228,6 +229,8 @@ struct ProfileInfoView: View {
         .navigationBarBackButtonHidden()
         .onAppear {
             postVM.fetchTargetPosts(targetId: userProfileVM.userId, currentPage: 1)
+            userProfileVM.fetchFollower(currentPage: 1)
+            userProfileVM.fetchFollowing(currentPage: 1)
         }
     }
 }
