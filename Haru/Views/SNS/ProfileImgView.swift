@@ -14,7 +14,7 @@ struct ProfileImgView: View {
         AsyncImage(url: imageUrl, content: { image in
             image
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                
         }, placeholder: {
             Image(systemName: "person")
         })

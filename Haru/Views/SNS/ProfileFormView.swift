@@ -100,19 +100,21 @@ struct ProfileFormView: View {
                     .frame(width: 28, height: 28)
             }
         } rightView: {
-            Image("confirm")
-                .renderingMode(.template)
-                .foregroundColor(Color(0x191919))
+            Button {
+                userProfileVM.updateUserProfile(name: name, introduction: introduction, profileImage: image) { result in
+                    switch result {
+                    case .success:
+                        self.dismissAction.callAsFunction()
+                    case .failure(let error):
+                        // TODO: 알럿창으로 바꿔주기
+                        print("[Error] \(error)")
+                    }
+                }
+            } label: {
+                Image("confirm")
+                    .renderingMode(.template)
+                    .foregroundColor(Color(0x191919))
+            }
         }
     }
 }
-
-// struct ProfileFormView_Previews: PreviewProvider {
-//    static var snsVM: SNSViewModel = .init()
-//    static var previews: some View {
-//        ProfileFormView(snsVM: snsVM, name: "게으른 민수", introduction: "안녕하세요.")
-//            .onAppear {
-//                snsVM.fetchProfileImg()
-//            }
-//    }
-// }

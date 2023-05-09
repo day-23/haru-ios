@@ -33,7 +33,7 @@ struct ProfileInfoView: View {
                 ) {
                     FallowView()
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, 20)
                 
                 // ---
                 
@@ -130,24 +130,38 @@ struct ProfileInfoView: View {
                             .font(.pretendard(size: 14, weight: .regular))
                     }
                     Spacer()
-                    VStack {
-                        Text("\(userProfileVM.user.followingCount)")
-                            .font(.pretendard(size: 20, weight: .bold))
-                        Text("팔로우")
-                            .font(.pretendard(size: 14, weight: .regular))
+                    
+                    NavigationLink {
+                        FallowView()
+                    } label: {
+                        VStack {
+                            Text("\(userProfileVM.user.followingCount)")
+                                .font(.pretendard(size: 20, weight: .bold))
+                            Text("팔로윙")
+                                .font(.pretendard(size: 14, weight: .regular))
+                        }
                     }
+                    .foregroundColor(Color(0x191919))
+                    
                     Spacer()
-                    VStack {
-                        Text("\(userProfileVM.user.followerCount)")
-                            .font(.pretendard(size: 20, weight: .bold))
-                        Text("팔로워")
-                            .font(.pretendard(size: 14, weight: .regular))
+                    
+                    NavigationLink {
+                        FallowView()
+                    } label: {
+                        VStack {
+                            Text("\(userProfileVM.user.followerCount)")
+                                .font(.pretendard(size: 20, weight: .bold))
+                            Text("팔로워")
+                                .font(.pretendard(size: 14, weight: .regular))
+                        }
                     }
+                    .foregroundColor(Color(0x191919))
+                    
                     Spacer()
                 }
                 
                 Spacer()
-                    .frame(height: 20)
+                    .frame(height: 38)
                 
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
@@ -217,5 +231,8 @@ struct ProfileInfoView: View {
             }
         }
         .navigationBarBackButtonHidden()
+        .onAppear {
+            postVM.fetchTargetPosts(targetId: userProfileVM.userId, currentPage: 1)
+        }
     }
 }

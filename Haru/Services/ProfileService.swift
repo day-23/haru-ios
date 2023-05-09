@@ -39,13 +39,28 @@ struct ProfileService {
     }
 
     /**
-     * 유저 프로필 변경
+     * 유저 프로필 변경 사진과 함께
      */
-    func updateUserProfile(
+    func updateUserProfileWithImage(
         userId: String,
         name: String,
         introduction: String,
-        profileImage: UIImage?,
+        profileImage: UIImage,
+        completion: @escaping (Result<User, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: User
+        }
+    }
+
+    /**
+     * 유저 프로필 사진은 변경하지 않은 경우
+     */
+    func updateUserProfileWithoutImage(
+        userId: String,
+        name: String,
+        introduction: String,
         completion: @escaping (Result<User, Error>) -> Void
     ) {
         struct Response: Codable {
@@ -53,6 +68,29 @@ struct ProfileService {
             let data: User
         }
 
-        // TODO: multipart-form 사용해서 update 요청할 것
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "name": name,
+            "introduction": introduction,
+        ]
+
+        AF.request(
+            ProfileService.baseURL + "\(userId)/profile",
+            method: .patch,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        )
+        .responseDecodable(of: Response.self) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
     }
 }

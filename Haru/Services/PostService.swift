@@ -73,5 +73,28 @@ final class PostService {
             let data: [Post]
             let pagination: Post.Pagination
         }
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "page": page
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/feed",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data, response.pagination)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
     }
 }

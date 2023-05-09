@@ -112,4 +112,10 @@ struct Request: Codable {
         var color: String?
         var categoryOrder: Int?
     }
+    
+    struct Profile: Codable {
+        var name: String
+        var introduction: String
+        // TODO: profileImage 넣어주기
+    }
 }

@@ -13,9 +13,9 @@ final class Global {
         id: "005224c0-eec1-4638-9143-58cbfc9688c5",
         name: "테스트 계정",
         introduction: "For Test",
-        postCount: 100,
-        followerCount: 100,
-        followingCount: 100,
+        postCount: 0,
+        followerCount: 0,
+        followingCount: 0,
         isFollowing: false
     )
     private init() {}

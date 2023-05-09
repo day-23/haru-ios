@@ -19,9 +19,9 @@ final class UserProfileViewModel: ObservableObject {
             id: userId,
             name: "",
             introduction: "",
-            postCount: 100,
-            followerCount: 100,
-            followingCount: 100,
+            postCount: 0,
+            followerCount: 0,
+            followingCount: 0,
             isFollowing: false
         )
         self.userId = userId
@@ -40,13 +40,27 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
-    func updateUserProfile(name: String, introduction: String, profileImage: UIImage?) {
-        profileService.updateUserProfile(userId: userId, name: name, introduction: introduction, profileImage: profileImage) { result in
-            switch result {
-            case .success(let success):
-                print("Complete!!!")
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
+    func updateUserProfile(
+        name: String,
+        introduction: String,
+        profileImage: UIImage?,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+//        let profile = Request.Profile(name: name, introduction: introduction)
+
+        if profileImage != nil {
+        } else {
+            profileService.updateUserProfileWithoutImage(userId: userId, name: name, introduction: introduction) { result in
+                switch result {
+                case .success(let success):
+                    self.user = success
+                    // FIXME: Global 변경 되면 수정해주기
+                    Global.shared.user = success
+                    completion(.success(true))
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                    completion(.failure(failure))
+                }
             }
         }
     }

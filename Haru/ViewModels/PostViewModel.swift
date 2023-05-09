@@ -23,4 +23,15 @@ final class PostViewModel: ObservableObject {
             }
         }
     }
+
+    func fetchTargetPosts(targetId: String, currentPage: Int) {
+        postService.fetchTargetPosts(targetId: targetId, page: currentPage) { result in
+            switch result {
+            case .success(let success):
+                self.postList = success.0
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
 }

@@ -71,8 +71,5 @@ struct FeedView: View {
             }
             Divider()
         }
-        .onAppear {
-            print("FeedView \(post.user.id)")
-        }
     }
 }
