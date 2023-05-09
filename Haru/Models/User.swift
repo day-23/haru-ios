@@ -17,8 +17,6 @@ struct User: Identifiable, Codable {
 
     // FIXME: API 변경되면 수정해 줄 것
     var isFollowing: Bool
-
-    var email: String?
 }
 
 //  MARK: - Extensions

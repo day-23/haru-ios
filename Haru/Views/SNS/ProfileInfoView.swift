@@ -17,12 +17,7 @@ struct ProfileInfoView: View {
     }
 
     var postVM: PostViewModel
-    var userProfileVM: UserProfileViewModel
-
-    init(postVM: PostViewModel, userProfileVM: UserProfileViewModel) {
-        self.postVM = postVM
-        self.userProfileVM = userProfileVM
-    }
+    @StateObject var userProfileVM: UserProfileViewModel
     
     var body: some View {
         ZStack {
@@ -88,7 +83,7 @@ struct ProfileInfoView: View {
                         } else {
                             if userProfileVM.user.isFollowing {
                                 Button {
-                                    print("팔로우 취소")
+                                    userProfileVM.cancelFollowing()
                                 } label: {
                                     Text("팔로우 취소")
                                         .foregroundColor(.mainBlack)
@@ -102,7 +97,7 @@ struct ProfileInfoView: View {
                                 }
                             } else {
                                 Button {
-                                    print("팔로우 신청")
+                                    userProfileVM.addFollowing()
                                 } label: {
                                     Text("팔로우 신청")
                                         .foregroundColor(.mainBlack)
