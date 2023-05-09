@@ -19,8 +19,14 @@ final class TimeTableViewModel: ObservableObject {
     private var scheduleService: ScheduleService = .init()
     private var todoService: TodoService = .init()
 
-    @Published var todoListByDate: [[Todo]] = Array(repeating: [], count: 7)
+    @Published var todoListByDate: [[Todo]] = Array(repeating: [], count: 7) {
+        didSet {
+            print(todoListByDate)
+        }
+    }
+
     @Published var scheduleList: [ScheduleCell] = []
+
     @Published var scheduleListWithoutTime: [[ScheduleCell]] = Array(repeating: [], count: 7)
     var maxRowCount: Int {
         scheduleListWithoutTime.reduce(0) { acc, curr in

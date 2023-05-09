@@ -39,15 +39,20 @@ final class ScheduleService {
         _ completion: @escaping (Result<[Schedule], Error>) -> Void
     ) {
         struct Response: Codable {
+            let success: Bool
+            let data: Data
+            let pagination: Pagination
+
+            struct Data: Codable {
+                let schedules: [Schedule]
+                let holidays: [Holiday]
+            }
+
             struct Pagination: Codable {
                 let totalItems: Int
                 let startDate: Date
                 let endDate: Date
             }
-
-            let success: Bool
-            let data: [Schedule]
-            let pagination: Pagination
         }
 
         let headers: HTTPHeaders = [
@@ -68,7 +73,7 @@ final class ScheduleService {
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
-                completion(.success(response.data))
+                completion(.success(response.data.schedules))
             case let .failure(error):
                 completion(.failure(error))
             }
