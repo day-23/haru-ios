@@ -8,13 +8,11 @@
 import SwiftUI
 
 struct ProfileInfoView: View {
+    @Environment(\.presentationMode) var presentationMode
     @Environment(\.dismiss) var dismissAction
 
     @State var toggleIsClicked: Bool = false
     @State private var isFeedSelected: Bool = true
-    var isMine: Bool {
-        userProfileVM.user.id == Global.shared.user?.id
-    }
 
     var postVM: PostViewModel
     @StateObject var userProfileVM: UserProfileViewModel
@@ -54,7 +52,7 @@ struct ProfileInfoView: View {
                     Spacer()
                     
                     VStack(spacing: 4) {
-                        if isMine {
+                        if userProfileVM.isMe {
                             NavigationLink {
                                 // FIXME:
                                 ProfileFormView(
@@ -84,7 +82,7 @@ struct ProfileInfoView: View {
                         } else {
                             if userProfileVM.user.isFollowing {
                                 Button {
-                                    userProfileVM.cancelFollowing(followingId: userProfileVM.user.id)
+                                    userProfileVM.cancelFollowing(followingId: userProfileVM.user.id) {}
                                 } label: {
                                     Text("팔로우 취소")
                                         .foregroundColor(.mainBlack)
@@ -98,7 +96,7 @@ struct ProfileInfoView: View {
                                 }
                             } else {
                                 Button {
-                                    userProfileVM.addFollowing(followId: userProfileVM.user.id)
+                                    userProfileVM.addFollowing(followId: userProfileVM.user.id) {}
                                 } label: {
                                     Text("팔로우 신청")
                                         .foregroundColor(.mainBlack)
@@ -217,7 +215,7 @@ struct ProfileInfoView: View {
                         Text("둘러보기")
                     }
                 } thirdContent: {
-                    isMine ?
+                    userProfileVM.isMe ?
                         Text("내 기록")
                         .foregroundColor(Color(0x1DAFFF))
                         :

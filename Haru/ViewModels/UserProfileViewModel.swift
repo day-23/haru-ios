@@ -11,6 +11,9 @@ import SwiftUI
 final class UserProfileViewModel: ObservableObject {
     @Published var user: User
     var userId: String
+    var isMe: Bool {
+        user.id == Global.shared.user?.id
+    }
 
     @Published var followerList: [User] = []
     @Published var followingList: [User] = []
@@ -98,24 +101,34 @@ final class UserProfileViewModel: ObservableObject {
     /**
      * 나의 계정에서 userProfileVM의 user에게 팔로우를 신청
      */
-    func addFollowing(followId: String) {
+    func addFollowing(followId: String, completion: @escaping () -> Void) {
         followService.addFollowing(followId: followId) { result in
             switch result {
             case .success:
                 self.user.isFollowing = true
-                self.user.followerCount += 1
+                if self.isMe {
+                    self.user.followingCount += 1
+                } else {
+                    self.user.followerCount += 1
+                }
+                completion()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
 
-    func cancelFollowing(followingId: String) {
+    func cancelFollowing(followingId: String, completion: @escaping () -> Void) {
         followService.cancelFollowing(followingId: followingId) { result in
             switch result {
             case .success:
                 self.user.isFollowing = false
-                self.user.followerCount -= 1
+                if self.isMe {
+                    self.user.followingCount -= 1
+                } else {
+                    self.user.followerCount -= 1
+                }
+                completion()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }

@@ -72,19 +72,27 @@ struct FollowView: View {
                 ScrollView {
                     LazyVStack(spacing: 30) {
                         ForEach(isFollowing ? userProfileVM.followingList : userProfileVM.followerList, id: \.self) { user in
-                            HStack(spacing: 16) {
-                                if let profileImage = user.profileImage {
-                                    ProfileImgView(imageUrl: URL(string: profileImage))
-                                        .frame(width: 30, height: 30)
-                                } else {
-                                    Image("default-profile-image")
-                                        .resizable()
-                                        .clipShape(Circle())
-                                        .frame(width: 30, height: 30)
+                            HStack {
+                                NavigationLink {
+                                    ProfileInfoView(postVM: PostViewModel(), userProfileVM: UserProfileViewModel(userId: user.id))
+                                } label: {
+                                    HStack(spacing: 16) {
+                                        if let profileImage = user.profileImage {
+                                            ProfileImgView(imageUrl: URL(string: profileImage))
+                                                .frame(width: 30, height: 30)
+                                        } else {
+                                            Image("default-profile-image")
+                                                .resizable()
+                                                .clipShape(Circle())
+                                                .frame(width: 30, height: 30)
+                                        }
+                                        
+                                        Text(user.name)
+                                            .font(.pretendard(size: 16, weight: .bold))
+                                    }
                                 }
+                                .foregroundColor(Color(0x191919))
                                 
-                                Text(user.name)
-                                    .font(.pretendard(size: 16, weight: .bold))
                                 Spacer()
                                 Button {
                                     targetUser = user
@@ -148,7 +156,11 @@ struct FollowView: View {
                                 Spacer()
                                 
                                 Button {
-                                    userProfileVM.cancelFollowing(followingId: user.id)
+                                    userProfileVM.cancelFollowing(followingId: user.id) {
+                                        userProfileVM.fetchFollowing(currentPage: 1)
+                                        userProfileVM.fetchFollower(currentPage: 1)
+                                    }
+                                    cancelFollowingModalVis = false
                                 } label: {
                                     Text("확인")
                                         .font(.pretendard(size: 20, weight: .regular))
@@ -205,7 +217,11 @@ struct FollowView: View {
                                 Spacer()
                                 
                                 Button {
-                                    userProfileVM.addFollowing(followId: user.id)
+                                    userProfileVM.addFollowing(followId: user.id) {
+                                        userProfileVM.fetchFollower(currentPage: 1)
+                                        userProfileVM.fetchFollowing(currentPage: 1)
+                                    }
+                                    addFollowModalVis = false
                                 } label: {
                                     Text("확인")
                                         .font(.pretendard(size: 20, weight: .regular))
@@ -223,9 +239,3 @@ struct FollowView: View {
         } // ZStack
     }
 }
-
-// struct FallowView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        FallowView()
-//    }
-// }
