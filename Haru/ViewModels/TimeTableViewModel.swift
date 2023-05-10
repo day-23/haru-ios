@@ -267,66 +267,125 @@ final class TimeTableViewModel: ObservableObject {
                     }
 
                     // Schedule이 반복 일정일 경우
-                    if schedule.repeatOption != nil {
+                    if let repeatOption = schedule.repeatOption {
                         if let first = self.thisWeek.first,
-                           let last = self.thisWeek.last
+                           let last = self.thisWeek.last,
+                           let repeatValue = schedule.repeatValue
                         {
-                            // TODO: 단일 날짜, 2일 연속된 일정 구분 필요,
                             var date = schedule.repeatStart
-                            if dateFormatter.string(from: date) < dateFormatter.string(from: first) {
-                                let dateComponents = DateComponents(
-                                    year: first.year,
-                                    month: first.month,
-                                    day: first.day,
-                                    hour: date.hour,
-                                    minute: date.minute
-                                )
+                            if !repeatValue.hasPrefix("T") {
+                                // 단일 날짜 일정
 
-                                guard let next = Calendar.current.date(from: dateComponents)
-                                else {
-                                    return
-                                }
+                                // 만약, date가 이번 주의 첫날보다 이전에서 시작한다면 저번 주의 마지막 날로 변경.
+                                if dateFormatter.string(from: date) < dateFormatter.string(from: first) {
+                                    let dateComponents = DateComponents(
+                                        year: first.year,
+                                        month: first.month,
+                                        day: first.day,
+                                        hour: date.hour,
+                                        minute: date.minute
+                                    )
 
-                                date = next.addingTimeInterval(-TimeInterval(60 * 60 * 24))
-                            }
-
-                            while dateFormatter.string(from: date) <= dateFormatter.string(from: last) {
-                                var repeatSchedule = schedule
-                                repeatSchedule.repeatStart = date
-
-                                let dateComponents = DateComponents(
-                                    year: date.year,
-                                    month: date.month,
-                                    day: date.day,
-                                    hour: schedule.repeatEnd.hour,
-                                    minute: schedule.repeatEnd.minute
-                                )
-
-                                guard let repeatEnd = Calendar.current.date(from: dateComponents)
-                                else {
-                                    return
-                                }
-                                repeatSchedule.repeatEnd = repeatEnd
-
-                                let cell = ScheduleCell(
-                                    id: "\(self.scheduleList.count)",
-                                    data: repeatSchedule,
-                                    weight: 1,
-                                    order: 1
-                                )
-                                self.scheduleList.append(cell)
-
-                                do {
-                                    date = try schedule.nextRepeatStartDate(curRepeatStart: date)
-                                } catch {
-                                    switch error {
-                                    case RepeatError.invalid:
-                                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
-                                    case RepeatError.calculation:
-                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
-                                    default:
-                                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                    guard let next = Calendar.current.date(from: dateComponents)
+                                    else {
+                                        return
                                     }
+
+                                    date = next.addingTimeInterval(-TimeInterval(60 * 60 * 24))
+                                }
+
+                                while dateFormatter.string(from: date) <= dateFormatter.string(from: last) {
+                                    var repeatSchedule = schedule
+                                    repeatSchedule.repeatStart = date
+
+                                    let dateComponents = DateComponents(
+                                        year: date.year,
+                                        month: date.month,
+                                        day: date.day,
+                                        hour: schedule.repeatEnd.hour,
+                                        minute: schedule.repeatEnd.minute
+                                    )
+
+                                    guard let repeatEnd = Calendar.current.date(from: dateComponents)
+                                    else {
+                                        return
+                                    }
+                                    repeatSchedule.repeatEnd = repeatEnd
+
+                                    let cell = ScheduleCell(
+                                        id: "\(self.scheduleList.count)",
+                                        data: repeatSchedule,
+                                        weight: 1,
+                                        order: 1
+                                    )
+                                    self.scheduleList.append(cell)
+
+                                    do {
+                                        date = try schedule.nextRepeatStartDate(curRepeatStart: date)
+                                    } catch {
+                                        switch error {
+                                        case RepeatError.invalid:
+                                            print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                        case RepeatError.calculation:
+                                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                        default:
+                                            print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                        }
+                                    }
+                                }
+                            } else {
+                                // 2일 연속 일정
+                                switch repeatOption {
+                                case RepeatOption.everyWeek.rawValue:
+                                    while dateFormatter.string(from: date) <= dateFormatter.string(from: first) {
+                                        date = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7))
+                                    }
+                                case RepeatOption.everySecondWeek.rawValue:
+                                    break
+                                case RepeatOption.everyMonth.rawValue:
+                                    break
+                                case RepeatOption.everyYear.rawValue:
+                                    break
+                                default:
+                                    // RepeatOption이 잘못된 경우로 해당 일정은 무시하고 다음 일정으로 넘어가서 계산한다.
+                                    continue
+                                }
+
+                                // interval을 이용 repeatEnd를 계산한다.
+                                guard let interval = Double(
+                                    repeatValue[
+                                        repeatValue.index(repeatValue.startIndex, offsetBy: 1)...
+                                    ]
+                                )
+                                else {
+                                    continue
+                                }
+
+                                let repeatEnd = schedule.repeatStart.addingTimeInterval(
+                                    TimeInterval(floatLiteral: interval)
+                                )
+
+                                if var start = date.indexOfWeek(),
+                                   var end = repeatEnd.indexOfWeek()
+                                {
+                                    if date.year < self.currentYear {
+                                        start = 0
+                                    } else if date.year == self.currentYear,
+                                              date.weekOfYear() < self.currentWeek
+                                    {
+                                        start = 0
+                                    }
+
+                                    if repeatEnd.year == self.currentYear,
+                                       repeatEnd.weekOfYear() > self.currentWeek
+                                    {
+                                        end = 6
+                                    } else if repeatEnd.year > self.currentYear {
+                                        end = 6
+                                    }
+
+                                    data.weight = end - start + 1
+                                    self.scheduleListWithoutTime[start].append(data)
                                 }
                             }
                         }
