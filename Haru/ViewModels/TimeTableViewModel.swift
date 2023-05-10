@@ -528,16 +528,19 @@ final class TimeTableViewModel: ObservableObject {
                         if let first = self.thisWeek.first,
                            let last = self.thisWeek.last
                         {
+                            var at: RepeatAt = .front
                             var modified = todo
                             while dateFormatter.string(from: endDate) < dateFormatter.string(from: first) {
                                 do {
                                     guard let next = try modified.nextEndDate() else {
                                         // 반복이 끝난 할 일
+                                        at = .back
                                         break
                                     }
 
                                     endDate = next
                                     modified.endDate = endDate
+                                    at = .middle
                                 } catch {
                                     switch error {
                                     case RepeatError.invalid:
@@ -556,18 +559,29 @@ final class TimeTableViewModel: ObservableObject {
                                     continue
                                 }
 
-                                self.todoListByDate[index].append(
-                                    TodoCell(id: UUID().uuidString, data: modified)
-                                )
-
                                 do {
                                     guard let next = try modified.nextEndDate() else {
                                         // 반복이 끝난 할 일
+                                        self.todoListByDate[index].append(
+                                            TodoCell(
+                                                id: UUID().uuidString,
+                                                data: modified,
+                                                at: .back
+                                            )
+                                        )
                                         break
                                     }
 
+                                    self.todoListByDate[index].append(
+                                        TodoCell(
+                                            id: UUID().uuidString,
+                                            data: modified,
+                                            at: at
+                                        )
+                                    )
                                     endDate = next
                                     modified.endDate = endDate
+                                    at = .middle
                                 } catch {
                                     switch error {
                                     case RepeatError.invalid:

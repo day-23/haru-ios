@@ -69,6 +69,9 @@ struct TimeTableTodoRow: View {
                                 timeTableViewModel.draggingTodo = todo
                                 return NSItemProvider(object: todo.data.id as NSString)
                             }
+                            .onTapGesture {
+                                print(todo.data.repeatOption, todo.at)
+                            }
                         }
                     }
                     .padding(1)
