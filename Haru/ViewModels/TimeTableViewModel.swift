@@ -13,13 +13,13 @@ struct ScheduleCell: Identifiable {
     var data: Schedule
     var weight: Int
     var order: Int
-    var at: RepeatAt = .front
+    var at: RepeatAt = .none
 }
 
 struct TodoCell: Identifiable, Equatable {
     var id: String
     var data: Todo
-    var at: RepeatAt = .front
+    var at: RepeatAt = .none
 
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id && lhs.data == rhs.data

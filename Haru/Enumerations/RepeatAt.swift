@@ -8,6 +8,7 @@
 import Foundation
 
 enum RepeatAt: String {
+    case none
     case front
     case middle
     case back

@@ -99,9 +99,12 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     @Published var repeatEnd: Date = .init()
+
     @Published var isSelectedRepeatEnd: Bool = false {
         didSet {
-            repeatEnd = endDate
+            if repeatEnd.compare(endDate) == .orderedAscending {
+                repeatEnd = endDate
+            }
         }
     }
 
