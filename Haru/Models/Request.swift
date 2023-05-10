@@ -6,6 +6,7 @@
 //  Updated by 이준호 on 2023/03/14
 //
 import Foundation
+import UIKit
 
 struct Request: Codable {
     private static let formatter: DateFormatter = {
@@ -32,7 +33,7 @@ struct Request: Codable {
         var subTodosCompleted: [Bool]?
 
         var dictionary: [String: Any] {
-            return [
+            [
                 "content": self.content,
                 "memo": self.memo,
                 "todayTodo": self.todayTodo,
@@ -112,10 +113,9 @@ struct Request: Codable {
         var color: String?
         var categoryOrder: Int?
     }
-    
+
     struct Profile: Codable {
         var name: String
         var introduction: String
-        // TODO: profileImage 넣어주기
     }
 }

@@ -24,22 +24,33 @@ struct PopupImagePicker: View {
         let deviceSize = UIScreen.main.bounds.size
         VStack(spacing: 0) {
             HStack {
-                Text("Select Images")
-                    .font(.callout.bold())
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 Button {
                     onEnd()
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(.primary)
+                    HStack(spacing: 10) {
+                        Text("갤러리")
+                            .font(.pretendard(size: 20, weight: .bold))
+                        Image("toggle")
+                            .renderingMode(.template)
+                            .resizable()
+                            .rotationEffect(.degrees(90))
+                            .frame(width: 20, height: 20)
+                    }
                 }
+                .foregroundColor(Color(0x191919))
+
+                Spacer()
+
+                Image("default-camera")
+                    .resizable()
+                    .frame(width: 30, height: 30)
             }
-            .padding([.horizontal, .top])
-            .padding(.bottom, 10)
+            .padding(.top, 27)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 20)
 
             ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4), spacing: 12) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: 3), spacing: 3) {
                     ForEach($imagePickerModel.fetchedImages) { $imageAsset in
 
                         // MARK: Grid Content
@@ -57,124 +68,95 @@ struct PopupImagePicker: View {
                             }
                     }
                 }
-                .padding()
-            }
-            .safeAreaInset(edge: .bottom) {
-                // MARK: Add Button
-
-                Button {
-                    let imageAssets = imagePickerModel.selectedImages.compactMap { imageAsset -> PHAsset? in
-                        imageAsset.asset
-                    }
-                    onSelect(imageAssets)
-                } label: {
-                    Text("Add\(imagePickerModel.selectedImages.isEmpty ? "" : "\(imagePickerModel.selectedImages.count) Images")")
-                        .font(.callout)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 10)
-                        .background {
-                            Capsule()
-                                .fill(.blue)
-                        }
-                }
-                .disabled(imagePickerModel.selectedImages.isEmpty)
-                .opacity(imagePickerModel.selectedImages.isEmpty ? 0.6 : 1)
-                .padding(.vertical)
             }
         }
-        .frame(height: deviceSize.height / 1.8)
-        .frame(maxWidth: (deviceSize.width - 40) > 350 ? 350 : (deviceSize.width - 40))
+        .frame(height: deviceSize.height * 0.5)
+        .frame(maxWidth: deviceSize.width)
         .background {
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(env.colorScheme == .dark ? .black : .white)
+            Rectangle()
+                .fill(LinearGradient(colors: [.gradientStart2, .gradientEnd2], startPoint: .leading, endPoint: .trailing))
+                .cornerRadius(20, corners: [.topLeft, .topRight])
         }
 
         // MARK: Since its an Overlay View
 
         // Making It to Take Full Screen Space
-        .frame(width: deviceSize.width, height: deviceSize.height, alignment: .center)
+        .frame(width: deviceSize.width, height: deviceSize.height, alignment: .bottom)
+        // TODO: 하단 탭바 삭제하면 안해줘도 됨
+        .padding(.bottom, 110)
     }
 
     // MARK: Grid Image Content
 
     @ViewBuilder
     func GridContent(imageAsset: ImageAsset) -> some View {
-        GeometryReader { proxy in
-            let size = proxy.size
-            ZStack {
-                if let thumbnail = imageAsset.thumbnail {
-                    Image(uiImage: thumbnail)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: size.width, height: size.height)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                } else {
-                    ProgressView()
-                        .frame(width: size.width, height: size.height, alignment: .center)
-                }
-
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(.black.opacity(0.1))
-
-                    Circle()
-                        .fill(.white.opacity(0.25))
-
-                    Circle()
-                        .stroke(.white, lineWidth: 1)
-
-                    if let index = imagePickerModel.selectedImages.firstIndex(where: { asset in
-                        asset.id == imageAsset.id
-                    }) {
-                        Circle()
-                            .fill(.blue)
-
-                        if mode == .multiple {
-                            Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
-                                .font(.caption2.bold())
-                                .foregroundColor(.white)
-                        }
-                    }
-                }
-                .frame(width: 20, height: 20)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .padding(5)
+        let size = (UIScreen.main.bounds.size.width - 6) / 3
+        ZStack {
+            if let thumbnail = imageAsset.thumbnail {
+                Image(uiImage: thumbnail)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: size, height: size)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            } else {
+                ProgressView()
+                    .frame(width: size, height: size, alignment: .center)
             }
-            .clipped()
-            .onTapGesture {
-                // MARK: adding / Removing Asset
 
-                withAnimation(.easeInOut) {
-                    if let index = imagePickerModel.selectedImages.firstIndex(where: { asset in
-                        asset.id == imageAsset.id
-                    }) {
-                        // MARK: Remove And Update Selected Index
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(.black.opacity(0.1))
 
-                        imagePickerModel.selectedImages.remove(at: index)
-                        imagePickerModel.selectedImages.enumerated().forEach { item in
-                            imagePickerModel.selectedImages[item.offset].assetIndex = item.offset
-                        }
-                    } else {
-                        // MARK: Add New
+                Circle()
+                    .fill(.white.opacity(0.25))
 
-                        var newAsset = imageAsset
-                        newAsset.assetIndex = imagePickerModel.selectedImages.count
-                        if mode == .single, !imagePickerModel.selectedImages.isEmpty {
-                            imagePickerModel.selectedImages.removeLast()
-                        }
-                        imagePickerModel.selectedImages.append(newAsset)
-                    }
+                Circle()
+                    .stroke(.white, lineWidth: 1)
+
+                if let index = imagePickerModel.selectedImages.firstIndex(where: { asset in
+                    asset.id == imageAsset.id
+                }) {
+                    Circle()
+                        .fill(.blue)
+
+                    Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
+                        .font(.caption2.bold())
+                        .foregroundColor(.white)
                 }
+            }
+            .frame(width: 20, height: 20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .offset(x: -12, y: 12)
+        }
+        .clipped()
+        .frame(width: size, height: size)
+        .onTapGesture {
+            // MARK: adding / Removing Asset
+
+            withAnimation(.easeInOut) {
+                if let index = imagePickerModel.selectedImages.firstIndex(where: { asset in
+                    asset.id == imageAsset.id
+                }) {
+                    // MARK: Remove And Update Selected Index
+
+                    imagePickerModel.selectedImages.remove(at: index)
+                    imagePickerModel.selectedImages.enumerated().forEach { item in
+                        imagePickerModel.selectedImages[item.offset].assetIndex = item.offset
+                    }
+                } else {
+                    // MARK: Add New
+
+                    var newAsset = imageAsset
+                    newAsset.assetIndex = imagePickerModel.selectedImages.count
+                    imagePickerModel.selectedImages.append(newAsset)
+                }
+            }
+            if mode == .single {
+                let imageAssets = imagePickerModel.selectedImages.compactMap { imageAsset -> PHAsset? in
+                    imageAsset.asset
+                }
+                onSelect(imageAssets)
             }
         }
-        .frame(height: 70)
     }
 }
-
-// struct PopupImagePickerView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PopupImagePicker()
-//    }
-// }

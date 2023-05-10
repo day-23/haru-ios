@@ -144,9 +144,9 @@ extension View {
                 // MARK: BG Blur
 
                 Rectangle()
-                    .fill(.ultraThinMaterial)
+                    .fill(.black)
                     .ignoresSafeArea()
-                    .opacity(show.wrappedValue ? 1 : 0)
+                    .opacity(show.wrappedValue ? 0.4 : 0)
                     .onTapGesture {
                         show.wrappedValue = false
                     }

@@ -52,8 +52,39 @@ struct ProfileService {
             let success: Bool
             let data: User
         }
-        
+
         // TODO: 코드 작성해주기
+        let headers: HTTPHeaders = [
+            "Content-Type": "multipart/form-data; boundary=Boundary-\(UUID().uuidString)",
+        ]
+
+        let parameters: Parameters = [
+            "name": name,
+            "introduction": introduction,
+        ]
+
+        AF.upload(multipartFormData: { multipartFormData in
+                      if let image = profileImage.jpegData(compressionQuality: 1) {
+                          multipartFormData.append(image, withName: "image", fileName: "\(image).jpeg", mimeType: "image/jpeg")
+                      }
+                      for (key, value) in parameters {
+                          if let data = value as? String {
+                              multipartFormData.append(data.data(using: .utf8)!, withName: key)
+                          }
+                      }
+                  },
+                  to: ProfileService.baseURL + "\(userId)/profile/image",
+                  usingThreshold: .init(),
+                  method: .patch,
+                  headers: headers)
+            .responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
+                switch response.result {
+                case let .success(response):
+                    completion(.success(response.data))
+                case let .failure(error):
+                    completion(.failure(error))
+                }
+            }
     }
 
     /**

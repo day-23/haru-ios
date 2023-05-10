@@ -55,9 +55,19 @@ final class UserProfileViewModel: ObservableObject {
         profileImage: UIImage?,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-//        let profile = Request.Profile(name: name, introduction: introduction)
-
-        if profileImage != nil {
+        if let profileImage {
+            profileService.updateUserProfileWithImage(userId: userId, name: name, introduction: introduction, profileImage: profileImage) { result in
+                switch result {
+                case .success(let success):
+                    self.user = success
+                    // FIXME: Global 변경 되면 수정해주기
+                    Global.shared.user = success
+                    completion(.success(true))
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                    completion(.failure(failure))
+                }
+            }
         } else {
             profileService.updateUserProfileWithoutImage(userId: userId, name: name, introduction: introduction) { result in
                 switch result {
