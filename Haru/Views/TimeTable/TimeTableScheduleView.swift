@@ -341,7 +341,11 @@ struct CellDropDelegate: DropDelegate {
         )
 
         timeTableViewModel.removePreview()
-        timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
+        timeTableViewModel.updateDraggingSchedule(
+            startDate: date,
+            endDate: date.advanced(by: TimeInterval(60 * diff)),
+            at: draggingSchedule.at
+        )
         return true
     }
 }

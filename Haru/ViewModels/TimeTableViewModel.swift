@@ -303,7 +303,9 @@ final class TimeTableViewModel: ObservableObject {
                                     at = .middle
                                 }
 
-                                while dateFormatter.string(from: date) <= dateFormatter.string(from: last) {
+                                while dateFormatter.string(from: date) <= dateFormatter.string(from: last),
+                                      dateFormatter.string(from: date) <= dateFormatter.string(from: schedule.repeatEnd)
+                                {
                                     var repeatSchedule = schedule
                                     repeatSchedule.repeatStart = date
 
@@ -623,9 +625,8 @@ final class TimeTableViewModel: ObservableObject {
         scheduleList = scheduleList.filter { $0.id != draggingSchedule.id }
 
         if at == .none {
-            //  FIXME: - Alarms 데이터 넣어야 함
             scheduleService.updateSchedule(
-                scheduleId: draggingSchedule.id,
+                scheduleId: draggingSchedule.data.id,
                 schedule: Request.Schedule(
                     content: draggingSchedule.data.content,
                     memo: draggingSchedule.data.memo,
@@ -648,7 +649,104 @@ final class TimeTableViewModel: ObservableObject {
                     print("[Debug] \(failure) (\(#fileID), \(#function))")
                 }
             }
-        } else {}
+        } else {
+            if at == .none {
+                print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+                return
+            }
+
+            var nextRepeatStart: Date? {
+                if !(at == .front || at == .middle) {
+                    return nil
+                }
+
+                var date: Date?
+                do {
+                    date = try draggingSchedule.data.nextRepeatStartDate(
+                        curRepeatStart: draggingSchedule.data.repeatStart
+                    )
+                } catch {
+                    switch error {
+                    case RepeatError.invalid:
+                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                    case RepeatError.calculation:
+                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                    default:
+                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                    }
+                }
+                return date
+            }
+
+            var changedDate: Date? {
+                if at != .middle {
+                    return nil
+                }
+                return draggingSchedule.data.repeatStart
+            }
+
+            var preRepeatEnd: Date? {
+                if at != .back {
+                    return nil
+                }
+
+                var date: Date?
+                do {
+                    date = try draggingSchedule.data.prevRepeatEndDate(
+                        curRepeatEnd: draggingSchedule.data.repeatStart
+                    )
+
+                    let components = DateComponents(
+                        year: date?.year,
+                        month: date?.month,
+                        day: date?.day,
+                        hour: draggingSchedule.data.repeatEnd.hour,
+                        minute: draggingSchedule.data.repeatEnd.minute
+                    )
+
+                    guard let repeatEnd = Calendar.current.date(from: components) else {
+                        return nil
+                    }
+                    return repeatEnd
+                } catch {
+                    switch error {
+                    case RepeatError.invalid:
+                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                    case RepeatError.calculation:
+                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                    default:
+                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                    }
+                }
+                return date
+            }
+            scheduleService.updateScheduleWithRepeat(
+                scheduleId: draggingSchedule.data.id,
+                schedule: Request.RepeatSchedule(
+                    content: draggingSchedule.data.content,
+                    memo: draggingSchedule.data.memo,
+                    isAllDay: draggingSchedule.data.isAllDay,
+                    repeatStart: startDate,
+                    repeatEnd: endDate,
+                    repeatOption: nil,
+                    repeatValue: nil,
+                    categoryId: draggingSchedule.data.category?.id,
+                    alarms: draggingSchedule.data.alarms.map(\.time),
+                    nextRepeatStart: nextRepeatStart,
+                    changedDate: changedDate,
+                    preRepeatEnd: preRepeatEnd
+                ),
+                at: draggingSchedule.at
+            ) { result in
+                switch result {
+                case .success:
+                    self.draggingSchedule = nil
+                    self.fetchScheduleList()
+                case .failure(let error):
+                    print("[Debug] \(error) \(#fileID), \(#function)")
+                }
+            }
+        }
     }
 
     func updateDraggingTodo(
