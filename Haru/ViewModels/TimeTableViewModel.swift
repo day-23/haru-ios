@@ -30,11 +30,7 @@ final class TimeTableViewModel: ObservableObject {
     private var scheduleService: ScheduleService = .init()
     private var todoService: TodoService = .init()
 
-    @Published var todoListByDate: [[TodoCell]] = Array(repeating: [], count: 7) {
-        didSet {
-            print(todoListByDate)
-        }
-    }
+    @Published var todoListByDate: [[TodoCell]] = Array(repeating: [], count: 7)
 
     @Published var scheduleList: [ScheduleCell] = []
 
@@ -468,27 +464,57 @@ final class TimeTableViewModel: ObservableObject {
 
                 self.todoListByDate = Array(repeating: [], count: 7)
                 for todo in todoList {
-                    guard var endDate = todo.endDate,
-                          let index = endDate.indexOfWeek()
-                    else {
+                    guard var endDate = todo.endDate else {
                         continue
                     }
                     if todo.completed {
                         continue
                     }
 
-                    if let repeatOption = todo.repeatOption,
-                       let repeatValue = todo.repeatValue
-                    {
+                    if todo.repeatOption != nil {
                         if let first = self.thisWeek.first,
                            let last = self.thisWeek.last
                         {
+                            var modified = todo
                             while dateFormatter.string(from: endDate) < dateFormatter.string(from: first) {
                                 do {
-                                    guard let next = try todo.nextEndDate() else {
+                                    guard let next = try modified.nextEndDate() else {
                                         // 반복이 끝난 할 일
                                         break
                                     }
+
+                                    endDate = next
+                                    modified.endDate = endDate
+                                } catch {
+                                    switch error {
+                                    case RepeatError.invalid:
+                                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                    case RepeatError.calculation:
+                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                    default:
+                                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                    }
+                                }
+                            }
+
+                            // 데이터 추가
+                            while dateFormatter.string(from: endDate) <= dateFormatter.string(from: last) {
+                                guard let index = endDate.indexOfWeek() else {
+                                    continue
+                                }
+
+                                self.todoListByDate[index].append(
+                                    TodoCell(id: UUID().uuidString, data: modified)
+                                )
+
+                                do {
+                                    guard let next = try modified.nextEndDate() else {
+                                        // 반복이 끝난 할 일
+                                        break
+                                    }
+
+                                    endDate = next
+                                    modified.endDate = endDate
                                 } catch {
                                     switch error {
                                     case RepeatError.invalid:
@@ -502,6 +528,10 @@ final class TimeTableViewModel: ObservableObject {
                             }
                         }
                     } else {
+                        guard let index = endDate.indexOfWeek() else {
+                            continue
+                        }
+
                         self.todoListByDate[index].append(
                             TodoCell(id: todo.id, data: todo)
                         )
