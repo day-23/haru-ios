@@ -13,26 +13,26 @@ struct FeedListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack {
+            LazyVStack(spacing: 14) {
                 ForEach(postVM.postList) { post in
                     FeedView(post: post)
                 }
-                if !postVM.postList.isEmpty {
+                if !postVM.postList.isEmpty, (postVM.page + 1) <= postVM.totalPages {
                     HStack {
                         Spacer()
                         ProgressView()
                             .onAppear {
-                                print("여기")
+                                print("더 불러오기")
                                 postVM.loadMorePosts()
                             }
                         Spacer()
                     }
                 }
             }
-        }.onAppear {
-            guard !isAppear else { return }
-            isAppear = true
-            postVM.loadMorePosts()
+            .padding(.top, 14)
+        }.refreshable {
+            print("새로고침")
+            postVM.refreshPosts()
         }
     }
 }

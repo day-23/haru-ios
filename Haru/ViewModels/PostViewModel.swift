@@ -9,18 +9,20 @@ import Foundation
 
 final class PostViewModel: ObservableObject {
     @Published var postList: [Post] = []
-    @Published var page: Int = 1
+
+    var page: Int = 1
+    var totalPages: Int = 0
 
     var postOption: PostOption
+    var targetId: String?
 
     private let postService: PostService
 
-    init(postOption: PostOption) {
+    init(postOption: PostOption, targetId: String? = nil) {
         self.postOption = postOption
+        self.targetId = targetId
         postService = .init()
-    }
 
-    func loadMorePosts(targetId: String? = nil) {
         switch postOption {
         case .main:
             fetchAllPosts()
@@ -36,12 +38,38 @@ final class PostViewModel: ObservableObject {
         }
     }
 
+    func loadMorePosts() {
+        if (page + 1) > totalPages {
+            return
+        }
+        page += 1
+        switch postOption {
+        case .main:
+            fetchAllPosts()
+        case .target_all:
+            guard let targetId else { return }
+            fetchTargetPosts(targetId: targetId)
+        case .target_image:
+            print("특정 사용자 미디어 보기")
+        case .target_hashtag:
+            print("특정 사용자 해시태그 조회")
+        case .around:
+            print("둘러보기")
+        }
+    }
+
+    func refreshPosts() {
+        clear()
+        loadMorePosts()
+    }
+
     func fetchAllPosts() {
         postService.fetchAllPosts(page: page) { result in
             switch result {
             case .success(let success):
-                self.postList = success.0
-//                let pageInfo = success.1
+                self.postList.append(contentsOf: success.0)
+                let pageInfo = success.1
+                self.totalPages = pageInfo.totalPages
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -52,10 +80,17 @@ final class PostViewModel: ObservableObject {
         postService.fetchTargetPosts(targetId: targetId, page: page) { result in
             switch result {
             case .success(let success):
-                self.postList = success.0
+                self.postList.append(contentsOf: success.0)
+                let pageInfo = success.1
+                self.totalPages = pageInfo.totalPages
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
+    }
+
+    func clear() {
+        page = 0
+        postList = []
     }
 }

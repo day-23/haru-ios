@@ -15,7 +15,7 @@ struct FeedView: View {
             HStack {
                 NavigationLink {
                     ProfileInfoView(
-                        postVM: PostViewModel(postOption: .target_all),
+                        postVM: PostViewModel(postOption: .target_all, targetId: post.user.id),
                         userProfileVM: UserProfileViewModel(userId: post.user.id)
                     )
                 } label: {

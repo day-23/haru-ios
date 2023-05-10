@@ -20,7 +20,7 @@ struct SNSView: View {
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 0) {
                 HaruHeader(
                     toggleIsClicked: $toggleIsClicked,
                     backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
@@ -43,7 +43,7 @@ struct SNSView: View {
                 } thirdContent: {
                     NavigationLink {
                         ProfileInfoView(
-                            postVM: PostViewModel(postOption: .target_all),
+                            postVM: PostViewModel(postOption: .target_all, targetId: Global.shared.user?.id ?? nil),
                             userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
                         )
                     } label: {

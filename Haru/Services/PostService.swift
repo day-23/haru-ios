@@ -73,13 +73,13 @@ final class PostService {
             let data: [Post]
             let pagination: Post.Pagination
         }
-        
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
         let parameters: Parameters = [
-            "page": page
+            "page": page,
         ]
 
         AF.request(
