@@ -444,6 +444,11 @@ struct TodoService {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        if at == .none {
+            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            return
+        }
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -764,6 +769,11 @@ struct TodoService {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        if at == .none {
+            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            return
+        }
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -819,6 +829,11 @@ struct TodoService {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        if at == .none {
+            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            return
+        }
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
