@@ -357,40 +357,80 @@ final class TimeTableViewModel: ObservableObject {
                                 switch repeatOption {
                                 case RepeatOption.everyWeek.rawValue:
                                     while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
+                                        at = .middle
                                         date = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7))
+
+                                        let next = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7))
+                                        if dateFormatter.string(from: schedule.repeatEnd) == dateFormatter.string(from: date)
+                                            || dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: next)
+                                        {
+                                            at = .back
+                                        }
                                     }
                                 case RepeatOption.everySecondWeek.rawValue:
                                     while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
+                                        at = .middle
                                         date = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7 * 2))
+
+                                        let next = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7 * 2))
+                                        if dateFormatter.string(from: schedule.repeatEnd) == dateFormatter.string(from: date)
+                                            || dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: next)
+                                        {
+                                            at = .back
+                                        }
                                     }
                                 case RepeatOption.everyMonth.rawValue:
                                     let day = date.day
                                     while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
                                         if let next = Calendar.current.date(byAdding: .month, value: 1, to: date) {
+                                            at = .middle
                                             date = next
+
+                                            if let nextForCheck = Calendar.current.date(byAdding: .month, value: 1, to: date) {
+                                                if dateFormatter.string(from: schedule.repeatEnd) == dateFormatter.string(from: date)
+                                                    || dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: nextForCheck)
+                                                {
+                                                    at = .back
+                                                }
+                                            } else {
+                                                return
+                                            }
                                         } else {
-                                            continue
+                                            return
                                         }
 
                                         guard let range = Calendar.current.range(of: .day, in: .month, for: date) else {
+                                            return
+                                        }
+
+                                        var upperBound = range.upperBound - 1
+                                        // 아래에서 이번 주를 넘어가는 일정은 어차피 이후에 처리가 되기 때문에 outer while loop의 조건을
+                                        // 확인하지 않아도 된다.
+                                        while day > upperBound {
+                                            if let next = Calendar.current.date(byAdding: .month, value: 1, to: date) {
+                                                date = next
+                                                guard let range = Calendar.current.range(of: .day, in: .month, for: date) else {
+                                                    return
+                                                }
+
+                                                upperBound = range.upperBound - 1
+                                            } else {
+                                                return
+                                            }
+                                        }
+
+                                        let components = DateComponents(
+                                            year: date.year,
+                                            month: date.month,
+                                            day: day,
+                                            hour: date.hour,
+                                            minute: date.minute
+                                        )
+
+                                        guard let modified = Calendar.current.date(from: components) else {
                                             continue
                                         }
-
-                                        let upperBound = range.upperBound - 1
-                                        if day <= upperBound {
-                                            let components = DateComponents(
-                                                year: date.year,
-                                                month: date.month,
-                                                day: day,
-                                                hour: date.hour,
-                                                minute: date.minute
-                                            )
-
-                                            guard let modified = Calendar.current.date(from: components) else {
-                                                continue
-                                            }
-                                            date = modified
-                                        }
+                                        date = modified
                                     }
                                 case RepeatOption.everyYear.rawValue:
                                     // TODO: 연속되는 일정 매년 반복 처리 필요
@@ -439,6 +479,7 @@ final class TimeTableViewModel: ObservableObject {
                                         end = 6
                                     }
 
+                                    data.at = at
                                     data.weight = end - start + 1
                                     self.scheduleListWithoutTime[start].append(data)
                                 }
