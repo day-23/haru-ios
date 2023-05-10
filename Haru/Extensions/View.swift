@@ -6,6 +6,7 @@
 //  Updated by 최정민 on 2023/03/27.
 //
 
+import Photos
 import SwiftUI
 
 extension View {
@@ -131,5 +132,37 @@ class CustomHostingView<Content: View>: UIHostingController<Content> {
     override func viewDidLoad() {
         super.viewDidLoad()
         preferredContentSize = view.intrinsicContentSize
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func popupImagePicker(show: Binding<Bool>, transition: AnyTransition = .move(edge: .bottom), onSelect: @escaping ([PHAsset]) -> ()) -> some View {
+        overlay {
+            let deviceSize = UIScreen.main.bounds.size
+            ZStack {
+                // MARK: BG Blur
+
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .ignoresSafeArea()
+                    .opacity(show.wrappedValue ? 1 : 0)
+                    .onTapGesture {
+                        show.wrappedValue = false
+                    }
+
+                if show.wrappedValue {
+                    PopupImagePicker {
+                        show.wrappedValue = false
+                    } onSelect: { assets in
+                        onSelect(assets)
+                        show.wrappedValue = false
+                    }
+                    .transition(transition)
+                }
+            }
+            .frame(width: deviceSize.width, height: deviceSize.height)
+            .animation(.easeInOut, value: show.wrappedValue)
+        }
     }
 }

@@ -5,6 +5,7 @@
 //  Created by 이준호 on 2023/04/05.
 //
 
+import Photos
 import SwiftUI
 
 struct ProfileFormView: View {
@@ -74,20 +75,6 @@ struct ProfileFormView: View {
 
                 Spacer()
             }
-
-            if openPhoto {
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        openPhoto = false
-                    }
-
-                Modal(isActive: $openPhoto, ratio: 0.9) {
-                    ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
-                }
-                .zIndex(2)
-            }
         }
         .customNavigationBar {
             Text("프로필 편집")
@@ -114,6 +101,26 @@ struct ProfileFormView: View {
                 Image("confirm")
                     .renderingMode(.template)
                     .foregroundColor(Color(0x191919))
+            }
+        }
+        .popupImagePicker(show: $openPhoto) { assets in
+
+            // MARK: Do Your Operation With PHAsset
+
+            // I'm Simply Extracting Image
+            // .init() Means Exact Size of the Image
+            let manager = PHCachingImageManager.default()
+            let options = PHImageRequestOptions()
+            options.isSynchronous = true
+            DispatchQueue.global(qos: .userInteractive).async {
+                assets.forEach { asset in
+                    manager.requestImage(for: asset, targetSize: .init(), contentMode: .default, options: options) { image, _ in
+                        guard let image else { return }
+                        DispatchQueue.main.async {
+                            self.image = image
+                        }
+                    }
+                }
             }
         }
     }

@@ -113,9 +113,11 @@
 		6F54DF5529DD7B85002FAD7F /* FeedListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5429DD7B85002FAD7F /* FeedListView.swift */; };
 		6F54DF5729DD7C33002FAD7F /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5629DD7C33002FAD7F /* FeedView.swift */; };
 		6F54DF5929DD919C002FAD7F /* ProfileFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5829DD919C002FAD7F /* ProfileFormView.swift */; };
-		6F54DF5F29DDCA26002FAD7F /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5E29DDCA26002FAD7F /* ImagePicker.swift */; };
+		6F54DF5F29DDCA26002FAD7F /* PopupImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5E29DDCA26002FAD7F /* PopupImagePicker.swift */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
 		6F62F4922A0B62DB001BA364 /* PostOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4912A0B62DB001BA364 /* PostOption.swift */; };
+		6F62F4942A0BA14F001BA364 /* ImageAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4932A0BA14F001BA364 /* ImageAsset.swift */; };
+		6F62F4962A0BA212001BA364 /* ImagePickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */; };
 		6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */; };
 		6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */; };
 		6F8D8C422A02547300A32988 /* CustomNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C412A02547300A32988 /* CustomNavBar.swift */; };
@@ -236,9 +238,11 @@
 		6F54DF5429DD7B85002FAD7F /* FeedListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedListView.swift; sourceTree = "<group>"; };
 		6F54DF5629DD7C33002FAD7F /* FeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedView.swift; sourceTree = "<group>"; };
 		6F54DF5829DD919C002FAD7F /* ProfileFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFormView.swift; sourceTree = "<group>"; };
-		6F54DF5E29DDCA26002FAD7F /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		6F54DF5E29DDCA26002FAD7F /* PopupImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupImagePicker.swift; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
 		6F62F4912A0B62DB001BA364 /* PostOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostOption.swift; sourceTree = "<group>"; };
+		6F62F4932A0BA14F001BA364 /* ImageAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAsset.swift; sourceTree = "<group>"; };
+		6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerViewModel.swift; sourceTree = "<group>"; };
 		6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmOption.swift; sourceTree = "<group>"; };
 		6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormMode.swift; sourceTree = "<group>"; };
 		6F8D8C412A02547300A32988 /* CustomNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavBar.swift; sourceTree = "<group>"; };
@@ -355,6 +359,7 @@
 				1306670729CEE13200AACEE6 /* User.swift */,
 				6F54DF5029DD6884002FAD7F /* Profile.swift */,
 				6F8D8C432A027F4B00A32988 /* Post.swift */,
+				6F62F4932A0BA14F001BA364 /* ImageAsset.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -396,6 +401,7 @@
 				13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */,
 				6F54DF4C29DD63C2002FAD7F /* PostViewModel.swift */,
 				6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */,
+				6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -411,7 +417,7 @@
 				1306678429CEE1E300AACEE6 /* Modal.swift */,
 				1306678829CEE1E300AACEE6 /* MyToggleStyle.swift */,
 				1306678629CEE1E300AACEE6 /* StarButton.swift */,
-				6F54DF5E29DDCA26002FAD7F /* ImagePicker.swift */,
+				6F54DF5E29DDCA26002FAD7F /* PopupImagePicker.swift */,
 				6F1F9A222A00E36600C4ABF4 /* DropdownMenu.swift */,
 				6F1F9A282A013C2F00C4ABF4 /* FeedImage.swift */,
 				6F50BC332A0233A700AB7350 /* HaruHeader.swift */,
@@ -624,6 +630,7 @@
 				130667AD29CEE1FE00AACEE6 /* RepeatOption.swift in Sources */,
 				1306671D29CEE14000AACEE6 /* TagService.swift in Sources */,
 				6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */,
+				6F62F4942A0BA14F001BA364 /* ImageAsset.swift in Sources */,
 				1306677729CEE19C00AACEE6 /* TagView.swift in Sources */,
 				1306676129CEE19C00AACEE6 /* CalendarOptionView.swift in Sources */,
 				6F1F9A252A01212000C4ABF4 /* LookAroundView.swift in Sources */,
@@ -646,6 +653,7 @@
 				130666CC29CEDF4A00AACEE6 /* HaruApp.swift in Sources */,
 				1306671F29CEE14000AACEE6 /* CategoryService.swift in Sources */,
 				1306671E29CEE14000AACEE6 /* CalendarService.swift in Sources */,
+				6F62F4962A0BA212001BA364 /* ImagePickerViewModel.swift in Sources */,
 				1306679229CEE1E300AACEE6 /* CompleteButton.swift in Sources */,
 				134F5FF229DF1A240072704B /* TimeTableScheduleTopView.swift in Sources */,
 				1306671229CEE13200AACEE6 /* SubTodo.swift in Sources */,
@@ -655,7 +663,7 @@
 				1306679529CEE1E300AACEE6 /* DayButton.swift in Sources */,
 				1306677629CEE19C00AACEE6 /* TodoAddView.swift in Sources */,
 				1306678129CEE1D300AACEE6 /* TodoAddViewModel.swift in Sources */,
-				6F54DF5F29DDCA26002FAD7F /* ImagePicker.swift in Sources */,
+				6F54DF5F29DDCA26002FAD7F /* PopupImagePicker.swift in Sources */,
 				130667B029CEE1FE00AACEE6 /* Tab.swift in Sources */,
 				6F54DF4929DC6B02002FAD7F /* ProfileInfoView.swift in Sources */,
 				1306678E29CEE1E300AACEE6 /* CategoryModal.swift in Sources */,
