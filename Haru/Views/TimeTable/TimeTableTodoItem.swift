@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct TimeTableTodoItem: View {
-    var todo: Todo
+    var todo: TodoCell
 
     var body: some View {
         ZStack {
-            Text(todo.content)
+            Text(todo.data.content)
                 .font(.pretendard(size: 16, weight: .regular))
                 .background(Color(0xFDFDFD))
                 .padding(10)

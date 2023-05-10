@@ -13,13 +13,24 @@ struct ScheduleCell: Identifiable {
     var data: Schedule
     var weight: Int
     var order: Int
+    var at: TodoService.RepeatAt = .front
+}
+
+struct TodoCell: Identifiable, Equatable {
+    var id: String
+    var data: Todo
+    var at: TodoService.RepeatAt = .front
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.data == rhs.data
+    }
 }
 
 final class TimeTableViewModel: ObservableObject {
     private var scheduleService: ScheduleService = .init()
     private var todoService: TodoService = .init()
 
-    @Published var todoListByDate: [[Todo]] = Array(repeating: [], count: 7) {
+    @Published var todoListByDate: [[TodoCell]] = Array(repeating: [], count: 7) {
         didSet {
             print(todoListByDate)
         }
@@ -36,7 +47,7 @@ final class TimeTableViewModel: ObservableObject {
         }
     }
 
-    @Published var draggingTodo: Todo? = nil
+    @Published var draggingTodo: TodoCell? = nil
     @Published var draggingSchedule: ScheduleCell? = nil
 
     @Published var currentDate: Date = .now
@@ -452,15 +463,48 @@ final class TimeTableViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success(let todoList):
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyyMMdd"
+
                 self.todoListByDate = Array(repeating: [], count: 7)
                 for todo in todoList {
-                    guard let endDate = todo.endDate,
+                    guard var endDate = todo.endDate,
                           let index = endDate.indexOfWeek()
                     else {
                         continue
                     }
-                    if !todo.completed {
-                        self.todoListByDate[index].append(todo)
+                    if todo.completed {
+                        continue
+                    }
+
+                    if let repeatOption = todo.repeatOption,
+                       let repeatValue = todo.repeatValue
+                    {
+                        if let first = self.thisWeek.first,
+                           let last = self.thisWeek.last
+                        {
+                            while dateFormatter.string(from: endDate) < dateFormatter.string(from: first) {
+                                do {
+                                    guard let next = try todo.nextEndDate() else {
+                                        // 반복이 끝난 할 일
+                                        break
+                                    }
+                                } catch {
+                                    switch error {
+                                    case RepeatError.invalid:
+                                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                    case RepeatError.calculation:
+                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                    default:
+                                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        self.todoListByDate[index].append(
+                            TodoCell(id: todo.id, data: todo)
+                        )
                     }
                 }
             case .failure(let failure):
@@ -520,7 +564,7 @@ final class TimeTableViewModel: ObservableObject {
             }
 
             //  찾는데 성공하였을 때
-            guard let endDate = draggingTodo.endDate else {
+            guard let endDate = draggingTodo.data.endDate else {
                 return
             }
 
@@ -539,31 +583,31 @@ final class TimeTableViewModel: ObservableObject {
             }
 
             todoService.updateTodo(
-                todoId: draggingTodo.id,
+                todoId: draggingTodo.data.id,
                 todo: Request.Todo(
-                    content: draggingTodo.content,
-                    memo: draggingTodo.memo,
-                    todayTodo: draggingTodo.todayTodo,
-                    flag: draggingTodo.flag,
+                    content: draggingTodo.data.content,
+                    memo: draggingTodo.data.memo,
+                    todayTodo: draggingTodo.data.todayTodo,
+                    flag: draggingTodo.data.flag,
                     endDate: updatedEndDate,
-                    isAllDay: draggingTodo.isAllDay,
-                    alarms: draggingTodo.alarms.map(\.time),
-                    repeatOption: draggingTodo.repeatOption,
-                    repeatValue: draggingTodo.repeatValue,
-                    repeatEnd: draggingTodo.repeatEnd,
-                    tags: draggingTodo.tags.map(\.content),
-                    subTodos: draggingTodo.subTodos.map(\.content)
+                    isAllDay: draggingTodo.data.isAllDay,
+                    alarms: draggingTodo.data.alarms.map(\.time),
+                    repeatOption: draggingTodo.data.repeatOption,
+                    repeatValue: draggingTodo.data.repeatValue,
+                    repeatEnd: draggingTodo.data.repeatEnd,
+                    tags: draggingTodo.data.tags.map(\.content),
+                    subTodos: draggingTodo.data.subTodos.map(\.content)
                 )
             ) { result in
                 switch result {
                 case .success:
                     withAnimation {
-                        draggingTodo.endDate = updatedEndDate
+                        draggingTodo.data.endDate = updatedEndDate
                         self.todoListByDate[i].remove(at: j)
                         self.todoListByDate[index].append(draggingTodo)
                         self.todoListByDate[index].sort { v1, v2 in
-                            guard let endDate1 = v1.endDate,
-                                  let endDate2 = v2.endDate
+                            guard let endDate1 = v1.data.endDate,
+                                  let endDate2 = v2.data.endDate
                             else {
                                 return false
                             }
