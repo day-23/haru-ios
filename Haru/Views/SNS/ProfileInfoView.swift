@@ -226,7 +226,7 @@ struct ProfileInfoView: View {
         }
         .navigationBarBackButtonHidden()
         .onAppear {
-            postVM.fetchTargetPosts(targetId: userProfileVM.userId, currentPage: 1)
+            postVM.loadMorePosts(targetId: userProfileVM.userId)
             userProfileVM.fetchFollower(currentPage: 1)
             userProfileVM.fetchFollowing(currentPage: 1)
         }

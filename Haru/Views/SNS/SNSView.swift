@@ -16,8 +16,6 @@ struct Sns: Identifiable, Hashable {
 struct SNSView: View {
     @State private var maxNumber: Int = 4
 
-    @StateObject var postVM: PostViewModel = .init()
-
     @State var toggleIsClicked: Bool = false
 
     var body: some View {
@@ -29,7 +27,7 @@ struct SNSView: View {
                 ) {
                     Text("검색창")
                 }
-                FeedListView(postVM: postVM)
+                FeedListView(postVM: PostViewModel(postOption: PostOption.main))
             }
 
             if toggleIsClicked {
@@ -45,7 +43,7 @@ struct SNSView: View {
                 } thirdContent: {
                     NavigationLink {
                         ProfileInfoView(
-                            postVM: postVM,
+                            postVM: PostViewModel(postOption: .target_all),
                             userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
                         )
                     } label: {
@@ -63,9 +61,6 @@ struct SNSView: View {
             .zIndex(5)
             .padding(.horizontal, 20)
             .padding(.bottom, 10)
-        }
-        .onAppear {
-            postVM.fetchAllPosts(currentPage: 1)
         }
     }
 }

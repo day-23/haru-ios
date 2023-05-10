@@ -74,7 +74,10 @@ struct FollowView: View {
                         ForEach(isFollowing ? userProfileVM.followingList : userProfileVM.followerList, id: \.self) { user in
                             HStack {
                                 NavigationLink {
-                                    ProfileInfoView(postVM: PostViewModel(), userProfileVM: UserProfileViewModel(userId: user.id))
+                                    ProfileInfoView(
+                                        postVM: PostViewModel(postOption: PostOption.target_all),
+                                        userProfileVM: UserProfileViewModel(userId: user.id)
+                                    )
                                 } label: {
                                     HStack(spacing: 16) {
                                         if let profileImage = user.profileImage {

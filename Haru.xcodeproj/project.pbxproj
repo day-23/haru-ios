@@ -115,6 +115,7 @@
 		6F54DF5929DD919C002FAD7F /* ProfileFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5829DD919C002FAD7F /* ProfileFormView.swift */; };
 		6F54DF5F29DDCA26002FAD7F /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5E29DDCA26002FAD7F /* ImagePicker.swift */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
+		6F62F4922A0B62DB001BA364 /* PostOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4912A0B62DB001BA364 /* PostOption.swift */; };
 		6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */; };
 		6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */; };
 		6F8D8C422A02547300A32988 /* CustomNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C412A02547300A32988 /* CustomNavBar.swift */; };
@@ -237,6 +238,7 @@
 		6F54DF5829DD919C002FAD7F /* ProfileFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFormView.swift; sourceTree = "<group>"; };
 		6F54DF5E29DDCA26002FAD7F /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
+		6F62F4912A0B62DB001BA364 /* PostOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostOption.swift; sourceTree = "<group>"; };
 		6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmOption.swift; sourceTree = "<group>"; };
 		6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormMode.swift; sourceTree = "<group>"; };
 		6F8D8C412A02547300A32988 /* CustomNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavBar.swift; sourceTree = "<group>"; };
@@ -452,6 +454,7 @@
 				6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */,
 				130667AB29CEE1FE00AACEE6 /* Tab.swift */,
 				130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */,
+				6F62F4912A0B62DB001BA364 /* PostOption.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";
@@ -647,6 +650,7 @@
 				134F5FF229DF1A240072704B /* TimeTableScheduleTopView.swift in Sources */,
 				1306671229CEE13200AACEE6 /* SubTodo.swift in Sources */,
 				6F1F9A292A013C2F00C4ABF4 /* FeedImage.swift in Sources */,
+				6F62F4922A0B62DB001BA364 /* PostOption.swift in Sources */,
 				130667A229CEE1F200AACEE6 /* Border.swift in Sources */,
 				1306679529CEE1E300AACEE6 /* DayButton.swift in Sources */,
 				1306677629CEE19C00AACEE6 /* TodoAddView.swift in Sources */,
