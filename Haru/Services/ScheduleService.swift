@@ -267,6 +267,33 @@ final class ScheduleService {
         }
     }
 
+    func updateScheduleWithRepeat(
+        scheduleId: String,
+        schedule: Request.RepeatSchedule,
+        at: RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            ScheduleService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/\(at.rawValue)",
+            method: .put,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
     /**
      * 일정 삭제하기 (모든 일정 삭제, 일반 삭제)
      */

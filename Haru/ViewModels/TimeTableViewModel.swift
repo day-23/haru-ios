@@ -613,39 +613,42 @@ final class TimeTableViewModel: ObservableObject {
     //  MARK: - Update
 
     func updateDraggingSchedule(
-        _ startDate: Date,
-        _ endDate: Date
+        startDate: Date,
+        endDate: Date,
+        at: RepeatAt
     ) {
         guard let draggingSchedule else {
             return
         }
         scheduleList = scheduleList.filter { $0.id != draggingSchedule.id }
 
-        //  FIXME: - Alarms 데이터 넣어야 함
-        scheduleService.updateSchedule(
-            scheduleId: draggingSchedule.id,
-            schedule: Request.Schedule(
-                content: draggingSchedule.data.content,
-                memo: draggingSchedule.data.memo,
-                isAllDay: draggingSchedule.data.isAllDay,
-                repeatStart: startDate,
-                repeatEnd: endDate,
-                repeatOption: draggingSchedule.data.repeatOption,
-                repeatValue: draggingSchedule.data.repeatValue,
-                categoryId: draggingSchedule.data.category?.id,
-                alarms: draggingSchedule.data.alarms.map(\.time)
-            )
-        ) { result in
-            switch result {
-            case .success(let schedule):
-                self.draggingSchedule?.data = schedule
-                self.scheduleList.append(self.draggingSchedule!)
-                self.draggingSchedule = nil
-                self.findUnion()
-            case .failure(let failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function))")
+        if at == .none {
+            //  FIXME: - Alarms 데이터 넣어야 함
+            scheduleService.updateSchedule(
+                scheduleId: draggingSchedule.id,
+                schedule: Request.Schedule(
+                    content: draggingSchedule.data.content,
+                    memo: draggingSchedule.data.memo,
+                    isAllDay: draggingSchedule.data.isAllDay,
+                    repeatStart: startDate,
+                    repeatEnd: endDate,
+                    repeatOption: draggingSchedule.data.repeatOption,
+                    repeatValue: draggingSchedule.data.repeatValue,
+                    categoryId: draggingSchedule.data.category?.id,
+                    alarms: draggingSchedule.data.alarms.map(\.time)
+                )
+            ) { result in
+                switch result {
+                case .success(let schedule):
+                    self.draggingSchedule?.data = schedule
+                    self.scheduleList.append(self.draggingSchedule!)
+                    self.draggingSchedule = nil
+                    self.findUnion()
+                case .failure(let failure):
+                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                }
             }
-        }
+        } else {}
     }
 
     func updateDraggingTodo(
