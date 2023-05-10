@@ -38,13 +38,18 @@ struct PostFormView: View {
                         .foregroundColor(Color(0x191919))
                 }
             } rightView: {
-                HStack(spacing: 10) {
-                    Text("하루 쓰기")
-                        .font(.pretendard(size: 20, weight: .bold))
-                    Image("toggle")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
+                NavigationLink {
+                    PostFormPreView(images: images, content: content)
+                } label: {
+                    HStack(spacing: 10) {
+                        Text("하루 쓰기")
+                            .font(.pretendard(size: 20, weight: .bold))
+                        Image("toggle")
+                            .renderingMode(.template)
+                            .foregroundColor(Color(0x191919))
+                    }
                 }
+                .foregroundColor(Color(0x191919))
             }
             .popupImagePicker(show: $openPhoto, mode: .multiple, always: true) { assets in
 

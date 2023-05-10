@@ -119,6 +119,8 @@
 		6F62F4942A0BA14F001BA364 /* ImageAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4932A0BA14F001BA364 /* ImageAsset.swift */; };
 		6F62F4962A0BA212001BA364 /* ImagePickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */; };
 		6F62F4982A0BAFA9001BA364 /* ImagePickerMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4972A0BAFA9001BA364 /* ImagePickerMode.swift */; };
+		6F62F49A2A0C3C34001BA364 /* PostFormPreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4992A0C3C34001BA364 /* PostFormPreView.swift */; };
+		6F62F49C2A0C3DAD001BA364 /* PostFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F49B2A0C3DAD001BA364 /* PostFormViewModel.swift */; };
 		6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */; };
 		6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */; };
 		6F8D8C422A02547300A32988 /* CustomNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C412A02547300A32988 /* CustomNavBar.swift */; };
@@ -245,6 +247,8 @@
 		6F62F4932A0BA14F001BA364 /* ImageAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAsset.swift; sourceTree = "<group>"; };
 		6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerViewModel.swift; sourceTree = "<group>"; };
 		6F62F4972A0BAFA9001BA364 /* ImagePickerMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerMode.swift; sourceTree = "<group>"; };
+		6F62F4992A0C3C34001BA364 /* PostFormPreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFormPreView.swift; sourceTree = "<group>"; };
+		6F62F49B2A0C3DAD001BA364 /* PostFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFormViewModel.swift; sourceTree = "<group>"; };
 		6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmOption.swift; sourceTree = "<group>"; };
 		6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormMode.swift; sourceTree = "<group>"; };
 		6F8D8C412A02547300A32988 /* CustomNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavBar.swift; sourceTree = "<group>"; };
@@ -404,6 +408,7 @@
 				6F54DF4C29DD63C2002FAD7F /* PostViewModel.swift */,
 				6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */,
 				6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */,
+				6F62F49B2A0C3DAD001BA364 /* PostFormViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -534,6 +539,7 @@
 				6F1F9A242A01212000C4ABF4 /* LookAroundView.swift */,
 				6F1F9A2A2A014A0F00C4ABF4 /* FollowView.swift */,
 				6F8D8C472A02B80300A32988 /* PostFormView.swift */,
+				6F62F4992A0C3C34001BA364 /* PostFormPreView.swift */,
 			);
 			path = SNS;
 			sourceTree = "<group>";
@@ -653,6 +659,7 @@
 				6FB144FD2A0A87D9006EA177 /* FollowService.swift in Sources */,
 				6F8D8C442A027F4B00A32988 /* Post.swift in Sources */,
 				1306678D29CEE1E300AACEE6 /* Modal.swift in Sources */,
+				6F62F49A2A0C3C34001BA364 /* PostFormPreView.swift in Sources */,
 				130666CC29CEDF4A00AACEE6 /* HaruApp.swift in Sources */,
 				1306671F29CEE14000AACEE6 /* CategoryService.swift in Sources */,
 				1306671E29CEE14000AACEE6 /* CalendarService.swift in Sources */,
@@ -730,6 +737,7 @@
 				1306670A29CEE13200AACEE6 /* tagWithTodo.swift in Sources */,
 				6F54DF4D29DD63C2002FAD7F /* PostViewModel.swift in Sources */,
 				1306677329CEE19C00AACEE6 /* ListView.swift in Sources */,
+				6F62F49C2A0C3DAD001BA364 /* PostFormViewModel.swift in Sources */,
 				130667B129CEE1FE00AACEE6 /* Calendar.swift in Sources */,
 				6F8D8C482A02B80300A32988 /* PostFormView.swift in Sources */,
 				134F5FF429DF1FF90072704B /* TimeTableTodoRow.swift in Sources */,
