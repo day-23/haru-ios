@@ -337,17 +337,53 @@ final class TimeTableViewModel: ObservableObject {
                                 // 2일 연속 일정
                                 switch repeatOption {
                                 case RepeatOption.everyWeek.rawValue:
-                                    while dateFormatter.string(from: date) <= dateFormatter.string(from: first) {
+                                    while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
                                         date = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7))
                                     }
                                 case RepeatOption.everySecondWeek.rawValue:
-                                    break
+                                    while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
+                                        date = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7 * 2))
+                                    }
                                 case RepeatOption.everyMonth.rawValue:
-                                    break
+                                    let day = date.day
+                                    while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
+                                        if let next = Calendar.current.date(byAdding: .month, value: 1, to: date) {
+                                            date = next
+                                        } else {
+                                            continue
+                                        }
+
+                                        guard let range = Calendar.current.range(of: .day, in: .month, for: date) else {
+                                            continue
+                                        }
+
+                                        let upperBound = range.upperBound - 1
+                                        if day <= upperBound {
+                                            let components = DateComponents(
+                                                year: date.year,
+                                                month: date.month,
+                                                day: day,
+                                                hour: date.hour,
+                                                minute: date.minute
+                                            )
+
+                                            guard let modified = Calendar.current.date(from: components) else {
+                                                continue
+                                            }
+                                            date = modified
+                                        }
+                                    }
                                 case RepeatOption.everyYear.rawValue:
+                                    // TODO: 연속되는 일정 매년 반복 처리 필요
+                                    // 현재 연속되는 일정의 경우에는 처리가 되어있지 않다.
                                     break
                                 default:
                                     // RepeatOption이 잘못된 경우로 해당 일정은 무시하고 다음 일정으로 넘어가서 계산한다.
+                                    continue
+                                }
+
+                                // 만약 반복일 계산 결과가 이번 주의 마지막을 넘어선다면 다음으로 넘어간다.
+                                if dateFormatter.string(from: last) < dateFormatter.string(from: date) {
                                     continue
                                 }
 
@@ -361,7 +397,7 @@ final class TimeTableViewModel: ObservableObject {
                                     continue
                                 }
 
-                                let repeatEnd = schedule.repeatStart.addingTimeInterval(
+                                let repeatEnd = date.addingTimeInterval(
                                     TimeInterval(floatLiteral: interval)
                                 )
 

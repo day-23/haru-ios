@@ -15,7 +15,7 @@ enum RepeatError: Error {
 enum RepeatOption: String, CaseIterable {
     case everyDay = "매일"
     case everyWeek = "매주"
-    case everySecondWeek = "2주마다"
+    case everySecondWeek = "격주"
     case everyMonth = "매달"
     case everyYear = "매년"
 }
