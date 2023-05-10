@@ -228,7 +228,10 @@ extension Todo {
         guard let repeatEnd else {
             return nextEndDate
         }
-        return nextEndDate.compare(repeatEnd) == .orderedAscending ? nextEndDate : nil
+        return nextEndDate.compare(repeatEnd) == .orderedAscending
+            || nextEndDate.compare(repeatEnd) == .orderedSame
+            ? nextEndDate
+            : nil
     }
 }
 
