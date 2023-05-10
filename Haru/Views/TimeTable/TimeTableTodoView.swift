@@ -70,7 +70,9 @@ struct TodoDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        timeTableViewModel.updateDraggingTodo(index: index)
+        timeTableViewModel.updateDraggingTodo(
+            index: index
+        )
         return true
     }
 }

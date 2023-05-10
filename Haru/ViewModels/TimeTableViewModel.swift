@@ -780,44 +780,131 @@ final class TimeTableViewModel: ObservableObject {
                 return
             }
 
-            todoService.updateTodo(
-                todoId: draggingTodo.data.id,
-                todo: Request.Todo(
-                    content: draggingTodo.data.content,
-                    memo: draggingTodo.data.memo,
-                    todayTodo: draggingTodo.data.todayTodo,
-                    flag: draggingTodo.data.flag,
-                    endDate: updatedEndDate,
-                    isAllDay: draggingTodo.data.isAllDay,
-                    alarms: draggingTodo.data.alarms.map(\.time),
-                    repeatOption: draggingTodo.data.repeatOption,
-                    repeatValue: draggingTodo.data.repeatValue,
-                    repeatEnd: draggingTodo.data.repeatEnd,
-                    tags: draggingTodo.data.tags.map(\.content),
-                    subTodos: draggingTodo.data.subTodos.map(\.content)
-                )
-            ) { result in
-                switch result {
-                case .success:
-                    withAnimation {
-                        draggingTodo.data.endDate = updatedEndDate
-                        self.todoListByDate[i].remove(at: j)
-                        self.todoListByDate[index].append(draggingTodo)
-                        self.todoListByDate[index].sort { v1, v2 in
-                            guard let endDate1 = v1.data.endDate,
-                                  let endDate2 = v2.data.endDate
-                            else {
-                                return false
+            if draggingTodo.at == .none {
+                todoService.updateTodo(
+                    todoId: draggingTodo.data.id,
+                    todo: Request.Todo(
+                        content: draggingTodo.data.content,
+                        memo: draggingTodo.data.memo,
+                        todayTodo: draggingTodo.data.todayTodo,
+                        flag: draggingTodo.data.flag,
+                        endDate: updatedEndDate,
+                        isAllDay: draggingTodo.data.isAllDay,
+                        alarms: draggingTodo.data.alarms.map(\.time),
+                        repeatOption: draggingTodo.data.repeatOption,
+                        repeatValue: draggingTodo.data.repeatValue,
+                        repeatEnd: draggingTodo.data.repeatEnd,
+                        tags: draggingTodo.data.tags.map(\.content),
+                        subTodos: draggingTodo.data.subTodos.map(\.content),
+                        subTodosCompleted: draggingTodo.data.subTodos.map(\.completed)
+                    )
+                ) { result in
+                    switch result {
+                    case .success:
+                        withAnimation {
+                            draggingTodo.data.endDate = updatedEndDate
+                            self.todoListByDate[i].remove(at: j)
+                            self.todoListByDate[index].append(draggingTodo)
+                            self.todoListByDate[index].sort { v1, v2 in
+                                guard let endDate1 = v1.data.endDate,
+                                      let endDate2 = v2.data.endDate
+                                else {
+                                    return false
+                                }
+                                return endDate1 < endDate2
                             }
-                            return endDate1 < endDate2
+                        }
+                    case .failure(let error):
+                        print("[Debug] \(error) (\(#fileID), \(#function))")
+                    }
+                    self.draggingTodo = nil
+                }
+            } else {
+                var date: Date = .now
+                if draggingTodo.at == .front || draggingTodo.at == .middle {
+                    do {
+                        if let nextEndDate = try draggingTodo.data.nextEndDate() {
+                            date = nextEndDate
+                        } else {
+                            todoService.updateTodo(
+                                todoId: draggingTodo.data.id,
+                                todo: Request.Todo(
+                                    content: draggingTodo.data.content,
+                                    memo: draggingTodo.data.memo,
+                                    todayTodo: draggingTodo.data.todayTodo,
+                                    flag: draggingTodo.data.flag,
+                                    endDate: updatedEndDate,
+                                    isAllDay: draggingTodo.data.isAllDay,
+                                    alarms: draggingTodo.data.alarms.map(\.time),
+                                    repeatOption: nil,
+                                    repeatValue: nil,
+                                    repeatEnd: nil,
+                                    tags: draggingTodo.data.tags.map(\.content),
+                                    subTodos: draggingTodo.data.subTodos.map(\.content),
+                                    subTodosCompleted: draggingTodo.data.subTodos.map(\.completed)
+                                )
+                            ) { result in
+                                switch result {
+                                case .success:
+                                    self.fetchTodoList()
+                                case .failure(let error):
+                                    print("[Debug] \(error) \(#fileID), \(#function)")
+                                }
+                            }
+                        }
+                    } catch {
+                        switch error {
+                        case RepeatError.invalid:
+                            print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                        case RepeatError.calculation:
+                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                        default:
+                            print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
                         }
                     }
-                case .failure(let failure):
-                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                } else if draggingTodo.at == .back {
+                    do {
+                        date = try draggingTodo.data.prevEndDate()
+                    } catch {
+                        switch error {
+                        case RepeatError.invalid:
+                            print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                        case RepeatError.calculation:
+                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                        default:
+                            print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                        }
+                    }
                 }
-                self.draggingTodo = nil
+
+                todoService.updateTodoWithRepeat(
+                    todoId: draggingTodo.data.id,
+                    todo: Request.Todo(
+                        content: draggingTodo.data.content,
+                        memo: draggingTodo.data.memo,
+                        todayTodo: draggingTodo.data.todayTodo,
+                        flag: draggingTodo.data.flag,
+                        endDate: updatedEndDate,
+                        isAllDay: draggingTodo.data.isAllDay,
+                        alarms: draggingTodo.data.alarms.map(\.time),
+                        repeatOption: nil,
+                        repeatValue: nil,
+                        repeatEnd: nil,
+                        tags: draggingTodo.data.tags.map(\.content),
+                        subTodos: draggingTodo.data.subTodos.map(\.content),
+                        subTodosCompleted: draggingTodo.data.subTodos.map(\.completed)
+                    ),
+                    date: date,
+                    at: draggingTodo.at
+                ) { result in
+                    switch result {
+                    case .success:
+                        self.fetchTodoList()
+                    case .failure(let error):
+                        print("[Debug] \(error) \(#fileID), \(#function)")
+                    }
+                }
             }
-            return
         }
     }
 }
