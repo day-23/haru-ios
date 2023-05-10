@@ -273,7 +273,7 @@ final class CheckListViewModel: ObservableObject {
         todoId: String,
         todo: Request.Todo,
         date: Date,
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.updateTodoWithRepeat(
@@ -403,7 +403,7 @@ final class CheckListViewModel: ObservableObject {
     func completeTodoWithRepeat(
         todoId: String,
         nextEndDate: Date,
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.completeTodoWithRepeat(
@@ -504,7 +504,7 @@ final class CheckListViewModel: ObservableObject {
     func deleteTodoWithRepeat(
         todoId: String,
         date: Date,
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.deleteTodoWithRepeat(

@@ -13,13 +13,13 @@ struct ScheduleCell: Identifiable {
     var data: Schedule
     var weight: Int
     var order: Int
-    var at: TodoService.RepeatAt = .front
+    var at: RepeatAt = .front
 }
 
 struct TodoCell: Identifiable, Equatable {
     var id: String
     var data: Todo
-    var at: TodoService.RepeatAt = .front
+    var at: RepeatAt = .front
 
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id && lhs.data == rhs.data
@@ -282,6 +282,7 @@ final class TimeTableViewModel: ObservableObject {
                             var date = schedule.repeatStart
                             if !repeatValue.hasPrefix("T") {
                                 // 단일 날짜 일정
+                                var at: RepeatAt = .front
 
                                 // 만약, date가 이번 주의 첫날보다 이전에서 시작한다면 저번 주의 마지막 날로 변경.
                                 if dateFormatter.string(from: date) < dateFormatter.string(from: first) {
@@ -299,6 +300,7 @@ final class TimeTableViewModel: ObservableObject {
                                     }
 
                                     date = next.addingTimeInterval(-TimeInterval(60 * 60 * 24))
+                                    at = .middle
                                 }
 
                                 while dateFormatter.string(from: date) <= dateFormatter.string(from: last) {
@@ -320,15 +322,24 @@ final class TimeTableViewModel: ObservableObject {
                                     repeatSchedule.repeatEnd = repeatEnd
 
                                     let cell = ScheduleCell(
-                                        id: "\(self.scheduleList.count)",
+                                        id: UUID().uuidString,
                                         data: repeatSchedule,
                                         weight: 1,
-                                        order: 1
+                                        order: 1,
+                                        at: at
                                     )
+
                                     self.scheduleList.append(cell)
 
                                     do {
                                         date = try schedule.nextRepeatStartDate(curRepeatStart: date)
+                                        let next = try schedule.nextRepeatStartDate(curRepeatStart: date)
+                                        at = .middle
+                                        if dateFormatter.string(from: schedule.repeatEnd) == dateFormatter.string(from: date)
+                                            || dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: next)
+                                        {
+                                            at = .back
+                                        }
                                     } catch {
                                         switch error {
                                         case RepeatError.invalid:
@@ -341,6 +352,7 @@ final class TimeTableViewModel: ObservableObject {
                                     }
                                 }
                             } else {
+                                var at: RepeatAt = .front
                                 // 2일 연속 일정
                                 switch repeatOption {
                                 case RepeatOption.everyWeek.rawValue:

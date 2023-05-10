@@ -151,6 +151,9 @@ struct TimeTableScheduleView: View {
                                     ScheduleItemView(schedule: $schedule)
                                         .frame(width: frame.width, height: frame.height)
                                         .position(x: position.x, y: position.y)
+                                        .onTapGesture {
+                                            print(schedule.at)
+                                        }
                                         .onDrop(of: [.text], delegate: CellDropDelegate(
                                             dayIndex: schedule.data.repeatStart.indexOfWeek()!,
                                             hourIndex: schedule.data.repeatStart.hour,

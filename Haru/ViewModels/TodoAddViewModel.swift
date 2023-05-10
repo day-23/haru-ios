@@ -489,7 +489,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func updateTodoWithRepeat(
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         guard let todo else {
@@ -744,7 +744,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func deleteTodoWithRepeat(
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         guard let todo else {

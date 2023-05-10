@@ -11,12 +11,6 @@ import Foundation
 struct TodoService {
     //  MARK: - Properties
 
-    enum RepeatAt: String {
-        case front
-        case middle
-        case back
-    }
-
     private static let baseURL = Constants.baseURL + "todo/"
 
     private static let formatter: DateFormatter = {
