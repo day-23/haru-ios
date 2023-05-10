@@ -103,7 +103,7 @@ struct ProfileFormView: View {
                     .foregroundColor(Color(0x191919))
             }
         }
-        .popupImagePicker(show: $openPhoto) { assets in
+        .popupImagePicker(show: $openPhoto, mode: .single) { assets in
 
             // MARK: Do Your Operation With PHAsset
 

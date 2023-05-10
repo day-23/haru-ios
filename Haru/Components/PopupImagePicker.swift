@@ -16,6 +16,7 @@ struct PopupImagePicker: View {
 
     // MARK: Callbacks
 
+    var mode: ImagePickerMode
     var onEnd: () -> ()
     var onSelect: ([PHAsset]) -> ()
 
@@ -130,9 +131,11 @@ struct PopupImagePicker: View {
                         Circle()
                             .fill(.blue)
 
-                        Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
-                            .font(.caption2.bold())
-                            .foregroundColor(.white)
+                        if mode == .multiple {
+                            Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
+                                .font(.caption2.bold())
+                                .foregroundColor(.white)
+                        }
                     }
                 }
                 .frame(width: 20, height: 20)
@@ -158,6 +161,9 @@ struct PopupImagePicker: View {
 
                         var newAsset = imageAsset
                         newAsset.assetIndex = imagePickerModel.selectedImages.count
+                        if mode == .single, !imagePickerModel.selectedImages.isEmpty {
+                            imagePickerModel.selectedImages.removeLast()
+                        }
                         imagePickerModel.selectedImages.append(newAsset)
                     }
                 }

@@ -137,7 +137,7 @@ class CustomHostingView<Content: View>: UIHostingController<Content> {
 
 extension View {
     @ViewBuilder
-    func popupImagePicker(show: Binding<Bool>, transition: AnyTransition = .move(edge: .bottom), onSelect: @escaping ([PHAsset]) -> ()) -> some View {
+    func popupImagePicker(show: Binding<Bool>, transition: AnyTransition = .move(edge: .bottom), mode: ImagePickerMode = .multiple, onSelect: @escaping ([PHAsset]) -> ()) -> some View {
         overlay {
             let deviceSize = UIScreen.main.bounds.size
             ZStack {
@@ -152,7 +152,7 @@ extension View {
                     }
 
                 if show.wrappedValue {
-                    PopupImagePicker {
+                    PopupImagePicker(mode: mode) {
                         show.wrappedValue = false
                     } onSelect: { assets in
                         onSelect(assets)
