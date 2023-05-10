@@ -14,6 +14,8 @@ struct PopupImagePicker: View {
 
     @Environment(\.self) var env
 
+    @State var enable: Bool = false
+
     // MARK: Callbacks
 
     var mode: ImagePickerMode
@@ -25,7 +27,9 @@ struct PopupImagePicker: View {
         VStack(spacing: 0) {
             HStack {
                 Button {
-                    onEnd()
+                    if mode == .single {
+                        onEnd()
+                    }
                 } label: {
                     HStack(spacing: 10) {
                         Text("갤러리")
@@ -41,6 +45,13 @@ struct PopupImagePicker: View {
 
                 Spacer()
 
+                if mode == .multiple {
+                    Button {
+                        enable.toggle()
+                    } label: {
+                        Image(enable ? "enable-select-photo" : "disable-select-photo")
+                    }
+                }
                 Image("default-camera")
                     .resizable()
                     .frame(width: 30, height: 30)
@@ -133,6 +144,10 @@ struct PopupImagePicker: View {
         .onTapGesture {
             // MARK: adding / Removing Asset
 
+            if mode == .multiple, !enable {
+                return
+            }
+
             withAnimation(.easeInOut) {
                 if let index = imagePickerModel.selectedImages.firstIndex(where: { asset in
                     asset.id == imageAsset.id
@@ -151,12 +166,11 @@ struct PopupImagePicker: View {
                     imagePickerModel.selectedImages.append(newAsset)
                 }
             }
-            if mode == .single {
-                let imageAssets = imagePickerModel.selectedImages.compactMap { imageAsset -> PHAsset? in
-                    imageAsset.asset
-                }
-                onSelect(imageAssets)
+
+            let imageAssets = imagePickerModel.selectedImages.compactMap { imageAsset -> PHAsset? in
+                imageAsset.asset
             }
+            onSelect(imageAssets)
         }
     }
 }
