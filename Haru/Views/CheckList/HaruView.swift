@@ -11,6 +11,10 @@ struct HaruView: View {
     @Environment(\.dismiss) var dismissAction
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
+    @State private var isModalVisible: Bool = false
+    @State private var prevOffset: CGFloat?
+    @State private var offset: CGFloat?
+    @State private var viewIsShown: Bool = true
 
     let formatter: DateFormatter = {
         let formatter: DateFormatter = .init()
@@ -19,7 +23,7 @@ struct HaruView: View {
     }()
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             LinearGradient(
                 gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF), Color(0xAAD7FF)]),
                 startPoint: .bottomLeading,
@@ -101,7 +105,62 @@ struct HaruView: View {
                     )
                     .padding(.leading, 10)
                 }
-            } offsetChanged: { _ in }
+            } offsetChanged: { changeOffset($0) }
+
+            if isModalVisible {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            isModalVisible = false
+                        }
+                    }
+
+                Modal(isActive: $isModalVisible, ratio: 0.9) {
+                    TodoAddView(
+                        viewModel: addViewModel,
+                        isModalVisible: $isModalVisible
+                    )
+                }
+                .transition(.modal)
+                .zIndex(2)
+            } else if viewIsShown {
+                HStack(alignment: .bottom, spacing: 0) {
+                    TextField("", text: $addViewModel.content)
+                        .placeholder(when: addViewModel.content.isEmpty) {
+                            Text("간편 추가")
+                                .font(.pretendard(size: 14, weight: .regular))
+                                .foregroundColor(Color(0x646464))
+                        }
+                        .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(Color(0x646464))
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 12)
+                        .background(Color(0xF1F1F5))
+                        .cornerRadius(8)
+                        .padding(.trailing, 18)
+                        .padding(.bottom, 4)
+                        .onSubmit {
+                            addViewModel.addSimpleTodo()
+                        }
+
+                    Button {
+                        withAnimation {
+                            isModalVisible = true
+                            addViewModel.mode = .add
+                            addViewModel.isTodayTodo = true
+                            addViewModel.isSelectedEndDate = true
+                        }
+                    } label: {
+                        Image("add-button")
+                            .shadow(radius: 10, x: 5, y: 0)
+                    }
+                }
+                .zIndex(5)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
+            }
         }
         .navigationBarBackButtonHidden()
         .toolbar {
@@ -126,6 +185,32 @@ struct HaruView: View {
         }
         .onDisappear {
             viewModel.mode = .main
+        }
+    }
+
+    func changeOffset(_ value: CGPoint?) {
+        if self.prevOffset == nil {
+            self.viewIsShown = true
+            self.prevOffset = value?.y
+            return
+        }
+        self.offset = value?.y
+
+        guard let prevOffset,
+              let offset
+        else {
+            return
+        }
+
+        withAnimation(.easeInOut(duration: 0.25)) {
+            if offset >= 0 {
+                self.viewIsShown = true
+            } else if prevOffset > offset {
+                self.viewIsShown = false
+            } else {
+                self.viewIsShown = true
+            }
+            self.prevOffset = offset
         }
     }
 }
