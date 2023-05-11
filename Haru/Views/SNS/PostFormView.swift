@@ -17,6 +17,9 @@ struct PostFormView: View {
 
     @FocusState private var isFocused: Bool
 
+    // For pop up to root
+    @Binding var rootIsActive: Bool
+
     var body: some View {
         TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
             .lineLimit(nil)
@@ -38,7 +41,7 @@ struct PostFormView: View {
                 }
             } rightView: {
                 NavigationLink {
-                    PostFormPreView(postFormVM: postFormVM)
+                    PostFormPreView(postFormVM: postFormVM, shouldPopToRootView: $rootIsActive)
                 } label: {
                     HStack(spacing: 10) {
                         Text("하루 쓰기")
@@ -71,11 +74,5 @@ struct PostFormView: View {
                     }
                 }
             }
-    }
-}
-
-struct PostFormView_Previews: PreviewProvider {
-    static var previews: some View {
-        PostFormView()
     }
 }

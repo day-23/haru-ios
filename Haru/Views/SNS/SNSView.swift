@@ -16,6 +16,9 @@ struct Sns: Identifiable, Hashable {
 struct SNSView: View {
     @State var toggleIsClicked: Bool = false
 
+    // For pop up to root
+    @State var isActive: Bool = false
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
@@ -50,9 +53,10 @@ struct SNSView: View {
                 }
             }
 
-            NavigationLink {
-                PostFormView()
-            } label: {
+            NavigationLink(
+                destination: PostFormView(rootIsActive: $isActive),
+                isActive: $isActive
+            ) {
                 Image("sns-add-button")
                     .shadow(radius: 10, x: 5, y: 0)
             }

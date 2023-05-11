@@ -14,6 +14,9 @@ struct PostFormPreView: View {
 
     @FocusState private var tagInFocus: Bool
 
+    // For pop up to root
+    @Binding var shouldPopToRootView: Bool
+
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
         VStack(alignment: .leading, spacing: 0) {
@@ -97,7 +100,7 @@ struct PostFormPreView: View {
         .padding(.top, 12)
         .customNavigationBar {
             Button {
-                dismissAction.callAsFunction()
+                shouldPopToRootView = false
             } label: {
                 Image("cancel")
                     .renderingMode(.template)
