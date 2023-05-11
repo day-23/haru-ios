@@ -55,7 +55,6 @@ final class CalendarViewModel: ObservableObject {
 
     private let scheduleService = ScheduleService()
     private let categoryService = CategoryService()
-    private let calendarService = CalendarService()
     
     init() {
         setStartOnSunday(startOnSunday)
@@ -88,31 +87,52 @@ final class CalendarViewModel: ObservableObject {
         guard let firstDate = dateList.first?.date, let startDate = Calendar.current.date(byAdding: .day, value: -1, to: firstDate) else { return }
         guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
         
-        Task {
-            var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
-            
-            // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
-            var repeatScheduleList = [Schedule]()
-            var idx = 0
-            while idx < beforeRepeat.0.count {
-                let sch = beforeRepeat.0[idx]
-                if sch.repeatValue != nil {
-                    repeatScheduleList.append(sch)
-                    beforeRepeat.0.remove(at: idx)
-                } else {
-                    idx += 1
+        scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
+            switch result {
+            case .success(let success):
+                var beforeRepeat = success
+                // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
+                var repeatScheduleList = [Schedule]()
+                var repeatTodoList = [Todo]()
+                var idx = 0
+                // 반복 일정을 만들면서 중복 제거를 위함
+                while idx < beforeRepeat.0.count {
+                    let sch = beforeRepeat.0[idx]
+                    if sch.repeatValue != nil {
+                        repeatScheduleList.append(sch)
+                        beforeRepeat.0.remove(at: idx)
+                    } else {
+                        idx += 1
+                    }
                 }
-            }
-            
-            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: firstDate, lastDate: lastDate, repeatScheduleList: repeatScheduleList))
-            // beforeRepeat.1.append(...)
-            
-            let result = (beforeRepeat.0.sorted {
-                $0.repeatStart < $1.repeatStart
-            }, beforeRepeat.1)
-            
-            DispatchQueue.main.async {
+                idx = 0
+                while idx < beforeRepeat.1.count {
+                    let todo = beforeRepeat.1[idx]
+                    if todo.repeatValue != nil {
+                        repeatTodoList.append(todo)
+                        beforeRepeat.1.remove(at: idx)
+                    } else {
+                        idx += 1
+                    }
+                }
+                    
+                beforeRepeat.0.append(contentsOf: self.makeRepeatSchedule(firstDate: firstDate, lastDate: lastDate, repeatScheduleList: repeatScheduleList))
+                beforeRepeat.1.append(contentsOf: self.makeRepeatTodo(firstDate: firstDate, lastDate: lastDate, repeatTodoList: repeatTodoList))
+                
+                let result = (beforeRepeat.0.sorted {
+                    $0.repeatStart < $1.repeatStart
+                }, beforeRepeat.1.sorted {
+                    guard let leftEndDate = $0.endDate, let rightEndDate = $1.endDate else {
+                        print("[Error] (일정 + 투두) 가져오는 api에는 endDate가 null이 아닌 todo만 있어야합니다. \(#fileID) \(#function)")
+                        return false
+                    }
+                    return leftEndDate < rightEndDate
+                })
+                
                 (self.productivityList, self.viewProductivityList) = self.fittingCalendar(dateList: dateList, scheduleList: result.0, todoList: result.1)
+                
+            case .failure(let failure):
+                print("[Error] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -188,29 +208,51 @@ final class CalendarViewModel: ObservableObject {
             pivotDateList[index] = date
         }
         
-        Task {
-            var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
-            
-            // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
-            var repeatScheduleList = [Schedule]()
-            var idx = 0
-            while idx < beforeRepeat.0.count {
-                let sch = beforeRepeat.0[idx]
-                if sch.repeatValue != nil {
-                    repeatScheduleList.append(sch)
-                    beforeRepeat.0.remove(at: idx)
-                } else {
-                    idx += 1
+        scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
+            switch result {
+            case .success(let success):
+                var beforeRepeat = success
+                // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
+                var repeatScheduleList = [Schedule]()
+                var repeatTodoList = [Todo]()
+                var idx = 0
+                while idx < beforeRepeat.0.count {
+                    let sch = beforeRepeat.0[idx]
+                    if sch.repeatValue != nil {
+                        repeatScheduleList.append(sch)
+                        beforeRepeat.0.remove(at: idx)
+                    } else {
+                        idx += 1
+                    }
                 }
-            }
-            
-            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
-            let result = (beforeRepeat.0.sorted {
-                $0.repeatStart < $1.repeatStart
-            }, beforeRepeat.1)
-            
-            DispatchQueue.main.async {
+                idx = 0
+                while idx < beforeRepeat.1.count {
+                    let todo = beforeRepeat.1[idx]
+                    if todo.repeatValue != nil {
+                        repeatTodoList.append(todo)
+                        beforeRepeat.1.remove(at: idx)
+                    } else {
+                        idx += 1
+                    }
+                }
+                    
+                beforeRepeat.0.append(contentsOf: self.makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
+                beforeRepeat.1.append(contentsOf: self.makeRepeatTodo(firstDate: startDate, lastDate: endDate, repeatTodoList: repeatTodoList))
+                
+                let result = (beforeRepeat.0.sorted {
+                    $0.repeatStart < $1.repeatStart
+                }, beforeRepeat.1.sorted {
+                    guard let leftEndDate = $0.endDate, let rightEndDate = $1.endDate else {
+                        print("[Error] (일정 + 투두) 가져오는 api에는 endDate가 null이 아닌 todo만 있어야합니다. \(#fileID) \(#function)")
+                        return false
+                    }
+                    return leftEndDate < rightEndDate
+                })
+                
                 (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: result.0, todoList: result.1)
+                
+            case .failure(let failure):
+                print("[Error] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -230,29 +272,51 @@ final class CalendarViewModel: ObservableObject {
             pivotDateList[index] = date
         }
         
-        Task {
-            var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
-            
-            // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
-            var repeatScheduleList = [Schedule]()
-            var idx = 0
-            while idx < beforeRepeat.0.count {
-                let sch = beforeRepeat.0[idx]
-                if sch.repeatValue != nil {
-                    repeatScheduleList.append(sch)
-                    beforeRepeat.0.remove(at: idx)
-                } else {
-                    idx += 1
+        scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
+            switch result {
+            case .success(let success):
+                var beforeRepeat = success
+                // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
+                var repeatScheduleList = [Schedule]()
+                var repeatTodoList = [Todo]()
+                var idx = 0
+                while idx < beforeRepeat.0.count {
+                    let sch = beforeRepeat.0[idx]
+                    if sch.repeatValue != nil {
+                        repeatScheduleList.append(sch)
+                        beforeRepeat.0.remove(at: idx)
+                    } else {
+                        idx += 1
+                    }
                 }
-            }
-            
-            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
-            let result = (beforeRepeat.0.sorted {
-                $0.repeatStart < $1.repeatStart
-            }, beforeRepeat.1)
-            
-            DispatchQueue.main.async {
+                idx = 0
+                while idx < beforeRepeat.1.count {
+                    let todo = beforeRepeat.1[idx]
+                    if todo.repeatValue != nil {
+                        repeatTodoList.append(todo)
+                        beforeRepeat.1.remove(at: idx)
+                    } else {
+                        idx += 1
+                    }
+                }
+                    
+                beforeRepeat.0.append(contentsOf: self.makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
+                beforeRepeat.1.append(contentsOf: self.makeRepeatTodo(firstDate: startDate, lastDate: endDate, repeatTodoList: repeatTodoList))
+                
+                let result = (beforeRepeat.0.sorted {
+                    $0.repeatStart < $1.repeatStart
+                }, beforeRepeat.1.sorted {
+                    guard let leftEndDate = $0.endDate, let rightEndDate = $1.endDate else {
+                        print("[Error] (일정 + 투두) 가져오는 api에는 endDate가 null이 아닌 todo만 있어야합니다. \(#fileID) \(#function)")
+                        return false
+                    }
+                    return leftEndDate < rightEndDate
+                })
+                
                 (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: result.0, todoList: result.1)
+                
+            case .failure(let failure):
+                print("[Error] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -268,33 +332,52 @@ final class CalendarViewModel: ObservableObject {
         
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
 
-        Task {
-            var beforeRepeat = await calendarService.fetchScheduleAndTodo(startDate, endDate)
-            
-            // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
-            var repeatScheduleList = [Schedule]()
-            var idx = 0
-            while idx < beforeRepeat.0.count {
-                let sch = beforeRepeat.0[idx]
-                if sch.repeatValue != nil {
-                    repeatScheduleList.append(sch)
-                    beforeRepeat.0.remove(at: idx)
-                } else {
-                    idx += 1
+        scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
+            switch result {
+            case .success(let success):
+                var beforeRepeat = success
+                // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
+                var repeatScheduleList = [Schedule]()
+                var repeatTodoList = [Todo]()
+                var idx = 0
+                while idx < beforeRepeat.0.count {
+                    let sch = beforeRepeat.0[idx]
+                    if sch.repeatValue != nil {
+                        repeatScheduleList.append(sch)
+                        beforeRepeat.0.remove(at: idx)
+                    } else {
+                        idx += 1
+                    }
                 }
-            }
-            
-            beforeRepeat.0.append(contentsOf: makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
-            let result = (beforeRepeat.0.sorted {
-                $0.repeatStart < $1.repeatStart
-            }, beforeRepeat.1)
-            
-            DispatchQueue.main.async {
+                idx = 0
+                while idx < beforeRepeat.1.count {
+                    let todo = beforeRepeat.1[idx]
+                    if todo.repeatValue != nil {
+                        repeatTodoList.append(todo)
+                        beforeRepeat.1.remove(at: idx)
+                    } else {
+                        idx += 1
+                    }
+                }
+                    
+                beforeRepeat.0.append(contentsOf: self.makeRepeatSchedule(firstDate: startDate, lastDate: endDate, repeatScheduleList: repeatScheduleList))
+                beforeRepeat.1.append(contentsOf: self.makeRepeatTodo(firstDate: startDate, lastDate: endDate, repeatTodoList: repeatTodoList))
+                
+                let result = (beforeRepeat.0.sorted {
+                    $0.repeatStart < $1.repeatStart
+                }, beforeRepeat.1.sorted {
+                    guard let leftEndDate = $0.endDate, let rightEndDate = $1.endDate else {
+                        print("[Error] (일정 + 투두) 가져오는 api에는 endDate가 null이 아닌 todo만 있어야합니다. \(#fileID) \(#function)")
+                        return false
+                    }
+                    return leftEndDate < rightEndDate
+                })
+                
                 let prodList = self.fittingOffsetDay(startDate, endDate, scheduleList: result.0, todoList: result.1)
-            
+                
                 var addedDateList = [Date]()
                 addedDateList.append(contentsOf: stride(from: startDate, through: endDate, by: dayDurationInSeconds))
-                
+                    
                 if isRight {
                     self.pivotDateList.append(contentsOf: addedDateList)
                     self.pivotDateList.removeFirst(5)
@@ -302,7 +385,7 @@ final class CalendarViewModel: ObservableObject {
                     self.scheduleList.removeFirst(5)
                     self.todoList.append(contentsOf: prodList.1)
                     self.todoList.removeFirst(5)
-                    
+                        
                 } else {
                     self.pivotDateList.insert(contentsOf: addedDateList, at: 0)
                     self.pivotDateList.removeLast(5)
@@ -312,6 +395,9 @@ final class CalendarViewModel: ObservableObject {
                     self.todoList.removeLast(5)
                 }
                 completion()
+                
+            case .failure(let failure):
+                print("[Error] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -598,9 +684,12 @@ final class CalendarViewModel: ObservableObject {
     ) -> [Schedule] {
         var result = [Schedule]()
         for sch in repeatScheduleList {
-            // make schedule
-            if sch.repeatValue?.first == "T" {
-                // TODO: 연속된 일정 반복 처리
+            guard let repeatValue = sch.repeatValue else {
+                print("[Error] schedule id: \(sch.id) 반복 일정은 repeatValue가 null이면 안됩니다. \(#fileID) \(#function)")
+                continue
+            }
+            if repeatValue.first == "T" {
+                result.append(contentsOf: successionRepeatSchedule(firstDate: firstDate, lastDate: lastDate, oriRepeatSch: sch))
             } else {
                 result.append(contentsOf: singleRepeatSchedule(firstDate: firstDate, lastDate: lastDate, oriRepeatSch: sch))
             }
@@ -618,7 +707,23 @@ final class CalendarViewModel: ObservableObject {
         case "2주마다":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
         case "매달":
+            return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
+        case "매년":
             return [Schedule]()
+        default:
+            return [Schedule]()
+        }
+    }
+    
+    // 2일 이상치 일정의 반복
+    func successionRepeatSchedule(firstDate: Date, lastDate: Date, oriRepeatSch: Schedule) -> [Schedule] {
+        switch oriRepeatSch.repeatOption {
+        case "매주":
+            return sucRepeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
+        case "2주마다":
+            return sucRepeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
+        case "매달":
+            return sucRepeatEveryMonth(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매년":
             return [Schedule]()
         default:
@@ -626,6 +731,7 @@ final class CalendarViewModel: ObservableObject {
         }
     }
 
+    // repeatXXX 함수의 firstDate = 달력에 표시될 날짜의 첫 시작 date, lastDate = 달력에 표시될 날짜의 마지막 date
     func repeatEveryDay(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
         let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
         
@@ -672,6 +778,7 @@ final class CalendarViewModel: ObservableObject {
         
         let calendar = Calendar.current
         var dateComponents: DateComponents
+        let day = 60 * 60 * 24
         
         let offset = calendar.component(.weekday, from: startDate) - 1
         
@@ -679,6 +786,13 @@ final class CalendarViewModel: ObservableObject {
         for i in schedule.repeatValue! {
             if i.isNumber {
                 repeatValue.append(Int(String(i))!)
+            }
+        }
+        
+        if weekTerm == 2, startDate.month != schedule.repeatStart.month || startDate.day != schedule.repeatStart.day {
+            let diff = CalendarHelper.getDiffWeeks(date1: schedule.repeatStart, date2: startDate)
+            if diff % 2 == 0 {
+                startDate = startDate.addingTimeInterval(TimeInterval(day * 7))
             }
         }
         
@@ -711,7 +825,7 @@ final class CalendarViewModel: ObservableObject {
                     }
                     
                     // nextRepeatStart와 prevRepeatEnd 찾기
-                    let day = 60 * 60 * 24
+                    
                     var nextRepeatStart: Date = repeatStart.addingTimeInterval(TimeInterval(day))
                     var prevRepeatEnd: Date = repeatEnd.addingTimeInterval(TimeInterval(-day))
                     var index = (calendar.component(.weekday, from: repeatStart)) % 7
@@ -775,6 +889,303 @@ final class CalendarViewModel: ObservableObject {
             }
             if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
                 startDate = nextStartDate
+            }
+        }
+        
+        return result
+    }
+    
+    func repeatEveryMonth(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
+        var result = [Schedule]()
+        
+        guard let repeatValue = schedule.repeatValue else {
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        
+        for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
+            if repeatValue[repeatValue.index(repeatValue.startIndex, offsetBy: date.day - 1)] == "1" {
+                dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+                dateComponents.hour = schedule.repeatStart.hour
+                dateComponents.minute = schedule.repeatStart.minute
+                guard let curRepeatStart = calendar.date(from: dateComponents) else {
+                    print("[Error] schedule.repeatStart가 Date 타입이 아닙니다. \(#fileID) \(#function)")
+                    continue
+                }
+                
+                dateComponents.hour = schedule.repeatEnd.hour
+                dateComponents.minute = schedule.repeatEnd.minute
+                guard let curRepeatEnd = calendar.date(from: dateComponents) else {
+                    print("[Error] schedule.repeatEnd가 Date 타입이 아닙니다. \(#fileID) \(#function)")
+                    continue
+                }
+                
+                var nextRepeatStart: Date?
+                do {
+                    nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: curRepeatStart)
+                } catch (let error) {
+                    print("[Error] \(error) \(#fileID) \(#function)")
+                    continue
+                }
+                
+                var prevRepeatEnd: Date?
+                do {
+                    prevRepeatEnd = try schedule.prevRepeatEndDate(curRepeatEnd: curRepeatEnd)
+                } catch (let error) {
+                    print("[Error] \(error) \(#fileID) \(#function)")
+                }
+                
+                result.append(
+                    Schedule.createRepeatSchedule(
+                        schedule: schedule,
+                        repeatStart: curRepeatStart,
+                        repeatEnd: curRepeatEnd,
+                        prevRepeatEnd: prevRepeatEnd,
+                        nextRepeatStart: nextRepeatStart
+                    )
+                )
+            }
+        }
+        
+        return result
+    }
+    
+    // MARK: TODO: 긴 반복 일정 로직 구현
+
+    func sucRepeatEveryWeek(firstDate: Date, lastDate: Date, schedule: Schedule, weekTerm: Int) -> [Schedule] {
+        var result = [Schedule]()
+        
+        guard let repeatValue = schedule.repeatValue else {
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        let day = 60 * 60 * 24
+        
+        let idx = CalendarHelper.getDayofWeek(date: schedule.repeatStart)
+        var pivotRepStart = CalendarHelper.getClosestDayOfWeekDate(idx: idx, baseDate: startDate)
+        
+        // FIXME: 뭔가 이상함
+        if weekTerm == 2, startDate.month != schedule.repeatStart.month || startDate.day != schedule.repeatStart.day {
+            let diff = CalendarHelper.getDiffWeeks(date1: schedule.repeatStart, date2: startDate)
+            if diff % 2 == 0 {
+                pivotRepStart = pivotRepStart.addingTimeInterval(TimeInterval(day * 7))
+            }
+        }
+        
+        while pivotRepStart < endDate {
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: pivotRepStart)
+            dateComponents.hour = schedule.repeatStart.hour
+            dateComponents.minute = schedule.repeatStart.minute
+            guard let repeatStart = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
+                continue
+            }
+            
+            let repeatEnd = repeatStart.addingTimeInterval(
+                TimeInterval(
+                    Double(
+                        repeatValue.split(separator: "T")[0]
+                    ) ?? 0
+                )
+            )
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
+            dateComponents.hour = schedule.repeatEnd.hour
+            dateComponents.minute = schedule.repeatEnd.minute
+            
+            guard let repeatEnd = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
+                continue
+            }
+            
+            result.append(
+                Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd)
+            )
+            
+            pivotRepStart = pivotRepStart.addingTimeInterval(TimeInterval(day * 7 * weekTerm))
+        }
+        
+        return result
+    }
+    
+    func sucRepeatEveryMonth(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
+        var result = [Schedule]()
+//        guard let repeatValue = schedule.repeatValue else {
+//            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+//            return result
+//        }
+//
+//        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+//
+//        let calendar = Calendar.current
+//        var dateComponents: DateComponents
+        
+        return result
+    }
+    
+    // MARK: - 반복 TODO 만들어주기
+
+    func makeRepeatTodo(
+        firstDate: Date,
+        lastDate: Date,
+        repeatTodoList: [Todo]
+    ) -> [Todo] {
+        var result = [Todo]()
+        for todo in repeatTodoList {
+            result.append(contentsOf: singleRepeatTodo(firstDate: firstDate, lastDate: lastDate, oriRepeatTodo: todo))
+        }
+        return result
+    }
+    
+    func singleRepeatTodo(firstDate: Date, lastDate: Date, oriRepeatTodo: Todo) -> [Todo] {
+        switch oriRepeatTodo.repeatOption {
+        case "매일":
+            return repeatEveryDay(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
+        case "매주":
+            return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo, weekTerm: 1)
+        case "2주마다":
+            return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo, weekTerm: 2)
+        case "매달":
+            return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
+        case "매년":
+            return [Todo]()
+        default:
+            return [Todo]()
+        }
+    }
+    
+    func repeatEveryDay(firstDate: Date, lastDate: Date, todo: Todo) -> [Todo] {
+        var result = [Todo]()
+        
+        guard let todoEndDate = todo.endDate else {
+            print("[Error] 반복 Todo는 endDate가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let calendar = Calendar.current
+        var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
+        let maxRepeatEndDate = calendar.date(from: dateComponents)!
+
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        
+        for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+            dateComponents.hour = todoEndDate.hour
+            dateComponents.minute = todoEndDate.minute
+            
+            guard let curEndDate = calendar.date(from: dateComponents) else {
+                print("[Error] endDate에 문제가 있습니다. \(#fileID) \(#function)")
+                continue
+            }
+            
+            result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
+        }
+        
+        return result
+    }
+    
+    func repeatEveryWeek(firstDate: Date, lastDate: Date, todo: Todo, weekTerm: Int) -> [Todo] {
+        var result = [Todo]()
+        
+        guard let todoEndDate = todo.endDate else {
+            print("[Error] 반복 Todo는 endDate가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        guard let todoRepeatValue = todo.repeatValue else {
+            print("[Error] 반복 Todo는 repeatValue가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let calendar = Calendar.current
+        var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
+        let maxRepeatEndDate = calendar.date(from: dateComponents)!
+
+        var (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        
+        let offset = calendar.component(.weekday, from: startDate) - 1
+        
+        let repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
+        
+        // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
+        for _ in 0 ... 5 {
+            for idx in repeatValue.indices {
+                if repeatValue[(idx + offset) % 7] == 1 {
+                    guard let curEndDate = CalendarHelper.getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: calendar.startOfDay(for: startDate)) else {
+                        print("[Error] getClosestIdxDate 함수 에러 \(#fileID) \(#function)")
+                        continue
+                    }
+                    
+                    if curEndDate > endDate {
+                        break
+                    }
+                    
+                    dateComponents = calendar.dateComponents([.year, .month, .day], from: curEndDate)
+                    dateComponents.hour = todoEndDate.hour
+                    dateComponents.minute = todoEndDate.minute
+                    guard let curEndDate = calendar.date(from: dateComponents) else {
+                        print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
+                        continue
+                    }
+                    
+                    result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
+                }
+            }
+            if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
+                startDate = nextStartDate
+            }
+        }
+        
+        return result
+    }
+    
+    func repeatEveryMonth(firstDate: Date, lastDate: Date, todo: Todo) -> [Todo] {
+        var result = [Todo]()
+        
+        guard let todoEndDate = todo.endDate else {
+            print("[Error] 반복 Todo는 endDate가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        guard let todoRepeatValue = todo.repeatValue else {
+            print("[Error] 반복 Todo는 repeatValue가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let calendar = Calendar.current
+        var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
+        let maxRepeatEndDate = calendar.date(from: dateComponents)!
+
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        
+        let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
+        
+        let repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
+        
+        for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
+            if repeatValue[date.day - 1] == 1 {
+                dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+                dateComponents.hour = todoEndDate.hour
+                dateComponents.minute = todoEndDate.minute
+                guard let curEndDate = calendar.date(from: dateComponents) else {
+                    print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
+                    continue
+                }
+                
+                result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
             }
         }
         

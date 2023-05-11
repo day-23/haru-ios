@@ -39,15 +39,20 @@ final class ScheduleService {
         _ completion: @escaping (Result<[Schedule], Error>) -> Void
     ) {
         struct Response: Codable {
+            let success: Bool
+            let data: Data
+            let pagination: Pagination
+
+            struct Data: Codable {
+                let schedules: [Schedule]
+                let holidays: [Holiday]
+            }
+
             struct Pagination: Codable {
                 let totalItems: Int
                 let startDate: Date
                 let endDate: Date
             }
-
-            let success: Bool
-            let data: [Schedule]
-            let pagination: Pagination
         }
 
         let headers: HTTPHeaders = [
@@ -68,18 +73,24 @@ final class ScheduleService {
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
-                completion(.success(response.data))
+                completion(.success(response.data.schedules))
             case let .failure(error):
                 completion(.failure(error))
             }
         }
     }
 
-    func fetchScheduleListAsync(
+    func fetchScheduleAndTodo(
         _ startDate: Date,
-        _ endDate: Date
-    ) async throws -> [Schedule] {
+        _ endDate: Date,
+        _ completion: @escaping (Result<([Schedule], [Todo]), Error>) -> Void
+    ) {
         struct Response: Codable {
+            struct Data: Codable {
+                let schedules: [Schedule]
+                let todos: [Todo]
+            }
+
             struct Pagination: Codable {
                 let totalItems: Int
                 let startDate: Date
@@ -87,7 +98,7 @@ final class ScheduleService {
             }
 
             let success: Bool
-            let data: [Schedule]
+            let data: Data
             let pagination: Pagination
         }
 
@@ -100,21 +111,19 @@ final class ScheduleService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(
-                ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
-                method: .post,
-                parameters: parameters,
-                encoding: JSONEncoding.default,
-                headers: headers
-            )
-            .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
-                switch response.result {
-                case let .success(response):
-                    continuation.resume(returning: response.data)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
+        AF.request(
+            ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date/all",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data.schedules, response.data.todos)))
+            case let .failure(error):
+                completion(.failure(error))
             }
         }
     }
@@ -244,6 +253,33 @@ final class ScheduleService {
 
         AF.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/back",
+            method: .put,
+            parameters: schedule,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func updateScheduleWithRepeat(
+        scheduleId: String,
+        schedule: Request.RepeatSchedule,
+        at: RepeatAt,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            ScheduleService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/\(at.rawValue)",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),

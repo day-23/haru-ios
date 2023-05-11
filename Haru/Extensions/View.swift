@@ -25,11 +25,11 @@ struct RoundedCorner: Shape {
 }
 
 extension View {
-    func placeholder<Content: View>(
+    func placeholder(
         when shouldShow: Bool,
         alignment: Alignment = .leading,
-        @ViewBuilder placeholder: () -> Content) -> some View
-    {
+        @ViewBuilder placeholder: () -> some View
+    ) -> some View {
         ZStack(alignment: alignment) {
             placeholder().opacity(shouldShow ? 1 : 0)
             self
@@ -39,10 +39,31 @@ extension View {
 
 extension View {
     @ViewBuilder
-    func popover<Content: View>(isPresented: Binding<Bool>, arrowDirection: UIPopoverArrowDirection, @ViewBuilder content: @escaping () -> Content) -> some View {
+    func popover(isPresented: Binding<Bool>, arrowDirection: UIPopoverArrowDirection, @ViewBuilder content: @escaping () -> some View) -> some View {
         background {
             PopOverController(isPresented: isPresented, arrowDirection: arrowDirection, content: content())
         }
+    }
+}
+
+extension View {
+    func customNavigationBar(
+        centerView: @escaping (() -> some View),
+        leftView: @escaping (() -> some View),
+        rightView: @escaping (() -> some View)
+    ) -> some View {
+        modifier(
+            CustomNavBar(centerView: centerView, leftView: leftView, rightView: rightView)
+        )
+    }
+
+    func customNavigationBar(
+        leftView: @escaping (() -> some View),
+        rightView: @escaping (() -> some View)
+    ) -> some View {
+        modifier(
+            CustomNavBar(centerView: { EmptyView() }, leftView: leftView, rightView: rightView)
+        )
     }
 }
 
@@ -54,7 +75,7 @@ struct PopOverController<Content: View>: UIViewControllerRepresentable {
     @State private var alreadyPresented: Bool = false
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(parent: self)
+        Coordinator(parent: self)
     }
 
     func makeUIViewController(context: Context) -> some UIViewController {
@@ -91,7 +112,7 @@ struct PopOverController<Content: View>: UIViewControllerRepresentable {
         }
 
         func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-            return .none
+            .none
         }
 
         func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {

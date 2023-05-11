@@ -11,12 +11,6 @@ import Foundation
 struct TodoService {
     //  MARK: - Properties
 
-    enum RepeatAt: String {
-        case front
-        case middle
-        case back
-    }
-
     private static let baseURL = Constants.baseURL + "todo/"
 
     private static let formatter: DateFormatter = {
@@ -450,6 +444,11 @@ struct TodoService {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        if at == .none {
+            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            return
+        }
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -458,13 +457,17 @@ struct TodoService {
         if at == .front || at == .middle {
             params["nextEndDate"] = Self.formatter.string(from: date)
             if at == .middle {
-                params["changedDate"] = Self.formatter.string(from: .now)
+                guard let endDate = todo.endDate else {
+                    return
+                }
+                params["changedDate"] = Self.formatter.string(from: endDate)
             }
         }
         if at == .back {
             params["preRepeatEnd"] = Self.formatter.string(from: date)
         }
 
+        debugPrint(params)
         AF.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todo/\(todoId)/repeat/\(at.rawValue)",
@@ -770,6 +773,11 @@ struct TodoService {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        if at == .none {
+            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            return
+        }
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -825,6 +833,11 @@ struct TodoService {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        if at == .none {
+            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            return
+        }
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]

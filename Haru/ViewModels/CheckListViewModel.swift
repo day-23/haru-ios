@@ -27,10 +27,10 @@ final class CheckListViewModel: ObservableObject {
     @Published var selectedTag: Tag? = nil {
         didSet {
             if let tag = selectedTag {
-                if tag.id != "하루" &&
-                    tag.id != "중요" &&
-                    tag.id != "미분류" &&
-                    tag.id != "완료"
+                if tag.id != "하루"
+                    && tag.id != "중요"
+                    && tag.id != "미분류"
+                    && tag.id != "완료"
                 {
                     fetchTodoListByTag(tag: tag)
                     mode = .tag
@@ -61,14 +61,14 @@ final class CheckListViewModel: ObservableObject {
     @Published var todoListOffsetMap: [String: CGFloat] = [:]
 
     var isEmpty: Bool {
-        return (todoListByTag.isEmpty &&
-            todoListByFlag.isEmpty &&
-            todoListByCompleted.isEmpty &&
-            todoListByFlagWithToday.isEmpty &&
-            todoListByTodayTodo.isEmpty &&
-            todoListByUntilToday.isEmpty &&
-            todoListWithAnyTag.isEmpty &&
-            todoListWithoutTag.isEmpty)
+        return (todoListByTag.isEmpty
+            && todoListByFlag.isEmpty
+            && todoListByCompleted.isEmpty
+            && todoListByFlagWithToday.isEmpty
+            && todoListByTodayTodo.isEmpty
+            && todoListByUntilToday.isEmpty
+            && todoListWithAnyTag.isEmpty
+            && todoListWithoutTag.isEmpty)
     }
 
     //  MARK: - Create
@@ -273,7 +273,7 @@ final class CheckListViewModel: ObservableObject {
         todoId: String,
         todo: Request.Todo,
         date: Date,
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.updateTodoWithRepeat(
@@ -403,7 +403,7 @@ final class CheckListViewModel: ObservableObject {
     func completeTodoWithRepeat(
         todoId: String,
         nextEndDate: Date,
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.completeTodoWithRepeat(
@@ -504,7 +504,7 @@ final class CheckListViewModel: ObservableObject {
     func deleteTodoWithRepeat(
         todoId: String,
         date: Date,
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.deleteTodoWithRepeat(
