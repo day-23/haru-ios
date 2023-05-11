@@ -58,7 +58,8 @@ struct CheckListView: View {
                             ListSectionView(
                                 checkListViewModel: viewModel,
                                 todoAddViewModel: addViewModel,
-                                todoList: $viewModel.todoListByFlag
+                                todoList: $viewModel.todoListByFlag,
+                                emptyTextContent: "중요한 할 일이 있나요?"
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
@@ -115,7 +116,8 @@ struct CheckListView: View {
                             ListSectionView(
                                 checkListViewModel: viewModel,
                                 todoAddViewModel: addViewModel,
-                                todoList: $viewModel.todoListByCompleted
+                                todoList: $viewModel.todoListByCompleted,
+                                emptyTextContent: "할 일을 완료해 보세요!"
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
@@ -175,7 +177,8 @@ struct CheckListView: View {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
-                                        todoList: $viewModel.todoListByCompleted
+                                        todoList: $viewModel.todoListByCompleted,
+                                        emptyTextContent: "할 일을 완료해 보세요!"
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
@@ -194,7 +197,8 @@ struct CheckListView: View {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
-                                        todoList: $viewModel.todoListByFlag
+                                        todoList: $viewModel.todoListByFlag,
+                                        emptyTextContent: "중요한 할 일이 있나요?"
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {
@@ -229,7 +233,8 @@ struct CheckListView: View {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
-                                        todoList: $viewModel.todoListByCompleted
+                                        todoList: $viewModel.todoListByCompleted,
+                                        emptyTextContent: "할 일을 완료해 보세요!"
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {

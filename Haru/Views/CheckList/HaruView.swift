@@ -32,7 +32,8 @@ struct HaruView: View {
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
                     todoList: $viewModel.todoListByFlagWithToday,
-                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
+                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
+                    emptyTextContent: "중요한 할 일이 있나요?"
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
@@ -83,7 +84,8 @@ struct HaruView: View {
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
                     todoList: $viewModel.todoListByCompleted,
-                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
+                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
+                    emptyTextContent: "할 일을 완료해 보세요!"
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {

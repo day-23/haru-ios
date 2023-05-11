@@ -12,14 +12,17 @@ struct ListSectionView<Content>: View where Content: View {
     var todoAddViewModel: TodoAddViewModel
     @Binding var todoList: [Todo]
     var itemBackgroundColor: Color = .white
+    var emptyTextContent: String = "모든 할 일을 마쳤습니다!"
     let orderAction: () -> Void
     @ViewBuilder let header: () -> Content
 
     var body: some View {
         Section {
             if todoList.isEmpty {
-                EmptySectionView()
-                    .padding(.leading, 40)
+                EmptySectionView(
+                    content: emptyTextContent
+                )
+                .padding(.leading, 40)
             } else {
                 ForEach(todoList) { todo in
                     NavigationLink {
