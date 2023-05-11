@@ -93,12 +93,11 @@ struct TodoAddView: View {
                                 } label: {
                                     Image(systemName: "minus.circle.fill")
                                         .foregroundStyle(Color(0xACACAC))
+                                        .frame(width: 28, height: 28)
                                 }
                             }
-                            .padding(.horizontal, 14)
+                            .padding(.leading, 14)
                             .padding(.vertical, 7)
-                            
-                            Divider()
                         }
                         
                         if viewModel.todo == nil || viewModel.todo?.completed == false {
