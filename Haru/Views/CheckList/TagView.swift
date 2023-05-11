@@ -13,7 +13,7 @@ struct TagView: View {
 
     var body: some View {
         Text(tag.content)
-            .font(.pretendard(size: 14, weight: .bold))
+            .font(.pretendard(size: 16, weight: .bold))
             .foregroundColor(
                 isSelected
                     ? .white

@@ -62,8 +62,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
-                                    .padding(.leading, 21)
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.important.rawValue,
+                                        content: DefaultTag.important.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 21)
                             }
 
                             Divider()
@@ -75,8 +81,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: DefaultTag.classified.rawValue, content: DefaultTag.classified.rawValue))
-                                    .padding(.leading, 21)
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.classified.rawValue,
+                                        content: DefaultTag.classified.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 21)
                             }
 
                             Divider()
@@ -88,8 +100,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue))
-                                    .padding(.leading, 21)
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.unclassified.rawValue,
+                                        content: DefaultTag.unclassified.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 21)
                             }
 
                             Divider()
@@ -101,8 +119,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue))
-                                    .padding(.leading, 21)
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.completed.rawValue,
+                                        content: DefaultTag.completed.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 21)
                             }
                         } offsetChanged: {
                             self.changeOffset($0)
@@ -118,9 +142,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderFlag()
                                     } header: {
-                                        TagView(tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue)
-                                            .padding(.leading, 21)
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
+                                        )
+                                        .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
@@ -134,9 +160,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
-                                        TagView(tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue)
-                                            .padding(.leading, 21)
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue
+                                        )
+                                        .padding(.leading, 21)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
