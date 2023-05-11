@@ -41,8 +41,8 @@ struct CustomDatePicker: View {
         HStack(spacing: 8) {
             if displayedComponents.contains(.date) {
                 Text(formatter.string(from: selection))
-                    .font(.pretendard(size: 14, weight: .medium))
-                    .foregroundColor(Color(0x646464))
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .foregroundColor(Color(0x1dafff))
                     .padding(.vertical, 4)
                     .padding(.horizontal, 12)
                     .background(Color(0xf1f1f5))
@@ -74,8 +74,8 @@ struct CustomDatePicker: View {
 
             if displayedComponents.contains(.hourAndMinute) {
                 Text(timeFormatter.string(from: selection))
-                    .font(.pretendard(size: 14, weight: .medium))
-                    .foregroundColor(Color(0x646464))
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .foregroundColor(Color(0x1dafff))
                     .padding(.vertical, 4)
                     .padding(.horizontal, 12)
                     .background(Color(0xf1f1f5))
