@@ -25,7 +25,7 @@ struct HaruView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             LinearGradient(
-                gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF), Color(0xAAD7FF)]),
+                colors: [Color(0xD2D7FF), Color(0xAAD7FF), Color(0xD2D7FF)],
                 startPoint: .bottomLeading,
                 endPoint: .topTrailing
             ).ignoresSafeArea()
