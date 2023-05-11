@@ -41,7 +41,15 @@ struct ListSectionView<Content>: View where Content: View {
                                 checkListViewModel: checkListViewModel,
                                 todo: todo,
                                 backgroundColor: itemBackgroundColor
-                            )
+                            ) {
+                                guard let index = todoList.firstIndex(where: { $0.id == todo.id }) else {
+                                    return
+                                }
+
+                                withAnimation {
+                                    todoList[index].completed.toggle()
+                                }
+                            }
                             .foregroundColor(.black)
                         }
 

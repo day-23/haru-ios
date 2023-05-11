@@ -361,7 +361,6 @@ final class CheckListViewModel: ObservableObject {
     func completeTodo(
         todoId: String,
         completed: Bool,
-        isDetailView: Bool = false,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.completeTodo(
@@ -370,10 +369,8 @@ final class CheckListViewModel: ObservableObject {
         ) { result in
             switch result {
             case let .success(success):
-                if !isDetailView {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.fetchTodoList()
-                    }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.fetchTodoList()
                 }
                 completion(.success(success))
             case let .failure(failure):
@@ -421,65 +418,6 @@ final class CheckListViewModel: ObservableObject {
                 print("[Debug] \(failure) (\(#fileID), \(#function))")
                 completion(.failure(failure))
             }
-        }
-    }
-
-    // FIXME: 애니메이션 이상 작동 이유일듯 함
-    func toggleCompleted(todoId: String) {
-        if let index = todoListByTag.firstIndex(where: { $0.id == todoId }) {
-            withAnimation {
-                todoListByTag[index].completed.toggle()
-            }
-            return
-        }
-
-        if let index = todoListByFlag.firstIndex(where: { $0.id == todoId }) {
-            withAnimation {
-                todoListByFlag[index].completed.toggle()
-            }
-            return
-        }
-
-        if let index = todoListByCompleted.firstIndex(where: { $0.id == todoId }) {
-            withAnimation {
-                todoListByCompleted[index].completed.toggle()
-            }
-            return
-        }
-
-        if let index = todoListByFlagWithToday.firstIndex(where: { $0.id == todoId }) {
-            withAnimation {
-                todoListByFlagWithToday[index].completed.toggle()
-            }
-            return
-        }
-
-        if let index = todoListByTodayTodo.firstIndex(where: { $0.id == todoId }) {
-            withAnimation {
-                todoListByTodayTodo[index].completed.toggle()
-            }
-            return
-        }
-
-        if let index = todoListByUntilToday.firstIndex(where: { $0.id == todoId }) {
-            withAnimation {
-                todoListByUntilToday[index].completed.toggle()
-            }
-            return
-        }
-
-        if let index = todoListWithAnyTag.firstIndex(where: { $0.id == todoId }) {
-            withAnimation {
-                todoListWithAnyTag[index].completed.toggle()
-            }
-            return
-        }
-
-        if let index = todoListWithoutTag.firstIndex(where: { $0.id == todoId }) {
-            withAnimation {
-                todoListWithoutTag[index].completed.toggle()
-            }
-            return
         }
     }
 
