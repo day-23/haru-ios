@@ -97,8 +97,20 @@ struct TodoService {
             "Content-Type": "application/json",
         ]
 
+        let components = DateComponents(
+            year: Date.now.year,
+            month: Date.now.month,
+            day: Date.now.day,
+            hour: 23, minute: 59, second: 59
+        )
+
+        guard let endDate = Calendar.current.date(from: components) else {
+            print("[Debug] 오늘 날짜 변환에 실패했습니다. \(#fileID) \(#function)")
+            return
+        }
+
         let parameters: Parameters = [
-            "endDate": "\(Date.now.year)-\(Date.now.month < 10 ? "0" : "")\(Date.now.month)-\(Date.now.day < 10 ? "0" : "")\(Date.now.day)T00:00:00+09:00",
+            "endDate": Self.formatter.string(from: endDate),
         ]
 
         AF.request(
@@ -218,8 +230,20 @@ struct TodoService {
             "Content-Type": "application/json",
         ]
 
+        let components = DateComponents(
+            year: Date.now.year,
+            month: Date.now.month,
+            day: Date.now.day,
+            hour: 23, minute: 59, second: 59
+        )
+
+        guard let endDate = Calendar.current.date(from: components) else {
+            print("[Debug] 오늘 날짜 변환에 실패했습니다. \(#fileID) \(#function)")
+            return
+        }
+
         let parameters: Parameters = [
-            "endDate": "\(Date.now.year)-\(Date.now.month < 10 ? "0" : "")\(Date.now.month)-\(Date.now.day < 10 ? "0" : "")\(Date.now.day)T00:00:00+09:00",
+            "endDate": Self.formatter.string(from: endDate),
         ]
 
         AF.request(

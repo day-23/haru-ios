@@ -47,25 +47,13 @@ struct TodoView: View {
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일까지"
+        formatter.dateFormat = "M.d"
         return formatter
     }()
 
     let formatterWithTime: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 HH:mm까지"
-        return formatter
-    }()
-
-    let formatterWithRepeat: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일"
-        return formatter
-    }()
-
-    let formatterWithTimeAndRepeat: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 HH:mm"
+        formatter.dateFormat = "HH:mm"
         return formatter
     }()
 
@@ -170,18 +158,12 @@ struct TodoView: View {
                         }
 
                         if let todoDate = todo.endDate {
-                            if todo.isAllDay {
-                                if todo.repeatOption == nil {
-                                    Text(formatterWithTime.string(from: todoDate))
-                                } else {
-                                    Text(formatterWithTimeAndRepeat.string(from: todoDate))
-                                }
+                            if formatter.string(from: .now) == formatter.string(from: todoDate)
+                                && todo.isAllDay
+                            {
+                                Text("\(formatterWithTime.string(from: todoDate))\(todo.repeatOption == nil ? "까지" : "")")
                             } else {
-                                if todo.repeatOption == nil {
-                                    Text(formatter.string(from: todoDate))
-                                } else {
-                                    Text(formatterWithRepeat.string(from: todoDate))
-                                }
+                                Text("\(formatter.string(from: todoDate))\(todo.repeatOption == nil ? "까지" : "")")
                             }
                         }
 
