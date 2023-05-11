@@ -47,6 +47,11 @@ struct TagOptionView: View {
                                     .foregroundColor(
                                         checkListViewModel.tagContent.isEmpty ? Color(0xACACAC) : Color(0x191919)
                                     )
+                                    .onChange(
+                                        of: checkListViewModel.tagContent,
+                                        perform: onChangeTag(_:)
+                                    )
+                                    .onSubmit(onSubmitTag)
                                 Spacer()
 
                                 Button {
@@ -153,6 +158,48 @@ private struct TagOptionItem: View {
                     .renderingMode(.template)
                     .foregroundColor(Color(0x646464))
                     .frame(width: 28, height: 28)
+            }
+        }
+    }
+}
+
+extension TagOptionView {
+    func onChangeTag(_: String) {
+        let trimTag = checkListViewModel.tagContent.trimmingCharacters(in: .whitespaces)
+        if !trimTag.isEmpty
+            && checkListViewModel.tagContent[
+                checkListViewModel.tagContent.index(checkListViewModel.tagContent.endIndex, offsetBy: -1)
+            ] == " "
+        {
+            if checkListViewModel.tagList.filter({ $0.content == trimTag }).isEmpty {
+                checkListViewModel.addTag(
+                    content: trimTag
+                ) { result in
+                    switch result {
+                    case .success:
+                        checkListViewModel.tagContent = ""
+                    case .failure(let error):
+                        print("[Debug] \(error) (\(#fileID), \(#function))")
+                    }
+                }
+            }
+        }
+    }
+
+    func onSubmitTag() {
+        let trimTag = checkListViewModel.tagContent.trimmingCharacters(in: .whitespaces)
+        if !trimTag.isEmpty {
+            if checkListViewModel.tagList.filter({ $0.content == trimTag }).isEmpty {
+                checkListViewModel.addTag(
+                    content: trimTag
+                ) { result in
+                    switch result {
+                    case .success:
+                        checkListViewModel.tagContent = ""
+                    case .failure(let error):
+                        print("[Debug] \(error) (\(#fileID), \(#function))")
+                    }
+                }
             }
         }
     }
