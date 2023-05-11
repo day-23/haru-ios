@@ -309,9 +309,10 @@ struct CheckListView: View {
                     TextField("", text: $addViewModel.content)
                         .placeholder(when: addViewModel.content.isEmpty) {
                             Text("간편 추가")
+                                .font(.pretendard(size: 14, weight: .regular))
                                 .foregroundColor(Color(0x646464))
                         }
-                        .font(.pretendard(size: 14, weight: .medium))
+                        .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(Color(0x646464))
                         .padding(.vertical, 10)
                         .padding(.horizontal, 12)
