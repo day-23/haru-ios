@@ -14,6 +14,7 @@ final class TodoAddViewModel: ObservableObject {
     private let checkListViewModel: CheckListViewModel
     var mode: TodoAddMode
     var todo: Todo?
+    var at: RepeatAt = .none
 
     @Published var content: String = ""
 
@@ -530,9 +531,6 @@ final class TodoAddViewModel: ObservableObject {
         //  Case middle: endDate 계산하여 넘겨주기
         //  Case back: preRepeatEnd 계산하여 넘겨주기
 
-        //  반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
-        //  아래 옵션을 false로 변경한다.
-        isSelectedRepeat = false
         if at == .front || at == .middle {
             do {
                 guard let endDate = try todo.nextEndDate() else {
@@ -712,7 +710,14 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func applyTodoData(todo: Todo) {
+    func applyTodoData(
+        todo: Todo,
+        at: RepeatAt = .none
+    ) {
+        self.todo = todo
+        self.at = at
+        mode = .edit
+
         content = todo.content
 
         flag = todo.flag
@@ -863,6 +868,8 @@ final class TodoAddViewModel: ObservableObject {
 
     func clear() {
         todo = nil
+        at = .none
+        mode = .add
 
         content = ""
 

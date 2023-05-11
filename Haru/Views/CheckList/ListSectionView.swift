@@ -31,9 +31,10 @@ struct ListSectionView<Content>: View where Content: View {
                         NavigationLink {
                             TodoAddView(viewModel: todoAddViewModel)
                                 .onAppear {
-                                    todoAddViewModel.mode = .edit
-                                    todoAddViewModel.todo = todo
-                                    todoAddViewModel.applyTodoData(todo: todo)
+                                    todoAddViewModel.applyTodoData(
+                                        todo: todo,
+                                        at: .front
+                                    )
                                 }
                         } label: {
                             TodoView(

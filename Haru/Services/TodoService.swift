@@ -491,7 +491,6 @@ struct TodoService {
             params["preRepeatEnd"] = Self.formatter.string(from: date)
         }
 
-        debugPrint(params)
         AF.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todo/\(todoId)/repeat/\(at.rawValue)",

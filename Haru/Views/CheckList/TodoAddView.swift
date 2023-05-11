@@ -466,44 +466,76 @@ struct TodoAddView: View {
                     if let complete = viewModel.todo?.completed, !complete {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button {
-                                if viewModel.isSelectedRepeat {
-                                    updateButtonTapped = true
-                                    return
-                                }
-                                
-                                viewModel.updateTodo { result in
-                                    switch result {
-                                    case .success:
-                                        dismissAction.callAsFunction()
-                                    case let .failure(failure):
-                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
-                                    }
-                                }
+                                updateButtonTapped = true
                             } label: {
                                 Image("confirm")
                                     .renderingMode(.template)
                                     .foregroundColor(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
                             }
                             .disabled(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty)
-                            .confirmationDialog("반복하는 할 일 편집", isPresented: $updateButtonTapped) {
-                                if viewModel.isPreviousRepeatStateEqual {
-                                    Button("이 이벤트만 편집") {
-                                        //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
-                                        viewModel.updateTodoWithRepeat(
-                                            at: .front
-                                        ) { result in
-                                            switch result {
-                                            case .success:
-                                                dismissAction.callAsFunction()
-                                            case let .failure(failure):
-                                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            .confirmationDialog(
+                                viewModel.isSelectedRepeat
+                                    ? "수정사항을 저장할까요? 반복되는 할 일 입니다."
+                                    : "수정사항을 저장할까요?",
+                                isPresented: $updateButtonTapped,
+                                titleVisibility: .visible
+                            ) {
+                                if viewModel.isSelectedRepeat {
+                                    if viewModel.isPreviousRepeatStateEqual {
+                                        Button("이 할 일만 수정") {
+                                            //  반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
+                                            //  아래 옵션을 false로 변경한다.
+                                            viewModel.isSelectedRepeat = false
+                                            
+                                            viewModel.updateTodoWithRepeat(
+                                                at: viewModel.at
+                                            ) { result in
+                                                switch result {
+                                                case .success:
+                                                    dismissAction.callAsFunction()
+                                                case let .failure(failure):
+                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                
-                                if viewModel.isPreviousEndDateEqual {
-                                    Button("모든 이벤트 편집") {
+                                    
+                                    if (viewModel.isPreviousEndDateEqual
+                                        || (!viewModel.isPreviousEndDateEqual
+                                            && !viewModel.isPreviousRepeatStateEqual))
+                                        && viewModel.at != .front
+                                    {
+                                        Button("이 할 일부터 수정") {
+                                            viewModel.updateTodoWithRepeat(
+                                                at: .back
+                                            ) { result in
+                                                switch result {
+                                                case .success:
+                                                    dismissAction.callAsFunction()
+                                                case let .failure(failure):
+                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    if viewModel.isPreviousEndDateEqual
+                                        || (!viewModel.isPreviousEndDateEqual
+                                            && !viewModel.isPreviousRepeatStateEqual)
+                                    {
+                                        Button("모든 할 일 수정", role: .destructive) {
+                                            viewModel.updateTodo { result in
+                                                switch result {
+                                                case .success:
+                                                    dismissAction.callAsFunction()
+                                                case let .failure(failure):
+                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Button("저장하기") {
                                         viewModel.updateTodo { result in
                                             switch result {
                                             case .success:
@@ -546,11 +578,13 @@ struct TodoAddView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 20)
-                .confirmationDialog("반복되는 할 일 삭제", isPresented: $deleteButtonTapped) {
+                .confirmationDialog(
+                    "반복되는 할 일 삭제",
+                    isPresented: $deleteButtonTapped
+                ) {
                     Button("이 이벤트만 삭제") {
-                        //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
                         viewModel.deleteTodoWithRepeat(
-                            at: .front
+                            at: viewModel.at
                         ) { result in
                             switch result {
                             case .success:
@@ -560,6 +594,7 @@ struct TodoAddView: View {
                             }
                         }
                     }
+                    
                     Button("모든 이벤트 삭제", role: .destructive) {
                         viewModel.deleteTodo { result in
                             switch result {
