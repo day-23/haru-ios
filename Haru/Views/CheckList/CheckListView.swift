@@ -313,6 +313,7 @@ struct CheckListView: View {
                         .background(Color(0xf1f1f5))
                         .cornerRadius(8)
                         .padding(.trailing, 18)
+                        .padding(.bottom, 4)
                         .onSubmit {
                             addViewModel.addSimpleTodo()
                         }
