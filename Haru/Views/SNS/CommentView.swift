@@ -21,11 +21,28 @@ struct CommentView: View {
 
     @State var postPageNum: Int = 0
 
+    var alreadyComment: [Post.Comment?] {
+        var result: [Post.Comment?] = Array(repeating: nil, count: postImageList.count)
+        for (idx, image) in postImageList.enumerated() {
+            for comment in image.comments {
+                if comment.user.id == Global.shared.user?.id {
+                    result[idx] = comment
+                }
+            }
+        }
+        return result
+    }
+
     @State var isCommentCreate: Bool = false
+
+    @State var textRect = CGRect()
 
     // For Gesture
     @State var overDelete: Bool = false
-    @State var dragStart: Bool = false
+    @State var dragging: Bool = false
+    @State var pressing: Bool = false
+
+    @FocusState var isFocused: Bool
 
     @State var delCommentModalVis: Bool = false
     @State var delCommentTarget: Post.Comment?
@@ -51,26 +68,10 @@ struct CommentView: View {
             mainContent(deviceSize: deviceSize)
                 .zIndex(3)
 
-            if isCommentCreate {
-                ZStack {
-                    Circle()
-                        .frame(width: overDelete ? 90 : 77, height: overDelete ? 90 : 77)
-                        .foregroundColor(overDelete ? Color(0xF71E58) : .gray2)
-
-                    Image("cancel")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 38, height: 38)
-                        .foregroundColor(.white)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                .zIndex(2)
-            }
-
             if delCommentModalVis {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
+                    .zIndex(4)
                     .onTapGesture {
                         withAnimation {
                             delCommentModalVis = false
@@ -122,12 +123,19 @@ struct CommentView: View {
                     .padding(.top, 20)
                 }
                 .transition(.modal)
-                .zIndex(2)
+                .zIndex(5)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(0x191919))
         .edgesIgnoringSafeArea(.top)
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                if isFocused {
+                    isFocused = false
+                }
+            }
+        )
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -163,29 +171,54 @@ struct CommentView: View {
 
     @ViewBuilder
     func mainContent(deviceSize: CGSize) -> some View {
+        let sz = deviceSize.width > 395 ? 395 : deviceSize.width
         let longPress = LongPressGesture(minimumDuration: 0.3)
-            .onEnded { longPress in
+            .onEnded { value in
                 withAnimation {
-                    dragStart = true
+                    dragging = true
                 }
             }
 
         let drag = DragGesture()
             .onChanged { value in
+                // 삭제 버튼 근처인 경우
+                if value.location.x >= sz / 2 - 45,
+                   value.location.x <= sz / 2 + 45,
+                   value.location.y >= sz + 45,
+                   value.location.y <= sz + 140
+                {
+                    overDelete = true
+                } else {
+                    overDelete = false
+                }
+
+                // 범위 막기
                 if value.location.y < 0 {
                     return
                 }
-                x = value.location.x
-                y = value.location.y
+
+                if value.location.x + textRect.width / 2 >= sz - 15 ||
+                    value.location.x - textRect.width / 2 <= 15 ||
+                    value.location.y - textRect.height / 2 <= 15
+                {
+                    return
+                } else {
+                    x = value.location.x
+                    y = value.location.y
+                }
             }
             .onEnded { value in
-                if value.location.y > 380 {
+                if overDelete {
+                    isCommentCreate = false
+                    content = ""
+                    overDelete = false
+                }
+                if value.location.y + textRect.height / 2 > sz - 5 {
                     x = startingX ?? 190
                     y = startingY ?? 190
-                    return
                 }
                 withAnimation {
-                    dragStart = false
+                    dragging = false
                 }
             }
 
@@ -202,33 +235,67 @@ struct CommentView: View {
                     .zIndex(1)
 
                 commentListView()
+
+                if isCommentCreate {
+                    ZStack {
+                        Circle()
+                            .frame(width: overDelete ? 90 : 80, height: overDelete ? 90 : 80)
+                            .foregroundColor(overDelete ? Color(0xF71E58) : .gray2)
+
+                        Image("cancel")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 38, height: 38)
+                            .foregroundColor(.white)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                    .offset(y: 80 + 50)
+                    .zIndex(2)
+                }
             }
             .onTapGesture { location in
                 if isMine || isCommentCreate {
                     return
                 }
+
+                if let comment = alreadyComment[postPageNum] {
+                    x = CGFloat(comment.x)
+                    y = CGFloat(comment.y)
+                    startingX = CGFloat(comment.x)
+                    startingY = CGFloat(comment.y)
+                    content = comment.content
+                } else {
+                    x = location.x
+                    y = location.y
+                    startingX = location.x
+                    startingY = location.y
+                }
+
                 isCommentCreate = true
-                x = location.x
-                y = location.y
-                startingX = location.x
-                startingY = location.y
+                isFocused = true
             }
 
             if isCommentCreate {
-                TextFieldDynamicWidth(title: "        ", text: $content) { editingChange in
+                TextFieldDynamicWidth(title: "        ", text: $content, textRect: $textRect) { editingChange in
                     // logic
                 } onCommit: {
                     // logic
                 }
-                .font(.pretendard(size: 14, weight: .bold))
+                .lineLimit(4)
+                .focused($isFocused)
+                .font(.pretendard(size: dragging ? 18 : 14, weight: .bold))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(Color(0xFDFDFD))
                 .cornerRadius(9)
-                .scaleEffect(dragStart ? 1.5 : 1)
                 .position(x: x, y: y)
                 .zIndex(4)
-                .gesture(combined)
+                .onTapGesture {
+                    isFocused = true
+                }
+                .simultaneousGesture(
+                    combined
+                )
             }
         }
         .frame(
@@ -240,21 +307,23 @@ struct CommentView: View {
     @ViewBuilder
     func commentListView() -> some View {
         ForEach(commentList[postPageNum]) { comment in
-            Text("\(comment.content)")
-                .font(.pretendard(size: 14, weight: .bold))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color(0xFDFDFD))
-                .cornerRadius(9)
-                .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
-                .foregroundColor(Color(0x191919))
-                .zIndex(2)
-                .onTapGesture {
-                    if isMine {
-                        delCommentTarget = comment
-                        delCommentModalVis = true
+            if !isCommentCreate || alreadyComment[postPageNum]?.id != comment.id {
+                Text("\(comment.content)")
+                    .font(.pretendard(size: 14, weight: .bold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(0xFDFDFD))
+                    .cornerRadius(9)
+                    .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
+                    .foregroundColor(Color(0x191919))
+                    .zIndex(2)
+                    .onTapGesture {
+                        if isMine {
+                            delCommentTarget = comment
+                            delCommentModalVis = true
+                        }
                     }
-                }
+            }
         }
     }
 

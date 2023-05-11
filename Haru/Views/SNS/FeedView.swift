@@ -56,7 +56,7 @@ struct FeedView: View {
                     .foregroundColor(.red)
 
                 NavigationLink {
-//                    CommentView(postImageList: post.images)
+                    CommentView(postImageList: post.images, isMine: post.user.id == Global.shared.user?.id ? true : false)
                 } label: {
                     Image(systemName: "ellipses.bubble")
                         .foregroundColor(.gray2)

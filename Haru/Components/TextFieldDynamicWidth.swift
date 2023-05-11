@@ -10,17 +10,18 @@ import SwiftUI
 struct TextFieldDynamicWidth: View {
     let title: String
     @Binding var text: String
+    @Binding var textRect: CGRect
     let onEditingChanged: (Bool) -> Void
     let onCommit: () -> Void
-    
-    @State private var textRect = CGRect()
-    
+
     var body: some View {
         ZStack {
             Text(text == "" ? title : text).background(GlobalGeometryGetter(rect: $textRect)).layoutPriority(1).opacity(0)
             HStack {
-                TextField(title, text: $text, onEditingChanged: onEditingChanged, onCommit: onCommit)
-                .frame(width: textRect.width)
+                TextField(title, text: $text, axis: .vertical)
+                    .lineLimit(4)
+                    .frame(width: textRect.width)
+                    .frame(maxWidth: 50)
             }
         }
     }
@@ -30,7 +31,7 @@ struct GlobalGeometryGetter: View {
     @Binding var rect: CGRect
 
     var body: some View {
-        return GeometryReader { geometry in
+        GeometryReader { geometry in
             self.makeView(geometry: geometry)
         }
     }
