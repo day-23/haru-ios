@@ -14,8 +14,6 @@ struct Sns: Identifiable, Hashable {
 }
 
 struct SNSView: View {
-    @State private var maxNumber: Int = 4
-
     @State var toggleIsClicked: Bool = false
 
     var body: some View {

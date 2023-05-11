@@ -11,15 +11,14 @@ import SwiftUI
 struct PostFormView: View {
     @Environment(\.dismiss) var dismissAction
 
-    @State var content: String = ""
-    @State var images: [UIImage] = []
+    @StateObject var postFormVM: PostFormViewModel = .init()
 
     @State var openPhoto = true
 
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        TextField("텍스트를 입력해주세요.", text: $content, axis: .vertical)
+        TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
             .lineLimit(nil)
             .frame(height: 400, alignment: .top)
             .padding(.horizontal, 20)
@@ -39,7 +38,7 @@ struct PostFormView: View {
                 }
             } rightView: {
                 NavigationLink {
-                    PostFormPreView(images: images, content: content)
+                    PostFormPreView(postFormVM: postFormVM)
                 } label: {
                     HStack(spacing: 10) {
                         Text("하루 쓰기")
@@ -60,13 +59,13 @@ struct PostFormView: View {
                 let manager = PHCachingImageManager.default()
                 let options = PHImageRequestOptions()
                 options.isSynchronous = true
+                self.postFormVM.imageList = []
                 DispatchQueue.global(qos: .userInteractive).async {
-                    self.images = []
                     assets.forEach { asset in
                         manager.requestImage(for: asset, targetSize: .init(), contentMode: .default, options: options) { image, _ in
                             guard let image else { return }
                             DispatchQueue.main.async {
-                                self.images.append(image)
+                                self.postFormVM.imageList.append(image)
                             }
                         }
                     }

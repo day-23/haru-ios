@@ -10,13 +10,9 @@ import SwiftUI
 struct PostFormPreView: View {
     @Environment(\.dismiss) var dismissAction
 
+    @StateObject var postFormVM: PostFormViewModel
+
     @FocusState private var tagInFocus: Bool
-
-    @State var tag: String = ""
-    @State var tagList: [Tag] = []
-
-    var images: [UIImage]
-    var content: String
 
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
@@ -26,20 +22,20 @@ struct PostFormPreView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(
-                                Array(zip(tagList.indices, tagList)),
+                                Array(zip(postFormVM.tagList.indices, postFormVM.tagList)),
                                 id: \.0
                             ) { index, tag in
                                 TagView(tag: Tag(id: tag.id, content: tag.content))
                                     .onTapGesture {
-                                        tagList.remove(at: index)
+                                        postFormVM.tagList.remove(at: index)
                                     }
                             }
 
-                            TextField("태그 추가", text: $tag)
+                            TextField("태그 추가", text: $postFormVM.tag)
                                 .font(.pretendard(size: 14, weight: .regular))
-                                .foregroundColor(tagList.isEmpty ? Color(0xacacac) : .black)
+                                .foregroundColor(postFormVM.tagList.isEmpty ? Color(0xacacac) : .black)
                                 .onChange(
-                                    of: tag,
+                                    of: postFormVM.tag,
                                     perform: onChangeTag
                                 )
                                 .onSubmit(onSubmitTag)
@@ -54,7 +50,7 @@ struct PostFormPreView: View {
                     Image(systemName: "tag")
                         .frame(width: 28, height: 28)
                         .padding(.trailing, 10)
-                        .foregroundColor(tagList.isEmpty ? Color(0xacacac) : .black)
+                        .foregroundColor(postFormVM.tagList.isEmpty ? Color(0xacacac) : .black)
                 }
                 .padding(.horizontal, 20)
             }
@@ -62,10 +58,10 @@ struct PostFormPreView: View {
             Spacer()
                 .frame(height: 65)
 
-            if !images.isEmpty {
+            if !postFormVM.imageList.isEmpty {
                 TabView {
-                    ForEach(images.indices, id: \.self) { idx in
-                        Image(uiImage: images[idx])
+                    ForEach(postFormVM.imageList.indices, id: \.self) { idx in
+                        Image(uiImage: postFormVM.imageList[idx])
                             .resizable()
                             .scaledToFill()
                     }
@@ -74,19 +70,29 @@ struct PostFormPreView: View {
                 .indexViewStyle(.page(backgroundDisplayMode: .always))
                 .frame(width: deviceSize.width, height: deviceSize.width)
             } else {
-                Rectangle()
-                    .fill(Gradient(colors: [.gradientStart2, .gradientEnd2]))
-                    .frame(width: deviceSize.width, height: deviceSize.width)
+                ZStack(alignment: .topLeading) {
+                    Rectangle()
+                        .fill(Gradient(colors: [.gradientStart2, .gradientEnd2]))
+                        .frame(width: deviceSize.width, height: deviceSize.width)
+
+                    Text(postFormVM.content)
+                        .lineLimit(nil)
+                        .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(Color(0x646464))
+                        .padding(.all, 20)
+                }
             }
 
             Spacer()
                 .frame(height: 20)
 
-            Text(content)
-                .lineLimit(nil)
-                .font(.pretendard(size: 14, weight: .regular))
-                .foregroundColor(Color(0x646464))
-                .padding(.horizontal, 20)
+            if !postFormVM.imageList.isEmpty {
+                Text(postFormVM.content)
+                    .lineLimit(nil)
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .foregroundColor(Color(0x646464))
+                    .padding(.horizontal, 20)
+            }
         }
         .padding(.top, 12)
         .customNavigationBar {
@@ -99,8 +105,14 @@ struct PostFormPreView: View {
             }
         } rightView: {
             HStack(spacing: 10) {
-                Text("게시하기")
-                    .font(.pretendard(size: 20, weight: .bold))
+                Button {
+                    postFormVM.createPost {
+                        dismissAction.callAsFunction()
+                    }
+                } label: {
+                    Text("게시하기")
+                        .font(.pretendard(size: 20, weight: .bold))
+                }
                 Image("confirm")
                     .renderingMode(.template)
                     .foregroundColor(Color(0x191919))
@@ -109,28 +121,22 @@ struct PostFormPreView: View {
     }
 
     func onChangeTag(_: String) {
-        let trimTag = tag.trimmingCharacters(in: .whitespaces)
-        if !trimTag.isEmpty, tag[tag.index(tag.endIndex, offsetBy: -1)] == " " {
-            if tagList.filter({ $0.content == trimTag }).isEmpty {
-                tagList.append(Tag(id: UUID().uuidString, content: trimTag))
-                tag = ""
+        let trimTag = postFormVM.tag.trimmingCharacters(in: .whitespaces)
+        if !trimTag.isEmpty, postFormVM.tag[postFormVM.tag.index(postFormVM.tag.endIndex, offsetBy: -1)] == " " {
+            if postFormVM.tagList.filter({ $0.content == trimTag }).isEmpty {
+                postFormVM.tagList.append(Tag(id: UUID().uuidString, content: trimTag))
+                postFormVM.tag = ""
             }
         }
     }
 
     func onSubmitTag() {
-        let trimTag = tag.trimmingCharacters(in: .whitespaces)
+        let trimTag = postFormVM.tag.trimmingCharacters(in: .whitespaces)
         if !trimTag.isEmpty {
-            if tagList.filter({ $0.content == trimTag }).isEmpty {
-                tagList.append(Tag(id: UUID().uuidString, content: trimTag))
-                tag = ""
+            if postFormVM.tagList.filter({ $0.content == trimTag }).isEmpty {
+                postFormVM.tagList.append(Tag(id: UUID().uuidString, content: trimTag))
+                postFormVM.tag = ""
             }
         }
     }
 }
-
-// struct PostFormPreView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PostFormPreView(content: "학교 가기 싫음")
-//    }
-// }

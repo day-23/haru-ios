@@ -57,8 +57,8 @@ struct ProfileInfoView: View {
                                 // FIXME:
                                 ProfileFormView(
                                     userProfileVM: userProfileVM,
-                                    name: Global.shared.user?.name ?? "unknown",
-                                    introduction: Global.shared.user?.introduction ?? ""
+                                    name: userProfileVM.user.name,
+                                    introduction: userProfileVM.user.introduction
                                 )
                             } label: {
                                 Text("프로필 편집")
