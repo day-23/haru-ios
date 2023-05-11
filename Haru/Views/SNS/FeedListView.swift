@@ -11,11 +11,12 @@ struct FeedListView: View {
     @StateObject var postVM: PostViewModel
     @State var isAppear: Bool = false
 
+    var comeToRoot: Bool = false
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 14) {
                 ForEach(postVM.postList) { post in
-                    FeedView(post: post)
+                    FeedView(post: post, comeToRoot: comeToRoot)
                 }
                 if !postVM.postList.isEmpty, (postVM.page + 1) <= postVM.totalPages {
                     HStack {

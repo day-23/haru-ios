@@ -10,6 +10,8 @@ import SwiftUI
 struct FeedView: View {
     var post: Post
 
+    var comeToRoot: Bool = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -33,7 +35,7 @@ struct FeedView: View {
                             .font(.pretendard(size: 14, weight: .bold))
                             .foregroundColor(.mainBlack)
                     }
-                }
+                }.disabled(!comeToRoot)
 
                 Text("1일 전")
                     .font(.pretendard(size: 10, weight: .regular))

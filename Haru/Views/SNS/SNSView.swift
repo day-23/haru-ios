@@ -28,7 +28,7 @@ struct SNSView: View {
                 ) {
                     Text("검색창")
                 }
-                FeedListView(postVM: PostViewModel(postOption: PostOption.main))
+                FeedListView(postVM: PostViewModel(postOption: PostOption.main), comeToRoot: true)
             }
 
             if toggleIsClicked {
