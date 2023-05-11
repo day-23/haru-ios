@@ -296,7 +296,7 @@ struct CheckListView: View {
                     isActive: $isTagManageModalVisible
                 )
                 .position(
-                    x: UIScreen.main.bounds.width - UIScreen.main.bounds.width * 0.915 + (UIScreen.main.bounds.width * 0.915 * 0.5),
+                    x: UIScreen.main.bounds.width - UIScreen.main.bounds.width * 0.78 + (UIScreen.main.bounds.width * 0.78 * 0.5),
                     y: UIScreen.main.bounds.height * 0.4
                 )
                 .zIndex(2)

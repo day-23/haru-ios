@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TagOptionView: View {
-    private let width = UIScreen.main.bounds.width * 0.915
+    private let width = UIScreen.main.bounds.width * 0.78
     private let height = UIScreen.main.bounds.height * 0.8
 
     @StateObject var checkListViewModel: CheckListViewModel
