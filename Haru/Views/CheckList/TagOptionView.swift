@@ -85,6 +85,18 @@ struct TagOptionView: View {
 
                             ForEach($checkListViewModel.tagList) { $tag in
                                 TagOptionItem(tag: tag) {
+                                    checkListViewModel.toggleVisibility(
+                                        tagId: tag.id,
+                                        isSeleted: tag.isSelected
+                                    ) { result in
+                                        switch result {
+                                        case .success:
+                                            break
+                                        case .failure(let error):
+                                            print("[Debug] \(error) \(#fileID) \(#function)")
+                                        }
+                                    }
+                                } removeAction: {
                                     checkListViewModel.deleteTag(
                                         tagId: tag.id)
                                     { result in
@@ -92,7 +104,7 @@ struct TagOptionView: View {
                                         case .success:
                                             break
                                         case .failure(let error):
-                                            print("[Debug] \(error) (\(#fileID) \(#function))")
+                                            print("[Debug] \(error) \(#fileID) \(#function)")
                                         }
                                     }
                                 }
@@ -138,17 +150,25 @@ struct TagOptionView: View {
 
 private struct TagOptionItem: View {
     var tag: Tag
-    var action: () -> Void
+    var tapAction: () -> Void
+    var removeAction: () -> Void
 
     var body: some View {
         HStack {
-            TagView(tag: tag, isSelected: true)
+            TagView(
+                tag: tag,
+                isSelected: false,
+                disabled: !tag.isSelected
+            )
+            .onTapGesture {
+                tapAction()
+            }
 
             Spacer()
 
             Menu {
                 Button {
-                    action()
+                    removeAction()
                 } label: {
                     Label("삭제", systemImage: "trash")
                         .foregroundColor(Color(0xF71E58))

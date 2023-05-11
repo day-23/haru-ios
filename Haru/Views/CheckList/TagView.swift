@@ -10,12 +10,13 @@ import SwiftUI
 struct TagView: View {
     var tag: Tag
     var isSelected: Bool = false
+    var disabled: Bool = false
 
     var body: some View {
         Text(tag.content)
             .font(.pretendard(size: 16, weight: .bold))
             .foregroundColor(
-                isSelected
+                isSelected || disabled
                     ? .white
                     : Color(0x191919)
             )
@@ -23,14 +24,23 @@ struct TagView: View {
             .padding(.vertical, 5)
             .padding(.horizontal, 10)
             .background(
-                isSelected
-                    ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .leading, endPoint: .trailing)
-                    : LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
+                disabled
+                    ? LinearGradient(colors: [Color(0xDBDBDB)], startPoint: .leading, endPoint: .leading)
+                    : (isSelected
+                        ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .leading, endPoint: .trailing)
+                        : LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing))
             )
             .cornerRadius(10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]), lineWidth: 1)
+                    .stroke(
+                        Gradient(
+                            colors: !disabled
+                                ? [Color(0xD2D7FF), Color(0xAAD7FF)]
+                                : [.clear]
+                        ),
+                        lineWidth: 1
+                    )
             )
     }
 }

@@ -424,6 +424,7 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
+    // FIXME: 애니메이션 이상 작동 이유일듯 함
     func toggleCompleted(todoId: String) {
         if let index = todoListByTag.firstIndex(where: { $0.id == todoId }) {
             withAnimation {
@@ -479,6 +480,25 @@ final class CheckListViewModel: ObservableObject {
                 todoListWithoutTag[index].completed.toggle()
             }
             return
+        }
+    }
+
+    func toggleVisibility(
+        tagId: String,
+        isSeleted: Bool,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        tagService.updateIsSelected(
+            tagId: tagId,
+            isSelected: isSeleted
+        ) { result in
+            switch result {
+            case .success:
+                self.fetchTags()
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
         }
     }
 

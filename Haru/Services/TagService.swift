@@ -82,7 +82,44 @@ struct TagService {
         }
     }
 
-    //  MARK: - REMOVE API
+    //  MARK: - UPDATE API
+
+    func updateIsSelected(
+        tagId: String,
+        isSelected: Bool,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: Tag
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json"
+        ]
+
+        let params: Parameters = [
+            "isSelected": !isSelected
+        ]
+
+        AF.request(
+            TagService.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/\(tagId)",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    //  MARK: - DELETE API
 
     func deleteTag(
         tagId: String,
