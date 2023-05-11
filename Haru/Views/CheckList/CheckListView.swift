@@ -63,25 +63,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                HStack(spacing: 0) {
-                                    Button {} label: {
-                                        Image("toggle")
-                                            .renderingMode(.template)
-                                            .frame(width: 20, height: 28)
-                                            .rotationEffect(Angle(degrees: 90))
-                                    }
-                                    .padding(.leading, 14)
-                                    .foregroundColor(Color(0x646464))
-
-                                    TagView(
-                                        tag: Tag(
-                                            id: DefaultTag.important.rawValue,
-                                            content: DefaultTag.important.rawValue
-                                        ),
-                                        isSelected: true
-                                    )
-                                    .padding(.leading, 10)
-                                }
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.important.rawValue,
+                                        content: DefaultTag.important.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 10)
                             }
 
                             Divider()
@@ -93,25 +82,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                HStack(spacing: 0) {
-                                    Button {} label: {
-                                        Image("toggle")
-                                            .renderingMode(.template)
-                                            .frame(width: 20, height: 28)
-                                            .rotationEffect(Angle(degrees: 90))
-                                    }
-                                    .padding(.leading, 14)
-                                    .foregroundColor(Color(0x646464))
-
-                                    TagView(
-                                        tag: Tag(
-                                            id: DefaultTag.classified.rawValue,
-                                            content: DefaultTag.classified.rawValue
-                                        ),
-                                        isSelected: true
-                                    )
-                                    .padding(.leading, 10)
-                                }
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.classified.rawValue,
+                                        content: DefaultTag.classified.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 10)
                             }
 
                             Divider()
@@ -123,25 +101,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                HStack(spacing: 0) {
-                                    Button {} label: {
-                                        Image("toggle")
-                                            .renderingMode(.template)
-                                            .frame(width: 20, height: 28)
-                                            .rotationEffect(Angle(degrees: 90))
-                                    }
-                                    .padding(.leading, 14)
-                                    .foregroundColor(Color(0x646464))
-
-                                    TagView(
-                                        tag: Tag(
-                                            id: DefaultTag.unclassified.rawValue,
-                                            content: DefaultTag.unclassified.rawValue
-                                        ),
-                                        isSelected: true
-                                    )
-                                    .padding(.leading, 10)
-                                }
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.unclassified.rawValue,
+                                        content: DefaultTag.unclassified.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 10)
                             }
 
                             Divider()
@@ -154,25 +121,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                HStack(spacing: 0) {
-                                    Button {} label: {
-                                        Image("toggle")
-                                            .renderingMode(.template)
-                                            .frame(width: 20, height: 28)
-                                            .rotationEffect(Angle(degrees: 90))
-                                    }
-                                    .padding(.leading, 14)
-                                    .foregroundColor(Color(0x646464))
-
-                                    TagView(
-                                        tag: Tag(
-                                            id: DefaultTag.completed.rawValue,
-                                            content: DefaultTag.completed.rawValue
-                                        ),
-                                        isSelected: true
-                                    )
-                                    .padding(.leading, 10)
-                                }
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.completed.rawValue,
+                                        content: DefaultTag.completed.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 10)
                             }
                         } offsetChanged: {
                             self.changeOffset($0)
@@ -188,22 +144,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderFlag()
                                     } header: {
-                                        HStack(spacing: 0) {
-                                            Button {} label: {
-                                                Image("toggle")
-                                                    .renderingMode(.template)
-                                                    .frame(width: 20, height: 28)
-                                                    .rotationEffect(Angle(degrees: 90))
-                                            }
-                                            .padding(.leading, 14)
-                                            .foregroundColor(Color(0x646464))
-
-                                            TagView(
-                                                tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
-                                            )
-                                            .padding(.leading, 10)
-                                        }
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
+                                        )
+                                        .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
@@ -217,22 +162,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
-                                        HStack(spacing: 0) {
-                                            Button {} label: {
-                                                Image("toggle")
-                                                    .renderingMode(.template)
-                                                    .frame(width: 20, height: 28)
-                                                    .rotationEffect(Angle(degrees: 90))
-                                            }
-                                            .padding(.leading, 14)
-                                            .foregroundColor(Color(0x646464))
-
-                                            TagView(
-                                                tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue
-                                            )
-                                            .padding(.leading, 10)
-                                        }
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue
+                                        )
+                                        .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
@@ -248,22 +182,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
-                                        HStack(spacing: 0) {
-                                            Button {} label: {
-                                                Image("toggle")
-                                                    .renderingMode(.template)
-                                                    .frame(width: 20, height: 28)
-                                                    .rotationEffect(Angle(degrees: 90))
-                                            }
-                                            .padding(.leading, 14)
-                                            .foregroundColor(Color(0x646464))
-
-                                            TagView(
-                                                tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
-                                            )
-                                            .padding(.leading, 10)
-                                        }
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
+                                        )
+                                        .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
@@ -279,25 +202,14 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {
-                                        HStack(spacing: 0) {
-                                            Button {} label: {
-                                                Image("toggle")
-                                                    .renderingMode(.template)
-                                                    .frame(width: 20, height: 28)
-                                                    .rotationEffect(Angle(degrees: 90))
-                                            }
-                                            .padding(.leading, 14)
-                                            .foregroundColor(Color(0x646464))
-
-                                            TagView(
-                                                tag: Tag(
-                                                    id: DefaultTag.important.rawValue,
-                                                    content: DefaultTag.important.rawValue
-                                                ),
-                                                isSelected: true
-                                            )
-                                            .padding(.leading, 10)
-                                        }
+                                        TagView(
+                                            tag: Tag(
+                                                id: DefaultTag.important.rawValue,
+                                                content: DefaultTag.important.rawValue
+                                            ),
+                                            isSelected: true
+                                        )
+                                        .padding(.leading, 10)
                                     }
 
                                     Divider()
@@ -309,22 +221,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {
-                                        HStack(spacing: 0) {
-                                            Button {} label: {
-                                                Image("toggle")
-                                                    .renderingMode(.template)
-                                                    .frame(width: 20, height: 28)
-                                                    .rotationEffect(Angle(degrees: 90))
-                                            }
-                                            .padding(.leading, 14)
-                                            .foregroundColor(Color(0x646464))
-
-                                            TagView(
-                                                tag: tag,
-                                                isSelected: true
-                                            )
-                                            .padding(.leading, 10)
-                                        }
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: true
+                                        )
+                                        .padding(.leading, 10)
                                     }
 
                                     Divider()
@@ -337,25 +238,14 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {
-                                        HStack(spacing: 0) {
-                                            Button {} label: {
-                                                Image("toggle")
-                                                    .renderingMode(.template)
-                                                    .frame(width: 20, height: 28)
-                                                    .rotationEffect(Angle(degrees: 90))
-                                            }
-                                            .padding(.leading, 14)
-                                            .foregroundColor(Color(0x646464))
-
-                                            TagView(
-                                                tag: Tag(
-                                                    id: DefaultTag.completed.rawValue,
-                                                    content: DefaultTag.completed.rawValue
-                                                ),
-                                                isSelected: true
-                                            )
-                                            .padding(.leading, 10)
-                                        }
+                                        TagView(
+                                            tag: Tag(
+                                                id: DefaultTag.completed.rawValue,
+                                                content: DefaultTag.completed.rawValue
+                                            ),
+                                            isSelected: true
+                                        )
+                                        .padding(.leading, 10)
                                     }
 
                                 } offsetChanged: {

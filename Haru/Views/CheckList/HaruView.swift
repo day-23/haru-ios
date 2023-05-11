@@ -37,25 +37,14 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    HStack(spacing: 0) {
-                        Button {} label: {
-                            Image("toggle")
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 28)
-                                .rotationEffect(Angle(degrees: 90))
-                        }
-                        .padding(.leading, 14)
-                        .foregroundColor(Color(0x646464))
-
-                        TagView(
-                            tag: Tag(
-                                id: DefaultTag.important.rawValue,
-                                content: DefaultTag.important.rawValue
-                            ),
-                            isSelected: true
-                        )
-                        .padding(.leading, 10)
-                    }
+                    TagView(
+                        tag: Tag(
+                            id: DefaultTag.important.rawValue,
+                            content: DefaultTag.important.rawValue
+                        ),
+                        isSelected: true
+                    )
+                    .padding(.leading, 10)
                 }
 
                 Divider()
@@ -68,22 +57,11 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    HStack(spacing: 0) {
-                        Button {} label: {
-                            Image("toggle")
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 28)
-                                .rotationEffect(Angle(degrees: 90))
-                        }
-                        .padding(.leading, 14)
-                        .foregroundColor(Color(0x646464))
-
-                        TagView(
-                            tag: Tag(id: "오늘 할 일", content: "오늘 할 일"),
-                            isSelected: true
-                        )
-                        .padding(.leading, 10)
-                    }
+                    TagView(
+                        tag: Tag(id: "오늘 할 일", content: "오늘 할 일"),
+                        isSelected: true
+                    )
+                    .padding(.leading, 10)
                 }
 
                 Divider()
@@ -96,22 +74,11 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    HStack(spacing: 0) {
-                        Button {} label: {
-                            Image("toggle")
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 28)
-                                .rotationEffect(Angle(degrees: 90))
-                        }
-                        .padding(.leading, 14)
-                        .foregroundColor(Color(0x646464))
-
-                        TagView(
-                            tag: Tag(id: "오늘까지", content: "오늘까지"),
-                            isSelected: true
-                        )
-                        .padding(.leading, 10)
-                    }
+                    TagView(
+                        tag: Tag(id: "오늘까지", content: "오늘까지"),
+                        isSelected: true
+                    )
+                    .padding(.leading, 10)
                 }
 
                 Divider()
@@ -125,25 +92,14 @@ struct HaruView: View {
                 ) {
                     viewModel.updateOrderHaru()
                 } header: {
-                    HStack(spacing: 0) {
-                        Button {} label: {
-                            Image("toggle")
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 28)
-                                .rotationEffect(Angle(degrees: 90))
-                        }
-                        .padding(.leading, 14)
-                        .foregroundColor(Color(0x646464))
-
-                        TagView(
-                            tag: Tag(
-                                id: DefaultTag.completed.rawValue,
-                                content: DefaultTag.completed.rawValue
-                            ),
-                            isSelected: true
-                        )
-                        .padding(.leading, 10)
-                    }
+                    TagView(
+                        tag: Tag(
+                            id: DefaultTag.completed.rawValue,
+                            content: DefaultTag.completed.rawValue
+                        ),
+                        isSelected: true
+                    )
+                    .padding(.leading, 10)
                 }
             } offsetChanged: { _ in }
         }
