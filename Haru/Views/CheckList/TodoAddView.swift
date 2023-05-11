@@ -554,19 +554,7 @@ struct TodoAddView: View {
             
             if !isModalVisible {
                 Button {
-                    if viewModel.isSelectedRepeat {
-                        deleteButtonTapped = true
-                        return
-                    }
-                    
-                    viewModel.deleteTodo { result in
-                        switch result {
-                        case .success:
-                            dismissAction.callAsFunction()
-                        case let .failure(failure):
-                            print("[Debug] \(failure) (\(#fileID), \(#function))")
-                        }
-                    }
+                    deleteButtonTapped = true
                 } label: {
                     HStack(spacing: 10) {
                         Text("할 일 삭제하기")
@@ -579,29 +567,81 @@ struct TodoAddView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 20)
                 .confirmationDialog(
-                    "반복되는 할 일 삭제",
-                    isPresented: $deleteButtonTapped
+                    viewModel.isSelectedRepeat
+                        ? "할 일을 삭제할까요? 반복되는 할 일 입니다."
+                        : "할 일을 삭제할까요?",
+                    isPresented: $deleteButtonTapped,
+                    titleVisibility: .visible
                 ) {
-                    Button("이 이벤트만 삭제") {
-                        viewModel.deleteTodoWithRepeat(
-                            at: viewModel.at
-                        ) { result in
-                            switch result {
-                            case .success:
-                                dismissAction.callAsFunction()
-                            case let .failure(failure):
-                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                    if viewModel.isSelectedRepeat {
+                        Button("이 할 일만 삭제", role: .destructive) {
+                            viewModel.deleteTodoWithRepeat(
+                                at: viewModel.at
+                            ) { result in
+                                switch result {
+                                case .success:
+                                    dismissAction.callAsFunction()
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
                             }
                         }
-                    }
-                    
-                    Button("모든 이벤트 삭제", role: .destructive) {
-                        viewModel.deleteTodo { result in
-                            switch result {
-                            case .success:
-                                dismissAction.callAsFunction()
-                            case let .failure(failure):
-                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                        
+                        // 아래 상황은 뒤에 있는 할 일을 삭제하는 것을 하기보단 repeatEnd를 조정하는 것으로 대신한다.
+                        if viewModel.at == .middle {
+                            Button("이 할 일부터 삭제", role: .destructive) {
+                                guard let todo = viewModel.todo else {
+                                    print("[Debug] 이 할 일부터 삭제시에, 현재 보고 있는 데이터를 불러오지 못했습니다. \(#fileID), \(#function)")
+                                    return
+                                }
+                                
+                                if !viewModel.isSelectedRepeatEnd {
+                                    viewModel.isSelectedRepeatEnd = true
+                                }
+                                
+                                do {
+                                    viewModel.repeatEnd = try todo.prevEndDate()
+                                } catch {
+                                    switch error {
+                                    case RepeatError.invalid:
+                                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                    case RepeatError.calculation:
+                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                    default:
+                                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                    }
+                                }
+                                
+                                viewModel.updateTodo { result in
+                                    switch result {
+                                    case .success:
+                                        dismissAction.callAsFunction()
+                                    case let .failure(failure):
+                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    }
+                                }
+                            }
+                        }
+                        
+                        Button("모든 이벤트 삭제", role: .destructive) {
+                            viewModel.deleteTodo { result in
+                                switch result {
+                                case .success:
+                                    dismissAction.callAsFunction()
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
+                            }
+                        }
+                    } else {
+                        Button("삭제하기", role: .destructive) {
+                            viewModel.deleteTodo { result in
+                                switch result {
+                                case .success:
+                                    dismissAction.callAsFunction()
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
                             }
                         }
                     }
