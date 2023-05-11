@@ -9,12 +9,13 @@ import SwiftUI
 
 struct TagView: View {
     var tag: Tag
+    var fontSize: CGFloat = 16
     var isSelected: Bool = false
     var disabled: Bool = false
 
     var body: some View {
         Text(tag.content)
-            .font(.pretendard(size: 16, weight: .bold))
+            .font(.pretendard(size: fontSize, weight: .bold))
             .foregroundColor(
                 isSelected || disabled
                     ? .white

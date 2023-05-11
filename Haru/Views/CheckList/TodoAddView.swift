@@ -130,7 +130,7 @@ struct TodoAddView: View {
                                         Array(zip(viewModel.tagList.indices, viewModel.tagList)),
                                         id: \.0
                                     ) { index, tag in
-                                        TagView(tag: Tag(id: tag.id, content: tag.content))
+                                        TagView(tag: Tag(id: tag.id, content: tag.content), fontSize: 12)
                                             .onTapGesture {
                                                 viewModel.tagList.remove(at: index)
                                             }
