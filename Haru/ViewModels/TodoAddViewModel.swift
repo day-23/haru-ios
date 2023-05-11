@@ -370,6 +370,31 @@ final class TodoAddViewModel: ObservableObject {
         return formatter.string(from: endDate) == formatter.string(from: prevStateEndDate)
     }
 
+    var isPreviousAlarmEqual: Bool {
+        guard let todo else {
+            return false
+        }
+
+        if isSelectedAlarm != (!todo.alarms.isEmpty) {
+            return false
+        }
+
+        if !isSelectedAlarm {
+            return true
+        }
+
+        guard let prevAlarm = todo.alarms.first else {
+            return false
+        }
+
+        let formatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyyMMddhhmm"
+            return formatter
+        }()
+        return formatter.string(from: alarm) == formatter.string(from: prevAlarm.time)
+    }
+
     var isPreviousStateEqual: Bool {
         guard let todo else {
             return false
@@ -385,6 +410,7 @@ final class TodoAddViewModel: ObservableObject {
                 lhs.id == rhs.id
             })
             && todo.todayTodo == isTodayTodo
+            && isPreviousAlarmEqual
             && isPreviousEndDateEqual
             && isPreviousRepeatStateEqual
             && todo.memo == memo)

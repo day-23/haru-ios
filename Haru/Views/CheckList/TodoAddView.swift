@@ -120,6 +120,8 @@ struct TodoAddView: View {
                     }
                     .padding(.horizontal, 20)
                     
+                    Divider()
+                    
                     //  Tag 입력 View
                     Group {
                         Label {
