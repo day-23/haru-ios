@@ -137,7 +137,7 @@ class CustomHostingView<Content: View>: UIHostingController<Content> {
 
 extension View {
     @ViewBuilder
-    func popupImagePicker(show: Binding<Bool>, transition: AnyTransition = .move(edge: .bottom), mode: ImagePickerMode = .multiple, always: Bool = false, onSelect: @escaping ([PHAsset]) -> ()) -> some View {
+    func popupImagePicker(show: Binding<Bool>, transition: AnyTransition = .move(edge: .bottom), mode: ImagePickerMode = .multiple, always: Bool = false, onSelect: @escaping ([PHAsset]) -> Void) -> some View {
         overlay {
             let deviceSize = UIScreen.main.bounds.size
             ZStack {
@@ -170,3 +170,11 @@ extension View {
         }
     }
 }
+
+#if os(macOS)
+extension View {
+    func whenHovered(_ mouseIsInside: @escaping (Bool) -> Void) -> some View {
+        modifier(MouseInsideModifier(mouseIsInside))
+    }
+}
+#endif

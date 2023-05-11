@@ -12,13 +12,15 @@ struct FeedImage: View {
     @State var postPageNum: Int = 0
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
+        let deviceSize = UIScreen.main.bounds.size
+        ZStack {
             Text("\(postPageNum + 1)/\(imageList.count)")
                 .font(.pretendard(size: 12, weight: .bold))
-                .foregroundColor(.mainBlack)
+                .foregroundColor(Color(0xFDFDFD))
                 .padding(.all, 6)
-                .background(Color.white.opacity(0.5))
+                .background(Color.black.opacity(0.5))
                 .cornerRadius(15)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 .offset(x: -10, y: 10)
                 .zIndex(2)
 
@@ -33,14 +35,15 @@ struct FeedImage: View {
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .frame(width: 395, height: 390)
             .zIndex(1)
         }
+        .clipped()
+        .frame(width: deviceSize.width > 395 ? 395 : deviceSize.width, height: deviceSize.width > 395 ? 395 : deviceSize.width, alignment: .center)
     }
 }
 
-//struct FeedImage_Previews: PreviewProvider {
+// struct FeedImage_Previews: PreviewProvider {
 //    static var previews: some View {
 //        FeedImage(imageUrl: URL(string: "https://cdn.hankooki.com/news/photo/202301/46144_62027_1673489105.jpg")!)
 //    }
-//}
+// }

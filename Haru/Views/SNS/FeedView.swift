@@ -54,9 +54,16 @@ struct FeedView: View {
             HStack(spacing: 22) {
                 Image(systemName: post.isLiked ? "heart.fill" : "heart")
                     .foregroundColor(.red)
-                Image(systemName: "ellipses.bubble")
-                    .foregroundColor(.gray2)
+
+                NavigationLink {
+//                    CommentView(postImageList: post.images)
+                } label: {
+                    Image(systemName: "ellipses.bubble")
+                        .foregroundColor(.gray2)
+                }
+
                 Spacer()
+
                 if Global.shared.user?.id == post.user.id {
                     Image("option-button")
                         .renderingMode(.template)
