@@ -19,13 +19,24 @@ struct TagOptionView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                Text("태그 관리")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(Color(0xF8F8FA))
-                    .padding(.top, 28)
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 18)
+                HStack(spacing: 0) {
+                    Text("태그 관리")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.pretendard(size: 20, weight: .bold))
+                        .foregroundColor(Color(0xF8F8FA))
+
+                    Image("confirm")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0xF8F8FA))
+                        .onTapGesture {
+                            withAnimation {
+                                isActive = false
+                            }
+                        }
+                }
+                .padding(.top, 28)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 18)
 
                 VStack(spacing: 0) {
                     ScrollView {
