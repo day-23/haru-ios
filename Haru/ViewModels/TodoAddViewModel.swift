@@ -836,6 +836,8 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func clear() {
+        todo = nil
+
         content = ""
 
         flag = false
