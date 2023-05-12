@@ -9,7 +9,8 @@ import SwiftUI
 
 struct FeedView: View {
     var post: Post
-    var postImageList: [PostImage]
+    var postImageList: [PostImage?]
+    var profileImage: PostImage?
 
     @StateObject var postVM: PostViewModel
 
@@ -32,14 +33,8 @@ struct FeedView: View {
                     }
                 } label: {
                     HStack {
-                        if let profileUrl = post.user.profileImage {
-                            ProfileImgView(imageUrl: URL(string: profileUrl))
-                                .frame(width: 30, height: 30)
-                        } else {
-                            Image("default-profile-image")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                        }
+                        ProfileImgView(profileImage: profileImage)
+                            .frame(width: 30, height: 30)
 
                         Text("\(post.user.name)")
                             .font(.pretendard(size: 14, weight: .bold))
@@ -78,7 +73,11 @@ struct FeedView: View {
 
                 HStack(spacing: 10) {
                     NavigationLink {
-                        CommentView(postImageList: post.images, isMine: isMine)
+                        CommentView(
+                            postImageList: post.images,
+                            imageList: postImageList,
+                            isMine: isMine
+                        )
                     } label: {
                         Image(systemName: "ellipses.bubble")
                             .foregroundColor(post.isCommented ? .gradientStart1 : .gray2)

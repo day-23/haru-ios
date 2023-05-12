@@ -10,6 +10,7 @@ import SwiftUI
 
 final class UserProfileViewModel: ObservableObject {
     @Published var user: User
+    @Published var profileImage: PostImage?
     var userId: String
     var isMe: Bool {
         user.id == Global.shared.user?.id
@@ -35,12 +36,42 @@ final class UserProfileViewModel: ObservableObject {
         fetchUserProfile()
     }
 
+    func fetchProfileImage(profileUrl: String) {
+        DispatchQueue.global().async {
+            if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
+                DispatchQueue.main.async {
+                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
+                }
+            } else {
+                guard
+                    let encodeUrl = profileUrl.encodeUrl(),
+                    let url = URL(string: encodeUrl),
+                    let data = try? Data(contentsOf: url),
+                    let uiImage = UIImage(data: data)
+                else {
+                    print("[Error] \(profileUrl)이 잘못됨 \(#fileID) \(#function)")
+                    return
+                }
+
+                ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
+                DispatchQueue.main.async {
+                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
+                }
+            }
+        }
+    }
+
     // MARK: - 사용자 프로필을 위한 함수
 
     func fetchUserProfile() {
         profileService.fetchUserProfile(userId: userId) { result in
             switch result {
             case .success(let success):
+                // 이미지 캐시
+                if let profileUrl = success.profileImage {
+                    self.fetchProfileImage(profileUrl: profileUrl)
+                }
+
                 self.userId = success.id
                 self.user = success
             case .failure(let failure):
@@ -59,6 +90,11 @@ final class UserProfileViewModel: ObservableObject {
             profileService.updateUserProfileWithImage(userId: userId, name: name, introduction: introduction, profileImage: profileImage) { result in
                 switch result {
                 case .success(let success):
+                    // 이미지 캐시
+                    if let profileUrl = success.profileImage {
+                        self.fetchProfileImage(profileUrl: profileUrl)
+                    }
+                    
                     self.user = success
                     // FIXME: Global 변경 되면 수정해주기
                     Global.shared.user = success

@@ -11,6 +11,7 @@ struct CommentView: View {
     @Environment(\.dismiss) var dismissAction
 
     var postImageList: [Post.Image]
+    var imageList: [PostImage?]
     var commentList: [[Post.Comment]] {
         var result = Array(repeating: [Post.Comment](), count: postImageList.count)
         for (idx, image) in postImageList.enumerated() {
@@ -330,12 +331,12 @@ struct CommentView: View {
     @ViewBuilder
     func postListView() -> some View {
         TabView(selection: $postPageNum) {
-            ForEach(postImageList.indices, id: \.self) { idx in
-                AsyncImage(url: URL(string: postImageList[idx].url)) { image in
-                    image
+            ForEach(imageList.indices, id: \.self) { idx in
+                if let uiImage = imageList[idx]?.uiImage {
+                    Image(uiImage: uiImage)
                         .resizable()
-                } placeholder: {
-                    Image(systemName: "wifi.slash")
+                } else {
+                    ProgressView()
                 }
             }
         }
@@ -343,19 +344,19 @@ struct CommentView: View {
     }
 }
 
-struct CommentView_Previews: PreviewProvider {
-    static var previews: some View {
-        CommentView(
-            postImageList: [
-                Post.Image(id: UUID().uuidString, originalName: "test.png", url: "https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg", mimeType: "image/png", comments: [
-                    Post.Comment(id: UUID().uuidString, user: Post.User(id: UUID().uuidString, name: "테스터1"), content: "안녕하세요", x: 250, y: 250, createdAt: Date()),
-
-                    Post.Comment(id: UUID().uuidString, user: Post.User(id: UUID().uuidString, name: "테스터2"), content: "안녕하세요", x: 380, y: 250, createdAt: Date()),
-                ]),
-
-                Post.Image(id: UUID().uuidString, originalName: "test.png", url: "https://blog.kakaocdn.net/dn/bezjux/btqCX8fuOPX/6uq138en4osoKRq9rtbEG0/img.jpg", mimeType: "image/png", comments: []),
-            ],
-            isMine: false
-        )
-    }
-}
+// struct CommentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CommentView(
+//            postImageList: [
+//                Post.Image(id: UUID().uuidString, originalName: "test.png", url: "https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg", mimeType: "image/png", comments: [
+//                    Post.Comment(id: UUID().uuidString, user: Post.User(id: UUID().uuidString, name: "테스터1"), content: "안녕하세요", x: 250, y: 250, createdAt: Date()),
+//
+//                    Post.Comment(id: UUID().uuidString, user: Post.User(id: UUID().uuidString, name: "테스터2"), content: "안녕하세요", x: 380, y: 250, createdAt: Date()),
+//                ]),
+//
+//                Post.Image(id: UUID().uuidString, originalName: "test.png", url: "https://blog.kakaocdn.net/dn/bezjux/btqCX8fuOPX/6uq138en4osoKRq9rtbEG0/img.jpg", mimeType: "image/png", comments: []),
+//            ],
+//            isMine: false
+//        )
+//    }
+// }

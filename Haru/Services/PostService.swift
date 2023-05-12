@@ -187,7 +187,7 @@ final class PostService {
         ]
 
         AF.request(
-            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "\(targetPostId)/like",
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(targetPostId)/like",
             method: .post,
             encoding: URLEncoding.default,
             headers: headers

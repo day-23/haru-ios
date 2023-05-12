@@ -8,22 +8,31 @@
 import SwiftUI
 
 struct ProfileImgView: View {
+    var profileImage: PostImage?
     var imageUrl: URL?
 
     var body: some View {
-        AsyncImage(url: imageUrl, content: { image in
-            image
-                .resizable()
-                
-        }, placeholder: {
-            Image(systemName: "person")
-        })
-        .clipShape(Circle())
-    }
-}
-
-struct ProfileImgView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfileImgView(imageUrl: URL(string: "https://harus3.s3.ap-northeast-2.amazonaws.com/profile/1680693394711_momo.jpg")!)
+        if let imageUrl {
+            // 팔로우, 팔로윙 목록의 프로필은 캐싱하지 않고 asyncImage 사용
+            AsyncImage(url: imageUrl) { image in
+                image
+                    .resizable()
+            } placeholder: {
+                Image("wifi-error")
+                    .resizable()
+            }
+            .clipShape(Circle())
+        } else {
+            // 상대적으로 적은 수의 프로필은 캐싱
+            if let profileImage {
+                Image(uiImage: profileImage.uiImage)
+                    .resizable()
+                    .clipShape(Circle())
+            } else {
+                Image("default-profile-image")
+                    .resizable()
+                    .clipShape(Circle())
+            }
+        }
     }
 }

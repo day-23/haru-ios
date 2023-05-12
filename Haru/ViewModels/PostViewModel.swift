@@ -10,7 +10,8 @@ import SwiftUI
 
 final class PostViewModel: ObservableObject {
     @Published var postList: [Post] = []
-    @Published var postImageList: [Post.ID: [PostImage]] = [:]
+    @Published var postImageList: [Post.ID: [PostImage?]] = [:]
+    @Published var profileImage: PostImage?
     @Published var firstTimeAppear: Bool = true // 처음인지 아닌지 확인
 
     var page: Int = 1
@@ -60,12 +61,15 @@ final class PostViewModel: ObservableObject {
         loadMorePosts()
     }
 
-    func fetchPostImage(postId: String, postImages: [Post.Image], completion: @escaping ([PostImage]) -> Void) {
+    // MARK: - UIImage로 변환 + 이미지 캐싱
+
+    func fetchPostImage(postId: String, postImages: [Post.Image]) {
         DispatchQueue.global().async {
-            var newPostImages: [PostImage] = []
-            postImages.forEach { postImage in
+            postImages.enumerated().forEach { idx, postImage in
                 if let uiImage = ImageCache.shared.object(forKey: postImage.url as NSString) {
-                    newPostImages.append(PostImage(url: postImage.url, uiImage: uiImage))
+                    DispatchQueue.main.async {
+                        self.postImageList[postId]?[idx] = PostImage(url: postImage.url, uiImage: uiImage)
+                    }
                 } else {
                     guard
                         let url = URL(string: postImage.url.encodeUrl()!),
@@ -77,11 +81,36 @@ final class PostViewModel: ObservableObject {
                     }
 
                     ImageCache.shared.setObject(uiImage, forKey: postImage.url as NSString)
-                    newPostImages.append(PostImage(url: postImage.url, uiImage: uiImage))
+                    DispatchQueue.main.async {
+                        self.postImageList[postId]?[idx] = PostImage(url: postImage.url, uiImage: uiImage)
+                    }
                 }
             }
-            print("[Debug] \(postId) \(newPostImages.count) \(#function)")
-            completion(newPostImages)
+        }
+    }
+
+    func fetchProfileImage(profileUrl: String) {
+        DispatchQueue.global().async {
+            if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
+                DispatchQueue.main.async {
+                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
+                }
+            } else {
+                guard
+                    let encodeUrl = profileUrl.encodeUrl(),
+                    let url = URL(string: encodeUrl),
+                    let data = try? Data(contentsOf: url),
+                    let uiImage = UIImage(data: data)
+                else {
+                    print("[Error] \(profileUrl)이 잘못됨 \(#fileID) \(#function)")
+                    return
+                }
+
+                ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
+                DispatchQueue.main.async {
+                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
+                }
+            }
         }
     }
 
@@ -95,19 +124,17 @@ final class PostViewModel: ObservableObject {
             case .success(let success):
                 // 이미지 캐싱
                 success.0.forEach { post in
-
-                    self.fetchPostImage(postId: post.id, postImages: post.images) { newPostImages in
-                        DispatchQueue.main.async {
-                            self.postImageList[post.id] = (self.postImageList[post.id] ?? []) + newPostImages
-                        }
+                    // 프로필 이미지 캐싱
+                    if let profileUrl = post.user.profileImage {
+                        self.fetchProfileImage(profileUrl: profileUrl)
                     }
+                    // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
+                    self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
+                    self.fetchPostImage(postId: post.id, postImages: post.images)
                 }
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-
-                print("[Debug] \(self.postList.count) \(self.postImageList.count)")
-
                 self.totalPages = pageInfo.totalPages
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -121,6 +148,17 @@ final class PostViewModel: ObservableObject {
         postService.fetchTargetPosts(targetId: targetId, page: page) { result in
             switch result {
             case .success(let success):
+                // 이미지 캐싱
+                success.0.forEach { post in
+                    // 프로필 이미지 캐싱
+                    if let profileUrl = post.user.profileImage {
+                        self.fetchProfileImage(profileUrl: profileUrl)
+                    }
+                    // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
+                    self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
+                    self.fetchPostImage(postId: post.id, postImages: post.images)
+                }
+
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
                 self.totalPages = pageInfo.totalPages
@@ -155,5 +193,6 @@ final class PostViewModel: ObservableObject {
     func clear() {
         page = 0
         postList = []
+        postImageList = [:]
     }
 }

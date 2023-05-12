@@ -32,15 +32,8 @@ struct ProfileInfoView: View {
                 // ---
                 
                 HStack(spacing: 20) {
-                    if let profileImage = userProfileVM.user.profileImage {
-                        ProfileImgView(imageUrl: URL(string: profileImage))
-                            .frame(width: 62, height: 62)
-                    } else {
-                        Image("default-profile-image")
-                            .resizable()
-                            .clipShape(Circle())
-                            .frame(width: 62, height: 62)
-                    }
+                    ProfileImgView(profileImage: userProfileVM.profileImage)
+                        .frame(width: 62, height: 62)
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text(userProfileVM.user.name)

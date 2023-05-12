@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FeedImage: View {
-    var imageList: [PostImage]
+    var imageList: [PostImage?]
     var imageCount: Int
     @State var postPageNum: Int = 0
 
@@ -27,8 +27,12 @@ struct FeedImage: View {
 
             TabView(selection: $postPageNum) {
                 ForEach(imageList.indices, id: \.self) { idx in
-                    Image(uiImage: imageList[idx].uiImage)
-                        .resizable()
+                    if let uiImage = imageList[idx]?.uiImage {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                    } else {
+                        ProgressView()
+                    }
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
