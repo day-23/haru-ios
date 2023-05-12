@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-struct Sns: Identifiable, Hashable {
-    let id: String = UUID().uuidString
-    let imageURL: URL
-    let isLike: Bool
-}
-
 struct SNSView: View {
     @State var toggleIsClicked: Bool = false
 
@@ -20,6 +14,7 @@ struct SNSView: View {
     @State var isActive: Bool = false
 
     var postVM = PostViewModel(postOption: PostOption.main)
+    var myPostVM = PostViewModel(postOption: .target_all, targetId: Global.shared.user?.id ?? nil)
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -49,9 +44,12 @@ struct SNSView: View {
                 } thirdContent: {
                     NavigationLink {
                         ProfileInfoView(
-                            postVM: PostViewModel(postOption: .target_all, targetId: Global.shared.user?.id ?? nil),
+                            postVM: myPostVM,
                             userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
                         )
+                        .onAppear {
+                            myPostVM.loadMorePosts()
+                        }
                     } label: {
                         Text("내 기록")
                     }

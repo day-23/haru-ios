@@ -343,20 +343,3 @@ struct CommentView: View {
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
 }
-
-// struct CommentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CommentView(
-//            postImageList: [
-//                Post.Image(id: UUID().uuidString, originalName: "test.png", url: "https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg", mimeType: "image/png", comments: [
-//                    Post.Comment(id: UUID().uuidString, user: Post.User(id: UUID().uuidString, name: "테스터1"), content: "안녕하세요", x: 250, y: 250, createdAt: Date()),
-//
-//                    Post.Comment(id: UUID().uuidString, user: Post.User(id: UUID().uuidString, name: "테스터2"), content: "안녕하세요", x: 380, y: 250, createdAt: Date()),
-//                ]),
-//
-//                Post.Image(id: UUID().uuidString, originalName: "test.png", url: "https://blog.kakaocdn.net/dn/bezjux/btqCX8fuOPX/6uq138en4osoKRq9rtbEG0/img.jpg", mimeType: "image/png", comments: []),
-//            ],
-//            isMine: false
-//        )
-//    }
-// }

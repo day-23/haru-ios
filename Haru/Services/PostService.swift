@@ -46,7 +46,7 @@ final class PostService {
 
         let parameters: Parameters = [
             "page": page,
-            "limit": 20,
+            "limit": 3,
 //            "lastCreatedAt": Self.formatter.string(from: Date())
         ]
 

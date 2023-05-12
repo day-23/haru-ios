@@ -11,6 +11,7 @@ struct Post: Identifiable, Codable {
     let id: String
     var user: Post.User
     var content: String?
+    var templateUrl: String?
     var images: [Image]
     var hashTags: [String]
     var isLiked: Bool

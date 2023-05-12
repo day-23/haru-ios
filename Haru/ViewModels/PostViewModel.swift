@@ -63,26 +63,26 @@ final class PostViewModel: ObservableObject {
 
     // MARK: - UIImage로 변환 + 이미지 캐싱
 
-    func fetchPostImage(postId: String, postImages: [Post.Image]) {
+    func fetchPostImage(postId: String, postImageUrlList: [String]) {
         DispatchQueue.global().async {
-            postImages.enumerated().forEach { idx, postImage in
-                if let uiImage = ImageCache.shared.object(forKey: postImage.url as NSString) {
+            postImageUrlList.enumerated().forEach { idx, urlString in
+                if let uiImage = ImageCache.shared.object(forKey: urlString as NSString) {
                     DispatchQueue.main.async {
-                        self.postImageList[postId]?[idx] = PostImage(url: postImage.url, uiImage: uiImage)
+                        self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
                     }
                 } else {
                     guard
-                        let url = URL(string: postImage.url.encodeUrl()!),
+                        let url = URL(string: urlString.encodeUrl()!),
                         let data = try? Data(contentsOf: url),
                         let uiImage = UIImage(data: data)
                     else {
-                        print("[Error] \(postImage.url)이 잘못됨 \(#fileID) \(#function)")
+                        print("[Error] \(urlString)이 잘못됨 \(#fileID) \(#function)")
                         return
                     }
 
-                    ImageCache.shared.setObject(uiImage, forKey: postImage.url as NSString)
+                    ImageCache.shared.setObject(uiImage, forKey: urlString as NSString)
                     DispatchQueue.main.async {
-                        self.postImageList[postId]?[idx] = PostImage(url: postImage.url, uiImage: uiImage)
+                        self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
                     }
                 }
             }
@@ -129,8 +129,17 @@ final class PostViewModel: ObservableObject {
                         self.fetchProfileImage(profileUrl: profileUrl)
                     }
                     // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
-                    self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                    self.fetchPostImage(postId: post.id, postImages: post.images)
+                    if let templateUrl = post.templateUrl {
+                        self.postImageList[post.id] = Array(repeating: nil, count: 1)
+                        self.fetchPostImage(postId: post.id, postImageUrlList: [templateUrl])
+                    } else {
+                        self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
+                        self.fetchPostImage(
+                            postId: post.id,
+                            postImageUrlList: post.images.map { image in
+                                image.url
+                            })
+                    }
                 }
 
                 self.postList.append(contentsOf: success.0)
@@ -155,8 +164,17 @@ final class PostViewModel: ObservableObject {
                         self.fetchProfileImage(profileUrl: profileUrl)
                     }
                     // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
-                    self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                    self.fetchPostImage(postId: post.id, postImages: post.images)
+                    if let templateUrl = post.templateUrl {
+                        self.postImageList[post.id] = Array(repeating: nil, count: 1)
+                        self.fetchPostImage(postId: post.id, postImageUrlList: [templateUrl])
+                    } else {
+                        self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
+                        self.fetchPostImage(
+                            postId: post.id,
+                            postImageUrlList: post.images.map { image in
+                                image.url
+                            })
+                    }
                 }
 
                 self.postList.append(contentsOf: success.0)
