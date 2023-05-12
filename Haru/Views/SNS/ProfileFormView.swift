@@ -5,18 +5,19 @@
 //  Created by 이준호 on 2023/04/05.
 //
 
+import Photos
 import SwiftUI
 
 struct ProfileFormView: View {
     @Environment(\.dismiss) var dismissAction
-    
-    @StateObject var snsVM: SNSViewModel
+
+    @StateObject var userProfileVM: UserProfileViewModel
 
     @State var openPhoto: Bool = false
 
     @State var image: UIImage? = nil
     @State var name: String
-    @State var info: String
+    @State var introduction: String
 
     var body: some View {
         ZStack {
@@ -31,15 +32,8 @@ struct ProfileFormView: View {
                             .frame(width: 94, height: 94)
                             .clipShape(Circle())
                     } else {
-                        if let imageURL = snsVM.myProfileURL {
-                            ProfileImgView(imageUrl: imageURL)
-                                .frame(width: 94, height: 94)
-                        } else {
-                            Image(systemName: "person")
-                                .renderingMode(.template)
-                                .clipShape(Circle())
-                                .frame(width: 94, height: 94)
-                        }
+                        ProfileImgView(profileImage: userProfileVM.profileImage)
+                            .frame(width: 94, height: 94)
                     }
                     Image("camera")
                         .frame(width: 30, height: 30)
@@ -64,7 +58,7 @@ struct ProfileFormView: View {
                         HStack(spacing: 20) {
                             Text("자기소개")
                                 .font(.pretendard(size: 14, weight: .bold))
-                            TextField("자기소개를 입력하세요.", text: $info)
+                            TextField("자기소개를 입력하세요.", text: $introduction)
                                 .font(.pretendard(size: 14, weight: .regular))
                         }
                         Divider()
@@ -73,20 +67,6 @@ struct ProfileFormView: View {
                 .padding(.horizontal, 35)
 
                 Spacer()
-            }
-
-            if openPhoto {
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        openPhoto = false
-                    }
-
-                Modal(isActive: $openPhoto, ratio: 0.9) {
-                    ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
-                }
-                .zIndex(2)
             }
         }
         .customNavigationBar {
@@ -100,21 +80,41 @@ struct ProfileFormView: View {
                     .frame(width: 28, height: 28)
             }
         } rightView: {
-            Image("confirm")
-                .renderingMode(.template)
-                .foregroundColor(Color(0x191919))
-        }
-
-
-    }
-}
-
-struct ProfileFormView_Previews: PreviewProvider {
-    static var snsVM: SNSViewModel = .init()
-    static var previews: some View {
-        ProfileFormView(snsVM: snsVM, name: "게으른 민수", info: "안녕하세요.")
-            .onAppear {
-                snsVM.fetchProfileImg()
+            Button {
+                userProfileVM.updateUserProfile(name: name, introduction: introduction, profileImage: image) { result in
+                    switch result {
+                    case .success:
+                        self.dismissAction.callAsFunction()
+                    case .failure(let error):
+                        // TODO: 알럿창으로 바꿔주기
+                        print("[Error] \(error)")
+                    }
+                }
+            } label: {
+                Image("confirm")
+                    .renderingMode(.template)
+                    .foregroundColor(Color(0x191919))
             }
+        }
+        .popupImagePicker(show: $openPhoto, mode: .single) { assets in
+
+            // MARK: Do Your Operation With PHAsset
+
+            // I'm Simply Extracting Image
+            // .init() Means Exact Size of the Image
+            let manager = PHCachingImageManager.default()
+            let options = PHImageRequestOptions()
+            options.isSynchronous = true
+            DispatchQueue.global(qos: .userInteractive).async {
+                assets.forEach { asset in
+                    manager.requestImage(for: asset, targetSize: .init(), contentMode: .default, options: options) { image, _ in
+                        guard let image else { return }
+                        DispatchQueue.main.async {
+                            self.image = image
+                        }
+                    }
+                }
+            }
+        }
     }
 }

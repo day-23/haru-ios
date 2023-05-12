@@ -7,51 +7,99 @@
 
 import SwiftUI
 
-struct Feed: Identifiable, Hashable {
-    let id: String = UUID().uuidString
-    var content: String?
-    var imageURL: URL
-    var isLike: Bool
-}
-
 struct FeedView: View {
     var post: Post
-    var snsVM: SNSViewModel
+    var postImageList: [PostImage?]
+    var profileImage: PostImage?
+
+    @StateObject var postVM: PostViewModel
+
+    var comeToRoot: Bool = false
+    var isMine: Bool {
+        post.user.id == Global.shared.user?.id
+    }
 
     var body: some View {
+        let targetPostVM: PostViewModel = .init(postOption: .target_all, targetId: post.user.id)
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                ProfileImgView(imageUrl: URL(string: "https://item.kakaocdn.net/do/fd0050f12764b403e7863c2c03cd4d2d7154249a3890514a43687a85e6b6cc82")!)
-                    .frame(width: 30, height: 30)
+                NavigationLink {
+                    ProfileInfoView(
+                        postVM: targetPostVM,
+                        userProfileVM: UserProfileViewModel(userId: post.user.id)
+                    )
+                    .onAppear {
+                        targetPostVM.loadMorePosts()
+                    }
+                } label: {
+                    HStack {
+                        ProfileImgView(profileImage: profileImage)
+                            .frame(width: 30, height: 30)
 
-                Text("\(post.user.name)")
-                    .font(.pretendard(size: 14, weight: .bold))
-                    .foregroundColor(.mainBlack)
+                        Text("\(post.user.name)")
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .foregroundColor(.mainBlack)
+                    }
+                }.disabled(!comeToRoot)
+
                 Text("1일 전")
                     .font(.pretendard(size: 10, weight: .regular))
                     .foregroundColor(.gray2)
+
                 Spacer()
+
                 Image("ellipsis")
                     .renderingMode(.template)
                     .foregroundColor(.gray1)
             }
             .padding(.horizontal, 20)
 
-            FeedImage(imageList: post.images)
+            FeedImage(imageList: postImageList, imageCount: post.images.count, templateMode: post.templateUrl != nil, content: post.content)
 
             HStack(spacing: 22) {
-                Image(systemName: post.isLiked ? "heart.fill" : "heart")
-                    .foregroundColor(.red)
-                Image(systemName: "ellipses.bubble")
-                    .foregroundColor(.gray2)
+                HStack(spacing: 10) {
+                    Button {
+                        postVM.likeThisPost(targetPostId: post.id)
+                    } label: {
+                        Image(systemName: post.isLiked ? "heart.fill" : "heart")
+                            .foregroundColor(.red)
+                    }
+
+                    if isMine {
+                        Text("\(post.likedCount)")
+                            .font(.pretendard(size: 14, weight: .bold))
+                    }
+                }
+
+                HStack(spacing: 10) {
+                    NavigationLink {
+                        CommentView(
+                            postImageList: post.images,
+                            imageList: postImageList,
+                            isMine: isMine
+                        )
+                    } label: {
+                        Image(systemName: "ellipses.bubble")
+                            .foregroundColor(post.isCommented ? .gradientStart1 : .gray2)
+                    }
+
+                    if isMine {
+                        Text("\(post.commentCount)")
+                            .font(.pretendard(size: 14, weight: .bold))
+                    }
+                }
+
                 Spacer()
-                Image("option-button")
-                    .renderingMode(.template)
-                    .foregroundColor(.gray2)
+
+                if Global.shared.user?.id == post.user.id {
+                    Image("option-button")
+                        .renderingMode(.template)
+                        .foregroundColor(.gray2)
+                }
             }
             .padding(.horizontal, 20)
-            
-            if let content = post.content {
+
+            if let content = post.content, post.templateUrl == nil {
                 Text(content)
                     .lineLimit(nil)
                     .font(.pretendard(size: 14, weight: .regular))
@@ -61,9 +109,3 @@ struct FeedView: View {
         }
     }
 }
-
-//struct FeedView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        FeedView(feed: Feed(content: "아이콘-텍스트 간격 10 텍스트/아이콘-아래줄 간격 20, 14pt", imageURL: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")!, isLike: true), snsVM: SNSViewModel())
-//    }
-//}
