@@ -173,19 +173,31 @@ class CalendarHelper {
         return calendar.startOfDay(for: date)
     }
 
-    class func getInfiniteDate() -> Date {
-        let dateString = "2200-01-01T00:00:00.000Z"
+    class func getInfiniteDate(
+        _ repeatEnd: Date? = nil
+    ) -> Date {
         let dateFormatter = DateFormatter()
-
         dateFormatter.dateFormat = Constants.dateFormat
 
-        guard let date = dateFormatter.date(from: dateString) else { return Date() }
-        return date
+        if let repeatEnd {
+            let repeatEndString = repeatEnd.description
+            let tokens = repeatEndString.split(separator: " ")
+            let dateString = "2200-01-01T\(tokens[1]).000Z"
+
+            guard let date = dateFormatter.date(from: dateString) else { return Date() }
+            return date
+        } else {
+            let dateString = "2200-01-01T00:00:00.000Z"
+
+            guard let date = dateFormatter.date(from: dateString) else { return Date() }
+            return date
+        }
     }
 
+    // 일: 1, 월:2 ...
     class func getDayofWeek(date: Date) -> Int {
         let calendar = Calendar.current
-        let dayOfWeek = calendar.component(.weekday, from: Date()) - 1
+        let dayOfWeek = calendar.component(.weekday, from: date)
         return dayOfWeek
     }
 
@@ -199,7 +211,33 @@ class CalendarHelper {
         return closestDay
     }
 
+    // baseDate를 포함하여 가장 가까운 idx요일의 Date 구하기
+    class func getClosestDayOfWeekDate(idx: Int, baseDate: Date) -> Date {
+        let calendar = Calendar.current
+
+        var result = calendar.date(bySetting: .weekday, value: idx, of: baseDate)!
+        if result > baseDate {
+            result = calendar.date(byAdding: .weekOfYear, value: -1, to: result)!
+        }
+
+        let nextResult = calendar.date(byAdding: .weekOfYear, value: 1, to: result)!
+        let prevDiff = baseDate.timeIntervalSince(result)
+        let nextDiff = nextResult.timeIntervalSince(baseDate)
+        if nextDiff < prevDiff {
+            result = nextResult
+        }
+
+        let baseWeek = calendar.dateComponents([.weekOfYear], from: baseDate)
+        let resultDayWeek = calendar.dateComponents([.weekOfYear], from: result)
+        if baseWeek.weekOfYear != resultDayWeek.weekOfYear {
+            result = calendar.date(byAdding: .weekOfYear, value: -1, to: result)!
+        }
+
+        return result
+    }
+
     // 반복 시작일과 반복 종료일 계산
+    // startDate는 repeatStart의 hour, minute를 계산해서 넘긴다
     class func fittingStartEndDate(firstDate: Date, repeatStart: Date, lastDate: Date, repeatEnd: Date) -> (Date, Date) {
         var startDate = firstDate > repeatStart ? firstDate : repeatStart
         var endDate = lastDate > repeatEnd ? repeatEnd : lastDate
@@ -237,5 +275,31 @@ class CalendarHelper {
         }
 
         return range.count
+    }
+
+    class func getDiffWeeks(date1: Date, date2: Date) -> Int {
+        let calendar = Calendar.current
+        let day = 60 * 60 * 24
+
+        var date1 = date1
+        var date2 = date2
+
+        print(date1)
+        print(date2)
+        var dayOfWeek1 = calendar.component(.weekday, from: date1)
+        while dayOfWeek1 > 1 {
+            date1 = date1.addingTimeInterval(TimeInterval(-day))
+            dayOfWeek1 -= 1
+        }
+
+        var dayOfWeek2 = calendar.component(.weekday, from: date2)
+        while dayOfWeek2 > 1 {
+            date2 = date2.addingTimeInterval(TimeInterval(-day))
+            dayOfWeek2 -= 1
+        }
+
+        let components = calendar.dateComponents([.day], from: date1, to: date2)
+        print(components.day! / 7)
+        return components.day! / 7
     }
 }

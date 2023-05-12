@@ -12,8 +12,8 @@ struct TimeTableTodoRow: View {
 
     var index: Int
     var date: Date
-    @Binding var todoList: [Todo]
-    var timeTableViewModel: TimeTableViewModel
+    @Binding var todoList: [TodoCell]
+    @StateObject var timeTableViewModel: TimeTableViewModel
 
     var body: some View {
         HStack(spacing: 0) {
@@ -21,7 +21,11 @@ struct TimeTableTodoRow: View {
                 Text(week[index])
                     .font(.pretendard(size: 14, weight: .bold))
                     .foregroundColor(
-                        index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
+                        index == 0
+                            ? Color(0xF71E58)
+                            : (index == 6
+                                ? Color(0x1DAFFF)
+                                : Color(0x191919))
                     )
                     .padding(.bottom, 7)
 
@@ -39,12 +43,15 @@ struct TimeTableTodoRow: View {
                     Text("\(date.day)")
                         .font(.pretendard(size: 14, weight: .bold))
                         .foregroundColor(
-                            index == 0 ? Color(0xF71E58) : index == 6 ? Color(0x1DAFFF) : Color(0x191919)
+                            index == 0
+                                ? Color(0xF71E58)
+                                : (index == 6
+                                    ? Color(0x1DAFFF)
+                                    : Color(0x191919))
                         )
-                        .padding(.horizontal, 6)
                 }
             }
-            .padding(.trailing, 24)
+            .frame(width: 60)
 
             if todoList.isEmpty {
                 EmptySectionView()
@@ -57,9 +64,13 @@ struct TimeTableTodoRow: View {
                                 todo: todo
                             )
                             .transition(.scale)
+                            .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 10))
                             .onDrag {
                                 timeTableViewModel.draggingTodo = todo
-                                return NSItemProvider(object: todo.id as NSString)
+                                return NSItemProvider(object: todo.data.id as NSString)
+                            }
+                            .onTapGesture {
+                                print(todo.data.repeatOption, todo.at)
                             }
                         }
                     }
@@ -68,6 +79,5 @@ struct TimeTableTodoRow: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: 72)
-        .padding(.leading, 24)
     }
 }

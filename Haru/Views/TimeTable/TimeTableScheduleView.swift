@@ -151,6 +151,9 @@ struct TimeTableScheduleView: View {
                                     ScheduleItemView(schedule: $schedule)
                                         .frame(width: frame.width, height: frame.height)
                                         .position(x: position.x, y: position.y)
+                                        .onTapGesture {
+                                            print(schedule.at)
+                                        }
                                         .onDrop(of: [.text], delegate: CellDropDelegate(
                                             dayIndex: schedule.data.repeatStart.indexOfWeek()!,
                                             hourIndex: schedule.data.repeatStart.hour,
@@ -160,13 +163,10 @@ struct TimeTableScheduleView: View {
                                         .onDrag {
                                             let scheduleId = schedule.id
                                             timeTableViewModel.draggingSchedule = schedule
-                                            timeTableViewModel.scheduleList = timeTableViewModel.scheduleList.filter {
-                                                $0.id != schedule.id
-                                            }
                                             return NSItemProvider(object: scheduleId as NSString)
                                         } preview: {
                                             ScheduleItemView(schedule: $schedule)
-                                                .frame(width: frame.width, height: frame.height)
+                                                .frame(width: 0.1, height: 0.1)
                                         }
                                 }
                             }
@@ -341,7 +341,11 @@ struct CellDropDelegate: DropDelegate {
         )
 
         timeTableViewModel.removePreview()
-        timeTableViewModel.updateDraggingSchedule(date, date.advanced(by: TimeInterval(60 * diff)))
+        timeTableViewModel.updateDraggingSchedule(
+            startDate: date,
+            endDate: date.advanced(by: TimeInterval(60 * diff)),
+            at: draggingSchedule.at
+        )
         return true
     }
 }

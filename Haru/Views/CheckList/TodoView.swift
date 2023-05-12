@@ -36,13 +36,13 @@ struct TodoView: View {
     }
 
     private var showExtraInfo: Bool {
-        todo.tags.count > 0 ||
-            todo.endDate != nil ||
-            todo.todayTodo ||
-            todo.alarms.count > 0 ||
-            todo.repeatValue != nil ||
-            todo.repeatOption != nil ||
-            !todo.memo.isEmpty
+        return todo.tags.count > 0
+            || todo.endDate != nil
+            || todo.todayTodo
+            || todo.alarms.count > 0
+            || todo.repeatValue != nil
+            || todo.repeatOption != nil
+            || !todo.memo.isEmpty
     }
 
     let formatter: DateFormatter = {
@@ -88,8 +88,8 @@ struct TodoView: View {
                 .onTapGesture {
                     disabled = true
 
-                    if (todo.repeatOption == nil &&
-                        todo.repeatValue == nil) || todo.completed
+                    if (todo.repeatOption == nil && todo.repeatValue == nil)
+                        || todo.completed
                     {
                         checkListViewModel.completeTodo(
                             todoId: todo.id,
@@ -185,13 +185,12 @@ struct TodoView: View {
                             }
                         }
 
-                        if (todo.tags.count > 0 ||
-                            todo.endDate != nil) &&
-                            (todo.alarms.count > 0 ||
-                                todo.todayTodo ||
-                                todo.repeatValue != nil ||
-                                todo.repeatOption != nil ||
-                                !todo.memo.isEmpty)
+                        if (todo.tags.count > 0 || todo.endDate != nil)
+                            && (todo.alarms.count > 0
+                                || todo.todayTodo
+                                || todo.repeatValue != nil
+                                || todo.repeatOption != nil
+                                || !todo.memo.isEmpty)
                         {
                             Image("dot-small")
                                 .renderingMode(.template)

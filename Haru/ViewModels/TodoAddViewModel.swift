@@ -67,7 +67,9 @@ final class TodoAddViewModel: ObservableObject {
     @Published var buttonDisabledList: [Bool] = Array(repeating: false, count: 12)
     @Published var isSelectedEndDate: Bool = false {
         didSet {
-            if !isSelectedEndDate && isSelectedRepeat {
+            if !isSelectedEndDate
+                && isSelectedRepeat
+            {
                 isSelectedRepeat = false
             }
         }
@@ -88,16 +90,21 @@ final class TodoAddViewModel: ObservableObject {
     @Published var repeatOption: RepeatOption = .everyDay
     @Published var isSelectedRepeat: Bool = false {
         didSet {
-            if isSelectedRepeat && !isSelectedEndDate {
+            if isSelectedRepeat
+                && !isSelectedEndDate
+            {
                 isSelectedEndDate = true
             }
         }
     }
 
     @Published var repeatEnd: Date = .init()
+
     @Published var isSelectedRepeatEnd: Bool = false {
         didSet {
-            repeatEnd = endDate
+            if repeatEnd.compare(endDate) == .orderedAscending {
+                repeatEnd = endDate
+            }
         }
     }
 
@@ -351,7 +358,9 @@ final class TodoAddViewModel: ObservableObject {
 
         let formatter: DateFormatter = {
             let formatter = DateFormatter()
-            if isAllDay == true && isAllDay == todo.isAllDay {
+            if isAllDay == true
+                && isAllDay == todo.isAllDay
+            {
                 formatter.dateFormat = "yyyyMMddhhmm"
             } else {
                 formatter.dateFormat = "yyyyMMdd"
@@ -366,18 +375,19 @@ final class TodoAddViewModel: ObservableObject {
             return false
         }
 
-        return (todo.content == content &&
-            todo.flag == flag &&
-            todo.subTodos.elementsEqual(subTodoList, by: { lhs, rhs in
+        // FIXME: alarm 비교하는 코드 추가 필요
+        return (todo.content == content
+            && todo.flag == flag
+            && todo.subTodos.elementsEqual(subTodoList, by: { lhs, rhs in
                 lhs.id == rhs.id
-            }) &&
-            todo.tags.elementsEqual(tagList, by: { lhs, rhs in
+            })
+            && todo.tags.elementsEqual(tagList, by: { lhs, rhs in
                 lhs.id == rhs.id
-            }) &&
-            todo.todayTodo == isTodayTodo &&
-            isPreviousEndDateEqual &&
-            isPreviousRepeatStateEqual &&
-            todo.memo == memo)
+            })
+            && todo.todayTodo == isTodayTodo
+            && isPreviousEndDateEqual
+            && isPreviousRepeatStateEqual
+            && todo.memo == memo)
     }
 
     init(checkListViewModel: CheckListViewModel, mode: TodoAddMode = .add) {
@@ -396,15 +406,24 @@ final class TodoAddViewModel: ObservableObject {
             endDate: selectedEndDate,
             isAllDay: isAllDay,
             alarms: selectedAlarm,
-            repeatOption: !isSelectedEndDate || !isSelectedRepeat ? nil : repeatOption.rawValue,
-            repeatValue: !isSelectedEndDate || !isSelectedRepeat ? nil : repeatValue,
-            repeatEnd: !isSelectedEndDate || !isSelectedRepeat ? nil : selectedRepeatEnd,
+            repeatOption: (!isSelectedEndDate || !isSelectedRepeat)
+                ? nil
+                : repeatOption.rawValue,
+            repeatValue: (!isSelectedEndDate || !isSelectedRepeat)
+                ? nil
+                : repeatValue,
+            repeatEnd: (!isSelectedEndDate || !isSelectedRepeat)
+                ? nil
+                : selectedRepeatEnd,
             tags: tagList.map { $0.content },
             subTodos: subTodoList
                 .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
                 .map { $0.content },
-            subTodosCompleted: mode == .add ? nil :
-                (subTodoList.isEmpty ? [] : subTodoList.map { $0.completed })
+            subTodosCompleted: mode == .add
+                ? nil
+                : (subTodoList.isEmpty
+                    ? []
+                    : subTodoList.map { $0.completed })
         )
     }
 
@@ -473,7 +492,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func updateTodoWithRepeat(
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         guard let todo else {
@@ -560,7 +579,9 @@ final class TodoAddViewModel: ObservableObject {
 
     func onChangeTag(_: String) {
         let trimTag = tag.trimmingCharacters(in: .whitespaces)
-        if !trimTag.isEmpty && tag[tag.index(tag.endIndex, offsetBy: -1)] == " " {
+        if !trimTag.isEmpty
+            && tag[tag.index(tag.endIndex, offsetBy: -1)] == " "
+        {
             if tagList.filter({ $0.content == trimTag }).isEmpty {
                 tagList.append(Tag(id: UUID().uuidString, content: trimTag))
                 tag = ""
@@ -697,9 +718,9 @@ final class TodoAddViewModel: ObservableObject {
         isSelectedRepeat = todo.repeatOption != nil
         repeatEnd = todo.repeatEnd ?? .init()
         isSelectedRepeatEnd = todo.repeatEnd != nil
-        repeatDay = isSelectedRepeat &&
-            todo.repeatOption == RepeatOption.everyDay.rawValue
-            ? (todo.repeatValue ?? "1") : "1"
+        repeatDay = isSelectedRepeat && todo.repeatOption == RepeatOption.everyDay.rawValue
+            ? (todo.repeatValue ?? "1")
+            : "1"
         initRepeatWeek(todo: todo)
         initRepeatMonth(todo: todo)
         initRepeatYear(todo: todo)
@@ -726,7 +747,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func deleteTodoWithRepeat(
-        at: TodoService.RepeatAt,
+        at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         guard let todo else {

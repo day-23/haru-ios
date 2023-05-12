@@ -26,17 +26,19 @@ struct TimeTableTodoView: View {
                     timeTableViewModel: timeTableViewModel
                 )
                 .background(
-                    index == Date.now.indexOfWeek() ? RadialGradient(
-                        gradient: Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]),
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 150
-                    ).opacity(0.5) : RadialGradient(
-                        colors: [.white],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 150
-                    ).opacity(0.5)
+                    index == Date.now.indexOfWeek()
+                        ? RadialGradient(
+                            gradient: Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 150
+                        ).opacity(0.5)
+                        : RadialGradient(
+                            colors: [.white],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 150
+                        ).opacity(0.5)
                 )
                 .onDrop(of: [.text], delegate: TodoDropDelegate(
                     index: index,
@@ -68,7 +70,9 @@ struct TodoDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        timeTableViewModel.updateDraggingTodo(index: index)
+        timeTableViewModel.updateDraggingTodo(
+            index: index
+        )
         return true
     }
 }

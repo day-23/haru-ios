@@ -135,15 +135,16 @@ struct CalendarDateView: View {
                             calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
                             isSchModalVisible = true
                         } label: {
-                            Image("plus-button")
+                            Image("add-button")
                                 .resizable()
                                 .frame(width: 56, height: 56)
                                 .clipShape(Circle())
-                                .shadow(radius: 3)
+                                .shadow(radius: 10, x: 5, y: 0)
                         }
                     }
                 }
-                .padding(20)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
                 .zIndex(2)
             }
             
