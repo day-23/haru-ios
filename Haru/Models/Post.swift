@@ -11,9 +11,11 @@ struct Post: Identifiable, Codable {
     let id: String
     var user: Post.User
     var content: String?
+    var templateUrl: String?
     var images: [Image]
     var hashTags: [String]
     var isLiked: Bool
+    var isCommented: Bool
     var likedCount: Int
     var commentCount: Int
     

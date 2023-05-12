@@ -78,9 +78,10 @@ struct HaruHeader<SearchContent: View>: View {
                 Spacer()
                     .frame(height: 20)
             }
+            .padding(.top, 10)
             .padding(.leading, 20)
             .padding(.trailing, 23)
         }
-        .frame(height: 42)
+        .frame(height: 52)
     }
 }

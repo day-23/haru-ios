@@ -7,78 +7,65 @@
 
 import SwiftUI
 
-struct Sns: Identifiable, Hashable {
-    let id: String = UUID().uuidString
-    let imageURL: URL
-    let isLike: Bool
-}
-
 struct SNSView: View {
-    @State private var maxNumber: Int = 4
-
-    @StateObject var snsVM: SNSViewModel = .init()
-
     @State var toggleIsClicked: Bool = false
+
+    // For pop up to root
+    @State var isActive: Bool = false
+
+    var postVM = PostViewModel(postOption: PostOption.main)
+    var myPostVM = PostViewModel(postOption: .target_all, targetId: Global.shared.user?.id ?? nil)
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 0) {
                 HaruHeader(
                     toggleIsClicked: $toggleIsClicked,
                     backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
                 ) {
-                    FallowView()
+                    Text("검색창")
                 }
-
-                FeedListView(snsVM: snsVM, postList: snsVM.mainPostList)
+                FeedListView(postVM: postVM, comeToRoot: true)
+                    .onAppear {
+                        postVM.loadMorePosts()
+                    }
             }
 
             if toggleIsClicked {
-                VStack {
-                    Group {
-                        NavigationLink {
-                            ProfileInfoView(isMine: false, snsVM: snsVM)
-                        } label: {
-                            Text("친구 피드")
-                        }
-                        Divider()
-                        NavigationLink {
-                            LookAroundView()
-                        } label: {
-                            Text("둘러보기")
-                        }
-                        Divider()
-                        NavigationLink {
-                            ProfileInfoView(isMine: true, snsVM: snsVM)
-                                .onAppear {
-                                    snsVM.fetchProfileImg()
-                                }
-                        } label: {
-                            Text("내 기록")
-                        }
+                DropdownMenu {
+                    Text("친구피드")
+                        .foregroundColor(Color(0x1DAFFF))
+                } secondContent: {
+                    NavigationLink {
+                        LookAroundView()
+                    } label: {
+                        Text("둘러보기")
                     }
-                    .foregroundColor(Color(0x191919))
+                } thirdContent: {
+                    NavigationLink {
+                        ProfileInfoView(
+                            postVM: myPostVM,
+                            userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
+                        )
+                        .onAppear {
+                            myPostVM.loadMorePosts()
+                        }
+                    } label: {
+                        Text("내 기록")
+                    }
                 }
-                .frame(width: 94, height: 96)
-                .padding(8)
-                .background(.white)
-                .cornerRadius(10)
-                .position(x: 60, y: 90)
-                .transition(.opacity.animation(.easeIn))
             }
 
-            NavigationLink {
-                PostFormView()
-            } label: {
+            NavigationLink(
+                destination: PostFormView(rootIsActive: $isActive),
+                isActive: $isActive
+            ) {
                 Image("sns-add-button")
                     .shadow(radius: 10, x: 5, y: 0)
             }
             .zIndex(5)
             .padding(.horizontal, 20)
             .padding(.bottom, 10)
-        }
-        .onAppear {
-            snsVM.fetchAllPosts(currentPage: 1)
         }
     }
 }
