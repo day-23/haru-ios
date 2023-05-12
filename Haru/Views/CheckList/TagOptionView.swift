@@ -87,7 +87,7 @@ struct TagOptionView: View {
                                 TagOptionItem(tag: tag) {
                                     checkListViewModel.toggleVisibility(
                                         tagId: tag.id,
-                                        isSeleted: tag.isSelected
+                                        isSeleted: tag.isSelected ?? true
                                     ) { result in
                                         switch result {
                                         case .success:
@@ -158,7 +158,7 @@ private struct TagOptionItem: View {
             TagView(
                 tag: tag,
                 isSelected: false,
-                disabled: !tag.isSelected
+                disabled: !(tag.isSelected ?? false)
             )
             .onTapGesture {
                 tapAction()

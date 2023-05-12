@@ -12,7 +12,7 @@ struct Tag: Codable, Identifiable {
 
     let id: String
     var content: String
-    var isSelected: Bool = true
+    var isSelected: Bool? = true
 
     //  MARK: - Dates Properties
 
