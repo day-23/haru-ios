@@ -16,7 +16,7 @@ struct FeedListView: View {
         ScrollView {
             LazyVStack(spacing: 14) {
                 ForEach(postVM.postList) { post in
-                    FeedView(post: post, comeToRoot: comeToRoot)
+                    FeedView(post: post, postVM: postVM, comeToRoot: comeToRoot)
                 }
                 if !postVM.postList.isEmpty, (postVM.page + 1) <= postVM.totalPages {
                     HStack {

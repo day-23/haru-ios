@@ -10,7 +10,12 @@ import SwiftUI
 struct FeedView: View {
     var post: Post
 
+    @StateObject var postVM: PostViewModel
+
     var comeToRoot: Bool = false
+    var isMine: Bool {
+        post.user.id == Global.shared.user?.id
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -52,14 +57,32 @@ struct FeedView: View {
             FeedImage(imageList: post.images)
 
             HStack(spacing: 22) {
-                Image(systemName: post.isLiked ? "heart.fill" : "heart")
-                    .foregroundColor(.red)
+                HStack(spacing: 10) {
+                    Button {
+                        postVM.likeThisPost(targetPostId: post.id)
+                    } label: {
+                        Image(systemName: post.isLiked ? "heart.fill" : "heart")
+                            .foregroundColor(.red)
+                    }
 
-                NavigationLink {
-                    CommentView(postImageList: post.images, isMine: post.user.id == Global.shared.user?.id ? true : false)
-                } label: {
-                    Image(systemName: "ellipses.bubble")
-                        .foregroundColor(.gray2)
+                    if isMine {
+                        Text("\(post.likedCount)")
+                            .font(.pretendard(size: 14, weight: .bold))
+                    }
+                }
+
+                HStack(spacing: 10) {
+                    NavigationLink {
+                        CommentView(postImageList: post.images, isMine: isMine)
+                    } label: {
+                        Image(systemName: "ellipses.bubble")
+                            .foregroundColor(post.isCommented ? .gradientStart1 : .gray2)
+                    }
+
+                    if isMine {
+                        Text("\(post.commentCount)")
+                            .font(.pretendard(size: 14, weight: .bold))
+                    }
                 }
 
                 Spacer()

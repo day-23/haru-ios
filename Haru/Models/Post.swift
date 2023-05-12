@@ -14,6 +14,7 @@ struct Post: Identifiable, Codable {
     var images: [Image]
     var hashTags: [String]
     var isLiked: Bool
+    var isCommented: Bool
     var likedCount: Int
     var commentCount: Int
     

@@ -46,13 +46,15 @@ final class PostService {
 
         let parameters: Parameters = [
             "page": page,
+            "limit": 20,
+//            "lastCreatedAt": Self.formatter.string(from: Date())
         ]
 
         AF.request(
-            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/all",
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/follow/feed",
             method: .get,
             parameters: parameters,
-            encoding: URLEncoding.default,
+            encoding: URLEncoding(),
             headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -81,6 +83,7 @@ final class PostService {
 
         let parameters: Parameters = [
             "page": page,
+//            "lastCreatedAt": Self.formatter.string(from: Date())
         ]
 
         AF.request(
@@ -167,5 +170,34 @@ final class PostService {
                     completion(.failure(error))
                 }
             }
+    }
+
+    func createPostWithTemplate() {}
+
+    func likeThisPost(
+        targetPostId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "multipart/form-data; boundary=Boundary-\(UUID().uuidString)",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "\(targetPostId)/like",
+            method: .post,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.success))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
     }
 }
