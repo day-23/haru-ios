@@ -10,20 +10,31 @@ import SwiftUI
 struct FeedImage: View {
     var imageList: [PostImage?]
     var imageCount: Int
+    var templateMode: Bool
+    var content: String?
     @State var postPageNum: Int = 0
 
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
         ZStack {
-            Text("\(postPageNum + 1)/\(imageCount)")
-                .font(.pretendard(size: 12, weight: .bold))
-                .foregroundColor(Color(0xFDFDFD))
-                .padding(.all, 6)
-                .background(Color.black.opacity(0.5))
-                .cornerRadius(15)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .offset(x: -10, y: 10)
-                .zIndex(2)
+            if !templateMode {
+                Text("\(postPageNum + 1)/\(imageCount)")
+                    .font(.pretendard(size: 12, weight: .bold))
+                    .foregroundColor(Color(0xFDFDFD))
+                    .padding(.all, 6)
+                    .background(Color.black.opacity(0.5))
+                    .cornerRadius(15)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .offset(x: -10, y: 10)
+                    .zIndex(2)
+            } else if let content {
+                Text(content)
+                    .lineLimit(nil)
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .padding(.all, 20)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .zIndex(2)
+            }
 
             TabView(selection: $postPageNum) {
                 ForEach(imageList.indices, id: \.self) { idx in

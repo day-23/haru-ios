@@ -14,6 +14,10 @@ final class PostViewModel: ObservableObject {
     @Published var profileImage: PostImage?
     @Published var firstTimeAppear: Bool = true // 처음인지 아닌지 확인
 
+    var lastCreatedAt: Date? {
+        postList.first?.createdAt
+    }
+
     var page: Int = 1
     var totalPages: Int = 0
 
@@ -119,7 +123,7 @@ final class PostViewModel: ObservableObject {
     func fetchAllPosts() {
         print("[Debug] 모든 게시물 불러오기")
         print("\(#fileID) \(#function)")
-        postService.fetchAllPosts(page: page) { result in
+        postService.fetchFreindPosts(page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 // 이미지 캐싱
@@ -145,6 +149,7 @@ final class PostViewModel: ObservableObject {
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
                 self.totalPages = pageInfo.totalPages
+
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -154,7 +159,7 @@ final class PostViewModel: ObservableObject {
     func fetchTargetPosts(targetId: String) {
         print("[Debug] 특정 사용자 게시물 불러오기 사용자 ID: \(targetId)")
         print("\(#fileID) \(#function)")
-        postService.fetchTargetPosts(targetId: targetId, page: page) { result in
+        postService.fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 // 이미지 캐싱

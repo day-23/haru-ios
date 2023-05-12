@@ -18,6 +18,12 @@ final class PostService {
         return formatter
     }()
 
+    private static let iSO8601Formatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
     private static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(PostService.formatter)
@@ -30,8 +36,10 @@ final class PostService {
         return encoder
     }()
 
-    func fetchAllPosts(
+    func fetchFreindPosts(
         page: Int,
+        limit: Int = 5,
+        lastCreatedAt: Date?,
         _ completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
     ) {
         struct Response: Codable {
@@ -44,17 +52,26 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        let parameters: Parameters = [
-            "page": page,
-            "limit": 3,
-//            "lastCreatedAt": Self.formatter.string(from: Date())
-        ]
+        var parameters: Parameters {
+            if let lastCreatedAt {
+                return [
+                    "page": page,
+                    "limit": limit,
+                    "lastCreatedAt": Self.iSO8601Formatter.string(from: lastCreatedAt),
+                ]
+            } else {
+                return [
+                    "page": page,
+                    "limit": limit,
+                ]
+            }
+        }
 
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/follow/feed",
             method: .get,
             parameters: parameters,
-            encoding: URLEncoding(),
+            encoding: URLEncoding.default,
             headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -69,6 +86,8 @@ final class PostService {
     func fetchTargetPosts(
         targetId: String,
         page: Int,
+        limit: Int = 5,
+        lastCreatedAt: Date?,
         completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
     ) {
         struct Response: Codable {
@@ -81,10 +100,20 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        let parameters: Parameters = [
-            "page": page,
-//            "lastCreatedAt": Self.formatter.string(from: Date())
-        ]
+        var parameters: Parameters {
+            if let lastCreatedAt {
+                return [
+                    "page": page,
+                    "limit": limit,
+                    "lastCreatedAt": Self.iSO8601Formatter.string(from: lastCreatedAt),
+                ]
+            } else {
+                return [
+                    "page": page,
+                    "limit": limit,
+                ]
+            }
+        }
 
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/feed",

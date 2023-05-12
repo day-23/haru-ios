@@ -54,7 +54,7 @@ struct FeedView: View {
             }
             .padding(.horizontal, 20)
 
-            FeedImage(imageList: postImageList, imageCount: post.images.count)
+            FeedImage(imageList: postImageList, imageCount: post.images.count, templateMode: post.templateUrl != nil, content: post.content)
 
             HStack(spacing: 22) {
                 HStack(spacing: 10) {
@@ -99,7 +99,7 @@ struct FeedView: View {
             }
             .padding(.horizontal, 20)
 
-            if let content = post.content {
+            if let content = post.content, post.templateUrl == nil {
                 Text(content)
                     .lineLimit(nil)
                     .font(.pretendard(size: 14, weight: .regular))
