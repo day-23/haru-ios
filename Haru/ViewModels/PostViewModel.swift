@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import SwiftUI
 
 final class PostViewModel: ObservableObject {
     @Published var postList: [Post] = []
+    @Published var postImageList: [Post.ID: [PostImage]] = [:]
     @Published var firstTimeAppear: Bool = true // 처음인지 아닌지 확인
 
     var page: Int = 1
@@ -23,20 +25,6 @@ final class PostViewModel: ObservableObject {
         self.postOption = postOption
         self.targetId = targetId
         postService = .init()
-
-//        switch postOption {
-//        case .main:
-//            fetchAllPosts()
-//        case .target_all:
-//            guard let targetId else { return }
-//            fetchTargetPosts(targetId: targetId)
-//        case .target_image:
-//            print("특정 사용자 미디어 보기")
-//        case .target_hashtag:
-//            print("특정 사용자 해시태그 조회")
-//        case .around:
-//            print("둘러보기")
-//        }
     }
 
     func loadMorePosts() {
@@ -72,14 +60,54 @@ final class PostViewModel: ObservableObject {
         loadMorePosts()
     }
 
+    func fetchPostImage(postId: String, postImages: [Post.Image], completion: @escaping ([PostImage]) -> Void) {
+        DispatchQueue.global().async {
+            var newPostImages: [PostImage] = []
+            postImages.forEach { postImage in
+                if let uiImage = ImageCache.shared.object(forKey: postImage.url as NSString) {
+                    newPostImages.append(PostImage(url: postImage.url, uiImage: uiImage))
+                } else {
+                    guard
+                        let url = URL(string: postImage.url.encodeUrl()!),
+                        let data = try? Data(contentsOf: url),
+                        let uiImage = UIImage(data: data)
+                    else {
+                        print("[Error] \(postImage.url)이 잘못됨 \(#fileID) \(#function)")
+                        return
+                    }
+
+                    ImageCache.shared.setObject(uiImage, forKey: postImage.url as NSString)
+                    newPostImages.append(PostImage(url: postImage.url, uiImage: uiImage))
+                }
+            }
+            print("[Debug] \(postId) \(newPostImages.count) \(#function)")
+            completion(newPostImages)
+        }
+    }
+
+    // MARK: - 서버와 API 연동
+
     func fetchAllPosts() {
         print("[Debug] 모든 게시물 불러오기")
         print("\(#fileID) \(#function)")
         postService.fetchAllPosts(page: page) { result in
             switch result {
             case .success(let success):
+                // 이미지 캐싱
+                success.0.forEach { post in
+
+                    self.fetchPostImage(postId: post.id, postImages: post.images) { newPostImages in
+                        DispatchQueue.main.async {
+                            self.postImageList[post.id] = (self.postImageList[post.id] ?? []) + newPostImages
+                        }
+                    }
+                }
+
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
+
+                print("[Debug] \(self.postList.count) \(self.postImageList.count)")
+
                 self.totalPages = pageInfo.totalPages
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")

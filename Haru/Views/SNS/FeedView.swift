@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FeedView: View {
     var post: Post
+    var postImageList: [PostImage]
 
     @StateObject var postVM: PostViewModel
 
@@ -58,7 +59,7 @@ struct FeedView: View {
             }
             .padding(.horizontal, 20)
 
-            FeedImage(imageList: post.images)
+            FeedImage(imageList: postImageList, imageCount: post.images.count)
 
             HStack(spacing: 22) {
                 HStack(spacing: 10) {

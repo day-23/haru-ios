@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct FeedImage: View {
-    var imageList: [Post.Image]
+    var imageList: [PostImage]
+    var imageCount: Int
     @State var postPageNum: Int = 0
 
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
         ZStack {
-            Text("\(postPageNum + 1)/\(imageList.count)")
+            Text("\(postPageNum + 1)/\(imageCount)")
                 .font(.pretendard(size: 12, weight: .bold))
                 .foregroundColor(Color(0xFDFDFD))
                 .padding(.all, 6)
@@ -26,12 +27,8 @@ struct FeedImage: View {
 
             TabView(selection: $postPageNum) {
                 ForEach(imageList.indices, id: \.self) { idx in
-                    AsyncImage(url: URL(string: imageList[idx].url)) { image in
-                        image
-                            .resizable()
-                    } placeholder: {
-                        Image(systemName: "wifi.slash")
-                    }
+                    Image(uiImage: imageList[idx].uiImage)
+                        .resizable()
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
