@@ -26,10 +26,14 @@ struct HaruLinkView: View {
         .frame(height: 52)
         .foregroundColor(.white)
         .background(
-            LinearGradient(
-                gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF), Color(0xAAD7FF)]),
-                startPoint: .bottomLeading,
-                endPoint: .topTrailing
+            RadialGradient(
+                colors: [
+                    Color(0xAAD7FF),
+                    Color(0xD2D7FF)
+                ],
+                center: .center,
+                startRadius: 0,
+                endRadius: 200
             )
         )
     }

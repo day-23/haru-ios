@@ -11,7 +11,8 @@ struct Tag: Codable, Identifiable {
     //  MARK: - Properties
 
     let id: String
-    private(set) var content: String
+    var content: String
+    var isSelected: Bool? = true
 
     //  MARK: - Dates Properties
 

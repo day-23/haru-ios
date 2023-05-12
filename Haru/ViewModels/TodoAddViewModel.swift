@@ -14,6 +14,7 @@ final class TodoAddViewModel: ObservableObject {
     private let checkListViewModel: CheckListViewModel
     var mode: TodoAddMode
     var todo: Todo?
+    var at: RepeatAt = .none
 
     @Published var content: String = ""
 
@@ -370,6 +371,31 @@ final class TodoAddViewModel: ObservableObject {
         return formatter.string(from: endDate) == formatter.string(from: prevStateEndDate)
     }
 
+    var isPreviousAlarmEqual: Bool {
+        guard let todo else {
+            return false
+        }
+
+        if isSelectedAlarm != (!todo.alarms.isEmpty) {
+            return false
+        }
+
+        if !isSelectedAlarm {
+            return true
+        }
+
+        guard let prevAlarm = todo.alarms.first else {
+            return false
+        }
+
+        let formatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyyMMddhhmm"
+            return formatter
+        }()
+        return formatter.string(from: alarm) == formatter.string(from: prevAlarm.time)
+    }
+
     var isPreviousStateEqual: Bool {
         guard let todo else {
             return false
@@ -385,6 +411,7 @@ final class TodoAddViewModel: ObservableObject {
                 lhs.id == rhs.id
             })
             && todo.todayTodo == isTodayTodo
+            && isPreviousAlarmEqual
             && isPreviousEndDateEqual
             && isPreviousRepeatStateEqual
             && todo.memo == memo)
@@ -504,9 +531,6 @@ final class TodoAddViewModel: ObservableObject {
         //  Case middle: endDate 계산하여 넘겨주기
         //  Case back: preRepeatEnd 계산하여 넘겨주기
 
-        //  반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
-        //  아래 옵션을 false로 변경한다.
-        isSelectedRepeat = false
         if at == .front || at == .middle {
             do {
                 guard let endDate = try todo.nextEndDate() else {
@@ -686,7 +710,14 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func applyTodoData(todo: Todo) {
+    func applyTodoData(
+        todo: Todo,
+        at: RepeatAt = .none
+    ) {
+        self.todo = todo
+        self.at = at
+        mode = .edit
+
         content = todo.content
 
         flag = todo.flag
@@ -836,6 +867,10 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func clear() {
+        todo = nil
+        at = .none
+        mode = .add
+
         content = ""
 
         flag = false
