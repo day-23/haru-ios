@@ -74,6 +74,7 @@ struct FeedView: View {
                 HStack(spacing: 10) {
                     NavigationLink {
                         CommentView(
+                            postId: post.id,
                             postImageList: post.images,
                             imageList: postImageList,
                             isMine: isMine

@@ -118,4 +118,10 @@ struct Request: Codable {
         var name: String
         var introduction: String
     }
+
+    struct Comment: Codable {
+        var content: String
+        var x: Double?
+        var y: Double?
+    }
 }

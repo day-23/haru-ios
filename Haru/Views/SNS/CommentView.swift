@@ -10,7 +10,8 @@ import SwiftUI
 struct CommentView: View {
     @Environment(\.dismiss) var dismissAction
 
-    var postImageList: [Post.Image]
+    var postId: String
+    @State var postImageList: [Post.Image]
     var imageList: [PostImage?]
     var commentList: [[Post.Comment]] {
         var result = Array(repeating: [Post.Comment](), count: postImageList.count)
@@ -50,13 +51,16 @@ struct CommentView: View {
 
     // 댓글 작성에 필요한 필드
     @State var content: String = ""
-    @State var x: CGFloat = 100
-    @State var y: CGFloat = 100
+    @State var x: Double?
+    @State var y: Double?
 
     @State var startingX: CGFloat?
     @State var startingY: CGFloat?
 
     var isMine: Bool
+
+    // For API
+    private let commentService: CommentService = .init()
 
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
@@ -159,7 +163,25 @@ struct CommentView: View {
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {} label: {
+                Button {
+                    commentService.createComment(
+                        targetPostId: postId,
+                        targetPostImageId: postImageList[postPageNum].id,
+                        comment: Request.Comment(content: content, x: x, y: y)
+                    ) { result in
+                        switch result {
+                        case .success(let success):
+                            content = ""
+                            x = nil
+                            y = nil
+                            postImageList[postPageNum].comments.append(success)
+                            isCommentCreate = false
+                        case .failure(let failure):
+                            print("[Debug] \(failure)")
+                            print("\(#fileID) \(#function)")
+                        }
+                    }
+                } label: {
                     Image("confirm")
                         .resizable()
                         .renderingMode(.template)
@@ -276,7 +298,7 @@ struct CommentView: View {
                 isFocused = true
             }
 
-            if isCommentCreate {
+            if isCommentCreate, let x, let y {
                 TextFieldDynamicWidth(title: "        ", text: $content, textRect: $textRect) { editingChange in
                     // logic
                 } onCommit: {
