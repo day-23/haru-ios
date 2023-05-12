@@ -18,13 +18,17 @@ struct FeedView: View {
     }
 
     var body: some View {
+        let targetPostVM: PostViewModel = .init(postOption: .target_all, targetId: post.user.id)
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 NavigationLink {
                     ProfileInfoView(
-                        postVM: PostViewModel(postOption: .target_all, targetId: post.user.id),
+                        postVM: targetPostVM,
                         userProfileVM: UserProfileViewModel(userId: post.user.id)
                     )
+                    .onAppear {
+                        targetPostVM.loadMorePosts()
+                    }
                 } label: {
                     HStack {
                         if let profileUrl = post.user.profileImage {

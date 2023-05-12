@@ -19,6 +19,8 @@ struct SNSView: View {
     // For pop up to root
     @State var isActive: Bool = false
 
+    var postVM = PostViewModel(postOption: PostOption.main)
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
@@ -28,7 +30,10 @@ struct SNSView: View {
                 ) {
                     Text("검색창")
                 }
-                FeedListView(postVM: PostViewModel(postOption: PostOption.main), comeToRoot: true)
+                FeedListView(postVM: postVM, comeToRoot: true)
+                    .onAppear {
+                        postVM.loadMorePosts()
+                    }
             }
 
             if toggleIsClicked {

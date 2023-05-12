@@ -9,6 +9,7 @@ import Foundation
 
 final class PostViewModel: ObservableObject {
     @Published var postList: [Post] = []
+    @Published var firstTimeAppear: Bool = true // 처음인지 아닌지 확인
 
     var page: Int = 1
     var totalPages: Int = 0
@@ -23,26 +24,32 @@ final class PostViewModel: ObservableObject {
         self.targetId = targetId
         postService = .init()
 
-        switch postOption {
-        case .main:
-            fetchAllPosts()
-        case .target_all:
-            guard let targetId else { return }
-            fetchTargetPosts(targetId: targetId)
-        case .target_image:
-            print("특정 사용자 미디어 보기")
-        case .target_hashtag:
-            print("특정 사용자 해시태그 조회")
-        case .around:
-            print("둘러보기")
-        }
+//        switch postOption {
+//        case .main:
+//            fetchAllPosts()
+//        case .target_all:
+//            guard let targetId else { return }
+//            fetchTargetPosts(targetId: targetId)
+//        case .target_image:
+//            print("특정 사용자 미디어 보기")
+//        case .target_hashtag:
+//            print("특정 사용자 해시태그 조회")
+//        case .around:
+//            print("둘러보기")
+//        }
     }
 
     func loadMorePosts() {
-        if (page + 1) > totalPages {
-            return
+        print("[Debug] pageNation 시작 \(postOption)")
+        print("\(#fileID) \(#function)")
+
+        if !firstTimeAppear {
+            if (page + 1) > totalPages {
+                return
+            }
+            page += 1
         }
-        page += 1
+
         switch postOption {
         case .main:
             fetchAllPosts()
@@ -56,6 +63,8 @@ final class PostViewModel: ObservableObject {
         case .around:
             print("둘러보기")
         }
+
+        firstTimeAppear = false
     }
 
     func refreshPosts() {
@@ -64,6 +73,8 @@ final class PostViewModel: ObservableObject {
     }
 
     func fetchAllPosts() {
+        print("[Debug] 모든 게시물 불러오기")
+        print("\(#fileID) \(#function)")
         postService.fetchAllPosts(page: page) { result in
             switch result {
             case .success(let success):
@@ -77,6 +88,8 @@ final class PostViewModel: ObservableObject {
     }
 
     func fetchTargetPosts(targetId: String) {
+        print("[Debug] 특정 사용자 게시물 불러오기 사용자 ID: \(targetId)")
+        print("\(#fileID) \(#function)")
         postService.fetchTargetPosts(targetId: targetId, page: page) { result in
             switch result {
             case .success(let success):
