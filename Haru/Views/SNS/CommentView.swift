@@ -114,8 +114,19 @@ struct CommentView: View {
                                 Spacer()
 
                                 Button {
-                                    print("확인")
-                                    delCommentModalVis = false
+                                    commentService.deleteComment(targetCommentId: target.id) { result in
+                                        switch result {
+                                        case .success(let success):
+                                            delCommentModalVis = !success
+                                            if success {
+                                                postImageList[postPageNum].comments = postImageList[postPageNum].comments.filter {
+                                                    $0.id != delCommentTarget?.id
+                                                }
+                                            }
+                                        case .failure(let failure):
+                                            print("[Debug] \(failure)")
+                                        }
+                                    }
                                 } label: {
                                     Text("확인")
                                         .font(.pretendard(size: 20, weight: .regular))
@@ -146,7 +157,12 @@ struct CommentView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
-                    dismissAction.callAsFunction()
+                    if isCommentCreate {
+                        isCommentCreate = false
+                        content = ""
+                    } else {
+                        dismissAction.callAsFunction()
+                    }
                 } label: {
                     Image("cancel")
                         .resizable()
@@ -163,30 +179,44 @@ struct CommentView: View {
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    commentService.createComment(
-                        targetPostId: postId,
-                        targetPostImageId: postImageList[postPageNum].id,
-                        comment: Request.Comment(content: content, x: x, y: y)
-                    ) { result in
-                        switch result {
-                        case .success(let success):
-                            content = ""
-                            x = nil
-                            y = nil
-                            postImageList[postPageNum].comments.append(success)
-                            isCommentCreate = false
-                        case .failure(let failure):
-                            print("[Debug] \(failure)")
-                            print("\(#fileID) \(#function)")
+                if isCommentCreate {
+                    Button {
+                        if let comment = alreadyComment[postPageNum] {
+                            print("댓글 수정")
+                        } else {
+                            commentService.createComment(
+                                targetPostId: postId,
+                                targetPostImageId: postImageList[postPageNum].id,
+                                comment: Request.Comment(content: content, x: x, y: y)
+                            ) { result in
+                                switch result {
+                                case .success(let success):
+                                    content = ""
+                                    x = nil
+                                    y = nil
+                                    postImageList[postPageNum].comments.append(success)
+                                    isCommentCreate = false
+                                case .failure(let failure):
+                                    print("[Debug] \(failure)")
+                                    print("\(#fileID) \(#function)")
+                                }
+                            }
                         }
+                    } label: {
+                        Image("confirm")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(Color(0xFDFDFD))
                     }
-                } label: {
-                    Image("confirm")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(Color(0xFDFDFD))
+                } else {
+                    Button {} label: {
+                        Image("option-button")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(Color(0xFDFDFD))
+                    }
                 }
             }
         }
@@ -281,6 +311,7 @@ struct CommentView: View {
                     return
                 }
 
+                // 기존에 댓글을 작성했는지 처음 작성인지 판별
                 if let comment = alreadyComment[postPageNum] {
                     x = CGFloat(comment.x)
                     y = CGFloat(comment.y)
