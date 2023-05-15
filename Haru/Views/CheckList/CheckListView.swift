@@ -58,12 +58,19 @@ struct CheckListView: View {
                             ListSectionView(
                                 checkListViewModel: viewModel,
                                 todoAddViewModel: addViewModel,
-                                todoList: $viewModel.todoListByFlag
+                                todoList: $viewModel.todoListByFlag,
+                                emptyTextContent: "중요한 할 일이 있나요?"
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
-                                    .padding(.leading, 21)
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.important.rawValue,
+                                        content: DefaultTag.important.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 10)
                             }
 
                             Divider()
@@ -75,8 +82,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: DefaultTag.classified.rawValue, content: DefaultTag.classified.rawValue))
-                                    .padding(.leading, 21)
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.classified.rawValue,
+                                        content: DefaultTag.classified.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 10)
                             }
 
                             Divider()
@@ -88,8 +101,14 @@ struct CheckListView: View {
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue))
-                                    .padding(.leading, 21)
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.unclassified.rawValue,
+                                        content: DefaultTag.unclassified.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 10)
                             }
 
                             Divider()
@@ -97,12 +116,19 @@ struct CheckListView: View {
                             ListSectionView(
                                 checkListViewModel: viewModel,
                                 todoAddViewModel: addViewModel,
-                                todoList: $viewModel.todoListByCompleted
+                                todoList: $viewModel.todoListByCompleted,
+                                emptyTextContent: "할 일을 완료해 보세요!"
                             ) {
                                 viewModel.updateOrderMain()
                             } header: {
-                                TagView(tag: Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue))
-                                    .padding(.leading, 21)
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.completed.rawValue,
+                                        content: DefaultTag.completed.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+                                .padding(.leading, 10)
                             }
                         } offsetChanged: {
                             self.changeOffset($0)
@@ -118,9 +144,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderFlag()
                                     } header: {
-                                        TagView(tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue)
-                                            .padding(.leading, 21)
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
+                                        )
+                                        .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
@@ -134,9 +162,11 @@ struct CheckListView: View {
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
-                                        TagView(tag: tag,
-                                                isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue)
-                                            .padding(.leading, 21)
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue
+                                        )
+                                        .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
@@ -147,7 +177,8 @@ struct CheckListView: View {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
-                                        todoList: $viewModel.todoListByCompleted
+                                        todoList: $viewModel.todoListByCompleted,
+                                        emptyTextContent: "할 일을 완료해 보세요!"
                                     ) {
                                         viewModel.updateOrderWithoutTag()
                                     } header: {
@@ -155,7 +186,7 @@ struct CheckListView: View {
                                             tag: tag,
                                             isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
                                         )
-                                        .padding(.leading, 21)
+                                        .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
                                     self.changeOffset($0)
@@ -166,7 +197,8 @@ struct CheckListView: View {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
-                                        todoList: $viewModel.todoListByFlag
+                                        todoList: $viewModel.todoListByFlag,
+                                        emptyTextContent: "중요한 할 일이 있나요?"
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {
@@ -177,7 +209,7 @@ struct CheckListView: View {
                                             ),
                                             isSelected: true
                                         )
-                                        .padding(.leading, 21)
+                                        .padding(.leading, 10)
                                     }
 
                                     Divider()
@@ -193,7 +225,7 @@ struct CheckListView: View {
                                             tag: tag,
                                             isSelected: true
                                         )
-                                        .padding(.leading, 21)
+                                        .padding(.leading, 10)
                                     }
 
                                     Divider()
@@ -201,7 +233,8 @@ struct CheckListView: View {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
                                         todoAddViewModel: addViewModel,
-                                        todoList: $viewModel.todoListByCompleted
+                                        todoList: $viewModel.todoListByCompleted,
+                                        emptyTextContent: "할 일을 완료해 보세요!"
                                     ) {
                                         viewModel.updateOrderByTag(tagId: tag.id)
                                     } header: {
@@ -212,7 +245,7 @@ struct CheckListView: View {
                                             ),
                                             isSelected: true
                                         )
-                                        .padding(.leading, 21)
+                                        .padding(.leading, 10)
                                     }
 
                                 } offsetChanged: {
@@ -263,7 +296,7 @@ struct CheckListView: View {
                     isActive: $isTagManageModalVisible
                 )
                 .position(
-                    x: UIScreen.main.bounds.width - UIScreen.main.bounds.width * 0.915 + (UIScreen.main.bounds.width * 0.915 * 0.5),
+                    x: UIScreen.main.bounds.width - UIScreen.main.bounds.width * 0.78 + (UIScreen.main.bounds.width * 0.78 * 0.5),
                     y: UIScreen.main.bounds.height * 0.4
                 )
                 .zIndex(2)
@@ -276,15 +309,17 @@ struct CheckListView: View {
                     TextField("", text: $addViewModel.content)
                         .placeholder(when: addViewModel.content.isEmpty) {
                             Text("간편 추가")
+                                .font(.pretendard(size: 14, weight: .regular))
                                 .foregroundColor(Color(0x646464))
                         }
-                        .font(.pretendard(size: 14, weight: .medium))
+                        .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(Color(0x646464))
                         .padding(.vertical, 10)
                         .padding(.horizontal, 12)
                         .background(Color(0xf1f1f5))
                         .cornerRadius(8)
                         .padding(.trailing, 18)
+                        .padding(.bottom, 4)
                         .onSubmit {
                             addViewModel.addSimpleTodo()
                         }

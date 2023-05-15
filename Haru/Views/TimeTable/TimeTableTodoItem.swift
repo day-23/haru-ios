@@ -13,7 +13,7 @@ struct TimeTableTodoItem: View {
     var body: some View {
         ZStack {
             Text(todo.data.content)
-                .font(.pretendard(size: 16, weight: .regular))
+                .font(.pretendard(size: 16, weight: .bold))
                 .background(Color(0xFDFDFD))
                 .padding(10)
                 .cornerRadius(8)

@@ -12,6 +12,7 @@ struct TodoView: View {
     var checkListViewModel: CheckListViewModel
     var todo: Todo
     var backgroundColor: Color = .white
+    var completeAction: () -> Void
 
     private var tagString: String {
         if todo.tags.isEmpty {
@@ -47,25 +48,13 @@ struct TodoView: View {
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일까지"
+        formatter.dateFormat = "M.d"
         return formatter
     }()
 
     let formatterWithTime: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 HH:mm까지"
-        return formatter
-    }()
-
-    let formatterWithRepeat: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일"
-        return formatter
-    }()
-
-    let formatterWithTimeAndRepeat: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 HH:mm"
+        formatter.dateFormat = "HH:mm"
         return formatter
     }()
 
@@ -97,7 +86,10 @@ struct TodoView: View {
                         ) { result in
                             switch result {
                             case .success:
-                                successCompletion(todoId: todo.id)
+                                completeAction()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    disabled = false
+                                }
                             case .failure(let failure):
                                 print("[Debug] 반복하지 않는 할 일 완료 실패 \(failure) (\(#fileID), \(#function))")
                                 disabled = false
@@ -116,7 +108,10 @@ struct TodoView: View {
                             ) { result in
                                 switch result {
                                 case .success:
-                                    successCompletion(todoId: todo.id)
+                                    completeAction()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        disabled = false
+                                    }
                                 case .failure(let failure):
                                     print("[Debug] 반복하는 할 일 마지막 반복 완료 실패, \(failure) (\(#fileID), \(#function))")
                                     disabled = false
@@ -133,7 +128,10 @@ struct TodoView: View {
                         ) { result in
                             switch result {
                             case .success:
-                                successCompletion(todoId: todo.id)
+                                completeAction()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    disabled = false
+                                }
                             case .failure(let failure):
                                 print("[Debug] 반복하는 할 일 완료 실패, \(failure) (\(#fileID), \(#function))")
                                 disabled = false
@@ -170,18 +168,12 @@ struct TodoView: View {
                         }
 
                         if let todoDate = todo.endDate {
-                            if todo.isAllDay {
-                                if todo.repeatOption == nil {
-                                    Text(formatterWithTime.string(from: todoDate))
-                                } else {
-                                    Text(formatterWithTimeAndRepeat.string(from: todoDate))
-                                }
+                            if formatter.string(from: .now) == formatter.string(from: todoDate)
+                                && todo.isAllDay
+                            {
+                                Text("\(formatterWithTime.string(from: todoDate))\(todo.repeatOption == nil ? "까지" : "")")
                             } else {
-                                if todo.repeatOption == nil {
-                                    Text(formatter.string(from: todoDate))
-                                } else {
-                                    Text(formatterWithRepeat.string(from: todoDate))
-                                }
+                                Text("\(formatter.string(from: todoDate))\(todo.repeatOption == nil ? "까지" : "")")
                             }
                         }
 
@@ -295,13 +287,6 @@ struct TodoView: View {
                     Label("모든 이벤트 삭제", systemImage: "trash")
                 }
             }
-        }
-    }
-
-    func successCompletion(todoId: String) {
-        checkListViewModel.toggleCompleted(todoId: todoId)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            disabled = false
         }
     }
 }

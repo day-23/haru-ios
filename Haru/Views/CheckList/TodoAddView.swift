@@ -62,7 +62,7 @@ struct TodoAddView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 0) {
                             TextField("투두 입력", text: $viewModel.content)
-                                .font(.pretendard(size: 24, weight: .medium))
+                                .font(.pretendard(size: 24, weight: .bold))
                                 .strikethrough(viewModel.todo?.completed ?? false)
                                 .foregroundColor(
                                     (viewModel.todo?.completed ?? false) ? Color(0xACACAC) : Color(0x191919)
@@ -82,7 +82,7 @@ struct TodoAddView: View {
                             HStack {
                                 Image("dot")
                                 TextField("", text: $viewModel.subTodoList[index].content)
-                                    .font(.pretendard(size: 20, weight: .medium))
+                                    .font(.pretendard(size: 16, weight: .bold))
                                     .strikethrough(viewModel.subTodoList[index].completed)
                                     .foregroundColor(
                                         viewModel.subTodoList[index].completed ? Color(0xACACAC) : Color(0x191919)
@@ -93,21 +93,20 @@ struct TodoAddView: View {
                                 } label: {
                                     Image(systemName: "minus.circle.fill")
                                         .foregroundStyle(Color(0xACACAC))
+                                        .frame(width: 28, height: 28)
                                 }
                             }
-                            .padding(.horizontal, 14)
+                            .padding(.leading, 14)
                             .padding(.vertical, 7)
-                            
-                            Divider()
                         }
                         
-                        if let completed = viewModel.todo?.completed, !completed {
+                        if viewModel.todo == nil || viewModel.todo?.completed == false {
                             Button {
                                 viewModel.createSubTodo()
                             } label: {
                                 Label {
                                     Text("하위 항목 추가")
-                                        .font(.pretendard(size: 20, weight: .medium))
+                                        .font(.pretendard(size: 16, weight: .regular))
                                 } icon: {
                                     Image("add-sub-todo")
                                         .frame(width: 28, height: 28)
@@ -116,11 +115,11 @@ struct TodoAddView: View {
                             .padding(.leading, 14)
                             .padding(.vertical, 7)
                             .foregroundColor(Color(0xACACAC))
-                            
-                            Divider()
                         }
                     }
                     .padding(.horizontal, 20)
+                    
+                    Divider()
                     
                     //  Tag 입력 View
                     Group {
@@ -131,14 +130,14 @@ struct TodoAddView: View {
                                         Array(zip(viewModel.tagList.indices, viewModel.tagList)),
                                         id: \.0
                                     ) { index, tag in
-                                        TagView(tag: Tag(id: tag.id, content: tag.content))
+                                        TagView(tag: Tag(id: tag.id, content: tag.content), fontSize: 12)
                                             .onTapGesture {
                                                 viewModel.tagList.remove(at: index)
                                             }
                                     }
                                     
                                     TextField("태그 추가", text: $viewModel.tag)
-                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .font(.pretendard(size: 14, weight: .regular))
                                         .foregroundColor(viewModel.tagList.isEmpty ? Color(0xACACAC) : .black)
                                         .onChange(
                                             of: viewModel.tag,
@@ -168,7 +167,7 @@ struct TodoAddView: View {
                         Label {
                             Toggle(isOn: $viewModel.isTodayTodo.animation()) {
                                 Text("나의 하루에 추가\(viewModel.isTodayTodo ? "됨" : "")")
-                                    .font(.pretendard(size: 14, weight: .medium))
+                                    .font(.pretendard(size: 14, weight: .regular))
                                     .frame(alignment: .leading)
                                     .foregroundColor(viewModel.isTodayTodo ? Color(0x1DAFFF) : Color(0xACACAC))
                             }
@@ -195,7 +194,7 @@ struct TodoAddView: View {
                             Toggle(isOn: $viewModel.isSelectedAlarm.animation()) {
                                 HStack {
                                     Text("알림\(viewModel.isSelectedAlarm ? "" : " 설정")")
-                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .font(.pretendard(size: 14, weight: .regular))
                                         .frame(alignment: .leading)
                                         .foregroundColor(viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
                                     
@@ -229,7 +228,7 @@ struct TodoAddView: View {
                             Toggle(isOn: $viewModel.isSelectedEndDate.animation()) {
                                 HStack {
                                     Text(viewModel.isSelectedRepeat ? "반복일" : "마감 설정")
-                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .font(.pretendard(size: 14, weight: .regular))
                                         .frame(alignment: .leading)
                                         .foregroundColor(viewModel.isSelectedEndDate ? Color(0x191919) : Color(0xACACAC))
                                     
@@ -262,7 +261,7 @@ struct TodoAddView: View {
                                 Toggle(isOn: $viewModel.isAllDay.animation()) {
                                     HStack {
                                         Text(viewModel.isSelectedRepeat ? "시간 설정" : "마감 시간 설정")
-                                            .font(.pretendard(size: 14, weight: .medium))
+                                            .font(.pretendard(size: 14, weight: .regular))
                                             .frame(alignment: .leading)
                                             .foregroundColor(viewModel.isAllDay ? Color(0x191919) : Color(0xACACAC))
                                         
@@ -302,7 +301,7 @@ struct TodoAddView: View {
                             Toggle(isOn: $viewModel.isSelectedRepeat.animation()) {
                                 HStack {
                                     Text("반복\(viewModel.isSelectedRepeat ? "" : " 설정")")
-                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .font(.pretendard(size: 14, weight: .regular))
                                         .frame(alignment: .leading)
                                         .foregroundColor(viewModel.isSelectedRepeat ? Color(0x191919) : Color(0xACACAC))
                                 }
@@ -327,7 +326,7 @@ struct TodoAddView: View {
                             Picker("", selection: $viewModel.repeatOption.animation()) {
                                 ForEach(RepeatOption.allCases, id: \.self) {
                                     Text($0.rawValue)
-                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .font(.pretendard(size: 14, weight: .regular))
                                 }
                             }
                             .pickerStyle(.segmented)
@@ -380,7 +379,7 @@ struct TodoAddView: View {
                                 Toggle(isOn: $viewModel.isSelectedRepeatEnd.animation()) {
                                     HStack {
                                         Text("반복 종료일")
-                                            .font(.pretendard(size: 14, weight: .medium))
+                                            .font(.pretendard(size: 14, weight: .regular))
                                             .frame(alignment: .leading)
                                             .foregroundColor(viewModel.isSelectedRepeatEnd ? Color(0x191919) : Color(0xACACAC))
                                         Spacer()
@@ -416,7 +415,7 @@ struct TodoAddView: View {
                         Label {
                             HStack {
                                 Text("메모\(viewModel.memo.isEmpty ? " 추가" : "")")
-                                    .font(.pretendard(size: 14, weight: .medium))
+                                    .font(.pretendard(size: 14, weight: .regular))
                                     .frame(alignment: .leading)
                                     .foregroundColor(!viewModel.memo.isEmpty ? Color(0x191919) : Color(0xACACAC))
                                 
@@ -440,7 +439,7 @@ struct TodoAddView: View {
                         TextField("메모를 작성해주세요.",
                                   text: $viewModel.memo,
                                   axis: .vertical)
-                            .font(.pretendard(size: 14, weight: .medium))
+                            .font(.pretendard(size: 14, weight: .regular))
                             .padding(.leading, 45)
                             .padding(.horizontal, 20)
                         
@@ -467,44 +466,76 @@ struct TodoAddView: View {
                     if let complete = viewModel.todo?.completed, !complete {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button {
-                                if viewModel.isSelectedRepeat {
-                                    updateButtonTapped = true
-                                    return
-                                }
-                                
-                                viewModel.updateTodo { result in
-                                    switch result {
-                                    case .success:
-                                        dismissAction.callAsFunction()
-                                    case let .failure(failure):
-                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
-                                    }
-                                }
+                                updateButtonTapped = true
                             } label: {
                                 Image("confirm")
                                     .renderingMode(.template)
                                     .foregroundColor(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
                             }
                             .disabled(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty)
-                            .confirmationDialog("반복하는 할 일 편집", isPresented: $updateButtonTapped) {
-                                if viewModel.isPreviousRepeatStateEqual {
-                                    Button("이 이벤트만 편집") {
-                                        //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
-                                        viewModel.updateTodoWithRepeat(
-                                            at: .front
-                                        ) { result in
-                                            switch result {
-                                            case .success:
-                                                dismissAction.callAsFunction()
-                                            case let .failure(failure):
-                                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                            .confirmationDialog(
+                                viewModel.isSelectedRepeat
+                                    ? "수정사항을 저장할까요? 반복되는 할 일 입니다."
+                                    : "수정사항을 저장할까요?",
+                                isPresented: $updateButtonTapped,
+                                titleVisibility: .visible
+                            ) {
+                                if viewModel.isSelectedRepeat {
+                                    if viewModel.isPreviousRepeatStateEqual {
+                                        Button("이 할 일만 수정") {
+                                            //  반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
+                                            //  아래 옵션을 false로 변경한다.
+                                            viewModel.isSelectedRepeat = false
+                                            
+                                            viewModel.updateTodoWithRepeat(
+                                                at: viewModel.at
+                                            ) { result in
+                                                switch result {
+                                                case .success:
+                                                    dismissAction.callAsFunction()
+                                                case let .failure(failure):
+                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                
-                                if viewModel.isPreviousEndDateEqual {
-                                    Button("모든 이벤트 편집") {
+                                    
+                                    if (viewModel.isPreviousEndDateEqual
+                                        || (!viewModel.isPreviousEndDateEqual
+                                            && !viewModel.isPreviousRepeatStateEqual))
+                                        && viewModel.at != .front
+                                    {
+                                        Button("이 할 일부터 수정") {
+                                            viewModel.updateTodoWithRepeat(
+                                                at: .back
+                                            ) { result in
+                                                switch result {
+                                                case .success:
+                                                    dismissAction.callAsFunction()
+                                                case let .failure(failure):
+                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    if viewModel.isPreviousEndDateEqual
+                                        || (!viewModel.isPreviousEndDateEqual
+                                            && !viewModel.isPreviousRepeatStateEqual)
+                                    {
+                                        Button("모든 할 일 수정", role: .destructive) {
+                                            viewModel.updateTodo { result in
+                                                switch result {
+                                                case .success:
+                                                    dismissAction.callAsFunction()
+                                                case let .failure(failure):
+                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Button("저장하기") {
                                         viewModel.updateTodo { result in
                                             switch result {
                                             case .success:
@@ -523,19 +554,7 @@ struct TodoAddView: View {
             
             if !isModalVisible {
                 Button {
-                    if viewModel.isSelectedRepeat {
-                        deleteButtonTapped = true
-                        return
-                    }
-                    
-                    viewModel.deleteTodo { result in
-                        switch result {
-                        case .success:
-                            dismissAction.callAsFunction()
-                        case let .failure(failure):
-                            print("[Debug] \(failure) (\(#fileID), \(#function))")
-                        }
-                    }
+                    deleteButtonTapped = true
                 } label: {
                     HStack(spacing: 10) {
                         Text("할 일 삭제하기")
@@ -547,27 +566,82 @@ struct TodoAddView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 20)
-                .confirmationDialog("반복되는 할 일 삭제", isPresented: $deleteButtonTapped) {
-                    Button("이 이벤트만 삭제") {
-                        //  TODO: 추후에 at 변수를 넘겨줄 때, 현재 Todo가 어느 쪽에 속한지 판별 필요
-                        viewModel.deleteTodoWithRepeat(
-                            at: .front
-                        ) { result in
-                            switch result {
-                            case .success:
-                                dismissAction.callAsFunction()
-                            case let .failure(failure):
-                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                .confirmationDialog(
+                    viewModel.isSelectedRepeat
+                        ? "할 일을 삭제할까요? 반복되는 할 일 입니다."
+                        : "할 일을 삭제할까요?",
+                    isPresented: $deleteButtonTapped,
+                    titleVisibility: .visible
+                ) {
+                    if viewModel.isSelectedRepeat {
+                        Button("이 할 일만 삭제", role: .destructive) {
+                            viewModel.deleteTodoWithRepeat(
+                                at: viewModel.at
+                            ) { result in
+                                switch result {
+                                case .success:
+                                    dismissAction.callAsFunction()
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
                             }
                         }
-                    }
-                    Button("모든 이벤트 삭제", role: .destructive) {
-                        viewModel.deleteTodo { result in
-                            switch result {
-                            case .success:
-                                dismissAction.callAsFunction()
-                            case let .failure(failure):
-                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                        
+                        // 아래 상황은 뒤에 있는 할 일을 삭제하는 것을 하기보단 repeatEnd를 조정하는 것으로 대신한다.
+                        if viewModel.at == .middle {
+                            Button("이 할 일부터 삭제", role: .destructive) {
+                                guard let todo = viewModel.todo else {
+                                    print("[Debug] 이 할 일부터 삭제시에, 현재 보고 있는 데이터를 불러오지 못했습니다. \(#fileID), \(#function)")
+                                    return
+                                }
+                                
+                                if !viewModel.isSelectedRepeatEnd {
+                                    viewModel.isSelectedRepeatEnd = true
+                                }
+                                
+                                do {
+                                    viewModel.repeatEnd = try todo.prevEndDate()
+                                } catch {
+                                    switch error {
+                                    case RepeatError.invalid:
+                                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                    case RepeatError.calculation:
+                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                    default:
+                                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                    }
+                                }
+                                
+                                viewModel.updateTodo { result in
+                                    switch result {
+                                    case .success:
+                                        dismissAction.callAsFunction()
+                                    case let .failure(failure):
+                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    }
+                                }
+                            }
+                        }
+                        
+                        Button("모든 이벤트 삭제", role: .destructive) {
+                            viewModel.deleteTodo { result in
+                                switch result {
+                                case .success:
+                                    dismissAction.callAsFunction()
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
+                            }
+                        }
+                    } else {
+                        Button("삭제하기", role: .destructive) {
+                            viewModel.deleteTodo { result in
+                                switch result {
+                                case .success:
+                                    dismissAction.callAsFunction()
+                                case let .failure(failure):
+                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                }
                             }
                         }
                     }

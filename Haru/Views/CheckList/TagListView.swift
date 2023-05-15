@@ -40,12 +40,15 @@ struct TagListView: View {
 
                 //  태그 리스트들
                 ForEach(viewModel.tagList) { tag in
-                    TagView(tag: tag, isSelected: viewModel.selectedTag?.id == tag.id)
-                        .onTapGesture {
-                            action(tag)
-                        }
+                    if let isSelected = tag.isSelected, isSelected {
+                        TagView(tag: tag, isSelected: viewModel.selectedTag?.id == tag.id)
+                            .onTapGesture {
+                                action(tag)
+                            }
+                    }
                 }
             }
+            .padding(.vertical, 1)
             .padding(.horizontal, 20)
         }
     }
