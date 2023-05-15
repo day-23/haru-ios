@@ -114,6 +114,7 @@ struct CommentView: View {
                                 Spacer()
 
                                 Button {
+                                    print("targetCommentId: \(target.id)")
                                     commentService.deleteComment(targetCommentId: target.id) { result in
                                         switch result {
                                         case .success(let success):
