@@ -90,10 +90,6 @@ final class CheckListViewModel: ObservableObject {
         todoState.addTodo(todo: todo) { result in
             switch result {
             case let .success(addedTodo):
-                self.selectedTag = nil
-                self.justAddedTodoId = addedTodo.id
-                self.fetchTags()
-                self.fetchTodoList()
                 completion(.success(addedTodo))
             case let .failure(error):
                 completion(.failure(error))
@@ -154,9 +150,7 @@ final class CheckListViewModel: ObservableObject {
                              todo: todo) { result in
             switch result {
             case .success:
-                self.justAddedTodoId = todoId
-                self.fetchTodoList()
-                self.fetchTags()
+                break
             case .failure:
                 break
             }
@@ -177,9 +171,7 @@ final class CheckListViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success:
-                self.justAddedTodoId = todoId
-                self.fetchTodoList()
-                self.fetchTags()
+                break
             case .failure:
                 break
             }

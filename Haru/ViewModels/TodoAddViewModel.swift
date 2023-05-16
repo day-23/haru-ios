@@ -12,6 +12,8 @@ final class TodoAddViewModel: ObservableObject {
     // MARK: - Properties
 
     private let todoState: TodoState
+    var addAction: (_ todoId: String) -> Void
+    var updateAction: (_ todoId: String) -> Void
     var mode: TodoAddMode
     var todo: Todo?
     var at: RepeatAt = .none
@@ -417,9 +419,16 @@ final class TodoAddViewModel: ObservableObject {
             && todo.memo == memo)
     }
 
-    init(todoState: TodoState, mode: TodoAddMode = .add) {
+    init(
+        todoState: TodoState,
+        mode: TodoAddMode = .add,
+        addAction: @escaping (_ todoId: String) -> Void,
+        updateAction: @escaping (_ todoId: String) -> Void
+    ) {
         self.todoState = todoState
         self.mode = mode
+        self.addAction = addAction
+        self.updateAction = updateAction
     }
 
     //  MARK: - Create
@@ -460,6 +469,7 @@ final class TodoAddViewModel: ObservableObject {
         todoState.addTodo(todo: createTodoData()) { result in
             switch result {
             case let .success(todo):
+                self.addAction(todo.id)
                 completion(.success(todo))
             case let .failure(error):
                 completion(.failure(error))
@@ -475,7 +485,8 @@ final class TodoAddViewModel: ObservableObject {
 
         todoState.addTodo(todo: createTodoData()) { result in
             switch result {
-            case .success:
+            case let .success(todo):
+                self.addAction(todo.id)
                 self.clear()
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
@@ -507,7 +518,15 @@ final class TodoAddViewModel: ObservableObject {
         todoState.updateTodo(
             todoId: todo.id,
             todo: createTodoData()
-        ) { _ in }
+        ) { result in
+            switch result {
+            case let .success(response):
+                self.updateAction(todo.id)
+                completion(.success(response))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
     }
 
     func updateTodoWithRepeat(
@@ -529,7 +548,15 @@ final class TodoAddViewModel: ObservableObject {
                     todoState.updateTodo(
                         todoId: todo.id,
                         todo: createTodoData()
-                    ) { _ in }
+                    ) { result in
+                        switch result {
+                        case let .success(response):
+                            self.updateAction(todo.id)
+                            completion(.success(response))
+                        case let .failure(error):
+                            completion(.failure(error))
+                        }
+                    }
                     return
                 }
 
@@ -538,7 +565,15 @@ final class TodoAddViewModel: ObservableObject {
                     todo: createTodoData(),
                     date: endDate,
                     at: at
-                ) { _ in }
+                ) { result in
+                    switch result {
+                    case let .success(response):
+                        self.updateAction(todo.id)
+                        completion(.success(response))
+                    case let .failure(error):
+                        completion(.failure(error))
+                    }
+                }
             } catch {
                 switch error {
                 case RepeatError.invalid:
@@ -558,7 +593,15 @@ final class TodoAddViewModel: ObservableObject {
                     todo: createTodoData(),
                     date: prevRepeatEnd,
                     at: at
-                ) { _ in }
+                ) { result in
+                    switch result {
+                    case let .success(response):
+                        self.updateAction(todo.id)
+                        completion(.success(response))
+                    case let .failure(error):
+                        completion(.failure(error))
+                    }
+                }
             } catch {
                 switch error {
                 case RepeatError.invalid:

@@ -34,9 +34,21 @@ struct RootView: View {
             .navigationViewStyle(.stack)
 
             NavigationView {
+                let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
+                let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
+                    checkListViewModel.selectedTag = nil
+                    checkListViewModel.justAddedTodoId = id
+                    checkListViewModel.fetchTags()
+                    checkListViewModel.fetchTodoList()
+                } updateAction: { id in
+                    checkListViewModel.justAddedTodoId = id
+                    checkListViewModel.fetchTodoList()
+                    checkListViewModel.fetchTags()
+                }
+
                 CheckListView(
-                    viewModel: CheckListViewModel(todoState: _todoState),
-                    addViewModel: TodoAddViewModel(todoState: todoState)
+                    viewModel: checkListViewModel,
+                    addViewModel: todoAddViewModel
                 )
             }
             .tabItem {
