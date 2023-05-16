@@ -14,9 +14,32 @@ struct MediaView: View {
         ScrollView {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
-                    ForEach(postVM.hashTags) { hashTag in
-                        Text("\(hashTag.content)")
+                    ForEach(postVM.hashTags.indices, id: \.self) { idx in
+                        Text(postVM.hashTags[idx].content)
                             .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(
+                                postVM.hashTags[idx] == postVM.selectedHashTag
+                                    ? .white
+                                    : Color(0x191919)
+                            )
+                            .padding(.vertical, 5)
+                            .padding(.horizontal, 10)
+                            .background(
+                                postVM.hashTags[idx] == postVM.selectedHashTag
+                                    ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .leading, endPoint: .trailing)
+                                    : LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
+                            )
+                            .cornerRadius(10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(
+                                        Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]),
+                                        lineWidth: 1
+                                    )
+                            )
+                            .onTapGesture {
+                                postVM.selectedHashTag = postVM.hashTags[idx]
+                            }
                     }
                 }
             }
@@ -30,10 +53,10 @@ struct MediaView: View {
 
     @ViewBuilder
     func mediaListView() -> some View {
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 3)
+        let columns = Array(repeating: GridItem(.flexible(), spacing: 3), count: 3)
         let width = (UIScreen.main.bounds.size.width - 6) / 3
         if let mediaList = postVM.mediaList[postVM.selectedHashTag.id] {
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 3) {
+            LazyVGrid(columns: columns, spacing: 3) {
                 ForEach(mediaList.indices, id: \.self) { idx in
                     if let uiImage = postVM.mediaImageList[mediaList[idx].id]?[0]?.uiImage {
                         Image(uiImage: uiImage)

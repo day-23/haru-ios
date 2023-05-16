@@ -27,9 +27,7 @@ final class PostViewModel: ObservableObject {
     @Published var feedFirstTimeAppear: Bool = true // 처음인지 아닌지 확인
     @Published var mediaFirstTimeAppear: Bool = true // 처음인지 아닌지 확인
 
-    var lastCreatedAt: Date? {
-        postList.first?.createdAt
-    }
+    var lastCreatedAt: Date?
 
     var feedPage: Int = 1
     var feedTotalPages: Int = 0
@@ -55,7 +53,10 @@ final class PostViewModel: ObservableObject {
                 }
                 feedPage += 1
             }
+
             fetchFreindsPosts()
+
+            lastCreatedAt = postList.first?.createdAt
             feedFirstTimeAppear = false
         case .target_feed:
             if !feedFirstTimeAppear {
@@ -64,20 +65,24 @@ final class PostViewModel: ObservableObject {
                 }
                 feedPage += 1
             }
+
             guard let targetId else { return }
             fetchTargetPosts(targetId: targetId)
+
+            lastCreatedAt = postList.first?.createdAt
             feedFirstTimeAppear = false
         case .target_media:
-            print("[Debug] \(targetId) 미디어 불러오기")
-            print("\(#function) \(#fileID)")
             if !mediaFirstTimeAppear {
                 if (mediaPage + 1) > mediaTotalPages {
                     return
                 }
                 mediaPage += 1
             }
+
             guard let targetId else { return }
             fetchTargetMediaAll(targetId: targetId)
+
+            lastCreatedAt = mediaList[selectedHashTag.id]?.first?.createdAt
             mediaFirstTimeAppear = false
         case .target_media_hashtag:
             print("헤시태그 불러오기")
@@ -98,7 +103,11 @@ final class PostViewModel: ObservableObject {
             postImageUrlList.enumerated().forEach { idx, urlString in
                 if let uiImage = ImageCache.shared.object(forKey: urlString as NSString) {
                     DispatchQueue.main.async {
-                        self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                        if isMedia {
+                            self.mediaImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                        } else {
+                            self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                        }
                     }
                 } else {
                     guard
@@ -251,6 +260,8 @@ final class PostViewModel: ObservableObject {
             }
         }
     }
+
+    func fetchTargetMediaHashTag(targetId: String, hashTagId: String, page: Int) {}
 
     func fetchTargetHashTags() {
         guard let targetId else { return }

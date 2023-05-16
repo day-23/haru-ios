@@ -11,3 +11,9 @@ struct HashTag: Codable, Identifiable {
     let id: String
     var content: String
 }
+
+extension HashTag: Equatable {
+    static func == (lhs: HashTag, rhs: HashTag) -> Bool {
+        lhs.id == rhs.id
+    }
+}

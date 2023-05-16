@@ -186,7 +186,7 @@ final class PostService {
         page: Int,
         limit: Int = 9,
         lastCreatedAt: Date?,
-        _ completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
+        completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
@@ -215,6 +215,55 @@ final class PostService {
 
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/media",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data, response.pagination)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func fetchTargetMediaHashTag(
+        targetId: String,
+        hashTagId: String,
+        page: Int,
+        limit: Int = 9,
+        lastCreatedAt: Date?,
+        completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post]
+            let pagination: Post.Pagination
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var parameters: Parameters {
+            if let lastCreatedAt {
+                return [
+                    "page": page,
+                    "limit": limit,
+                    "lastCreatedAt": Self.iSO8601Formatter.string(from: lastCreatedAt),
+                ]
+            } else {
+                return [
+                    "page": page,
+                    "limit": limit,
+                ]
+            }
+        }
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/media/hashtag/\(hashTagId)",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
