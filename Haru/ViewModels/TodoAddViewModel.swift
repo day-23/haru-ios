@@ -477,7 +477,6 @@ final class TodoAddViewModel: ObservableObject {
             switch result {
             case .success:
                 self.clear()
-                self.checkListViewModel.fetchTodoList()
             case let .failure(error):
                 print("[Debug] \(error) (\(#fileID), \(#function))")
             }
@@ -508,14 +507,7 @@ final class TodoAddViewModel: ObservableObject {
         checkListViewModel.updateTodo(
             todoId: todo.id,
             todo: createTodoData()
-        ) { result in
-            switch result {
-            case let .success(success):
-                completion(.success(success))
-            case let .failure(failure):
-                completion(.failure(failure))
-            }
-        }
+        )
     }
 
     func updateTodoWithRepeat(
@@ -537,14 +529,7 @@ final class TodoAddViewModel: ObservableObject {
                     checkListViewModel.updateTodo(
                         todoId: todo.id,
                         todo: createTodoData()
-                    ) { result in
-                        switch result {
-                        case let .success(success):
-                            completion(.success(success))
-                        case let .failure(error):
-                            completion(.failure(error))
-                        }
-                    }
+                    )
                     return
                 }
 
@@ -553,14 +538,7 @@ final class TodoAddViewModel: ObservableObject {
                     todo: createTodoData(),
                     date: endDate,
                     at: at
-                ) { result in
-                    switch result {
-                    case let .success(success):
-                        completion(.success(success))
-                    case let .failure(error):
-                        completion(.failure(error))
-                    }
-                }
+                )
             } catch {
                 switch error {
                 case RepeatError.invalid:
@@ -580,14 +558,7 @@ final class TodoAddViewModel: ObservableObject {
                     todo: createTodoData(),
                     date: prevRepeatEnd,
                     at: at
-                ) { result in
-                    switch result {
-                    case let .success(success):
-                        completion(.success(success))
-                    case let .failure(error):
-                        completion(.failure(error))
-                    }
-                }
+                )
             } catch {
                 switch error {
                 case RepeatError.invalid:
