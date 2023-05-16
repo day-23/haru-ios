@@ -67,14 +67,38 @@ final class CommentService {
         }
     }
 
-//    func updateComment(
-//        targetPostId: String,
-//        targetPostImageId: String,
-//        comment: Request.Comment,
-//        completion: @escaping(Result<Post.)
-//    )
+    func updateComment(
+        targetUserId: String,
+        targetCommentId: String,
+        comment: Request.Comment,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
+            method: .patch,
+            parameters: comment,
+            encoder: JSONParameterEncoder.default,
+            headers: headers
+        ).responseDecodable(of: Response.self) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.success))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 
     func deleteComment(
+        targetUserId: String,
         targetCommentId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -87,7 +111,7 @@ final class CommentService {
         ]
 
         AF.request(
-            CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetCommentId)",
+            CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
             method: .delete,
             headers: headers
         ).responseDecodable(of: Response.self) { response in

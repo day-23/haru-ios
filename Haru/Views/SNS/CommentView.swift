@@ -23,12 +23,12 @@ struct CommentView: View {
 
     @State var postPageNum: Int = 0
 
-    var alreadyComment: [Post.Comment?] {
-        var result: [Post.Comment?] = Array(repeating: nil, count: postImageList.count)
-        for (idx, image) in postImageList.enumerated() {
-            for comment in image.comments {
+    var alreadyComment: [(Post.Comment, Int)?] {
+        var result: [(Post.Comment, Int)?] = Array(repeating: nil, count: postImageList.count)
+        for (pageNum, image) in postImageList.enumerated() {
+            for (idx, comment) in image.comments.enumerated() {
                 if comment.user.id == Global.shared.user?.id {
-                    result[idx] = comment
+                    result[pageNum] = (comment, idx)
                 }
             }
         }
@@ -115,7 +115,10 @@ struct CommentView: View {
 
                                 Button {
                                     print("targetCommentId: \(target.id)")
-                                    commentService.deleteComment(targetCommentId: target.id) { result in
+                                    commentService.deleteComment(
+                                        targetUserId: target.user.id,
+                                        targetCommentId: target.id
+                                    ) { result in
                                         switch result {
                                         case .success(let success):
                                             delCommentModalVis = !success
@@ -183,7 +186,27 @@ struct CommentView: View {
                 if isCommentCreate {
                     Button {
                         if let comment = alreadyComment[postPageNum] {
-                            print("댓글 수정")
+                            commentService.updateComment(
+                                targetUserId: comment.0.user.id,
+                                targetCommentId: comment.0.id,
+                                comment: Request.Comment(content: content, x: x, y: y)
+                            ) { result in
+                                switch result {
+                                case .success(let success):
+                                    print("수정 완료")
+                                    // 댓글 업데이트 시 필드 값 변경해주기
+                                    postImageList[postPageNum].comments[comment.1].content = content
+                                    if let x, let y {
+                                        postImageList[postPageNum].comments[comment.1].x = x
+                                        postImageList[postPageNum].comments[comment.1].y = y
+                                    }
+                                    isFocused = false
+                                    isCommentCreate = false
+                                case .failure(let failure):
+                                    print("[Debug] \(failure)")
+                                    print("\(#function)")
+                                }
+                            }
                         } else {
                             commentService.createComment(
                                 targetPostId: postId,
@@ -314,11 +337,11 @@ struct CommentView: View {
 
                 // 기존에 댓글을 작성했는지 처음 작성인지 판별
                 if let comment = alreadyComment[postPageNum] {
-                    x = CGFloat(comment.x)
-                    y = CGFloat(comment.y)
-                    startingX = CGFloat(comment.x)
-                    startingY = CGFloat(comment.y)
-                    content = comment.content
+                    x = CGFloat(comment.0.x)
+                    y = CGFloat(comment.0.y)
+                    startingX = CGFloat(comment.0.x)
+                    startingY = CGFloat(comment.0.y)
+                    content = comment.0.content
                 } else {
                     x = location.x
                     y = location.y
@@ -362,7 +385,7 @@ struct CommentView: View {
     @ViewBuilder
     func commentListView() -> some View {
         ForEach(commentList[postPageNum]) { comment in
-            if !isCommentCreate || alreadyComment[postPageNum]?.id != comment.id {
+            if !isCommentCreate || alreadyComment[postPageNum]?.0.id != comment.id {
                 Text("\(comment.content)")
                     .font(.pretendard(size: 14, weight: .bold))
                     .padding(.horizontal, 8)

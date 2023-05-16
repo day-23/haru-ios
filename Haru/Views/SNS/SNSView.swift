@@ -27,6 +27,7 @@ struct SNSView: View {
                 }
                 FeedListView(postVM: postVM, comeToRoot: true)
                     .onAppear {
+                        print("피드 뷰가 보여짐")
                         postVM.loadMorePosts()
                     }
             }
