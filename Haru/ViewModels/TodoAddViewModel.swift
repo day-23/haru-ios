@@ -11,7 +11,7 @@ import SwiftUI
 final class TodoAddViewModel: ObservableObject {
     // MARK: - Properties
 
-    private let checkListViewModel: CheckListViewModel
+    private let todoState: TodoState
     var mode: TodoAddMode
     var todo: Todo?
     var at: RepeatAt = .none
@@ -417,8 +417,8 @@ final class TodoAddViewModel: ObservableObject {
             && todo.memo == memo)
     }
 
-    init(checkListViewModel: CheckListViewModel, mode: TodoAddMode = .add) {
-        self.checkListViewModel = checkListViewModel
+    init(todoState: TodoState, mode: TodoAddMode = .add) {
+        self.todoState = todoState
         self.mode = mode
     }
 
@@ -457,7 +457,7 @@ final class TodoAddViewModel: ObservableObject {
     func addTodo(
         completion: @escaping (Result<Todo, Error>) -> Void
     ) {
-        checkListViewModel.addTodo(todo: createTodoData()) { result in
+        todoState.addTodo(todo: createTodoData()) { result in
             switch result {
             case let .success(todo):
                 completion(.success(todo))
@@ -473,7 +473,7 @@ final class TodoAddViewModel: ObservableObject {
         content = alt
         isTodayTodo = true
 
-        checkListViewModel.addTodo(todo: createTodoData()) { result in
+        todoState.addTodo(todo: createTodoData()) { result in
             switch result {
             case .success:
                 self.clear()
@@ -504,10 +504,10 @@ final class TodoAddViewModel: ObservableObject {
             return
         }
 
-        checkListViewModel.updateTodo(
+        todoState.updateTodo(
             todoId: todo.id,
             todo: createTodoData()
-        )
+        ) { _ in }
     }
 
     func updateTodoWithRepeat(
@@ -526,19 +526,19 @@ final class TodoAddViewModel: ObservableObject {
         if at == .front || at == .middle {
             do {
                 guard let endDate = try todo.nextEndDate() else {
-                    checkListViewModel.updateTodo(
+                    todoState.updateTodo(
                         todoId: todo.id,
                         todo: createTodoData()
-                    )
+                    ) { _ in }
                     return
                 }
 
-                checkListViewModel.updateTodoWithRepeat(
+                todoState.updateTodoWithRepeat(
                     todoId: todo.id,
                     todo: createTodoData(),
                     date: endDate,
                     at: at
-                )
+                ) { _ in }
             } catch {
                 switch error {
                 case RepeatError.invalid:
@@ -553,12 +553,12 @@ final class TodoAddViewModel: ObservableObject {
             do {
                 let prevRepeatEnd = try todo.prevEndDate()
 
-                checkListViewModel.updateTodoWithRepeat(
+                todoState.updateTodoWithRepeat(
                     todoId: todo.id,
                     todo: createTodoData(),
                     date: prevRepeatEnd,
                     at: at
-                )
+                ) { _ in }
             } catch {
                 switch error {
                 case RepeatError.invalid:
@@ -738,7 +738,7 @@ final class TodoAddViewModel: ObservableObject {
             return
         }
 
-        checkListViewModel.deleteTodo(todoId: todo.id) { result in
+        todoState.deleteTodo(todoId: todo.id) { result in
             switch result {
             case .success:
                 completion(.success(true))
@@ -760,7 +760,7 @@ final class TodoAddViewModel: ObservableObject {
         if at == .front || at == .middle {
             do {
                 guard let date = try todo.nextEndDate() else {
-                    checkListViewModel.deleteTodo(
+                    todoState.deleteTodo(
                         todoId: todo.id
                     ) { result in
                         switch result {
@@ -773,7 +773,7 @@ final class TodoAddViewModel: ObservableObject {
                     return
                 }
 
-                checkListViewModel.deleteTodoWithRepeat(
+                todoState.deleteTodoWithRepeat(
                     todoId: todo.id,
                     date: date,
                     at: at
@@ -808,7 +808,7 @@ final class TodoAddViewModel: ObservableObject {
             do {
                 let repeatEnd = try todo.prevEndDate()
 
-                checkListViewModel.deleteTodoWithRepeat(
+                todoState.deleteTodoWithRepeat(
                     todoId: todo.id,
                     date: repeatEnd,
                     at: .back
