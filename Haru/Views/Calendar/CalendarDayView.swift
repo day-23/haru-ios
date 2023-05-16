@@ -20,9 +20,9 @@ struct CalendarDayView: View {
     var body: some View {
         Pager(page: page, data: self.data.indices, id: \.self) { index in
             // TODO: todoAddViewModel 이렇게 사용해도 되는지 물어보기
-            CalendarDayDetailView(calendarVM: calendarViewModel, todoAddViewModel: TodoAddViewModel(checkListViewModel: CheckListViewModel()), row: index)
-                .frame(width: 330, height: 480)
-                .cornerRadius(20)
+//            CalendarDayDetailView(calendarVM: calendarViewModel, todoAddViewModel: TodoAddViewModel(checkListViewModel: CheckListViewModel()), row: index)
+//                .frame(width: 330, height: 480)
+//                .cornerRadius(20)
         }
         .itemAspectRatio(0.8)
         .itemSpacing(30)

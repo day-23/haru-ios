@@ -73,7 +73,6 @@
 		130667A729CEE1F200AACEE6 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306679E29CEE1F200AACEE6 /* Color.swift */; };
 		130667AD29CEE1FE00AACEE6 /* RepeatOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130667A829CEE1FE00AACEE6 /* RepeatOption.swift */; };
 		130667AE29CEE1FE00AACEE6 /* TodoAddMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */; };
-		130667B029CEE1FE00AACEE6 /* Tab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130667AB29CEE1FE00AACEE6 /* Tab.swift */; };
 		130667B129CEE1FE00AACEE6 /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130667AC29CEE1FE00AACEE6 /* Calendar.swift */; };
 		130667B429CEE20A00AACEE6 /* CalendarHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130667B229CEE20A00AACEE6 /* CalendarHelper.swift */; };
 		130667B829CEE30800AACEE6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 130666CF29CEDF4B00AACEE6 /* Assets.xcassets */; };
@@ -224,7 +223,6 @@
 		1306679E29CEE1F200AACEE6 /* Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		130667A829CEE1FE00AACEE6 /* RepeatOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatOption.swift; sourceTree = "<group>"; };
 		130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodoAddMode.swift; sourceTree = "<group>"; };
-		130667AB29CEE1FE00AACEE6 /* Tab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
 		130667AC29CEE1FE00AACEE6 /* Calendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
 		134F5FED29DD356C0072704B /* ScheduleItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleItemView.swift; sourceTree = "<group>"; };
@@ -492,7 +490,6 @@
 				1356621729D1EE29003CAD1B /* DefaultTag.swift */,
 				130667A829CEE1FE00AACEE6 /* RepeatOption.swift */,
 				6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */,
-				130667AB29CEE1FE00AACEE6 /* Tab.swift */,
 				130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */,
 				6F62F4912A0B62DB001BA364 /* PostOption.swift */,
 				6F62F4972A0BAFA9001BA364 /* ImagePickerMode.swift */,
@@ -714,7 +711,6 @@
 				1306677629CEE19C00AACEE6 /* TodoAddView.swift in Sources */,
 				1306678129CEE1D300AACEE6 /* TodoAddViewModel.swift in Sources */,
 				6F54DF5F29DDCA26002FAD7F /* PopupImagePicker.swift in Sources */,
-				130667B029CEE1FE00AACEE6 /* Tab.swift in Sources */,
 				6F54DF4929DC6B02002FAD7F /* ProfileInfoView.swift in Sources */,
 				6F1082CB2A0E55D300CB89DB /* String.swift in Sources */,
 				1306678E29CEE1E300AACEE6 /* CategoryModal.swift in Sources */,

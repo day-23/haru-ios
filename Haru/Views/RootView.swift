@@ -9,25 +9,69 @@ import Foundation
 import SwiftUI
 
 struct RootView: View {
-    @State private var selectedTab: Tab = .sns
+    @StateObject private var todoState: TodoState = .init()
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            ForEach(Tab.allCases, id: \.self) { tab in
-                NavigationView {
-                    tab.view
-                }
-                .tabItem {
-                    Image(systemName: tab.systemImageName)
-                    Text(tab.title)
-                }
-                .tag(tab)
-                .navigationViewStyle(.stack)
+        TabView {
+            NavigationView {
+                SNSView()
             }
+            .tabItem {
+                Image(systemName: "paperplane")
+                Text("SNS")
+            }
+            .tag("SNS")
+            .navigationViewStyle(.stack)
+
+            NavigationView {
+                CalendarMainView()
+            }
+            .tabItem {
+                Image(systemName: "calendar")
+                Text("Calendar")
+            }
+            .tag("Calendar")
+            .navigationViewStyle(.stack)
+
+            NavigationView {
+                CheckListView(
+                    viewModel: CheckListViewModel(todoState: _todoState),
+                    addViewModel: TodoAddViewModel(todoState: todoState)
+                )
+            }
+            .tabItem {
+                Image(systemName: "checklist")
+                Text("Check-List")
+            }
+            .tag("Check-List")
+            .navigationViewStyle(.stack)
+
+            NavigationView {
+                TimeTableMainView(
+                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel())
+                )
+            }
+            .tabItem {
+                Image(systemName: "calendar.day.timeline.left")
+                Text("Time-Table")
+            }
+            .tag("Time-Table")
+            .navigationViewStyle(.stack)
+
+            NavigationView {
+                Text("Setting SubView")
+            }
+            .tabItem {
+                Image(systemName: "person")
+                Text("Setting")
+            }
+            .tag("Setting")
+            .navigationViewStyle(.stack)
         }
         .onAppear {
             UITabBar.appearance().backgroundColor = .white
             UIDatePicker.appearance().minuteInterval = 5
         }
+        .environmentObject(todoState)
     }
 }
