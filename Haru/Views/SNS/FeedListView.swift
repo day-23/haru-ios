@@ -18,13 +18,15 @@ struct FeedListView: View {
                 ForEach(postVM.postList) { post in
                     FeedView(post: post, postImageList: postVM.postImageList[post.id] ?? [], postVM: postVM, comeToRoot: comeToRoot)
                 }
-                if !postVM.postList.isEmpty, (postVM.page + 1) <= postVM.totalPages {
+                if !postVM.postList.isEmpty, (postVM.feedPage + 1) <= postVM.feedTotalPages {
                     HStack {
                         Spacer()
                         ProgressView()
                             .onAppear {
                                 print("더 불러오기")
-                                postVM.loadMorePosts()
+                                postVM.loadMorePosts(
+                                    option: postVM.targetId != nil ? .target_feed : .main
+                                )
                             }
                         Spacer()
                     }
@@ -33,7 +35,9 @@ struct FeedListView: View {
             .padding(.top, 14)
         }.refreshable {
             print("새로고침")
-            postVM.refreshPosts()
+            postVM.refreshPosts(
+                option: postVM.targetId != nil ? .target_feed : .main
+            )
         }
     }
 }

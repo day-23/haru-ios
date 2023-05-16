@@ -75,7 +75,7 @@ struct FollowView: View {
                             HStack {
                                 NavigationLink {
                                     ProfileInfoView(
-                                        postVM: PostViewModel(postOption: PostOption.target_all, targetId: user.id),
+                                        postVM: PostViewModel(targetId: user.id),
                                         userProfileVM: UserProfileViewModel(userId: user.id)
                                     )
                                 } label: {

@@ -11,8 +11,10 @@ struct LookAroundView: View {
     @Environment(\.dismiss) var dismissAction
 
     @State var text: String = ""
+
+    @StateObject var postVM: PostViewModel = .init()
     var body: some View {
-        MediaView()
+        MediaView(postVM: postVM)
             .customNavigationBar {
                 Button {
                     dismissAction.callAsFunction()

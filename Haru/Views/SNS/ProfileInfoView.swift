@@ -14,7 +14,7 @@ struct ProfileInfoView: View {
     @State var toggleIsClicked: Bool = false
     @State private var isFeedSelected: Bool = true
 
-    var postVM: PostViewModel
+    @StateObject var postVM: PostViewModel
     @StateObject var userProfileVM: UserProfileViewModel
     
     var body: some View {
@@ -190,7 +190,7 @@ struct ProfileInfoView: View {
                         .frame(height: 20)
                     FeedListView(postVM: postVM)
                 } else {
-                    MediaView()
+                    MediaView(postVM: postVM)
                 }
             }
             
@@ -219,9 +219,13 @@ struct ProfileInfoView: View {
         }
         .navigationBarBackButtonHidden()
         .onAppear {
+            postVM.loadMorePosts(option: .target_feed)
+            postVM.loadMorePosts(option: .target_media)
+            // TODO: 해시태그도 가져오기
+            postVM.fetchTargetHashTags()
             userProfileVM.fetchUserProfile()
-            userProfileVM.fetchFollower(currentPage: 1)
-            userProfileVM.fetchFollowing(currentPage: 1)
+//            userProfileVM.fetchFollower(currentPage: 1)
+//            userProfileVM.fetchFollowing(currentPage: 1)
         }
     }
 }

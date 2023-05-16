@@ -13,8 +13,8 @@ struct SNSView: View {
     // For pop up to root
     @State var isActive: Bool = false
 
-    var postVM = PostViewModel(postOption: PostOption.main)
-    var myPostVM = PostViewModel(postOption: .target_all, targetId: Global.shared.user?.id ?? nil)
+    var postVM = PostViewModel()
+    var myPostVM = PostViewModel(targetId: Global.shared.user?.id ?? nil)
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -27,8 +27,7 @@ struct SNSView: View {
                 }
                 FeedListView(postVM: postVM, comeToRoot: true)
                     .onAppear {
-                        print("피드 뷰가 보여짐")
-                        postVM.loadMorePosts()
+                        postVM.loadMorePosts(option: .main)
                     }
             }
 
@@ -49,7 +48,7 @@ struct SNSView: View {
                             userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
                         )
                         .onAppear {
-                            myPostVM.loadMorePosts()
+                            myPostVM.loadMorePosts(option: .target_feed)
                         }
                     } label: {
                         Text("내 기록")

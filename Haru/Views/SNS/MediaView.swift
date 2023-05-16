@@ -8,43 +8,62 @@
 import SwiftUI
 
 struct MediaView: View {
+    @StateObject var postVM: PostViewModel
+
     var body: some View {
         ScrollView {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
-                    TagView(tag: Tag(id: UUID().uuidString, content: "하루 챌린지"))
-                    TagView(tag: Tag(id: UUID().uuidString, content: "음식"))
-                    TagView(tag: Tag(id: UUID().uuidString, content: "학교"))
-                    TagView(tag: Tag(id: UUID().uuidString, content: "오운완"))
-                    TagView(tag: Tag(id: UUID().uuidString, content: "홍대거리"))
-                    TagView(tag: Tag(id: UUID().uuidString, content: "먹방"))
+                    ForEach(postVM.hashTags) { hashTag in
+                        Text("\(hashTag.content)")
+                            .font(.pretendard(size: 16, weight: .bold))
+                    }
                 }
             }
             .padding(.horizontal, 16)
             .padding(.top, 16)
-            
 
-            let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 3)
-            let width = UIScreen.main.bounds.size.width / 3
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 3) {
-                ForEach(0 ..< 20, id: \.self) { _ in
-                    AsyncImage(url: URL(string: "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/CYNMM4A3LOWZ44ZLGRZI3VBAZE.png")) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                    } placeholder: {
-                        Image(systemName: "wifi.slash")
-                    }
-                    .frame(width: width, height: width)
-                }
-            }
+            mediaListView()
         }
         .background(.white)
     }
-}
 
-struct MediaView_Previews: PreviewProvider {
-    static var previews: some View {
-        MediaView()
+    @ViewBuilder
+    func mediaListView() -> some View {
+        let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 3)
+        let width = (UIScreen.main.bounds.size.width - 6) / 3
+        if let mediaList = postVM.mediaList[postVM.selectedHashTag.id] {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 3) {
+                ForEach(mediaList.indices, id: \.self) { idx in
+                    if let uiImage = postVM.mediaImageList[mediaList[idx].id]?[0]?.uiImage {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .frame(width: width, height: width)
+                    } else {
+                        ProgressView()
+                            .frame(width: width, height: width)
+                    }
+                }
+                if !postVM.mediaList.isEmpty, (postVM.mediaPage + 1) <= postVM.mediaTotalPages {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .onAppear {
+                                print("더 불러오기")
+                                postVM.loadMorePosts(option: .target_media)
+                            }
+                        Spacer()
+                    }
+                }
+            }
+        } else {
+            Text("아직 게시한 미디어가 없습니다")
+        }
     }
 }
+
+// struct MediaView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MediaView()
+//    }
+// }

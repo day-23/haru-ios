@@ -36,6 +36,8 @@ final class PostService {
         return encoder
     }()
 
+    // MARK: - 게시물 불러오기
+
     func fetchFreindPosts(
         page: Int,
         limit: Int = 5,
@@ -131,6 +133,104 @@ final class PostService {
         }
     }
 
+    func fetchAllMedia(
+        page: Int,
+        limit: Int = 9,
+        lastCreatedAt: Date?,
+        _ completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post]
+            let pagination: Post.Pagination
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var parameters: Parameters {
+            if let lastCreatedAt {
+                return [
+                    "page": page,
+                    "limit": limit,
+                    "lastCreatedAt": Self.iSO8601Formatter.string(from: lastCreatedAt),
+                ]
+            } else {
+                return [
+                    "page": page,
+                    "limit": limit,
+                ]
+            }
+        }
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/all",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data, response.pagination)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // 특정 사용자 미디어 전체보기
+    func fetchTargetMediaAll(
+        targetId: String,
+        page: Int,
+        limit: Int = 9,
+        lastCreatedAt: Date?,
+        _ completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post]
+            let pagination: Post.Pagination
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var parameters: Parameters {
+            if let lastCreatedAt {
+                return [
+                    "page": page,
+                    "limit": limit,
+                    "lastCreatedAt": Self.iSO8601Formatter.string(from: lastCreatedAt),
+                ]
+            } else {
+                return [
+                    "page": page,
+                    "limit": limit,
+                ]
+            }
+        }
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/media",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data, response.pagination)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // MARK: - 게시물 추가, 수정, 삭제
+
     func createPostWithImages(
         imageList: [UIImage],
         content: String,
@@ -202,6 +302,38 @@ final class PostService {
     }
 
     func createPostWithTemplate() {}
+
+    // MARK: - 게시물 부수적인 기능
+
+    func fetchPopularHashTags() {}
+
+    func fetchTargetHashTags(
+        targetId: String,
+        completion: @escaping (Result<[HashTag], Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [HashTag]
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/hashtags/\(targetId)",
+            method: .get,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 
     func likeThisPost(
         targetPostId: String,
