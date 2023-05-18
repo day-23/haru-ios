@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Login: View {
     @Binding var isLoggedIn: Bool
+    @StateObject var authViewModel : AuthViewModel = AuthViewModel()
 
     var body: some View {
         Image("background-main")
@@ -42,6 +43,12 @@ struct Login: View {
                             .frame(width: 312, height: 44)
                             .background(Color(0xfee500))
                             .cornerRadius(12)
+                            .onTapGesture{
+                                authViewModel.handleKakaoLogin() { isLoggedIn in
+                                    self.isLoggedIn = isLoggedIn
+                                    print(isLoggedIn)
+                                }
+                            }
 
                         Text("APPLE로 로그인하기")
                             .font(.pretendard(size: 14, weight: .bold))
@@ -71,12 +78,6 @@ struct Login: View {
                             }
                     }
                     .padding(.top, 33)
-
-                    Image("character-login")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 251.82 * 1.5, height: 69.09 * 1.5)
-                        .padding(.top, 37)
                 }
             }
     }

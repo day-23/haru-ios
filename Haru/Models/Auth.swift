@@ -6,3 +6,26 @@
 //
 
 import Foundation
+
+struct UserKakaoAuthResponse: Codable {
+    let success: Bool
+    let data: UserKakaoAuth
+}
+
+struct UserKakaoAuth: Codable {
+    let id: String
+    let name: String
+    let cookie: String
+    let accessToken: String
+    let refreshToken: String
+}
+
+struct UserVerifyResponse: Codable {
+    let success: Bool
+    let data: UserVerify
+}
+
+struct UserVerify: Codable {
+    let id: String
+    let accessToken: String
+}

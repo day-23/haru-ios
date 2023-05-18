@@ -17,7 +17,9 @@ struct RootView: View {
         Group {
             ZStack {
                 if showSplash {
-                    SplashView()
+                    SplashView(
+                        isLoggedIn: $isLoggedIn
+                    )
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                 withAnimation {
