@@ -185,16 +185,10 @@ struct ProfileInfoView: View {
                     }
                 }
                 
-//                if isFeedSelected {
-//                    Spacer()
-//                        .frame(height: 20)
-//                    FeedListView(postVM: postVM, postOption: .target_feed)
-//                } else {
-//                    MediaListView(postVM: postVM, postOption: .target_media)
-//                }
-                TabView {
-                    FeedListView(postVM: postVM, postOption: .target_feed)
-                    MediaListView(postVM: postVM, postOption: .target_media)
+                if isFeedSelected {
+                    FeedListView(postVM: postVM)
+                } else {
+                    MediaListView(postVM: postVM)
                 }
             }
             

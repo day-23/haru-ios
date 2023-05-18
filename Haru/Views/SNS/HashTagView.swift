@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HashTagView: View {
     @StateObject var postVM: PostViewModel
-    
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack {
@@ -37,12 +37,19 @@ struct HashTagView: View {
                                 )
                         )
                         .onTapGesture {
+                            if postVM.selectedHashTag == postVM.hashTags[idx] {
+                                return
+                            }
+
                             postVM.selectedHashTag = postVM.hashTags[idx]
+                            postVM.option = postVM.targetId == nil ? .media : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media : .target_media_hashtag
+                            postVM.loadMorePosts()
                         }
                 }
             }
         }
         .padding(.horizontal, 16)
-        .padding(.top, 16)
+        .padding(.top, 14)
+        .padding(.bottom, 10)
     }
 }

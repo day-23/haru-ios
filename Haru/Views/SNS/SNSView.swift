@@ -23,7 +23,7 @@ struct SNSView: View {
                     Text("검색창")
                 }
 
-                FeedListView(postVM: PostViewModel(), postOption: .main, comeToRoot: true)
+                FeedListView(postVM: PostViewModel(option: .main), comeToRoot: true)
             }
 
             if toggleIsClicked {
@@ -39,7 +39,7 @@ struct SNSView: View {
                 } thirdContent: {
                     NavigationLink {
                         ProfileInfoView(
-                            postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil),
+                            postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
                             userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
                         )
                     } label: {
