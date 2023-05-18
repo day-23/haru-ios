@@ -33,7 +33,7 @@ struct TimeTableMainView: View {
                     Text("\(String(timeTableViewModel.currentYear))년")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
-                        .padding(.leading, 30)
+                        .padding(.leading, 34)
                     Text("\(timeTableViewModel.currentMonth)월")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
@@ -72,7 +72,7 @@ struct TimeTableMainView: View {
                         timeTableViewModel: _timeTableViewModel,
                         calendarViewModel: _calendarViewModel
                     )
-                    .padding(.trailing)
+                    .padding(.trailing, 15)
                 } else {
                     TimeTableTodoView(
                         todoAddViewModel: StateObject(

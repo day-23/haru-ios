@@ -19,7 +19,8 @@ struct TimeTableScheduleView: View {
 
     private let week = ["일", "월", "화", "수", "목", "금", "토"]
 
-    private let column = [GridItem(.fixed(31)), GridItem(.flexible(), spacing: 0),
+    private var fixed: Double = 25
+    private let column = [GridItem(.fixed(25)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0)]
@@ -31,7 +32,6 @@ struct TimeTableScheduleView: View {
     private var cellHeight: CGFloat = 72
     private var minuteInterval: Double = 5.0
     private let borderWidth = 1
-    private var fixed: Double = 31
 
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
@@ -56,7 +56,7 @@ struct TimeTableScheduleView: View {
                 }
 
                 Divider()
-                    .padding(.leading, 40)
+                    .padding(.leading, 32)
                     .foregroundColor(Color(0xdbdbdb))
 
                 LazyVGrid(columns: column) {
@@ -72,8 +72,10 @@ struct TimeTableScheduleView: View {
 
                 if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
                     TimeTableScheduleTopView(timeTableViewModel: _timeTableViewModel)
+                        .padding(.top, 2)
                 }
             }
+            .padding(.bottom, 5)
 
             ScrollView {
                 LazyVGrid(

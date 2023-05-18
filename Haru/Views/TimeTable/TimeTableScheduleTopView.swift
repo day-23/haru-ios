@@ -10,11 +10,11 @@ import SwiftUI
 struct TimeTableScheduleTopView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
 
-    private var fixed: Double = 31
     @State private var topItemWidth: Double = 48
     private var topItemHeight: Double = 18
 
-    private let column = [GridItem(.fixed(31)), GridItem(.flexible(), spacing: 0),
+    private var fixed: Double = 25
+    private let column = [GridItem(.fixed(25)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0)]
