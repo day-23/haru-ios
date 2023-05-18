@@ -3,3 +3,5 @@
 
 Haru.xcodeproj/project.xcworkspace/xcuserdata
 Haru.xcodeproj/xcuserdata
+env.xcconfig
+Haru/Global/env.xcconfig
