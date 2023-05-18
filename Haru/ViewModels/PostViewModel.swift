@@ -24,16 +24,6 @@ final class PostViewModel: ObservableObject {
     // MARK: postVM 공용 필드
 
     @Published var profileImage: PostImage?
-    @Published var feedFirstTimeAppear: Bool = true // 처음인지 아닌지 확인
-    @Published var mediaFirstTimeAppear: Bool = true // 처음인지 아닌지 확인
-
-    var lastCreatedAt: Date?
-
-    var feedPage: Int = 1
-    var feedTotalPages: Int = 0
-
-    var mediaPage: Int = 1
-    var mediaTotalPages: Int = 0
 
     var targetId: String?
 
@@ -44,46 +34,60 @@ final class PostViewModel: ObservableObject {
         postService = .init()
     }
 
-    func loadMorePosts(option: PostOption) {
+    func loadMorePosts(
+        option: PostOption,
+        page: Int,
+        totalPage: Int,
+        lastCreatedAt: Date? = nil,
+        isAppear: Bool,
+        completion: @escaping (Int, Date?) -> ())
+    {
         switch option {
         case .main:
-            if !feedFirstTimeAppear {
-                if (feedPage + 1) > feedTotalPages {
+            if !isAppear {
+                if (page + 1) > totalPage {
+                    print("[Error] 더 이상 불러올 게시물이 없습니다")
+                    print("\(#function) \(#fileID)")
                     return
                 }
-                feedPage += 1
             }
 
-            fetchFreindsPosts()
-
-            lastCreatedAt = postList.first?.createdAt
-            feedFirstTimeAppear = false
+            fetchFreindsPosts(page: page, lastCreatedAt: lastCreatedAt) {
+                completion($0, self.postList.first?.createdAt)
+            }
         case .target_feed:
-            if !feedFirstTimeAppear {
-                if (feedPage + 1) > feedTotalPages {
+            if !isAppear {
+                if (page + 1) > totalPage {
+                    print("[Error] 더 이상 불러올 게시물이 없습니다")
+                    print("\(#function) \(#fileID)")
                     return
                 }
-                feedPage += 1
             }
 
-            guard let targetId else { return }
-            fetchTargetPosts(targetId: targetId)
+            guard let targetId else {
+                print("[Debug] targetId가 잘못되었습니다.")
+                print("\(#function) \(#fileID)")
+                return
+            }
 
-            lastCreatedAt = postList.first?.createdAt
-            feedFirstTimeAppear = false
+            fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) {
+                completion($0, self.mediaList[self.selectedHashTag.id]?.first?.createdAt)
+            }
+
         case .target_media:
-            if !mediaFirstTimeAppear {
-                if (mediaPage + 1) > mediaTotalPages {
+            if !isAppear {
+                if (page + 1) > totalPage {
+                    print("[Error] 더 이상 불러올 게시물이 없습니다")
+                    print("\(#function) \(#fileID)")
                     return
                 }
-                mediaPage += 1
             }
 
             guard let targetId else { return }
-            fetchTargetMediaAll(targetId: targetId)
+            fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) {
+                completion($0, self.mediaList[self.selectedHashTag.id]?.first?.createdAt)
+            }
 
-            lastCreatedAt = mediaList[selectedHashTag.id]?.first?.createdAt
-            mediaFirstTimeAppear = false
         case .target_media_hashtag:
             print("헤시태그 불러오기")
         case .media:
@@ -93,7 +97,6 @@ final class PostViewModel: ObservableObject {
 
     func refreshPosts(option: PostOption) {
         clear(option: option)
-        loadMorePosts(option: option)
     }
 
     // MARK: - UIImage로 변환 + 이미지 캐싱
@@ -159,10 +162,14 @@ final class PostViewModel: ObservableObject {
 
     // MARK: - 서버와 API 연동
 
-    func fetchFreindsPosts() {
+    func fetchFreindsPosts(
+        page: Int,
+        lastCreatedAt: Date?,
+        completion: @escaping (Int) -> ())
+    {
         print("[Debug] 모든 게시물 불러오기")
         print("\(#fileID) \(#function)")
-        postService.fetchFreindPosts(page: feedPage, lastCreatedAt: lastCreatedAt) { result in
+        postService.fetchFreindPosts(page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 // 이미지 캐싱
@@ -187,18 +194,22 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPages = pageInfo.totalPages
-
+                completion(pageInfo.totalPages)
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
 
-    func fetchTargetPosts(targetId: String) {
+    func fetchTargetPosts(
+        targetId: String,
+        page: Int,
+        lastCreatedAt: Date?,
+        completion: @escaping (Int) -> ())
+    {
         print("[Debug] 특정 사용자 게시물 불러오기 사용자 ID: \(targetId)")
         print("\(#fileID) \(#function)")
-        postService.fetchTargetPosts(targetId: targetId, page: feedPage, lastCreatedAt: lastCreatedAt) { result in
+        postService.fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 // 이미지 캐싱
@@ -223,7 +234,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPages = pageInfo.totalPages
+                completion(pageInfo.totalPages)
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -233,8 +244,13 @@ final class PostViewModel: ObservableObject {
     // TODO: 인기 미디어 전체보기 해야함
     func fetchAllMedia(targetId: String) {}
 
-    func fetchTargetMediaAll(targetId: String) {
-        postService.fetchTargetMediaAll(targetId: targetId, page: mediaPage, lastCreatedAt: lastCreatedAt) { result in
+    func fetchTargetMediaAll(
+        targetId: String,
+        page: Int,
+        lastCreatedAt: Date?,
+        completion: @escaping (Int) -> ())
+    {
+        postService.fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 // 이미지 캐싱
@@ -253,7 +269,7 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
                 let pageInfo = success.1
-                self.mediaTotalPages = pageInfo.totalPages
+                completion(pageInfo.totalPages)
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -300,30 +316,24 @@ final class PostViewModel: ObservableObject {
     func clear(option: PostOption) {
         switch option {
         case .main:
-            feedPage = 1
             postList = []
             postImageList = [:]
-            feedFirstTimeAppear = true
+
         case .target_feed:
-            feedPage = 1
             postList = []
             postImageList = [:]
-            feedFirstTimeAppear = true
+
         case .target_media:
-            mediaPage = 1
             mediaList = [:]
             mediaImageList = [:]
-            mediaFirstTimeAppear = true
+
         case .target_media_hashtag:
-            mediaPage = 1
             mediaList = [:]
             mediaImageList = [:]
-            mediaFirstTimeAppear = true
+
         case .media:
-            mediaPage = 1
             mediaList = [:]
             mediaImageList = [:]
-            mediaFirstTimeAppear = true
         }
     }
 }

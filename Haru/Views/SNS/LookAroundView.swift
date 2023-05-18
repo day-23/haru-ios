@@ -14,7 +14,7 @@ struct LookAroundView: View {
 
     @StateObject var postVM: PostViewModel = .init()
     var body: some View {
-        MediaView(postVM: postVM)
+        MediaListView(postVM: postVM, postOption: .media)
             .customNavigationBar {
                 Button {
                     dismissAction.callAsFunction()

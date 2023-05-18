@@ -135,7 +135,7 @@ final class PostService {
 
     func fetchAllMedia(
         page: Int,
-        limit: Int = 9,
+        limit: Int = 12,
         lastCreatedAt: Date?,
         _ completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
     ) {
@@ -184,7 +184,7 @@ final class PostService {
     func fetchTargetMediaAll(
         targetId: String,
         page: Int,
-        limit: Int = 9,
+        limit: Int = 12,
         lastCreatedAt: Date?,
         completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
     ) {
