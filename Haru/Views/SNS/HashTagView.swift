@@ -43,13 +43,16 @@ struct HashTagView: View {
 
                             postVM.selectedHashTag = postVM.hashTags[idx]
                             postVM.option = postVM.targetId == nil ? .media : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media : .target_media_hashtag
-                            postVM.loadMorePosts()
+
+                            if postVM.mediaTotalPage[postVM.selectedHashTag.id] == nil {
+                                postVM.loadMorePosts()
+                            }
                         }
                 }
             }
         }
         .padding(.horizontal, 16)
         .padding(.top, 14)
-        .padding(.bottom, 10)
+        .padding(.bottom, 8)
     }
 }

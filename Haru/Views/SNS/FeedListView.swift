@@ -38,9 +38,11 @@ struct FeedListView: View {
             .padding(.top, 14)
         }
         .onAppear {
-            print("[Debug] 피드 리스트 처음 불러오기 \(#fileID)")
-            postVM.loadMorePosts()
             postVM.option = postVM.targetId == nil ? .main : .target_feed
+
+            if postVM.feedTotalPage == -1 {
+                postVM.loadMorePosts()
+            }
         }
         .refreshable {
             postVM.refreshPosts()

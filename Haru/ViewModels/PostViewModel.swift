@@ -37,17 +37,17 @@ final class PostViewModel: ObservableObject {
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return 1
             }
-            return Int(ceil(Double(mediaList.count) / 5.0)) + 1
+            return Int(ceil(Double(mediaList.count) / 12.0)) + 1
         case .target_media_hashtag:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return 1
             }
-            return Int(ceil(Double(mediaList.count) / 5.0)) + 1
+            return Int(ceil(Double(mediaList.count) / 12.0)) + 1
         case .media:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return 1
             }
-            return Int(ceil(Double(mediaList.count) / 5.0)) + 1
+            return Int(ceil(Double(mediaList.count) / 12.0)) + 1
         }
     }
 
@@ -301,6 +301,7 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
+        print("[Debug] \(page) \(mediaTotalPage[Global.shared.hashTagAll.id])")
         postService.fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):

@@ -10,7 +10,6 @@ import SwiftUI
 struct FeedView: View {
     var post: Post
     var postImageList: [PostImage?]
-    var profileImage: PostImage?
 
     @StateObject var postVM: PostViewModel
 
@@ -29,7 +28,7 @@ struct FeedView: View {
                     )
                 } label: {
                     HStack {
-                        ProfileImgView(profileImage: profileImage)
+                        ProfileImgView(profileImage: postVM.profileImage)
                             .frame(width: 30, height: 30)
 
                         Text("\(post.user.name)")

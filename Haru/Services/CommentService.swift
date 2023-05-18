@@ -80,7 +80,7 @@ final class CommentService {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
-
+        
         AF.request(
             CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
             method: .patch,

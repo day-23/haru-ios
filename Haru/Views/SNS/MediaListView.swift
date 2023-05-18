@@ -48,7 +48,10 @@ struct MediaListView: View {
         .onAppear {
             postVM.option = postVM.targetId == nil ? .media : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media : .target_media_hashtag
             postVM.fetchTargetHashTags()
-            postVM.loadMorePosts()
+            
+            if postVM.mediaTotalPage[postVM.selectedHashTag.id] == nil {
+                postVM.loadMorePosts()
+            }
         }
         .background(.white)
     }

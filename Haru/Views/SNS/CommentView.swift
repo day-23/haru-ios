@@ -9,14 +9,17 @@ import SwiftUI
 
 struct CommentView: View {
     @Environment(\.dismiss) var dismissAction
+    let deviceSize = UIScreen.main.bounds.size
 
     var postId: String
     @State var postImageList: [Post.Image]
     var imageList: [PostImage?]
-    var commentList: [[Post.Comment]] {
+    var commentList: [[Post.Comment]] { // [pageNum][commentIdx]
         var result = Array(repeating: [Post.Comment](), count: postImageList.count)
         for (idx, image) in postImageList.enumerated() {
-            result[idx].append(contentsOf: image.comments)
+            result[idx].append(contentsOf: image.comments.compactMap {
+                Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
+            })
         }
         return result
     }
@@ -28,7 +31,17 @@ struct CommentView: View {
         for (pageNum, image) in postImageList.enumerated() {
             for (idx, comment) in image.comments.enumerated() {
                 if comment.user.id == Global.shared.user?.id {
-                    result[pageNum] = (comment, idx)
+                    result[pageNum] = (
+                        Post.Comment(
+                            id: comment.id,
+                            user: comment.user,
+                            content: comment.content,
+                            x: comment.x / 100 * deviceSize.width,
+                            y: comment.y / 100 * deviceSize.width,
+                            createdAt: comment.createdAt
+                        ),
+                        idx
+                    )
                 }
             }
         }
@@ -63,7 +76,6 @@ struct CommentView: View {
     private let commentService: CommentService = .init()
 
     var body: some View {
-        let deviceSize = UIScreen.main.bounds.size
         ZStack {
             Text("\(postPageNum + 1)/\(postImageList.count)")
                 .font(.pretendard(size: 14, weight: .bold))
@@ -197,8 +209,8 @@ struct CommentView: View {
                                     // 댓글 업데이트 시 필드 값 변경해주기
                                     postImageList[postPageNum].comments[comment.1].content = content
                                     if let x, let y {
-                                        postImageList[postPageNum].comments[comment.1].x = x
-                                        postImageList[postPageNum].comments[comment.1].y = y
+                                        postImageList[postPageNum].comments[comment.1].x = x / deviceSize.width * 100
+                                        postImageList[postPageNum].comments[comment.1].y = y / deviceSize.width * 100
                                     }
                                     isFocused = false
                                     isCommentCreate = false
@@ -248,7 +260,7 @@ struct CommentView: View {
 
     @ViewBuilder
     func mainContent(deviceSize: CGSize) -> some View {
-        let sz = deviceSize.width > 395 ? 395 : deviceSize.width
+        let sz = deviceSize.width
         let longPress = LongPressGesture(minimumDuration: 0.3)
             .onEnded { value in
                 withAnimation {
@@ -261,8 +273,8 @@ struct CommentView: View {
                 // 삭제 버튼 근처인 경우
                 if value.location.x >= sz / 2 - 45,
                    value.location.x <= sz / 2 + 45,
-                   value.location.y >= sz + 45,
-                   value.location.y <= sz + 140
+                   value.location.y >= sz + 25,
+                   value.location.y <= sz + 120
                 {
                     overDelete = true
                 } else {
@@ -326,7 +338,7 @@ struct CommentView: View {
                             .foregroundColor(.white)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                    .offset(y: 80 + 50)
+                    .offset(y: 80 + 30)
                     .zIndex(2)
                 }
             }
@@ -377,8 +389,8 @@ struct CommentView: View {
             }
         }
         .frame(
-            width: deviceSize.width > 395 ? 395 : deviceSize.width,
-            height: deviceSize.width > 395 ? 395 : deviceSize.width
+            width: deviceSize.width,
+            height: deviceSize.width
         )
     }
 
