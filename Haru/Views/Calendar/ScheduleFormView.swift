@@ -19,8 +19,6 @@ struct ScheduleFormView: View {
 
     @State private var selectedIdx: Int?
     
-    var selectedIndex: Int
-    
     @State var showDeleteActionSheet: Bool = false
     @State var showEditActionSheet: Bool = false
     @State var actionSheetOption: ActionSheetOption = .isNotRepeat
@@ -378,7 +376,7 @@ struct ScheduleFormView: View {
         }
         .navigationBarBackButtonHidden()
         .toolbar {
-            if !isSchModalVisible {
+            if scheduleFormVM.mode == .edit {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         dismissAction.callAsFunction()
@@ -390,7 +388,7 @@ struct ScheduleFormView: View {
             }
         }
         .toolbar {
-            if !isSchModalVisible {
+            if scheduleFormVM.mode == .edit {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showEditActionSheet = true

@@ -159,7 +159,14 @@ struct CalendarDateView: View {
 
                 Modal(isActive: $isSchModalVisible, ratio: 0.9) {
                     ScheduleFormView(
-                        scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM), isSchModalVisible: $isSchModalVisible, selectedIndex: -1
+                        scheduleFormVM: ScheduleFormViewModel(
+                            selectionSet: calendarVM.selectionSet,
+                            categoryList: calendarVM.categoryList
+                        ) {
+                            calendarVM.getCurMonthSchList(calendarVM.dateList)
+                            calendarVM.getRefreshProductivityList()
+                        },
+                        isSchModalVisible: $isSchModalVisible
                     )
                 }
                 .zIndex(2)

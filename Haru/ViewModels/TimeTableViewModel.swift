@@ -232,7 +232,9 @@ final class TimeTableViewModel: ObservableObject {
             return
         }
 
-        scheduleService.fetchScheduleList(startDate, endDate) { result in
+        scheduleService.fetchScheduleList(
+            startDate, endDate
+        ) { result in
             switch result {
             case .success(let scheduleList):
                 let dateFormatter = DateFormatter()

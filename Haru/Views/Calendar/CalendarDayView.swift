@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftUIPager
 
 struct CalendarDayView: View {
+    @EnvironmentObject private var todoState: TodoState
+
     @StateObject var page: Page = .withIndex(15)
 
     @State var data = Array(0 ... 30)
@@ -19,10 +21,16 @@ struct CalendarDayView: View {
 
     var body: some View {
         Pager(page: page, data: self.data.indices, id: \.self) { index in
-            // TODO: todoAddViewModel 이렇게 사용해도 되는지 물어보기
-//            CalendarDayDetailView(calendarVM: calendarViewModel, todoAddViewModel: TodoAddViewModel(checkListViewModel: CheckListViewModel()), row: index)
-//                .frame(width: 330, height: 480)
-//                .cornerRadius(20)
+            CalendarDayDetailView(
+                calendarVM: calendarViewModel,
+                todoAddViewModel: TodoAddViewModel(todoState: todoState, addAction: { todoId in
+                }, updateAction: { todoId in
+                    calendarViewModel.getRefreshProductivityList()
+                }),
+                row: index
+            )
+            .frame(width: 330, height: 480)
+            .cornerRadius(20)
         }
         .itemAspectRatio(0.8)
         .itemSpacing(30)
