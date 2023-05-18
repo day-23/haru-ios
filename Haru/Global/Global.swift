@@ -18,5 +18,7 @@ final class Global {
         followingCount: 0,
         isFollowing: false
     )
+
+    var hashTagAll = HashTag(id: UUID().uuidString, content: "전체보기")
     private init() {}
 }

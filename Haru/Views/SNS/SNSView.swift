@@ -13,9 +13,6 @@ struct SNSView: View {
     // For pop up to root
     @State var isActive: Bool = false
 
-    var postVM = PostViewModel(postOption: PostOption.main)
-    var myPostVM = PostViewModel(postOption: .target_all, targetId: Global.shared.user?.id ?? nil)
-
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
@@ -25,10 +22,8 @@ struct SNSView: View {
                 ) {
                     Text("검색창")
                 }
-                FeedListView(postVM: postVM, comeToRoot: true)
-                    .onAppear {
-                        postVM.loadMorePosts()
-                    }
+
+                FeedListView(postVM: PostViewModel(option: .main), comeToRoot: true)
             }
 
             if toggleIsClicked {
@@ -44,12 +39,9 @@ struct SNSView: View {
                 } thirdContent: {
                     NavigationLink {
                         ProfileInfoView(
-                            postVM: myPostVM,
+                            postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
                             userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
                         )
-                        .onAppear {
-                            myPostVM.loadMorePosts()
-                        }
                     } label: {
                         Text("내 기록")
                     }
