@@ -183,14 +183,16 @@ struct ScheduleFormView: View {
                                 CustomDatePicker(
                                     selection: $scheduleFormVM.repeatEnd,
                                     displayedComponents: [.date],
-                                    pastCutoffDate: scheduleFormVM.repeatStart
+                                    pastCutoffDate: scheduleFormVM.repeatStart,
+                                    isWarning: $scheduleFormVM.isWarning
                                 )
                                 .transition(.picker)
                                 
                                 if !scheduleFormVM.isAllDay {
                                     CustomDatePicker(
                                         selection: $scheduleFormVM.repeatEnd,
-                                        displayedComponents: [.hourAndMinute]
+                                        displayedComponents: [.hourAndMinute],
+                                        isWarning: $scheduleFormVM.isWarning
                                     )
                                     .transition(.picker)
                                 }

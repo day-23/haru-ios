@@ -33,8 +33,28 @@ final class ScheduleFormViewModel: ObservableObject {
     var prevRepeatEnd: Date?
     var nextRepeatStart: Date?
     
-    @Published var repeatStart: Date
-    @Published var repeatEnd: Date
+    @Published var isWarning: Bool = false
+
+    @Published var repeatStart: Date {
+        willSet {
+            if newValue >= repeatEnd {
+                repeatEnd = newValue.addingTimeInterval(60 * 60)
+            } else {
+                isWarning = false
+            }
+        }
+    }
+
+    @Published var repeatEnd: Date {
+        willSet {
+            if newValue <= repeatEnd {
+                isWarning = true
+            } else {
+                isWarning = false
+            }
+        }
+    }
+
     @Published var realRepeatEnd: Date
     
     // 시작과 끝이 7일 이상인가
@@ -251,18 +271,22 @@ final class ScheduleFormViewModel: ObservableObject {
         successAction: @escaping () -> Void
     ) {
         let selectionList = selectionSet.sorted(by: <)
-        self.repeatStart = selectionList.first?.date ?? Date()
-        self.repeatEnd = Calendar.current.date(
+        self.repeatStart = (selectionList.first?.date ?? Date()).roundToNearestFiveMinutes()
+        self.repeatEnd = (Calendar.current.date(
             byAdding: .hour,
             value: 1,
             to: selectionList.last?.date ?? Date()
-        ) ?? Date()
+        ) ?? Date()).roundToNearestFiveMinutes()
         self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
         self.mode = .add
         
-        self.tmpRepeatStart = selectionList.first?.date ?? Date()
-        self.tmpRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+        self.tmpRepeatStart = (selectionList.first?.date ?? Date()).roundToNearestFiveMinutes()
+        self.tmpRepeatEnd = (Calendar.current.date(
+            byAdding: .hour,
+            value: 1,
+            to: selectionList.last?.date ?? Date()
+        ) ?? Date()).roundToNearestFiveMinutes()
         self.tmpRepeatOption = nil
         self.tmpRepeatValue = nil
         self.tmpIsSelectedRepeatEnd = false
