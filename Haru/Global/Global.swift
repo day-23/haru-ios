@@ -20,5 +20,7 @@ final class Global {
 //    )
 
     var user: User?
+    
+    var me : Me?
     private init() {}
 }
