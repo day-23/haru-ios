@@ -14,13 +14,13 @@ struct TagListView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                //  중요 태그
+                // 중요 태그
                 StarButton(isClicked: true)
                     .onTapGesture {
                         action(Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
                     }
 
-                //  미분류 태그
+                // 미분류 태그
                 TagView(
                     tag: Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue),
                     isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue
@@ -29,7 +29,7 @@ struct TagListView: View {
                     action(Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue))
                 }
 
-                //  완료 태그
+                // 완료 태그
                 TagView(
                     tag: Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue),
                     isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
@@ -38,7 +38,7 @@ struct TagListView: View {
                     action(Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue))
                 }
 
-                //  태그 리스트들
+                // 태그 리스트들
                 ForEach(viewModel.tagList) { tag in
                     if let isSelected = tag.isSelected, isSelected {
                         TagView(tag: tag, isSelected: viewModel.selectedTag?.id == tag.id)

@@ -8,14 +8,14 @@
 import Foundation
 
 struct SubTodo: Codable, Identifiable {
-    //  MARK: - Properties
+    // MARK: - Properties
 
     let id: String
     var content: String
     var subTodoOrder: Int
     var completed: Bool
 
-    //  MARK: - Dates
+    // MARK: - Dates
 
 //    let createdAt: Date
 //    private(set) var updatedAt: Date

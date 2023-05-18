@@ -66,7 +66,7 @@ struct ListSectionView<Content>: View where Content: View {
                         }
                     }
                     .onMove(perform: { indexSet, index in
-                        //  ScrollView로 변경함으로써 알고리즘 변경 필요
+                        // ScrollView로 변경함으로써 알고리즘 변경 필요
                         todoList.move(fromOffsets: indexSet, toOffset: index)
                         orderAction()
                     })

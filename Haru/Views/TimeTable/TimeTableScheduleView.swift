@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
+    @State var calendarViewModel: CalendarViewModel = .init()
 
     private let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -63,13 +64,21 @@ struct TimeTableScheduleView: View {
                             Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
                                 .font(.pretendard(size: 14, weight: .medium))
                                 .foregroundColor(
-                                    index == 0 ? Color(0xfdbbcd) : (index == 6 ? Color(0xbbe7ff) : Color(0xbababa))
+                                    index == 0
+                                        ? Color(0xfdbbcd)
+                                        : (index == 6
+                                            ? Color(0xbbe7ff)
+                                            : Color(0xbababa))
                                 )
                         } else {
                             Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
                                 .font(.pretendard(size: 14, weight: .medium))
                                 .foregroundColor(
-                                    index == 0 ? Color(0xf71e58) : (index == 6 ? Color(0x1dafff) : Color(0x191919))
+                                    index == 0
+                                        ? Color(0xf71e58)
+                                        : (index == 6
+                                            ? Color(0x1dafff)
+                                            : Color(0x191919))
                                 )
                         }
                     }
@@ -148,26 +157,35 @@ struct TimeTableScheduleView: View {
                                         .frame(width: frame.width, height: frame.height)
                                         .position(x: position.x, y: position.y)
                                 } else {
-                                    ScheduleItemView(schedule: $schedule)
-                                        .frame(width: frame.width, height: frame.height)
-                                        .position(x: position.x, y: position.y)
-                                        .onTapGesture {
-                                            print(schedule.at)
-                                        }
-                                        .onDrop(of: [.text], delegate: CellDropDelegate(
-                                            dayIndex: schedule.data.repeatStart.indexOfWeek()!,
-                                            hourIndex: schedule.data.repeatStart.hour,
-                                            minuteIndex: schedule.data.repeatStart.minute / 5,
-                                            timeTableViewModel: _timeTableViewModel
-                                        ))
-                                        .onDrag {
-                                            let scheduleId = schedule.id
-                                            timeTableViewModel.draggingSchedule = schedule
-                                            return NSItemProvider(object: scheduleId as NSString)
-                                        } preview: {
-                                            ScheduleItemView(schedule: $schedule)
-                                                .frame(width: 0.1, height: 0.1)
-                                        }
+                                    NavigationLink {
+                                        ScheduleFormView(
+                                            scheduleFormVM: ScheduleFormViewModel(
+                                                schedule: schedule.data,
+                                                categoryList: calendarViewModel.categoryList
+                                            ) {
+                                                timeTableViewModel.fetchScheduleList()
+                                            },
+                                            isSchModalVisible: .constant(false)
+                                        )
+                                    } label: {
+                                        ScheduleItemView(schedule: $schedule)
+                                    }
+                                    .frame(width: frame.width, height: frame.height)
+                                    .position(x: position.x, y: position.y)
+                                    .onDrop(of: [.text], delegate: CellDropDelegate(
+                                        dayIndex: schedule.data.repeatStart.indexOfWeek()!,
+                                        hourIndex: schedule.data.repeatStart.hour,
+                                        minuteIndex: schedule.data.repeatStart.minute / 5,
+                                        timeTableViewModel: _timeTableViewModel
+                                    ))
+                                    .onDrag {
+                                        let scheduleId = schedule.id
+                                        timeTableViewModel.draggingSchedule = schedule
+                                        return NSItemProvider(object: scheduleId as NSString)
+                                    } preview: {
+                                        ScheduleItemView(schedule: $schedule)
+                                            .frame(width: 0.1, height: 0.1)
+                                    }
                                 }
                             }
                         }
@@ -205,7 +223,7 @@ private extension TimeTableScheduleView {
             }
         }
 
-        //  찾지 못했을 때
+        // 찾지 못했을 때
         return nil
     }
 

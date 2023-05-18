@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HaruView: View {
     @Environment(\.dismiss) var dismissAction
+    @EnvironmentObject var todoState: TodoState
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
     @State private var isModalVisible: Bool = false
@@ -35,11 +36,11 @@ struct HaruView: View {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
-                    todoList: $viewModel.todoListByFlagWithToday,
+                    todoList: $todoState.todoListByFlagWithToday,
                     itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
                     emptyTextContent: "중요한 할 일이 있나요?"
                 ) {
-                    viewModel.updateOrderHaru()
+                    todoState.updateOrderHaru()
                 } header: {
                     TagView(
                         tag: Tag(
@@ -56,10 +57,10 @@ struct HaruView: View {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
-                    todoList: $viewModel.todoListByTodayTodo,
+                    todoList: $todoState.todoListByTodayTodo,
                     itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
                 ) {
-                    viewModel.updateOrderHaru()
+                    todoState.updateOrderHaru()
                 } header: {
                     TagView(
                         tag: Tag(id: "오늘 할 일", content: "오늘 할 일"),
@@ -73,10 +74,10 @@ struct HaruView: View {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
-                    todoList: $viewModel.todoListByUntilToday,
+                    todoList: $todoState.todoListByUntilToday,
                     itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
                 ) {
-                    viewModel.updateOrderHaru()
+                    todoState.updateOrderHaru()
                 } header: {
                     TagView(
                         tag: Tag(id: "오늘까지", content: "오늘까지"),
@@ -90,11 +91,11 @@ struct HaruView: View {
                 ListSectionView(
                     checkListViewModel: viewModel,
                     todoAddViewModel: addViewModel,
-                    todoList: $viewModel.todoListByCompleted,
+                    todoList: $todoState.todoListByCompleted,
                     itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
                     emptyTextContent: "할 일을 완료해 보세요!"
                 ) {
-                    viewModel.updateOrderHaru()
+                    todoState.updateOrderHaru()
                 } header: {
                     TagView(
                         tag: Tag(
@@ -181,7 +182,7 @@ struct HaruView: View {
         .toolbarBackground(Color(0xD9EAFD))
         .onAppear {
             viewModel.mode = .haru
-            viewModel.fetchTodoListByTodayTodoAndUntilToday()
+            todoState.fetchTodoListByTodayTodoAndUntilToday()
         }
         .onDisappear {
             viewModel.mode = .main

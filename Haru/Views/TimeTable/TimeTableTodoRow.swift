@@ -14,6 +14,7 @@ struct TimeTableTodoRow: View {
     var date: Date
     @Binding var todoList: [TodoCell]
     @StateObject var timeTableViewModel: TimeTableViewModel
+    @StateObject var todoAddViewModel: TodoAddViewModel
 
     var body: some View {
         HStack(spacing: 0) {
@@ -60,17 +61,24 @@ struct TimeTableTodoRow: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(todoList) { todo in
-                            TimeTableTodoItem(
-                                todo: todo
-                            )
-                            .transition(.scale)
-                            .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 10))
-                            .onDrag {
-                                timeTableViewModel.draggingTodo = todo
-                                return NSItemProvider(object: todo.data.id as NSString)
-                            }
-                            .onTapGesture {
-                                print(todo.data.repeatOption, todo.at)
+                            NavigationLink {
+                                TodoAddView(
+                                    viewModel: todoAddViewModel
+                                )
+                                .onAppear {
+                                    todoAddViewModel.applyTodoData(
+                                        todo: todo.data,
+                                        at: todo.at
+                                    )
+                                }
+                            } label: {
+                                TimeTableTodoItem(todo: todo)
+                                    .transition(.scale)
+                                    .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 10))
+                                    .onDrag {
+                                        timeTableViewModel.draggingTodo = todo
+                                        return NSItemProvider(object: todo.data.id as NSString)
+                                    }
                             }
                         }
                     }

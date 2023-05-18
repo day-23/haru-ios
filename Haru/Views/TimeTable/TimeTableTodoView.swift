@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct TimeTableTodoView: View {
-    //  MARK: - Properties
+    // MARK: - Properties
 
+    @StateObject var todoAddViewModel: TodoAddViewModel
     @StateObject var timeTableViewModel: TimeTableViewModel
 
-    init(timeTableViewModel: StateObject<TimeTableViewModel>) {
+    init(
+        todoAddViewModel: StateObject<TodoAddViewModel>,
+        timeTableViewModel: StateObject<TimeTableViewModel>
+    ) {
+        _todoAddViewModel = todoAddViewModel
         _timeTableViewModel = timeTableViewModel
     }
 
@@ -23,7 +28,8 @@ struct TimeTableTodoView: View {
                     index: index,
                     date: timeTableViewModel.thisWeek[index],
                     todoList: $timeTableViewModel.todoListByDate[index],
-                    timeTableViewModel: timeTableViewModel
+                    timeTableViewModel: timeTableViewModel,
+                    todoAddViewModel: todoAddViewModel
                 )
                 .background(
                     index == Date.now.indexOfWeek()
