@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
-    @State var calendarViewModel: CalendarViewModel = .init()
+    @StateObject var calendarViewModel: CalendarViewModel
 
     private let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -33,8 +33,12 @@ struct TimeTableScheduleView: View {
     private let borderWidth = 1
     private var fixed: Double = 31
 
-    init(timeTableViewModel: StateObject<TimeTableViewModel>) {
+    init(
+        timeTableViewModel: StateObject<TimeTableViewModel>,
+        calendarViewModel: StateObject<CalendarViewModel>
+    ) {
         _timeTableViewModel = timeTableViewModel
+        _calendarViewModel = calendarViewModel
     }
 
     var body: some View {

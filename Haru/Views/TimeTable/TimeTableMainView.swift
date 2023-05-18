@@ -13,6 +13,7 @@ struct TimeTableMainView: View {
 
     @EnvironmentObject private var todoState: TodoState
     @StateObject var timeTableViewModel: TimeTableViewModel
+    @StateObject var calendarViewModel: CalendarViewModel = .init()
 
     @State private var isScheduleView: Bool = true
 
@@ -23,6 +24,10 @@ struct TimeTableMainView: View {
     var body: some View {
         ZStack {
             VStack {
+                HaruHeader {
+                    // TODO: 검색 화면
+                }
+
                 // 날짜 레이아웃
                 HStack(spacing: 0) {
                     Text("\(String(timeTableViewModel.currentYear))년")
@@ -63,7 +68,8 @@ struct TimeTableMainView: View {
 
                 if isScheduleView {
                     TimeTableScheduleView(
-                        timeTableViewModel: _timeTableViewModel
+                        timeTableViewModel: _timeTableViewModel,
+                        calendarViewModel: _calendarViewModel
                     )
                     .padding(.trailing)
                 } else {

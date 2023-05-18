@@ -20,36 +20,23 @@ struct TimeTableTodoRow: View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
                 Text(week[index])
-                    .font(.pretendard(size: 14, weight: .bold))
-                    .foregroundColor(
-                        index == 0
-                            ? Color(0xF71E58)
-                            : (index == 6
-                                ? Color(0x1DAFFF)
-                                : Color(0x191919))
-                    )
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .foregroundColor(Color(0xACACAC))
                     .padding(.bottom, 7)
 
                 if index == Date.now.indexOfWeek() {
                     Text("\(date.day)")
                         .font(.pretendard(size: 14, weight: .bold))
-                        .foregroundColor(Color(0x2CA4FF))
+                        .foregroundColor(Color(0x1DAFFF))
                         .padding(.vertical, 3)
                         .padding(.horizontal, 6)
                         .background(
-                            Circle()
-                                .stroke(.gradation1, lineWidth: 2)
+                            Circle().stroke(.gradation1, lineWidth: 2)
                         )
                 } else {
                     Text("\(date.day)")
-                        .font(.pretendard(size: 14, weight: .bold))
-                        .foregroundColor(
-                            index == 0
-                                ? Color(0xF71E58)
-                                : (index == 6
-                                    ? Color(0x1DAFFF)
-                                    : Color(0x191919))
-                        )
+                        .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(Color(0x646464))
                 }
             }
             .frame(width: 60)
