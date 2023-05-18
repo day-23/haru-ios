@@ -23,7 +23,7 @@ struct TimeTableMainView: View {
 
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 0) {
                 HaruHeader {
                     // TODO: 검색 화면
                 }
@@ -65,6 +65,7 @@ struct TimeTableMainView: View {
                         }
                 }
                 .padding(.trailing)
+                .padding(.bottom, 18)
 
                 if isScheduleView {
                     TimeTableScheduleView(
