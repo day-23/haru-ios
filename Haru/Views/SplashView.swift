@@ -13,6 +13,8 @@ struct SplashView: View {
     
     var body: some View {
         Image("background-main")
+            .resizable()
+            .edgesIgnoringSafeArea(.all)
             .overlay {
                 VStack(spacing: 0) {
                     Image("haru")

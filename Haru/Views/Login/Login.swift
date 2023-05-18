@@ -13,6 +13,8 @@ struct Login: View {
 
     var body: some View {
         Image("background-main")
+            .resizable()
+            .edgesIgnoringSafeArea(.all)
             .overlay {
                 VStack(spacing: 0) {
                     Image("haru")
@@ -78,6 +80,13 @@ struct Login: View {
                             }
                     }
                     .padding(.top, 33)
+
+                    Image("character-login")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 251.82 * 1.5, height: 69.09 * 1.5)
+                        .padding(.top, 37)
+                        .allowsHitTesting(false)
                 }
             }
     }

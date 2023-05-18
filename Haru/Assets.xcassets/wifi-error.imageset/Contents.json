@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "캐릭터인터넷연결 3.svg",
+      "filename" : "캐릭터인터넷연결 1.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "캐릭터인터넷연결 4.svg",
+      "filename" : "캐릭터인터넷연결 2.svg",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -19,5 +19,8 @@
   "info" : {
     "author" : "xcode",
     "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
   }
 }
