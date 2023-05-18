@@ -43,16 +43,15 @@ struct TimeTableScheduleView: View {
 
     var body: some View {
         Group {
-            VStack {
+            VStack(spacing: 0) {
                 LazyVGrid(columns: column) {
                     Text("")
 
                     ForEach(week, id: \.self) { day in
                         Text(day)
-                            .font(.pretendard(size: 14, weight: .medium))
-                            .foregroundColor(
-                                day == "일" ? Color(0xf71e58) : (day == "토" ? Color(0x1dafff) : Color(0x191919))
-                            )
+                            .font(.pretendard(size: 14, weight: .regular))
+                            .foregroundColor(Color(0xacacac))
+                            .padding(.bottom, 3)
                     }
                 }
 
@@ -64,31 +63,14 @@ struct TimeTableScheduleView: View {
                     Text("")
 
                     ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                        if timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth {
-                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
-                                .font(.pretendard(size: 14, weight: .medium))
-                                .foregroundColor(
-                                    index == 0
-                                        ? Color(0xfdbbcd)
-                                        : (index == 6
-                                            ? Color(0xbbe7ff)
-                                            : Color(0xbababa))
-                                )
-                        } else {
-                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
-                                .font(.pretendard(size: 14, weight: .medium))
-                                .foregroundColor(
-                                    index == 0
-                                        ? Color(0xf71e58)
-                                        : (index == 6
-                                            ? Color(0x1dafff)
-                                            : Color(0x191919))
-                                )
-                        }
+                        Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                            .font(.pretendard(size: 14, weight: .regular))
+                            .foregroundColor(Color(0x646464))
+                            .padding(.top, 8)
                     }
                 }
 
-                if !timeTableViewModel.scheduleListWithoutTime.isEmpty {
+                if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
                     TimeTableScheduleTopView(timeTableViewModel: _timeTableViewModel)
                 }
             }
@@ -109,7 +91,7 @@ struct TimeTableScheduleView: View {
                         } else {
                             Rectangle()
                                 .foregroundColor(.white)
-                                .border(Color(0xededed))
+                                .border(Color(0xdbdbdb), width: 0.5)
                                 .frame(height: cellHeight)
                                 .background(
                                     GeometryReader(content: { proxy in

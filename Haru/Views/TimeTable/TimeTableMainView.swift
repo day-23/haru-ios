@@ -40,7 +40,7 @@ struct TimeTableMainView: View {
                         .padding(.leading, 10)
                     Image("toggle")
                         .renderingMode(.template)
-                        .foregroundColor(Color(0x767676))
+                        .foregroundColor(Color(0x191919))
                         .rotationEffect(Angle(degrees: 90))
                         .scaleEffect(1.25)
                         .scaledToFit()

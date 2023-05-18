@@ -46,9 +46,6 @@ struct TimeTableScheduleTopView: View {
                     ScheduleTopItemView(
                         schedule: $schedule, width: topItemWidth * CGFloat(schedule.weight), height: topItemHeight
                     )
-                    .onTapGesture {
-                        print(schedule.at)
-                    }
                     .position(
                         calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
                     )
