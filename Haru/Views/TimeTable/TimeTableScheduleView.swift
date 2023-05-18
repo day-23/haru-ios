@@ -85,13 +85,22 @@ struct TimeTableScheduleView: View {
                             VStack {
                                 Spacer()
                                 Text("\(index / 8 + 1)")
-                                    .font(.pretendard(size: 10, weight: .medium))
+                                    .font(.pretendard(size: 12, weight: .regular))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             }
                         } else {
                             Rectangle()
                                 .foregroundColor(.white)
-                                .border(Color(0xdbdbdb), width: 0.5)
+                                .border(
+                                    width: 1,
+                                    edges: [
+                                        .top,
+                                        .leading,
+                                        (index / 8 == 23) ? .bottom : .top,
+                                        (index % 8 == 7) ? .trailing : .leading
+                                    ],
+                                    color: Color(0xdbdbdb)
+                                )
                                 .frame(height: cellHeight)
                                 .background(
                                     GeometryReader(content: { proxy in
