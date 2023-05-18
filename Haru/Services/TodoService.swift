@@ -9,7 +9,7 @@ import Alamofire
 import Foundation
 
 struct TodoService {
-    //  MARK: - Properties
+    // MARK: - Properties
 
     private static let baseURL = Constants.baseURL + "todo/"
 
@@ -31,7 +31,7 @@ struct TodoService {
         return encoder
     }()
 
-    //  MARK: - Todo Create API
+    // MARK: - Todo Create API
 
     func addTodo(
         todo: Request.Todo,
@@ -65,7 +65,7 @@ struct TodoService {
         }
     }
 
-    //  MARK: - Todo Read API
+    // MARK: - Todo Read API
 
     func fetchAllTodoList(
         completion: @escaping (Result<(
@@ -433,7 +433,7 @@ struct TodoService {
         }
     }
 
-    //  MARK: - Todo Update API
+    // MARK: - Todo Update API
 
     func updateTodo(
         todoId: String,
@@ -469,7 +469,7 @@ struct TodoService {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         if at == .none {
-            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            print("[Debug] at의 값이 none입니다. \(#fileID) \(#function)")
             return
         }
 
@@ -596,7 +596,7 @@ struct TodoService {
             case .success:
                 break
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
             }
         }
     }
@@ -631,7 +631,7 @@ struct TodoService {
             case .success:
                 break
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
             }
         }
     }
@@ -661,7 +661,7 @@ struct TodoService {
             case .success:
                 break
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
             }
         }
     }
@@ -691,7 +691,7 @@ struct TodoService {
             case .success:
                 break
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
             }
         }
     }
@@ -723,7 +723,7 @@ struct TodoService {
             case .success:
                 break
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
             }
         }
     }
@@ -753,7 +753,7 @@ struct TodoService {
             case .success:
                 completion(.success(true))
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
                 completion(.failure(error))
             }
         }
@@ -784,7 +784,7 @@ struct TodoService {
             case .success:
                 completion(.success(true))
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
                 completion(.failure(error))
             }
         }
@@ -797,7 +797,7 @@ struct TodoService {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         if at == .none {
-            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            print("[Debug] at의 값이 none입니다. \(#fileID) \(#function)")
             return
         }
 
@@ -825,13 +825,13 @@ struct TodoService {
             case .success:
                 completion(.success(true))
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
                 completion(.failure(error))
             }
         }
     }
 
-    //  MARK: - Todo Delete API
+    // MARK: - Todo Delete API
 
     func deleteTodo(
         todoId: String,
@@ -857,7 +857,7 @@ struct TodoService {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         if at == .none {
-            print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
+            print("[Debug] at의 값이 none입니다. \(#fileID) \(#function)")
             return
         }
 

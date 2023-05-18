@@ -70,7 +70,7 @@ struct TagOptionView: View {
                                             checkListViewModel.tagContent = ""
                                             addButtonTapped = false
                                         case .failure(let error):
-                                            print("[Debug] \(error) (\(#fileID), \(#function))")
+                                            print("[Debug] \(error) \(#fileID), \(#function)")
                                             addButtonTapped = false
                                         }
                                     }
@@ -199,7 +199,7 @@ extension TagOptionView {
                     case .success:
                         checkListViewModel.tagContent = ""
                     case .failure(let error):
-                        print("[Debug] \(error) (\(#fileID), \(#function))")
+                        print("[Debug] \(error) \(#fileID), \(#function)")
                     }
                 }
             }
@@ -217,7 +217,7 @@ extension TagOptionView {
                     case .success:
                         checkListViewModel.tagContent = ""
                     case .failure(let error):
-                        print("[Debug] \(error) (\(#fileID), \(#function))")
+                        print("[Debug] \(error) \(#fileID), \(#function)")
                     }
                 }
             }

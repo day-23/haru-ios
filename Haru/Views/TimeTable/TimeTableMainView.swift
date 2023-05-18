@@ -9,7 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct TimeTableMainView: View {
-    //  MARK: - Properties
+    // MARK: - Properties
 
     @EnvironmentObject private var todoState: TodoState
     @StateObject var timeTableViewModel: TimeTableViewModel
@@ -23,7 +23,7 @@ struct TimeTableMainView: View {
     var body: some View {
         ZStack {
             VStack {
-                //  날짜 레이아웃
+                // 날짜 레이아웃
                 HStack(spacing: 0) {
                     Text("\(String(timeTableViewModel.currentYear))년")
                         .font(.pretendard(size: 28, weight: .bold))

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TimeTableTodoView: View {
-    //  MARK: - Properties
+    // MARK: - Properties
 
     @StateObject var todoAddViewModel: TodoAddViewModel
     @StateObject var timeTableViewModel: TimeTableViewModel

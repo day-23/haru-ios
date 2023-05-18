@@ -7,6 +7,4 @@
 
 import Foundation
 
-final class ScheduleState: ObservableObject {
-    
-}
+final class ScheduleState: ObservableObject {}

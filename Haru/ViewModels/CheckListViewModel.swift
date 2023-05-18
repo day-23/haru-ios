@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 final class CheckListViewModel: ObservableObject {
-    //  MARK: - enums
+    // MARK: - enums
 
     enum Mode {
         case main
@@ -17,7 +17,7 @@ final class CheckListViewModel: ObservableObject {
         case haru
     }
 
-    //  MARK: - Properties
+    // MARK: - Properties
 
     @StateObject var todoState: TodoState
     init(todoState: StateObject<TodoState>) {
@@ -49,10 +49,10 @@ final class CheckListViewModel: ObservableObject {
 
     @Published var tagList: [Tag] = []
 
-    //  add or update로 변경된 TodoId
+    // add or update로 변경된 TodoId
     @Published var justAddedTodoId: String?
 
-    //  현재 보여지고 있는 todoList의 offset
+    // 현재 보여지고 있는 todoList의 offset
     @Published var todoListOffsetMap: [String: CGFloat] = [:]
 
     var isEmpty: Bool {
@@ -66,7 +66,7 @@ final class CheckListViewModel: ObservableObject {
             && todoState.todoListWithoutTag.isEmpty)
     }
 
-    //  MARK: - Create
+    // MARK: - Create
 
     func addTag(
         content: String,
@@ -97,7 +97,7 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    //  MARK: - Read
+    // MARK: - Read
 
     func fetchTags() {
         tagService.fetchTags { result in
@@ -107,7 +107,7 @@ final class CheckListViewModel: ObservableObject {
                     self.tagList = tagList
                 }
             case let .failure(error):
-                print("[Debug]: \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
             }
         }
     }
@@ -131,7 +131,7 @@ final class CheckListViewModel: ObservableObject {
         } else if tag.id == DefaultTag.unclassified.rawValue {
             todoState.fetchTodoListWithoutTag()
         } else if tag.id == DefaultTag.completed.rawValue {
-            //  FIXME: - 페이지네이션 함수로 호출 해야함
+            // FIXME: - 페이지네이션 함수로 호출 해야함
             todoState.fetchTodoListByCompletedInMain()
         } else if tag.id == DefaultTag.haru.rawValue {
             todoState.fetchTodoListByTodayTodoAndUntilToday()
@@ -140,7 +140,7 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    //  MARK: - Update
+    // MARK: - Update
 
     func updateTodo(
         todoId: String,
@@ -286,7 +286,7 @@ final class CheckListViewModel: ObservableObject {
         }
     }
 
-    //  MARK: - Delete
+    // MARK: - Delete
 
     func deleteTodo(
         todoId: String,

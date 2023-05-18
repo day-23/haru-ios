@@ -31,7 +31,7 @@ final class TodoState: ObservableObject {
             case let .success(addedTodo):
                 completion(.success(addedTodo))
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
                 completion(.failure(error))
             }
         }
@@ -51,7 +51,7 @@ final class TodoState: ObservableObject {
                     self.todoListByCompleted = response.completedTodos
                 }
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
             }
         }
     }
@@ -64,7 +64,7 @@ final class TodoState: ObservableObject {
                     self.todoListByFlag = success
                 }
             case let .failure(failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -77,7 +77,7 @@ final class TodoState: ObservableObject {
                     self.todoListByCompleted = success
                 }
             case let .failure(failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -93,7 +93,7 @@ final class TodoState: ObservableObject {
                     self.todoListByCompleted = success.completedTodos
                 }
             case let .failure(failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function)")
+                print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -106,7 +106,7 @@ final class TodoState: ObservableObject {
                     self.todoListWithoutTag = success
                 }
             case let .failure(failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -125,7 +125,7 @@ final class TodoState: ObservableObject {
                     self.todoListWithoutTag = success.untaggedTodos
                 }
             case let .failure(failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -253,7 +253,7 @@ final class TodoState: ObservableObject {
             case let .success(success):
                 completion(.success(success))
             case let .failure(error):
-                print("[Debug] \(error) \(#fileID), \(#function)")
+                print("[Debug] \(error) \(#fileID) \(#function)")
                 completion(.failure(error))
             }
         }
@@ -270,7 +270,7 @@ final class TodoState: ObservableObject {
             case .success:
                 completion(.success(true))
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
                 completion(.failure(error))
             }
         }
@@ -291,7 +291,7 @@ final class TodoState: ObservableObject {
             case let .success(success):
                 completion(.success(success))
             case let .failure(error):
-                print("[Debug] \(error) (\(#fileID), \(#function))")
+                print("[Debug] \(error) \(#fileID) \(#function)")
                 completion(.failure(error))
             }
         }

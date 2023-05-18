@@ -205,7 +205,7 @@ private extension TimeTableScheduleView {
             }
         }
 
-        //  찾지 못했을 때
+        // 찾지 못했을 때
         return nil
     }
 

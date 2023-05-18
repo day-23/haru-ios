@@ -44,7 +44,7 @@ struct TodoAddView: View {
                                             isModalVisible = false
                                         }
                                     case let .failure(failure):
-                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                        print("[Debug] \(failure) \(#fileID) \(#function)")
                                     }
                                 }
                             } label: {
@@ -58,7 +58,7 @@ struct TodoAddView: View {
                         .padding(.bottom, 27)
                     }
                     
-                    //  Todo, SubTodo 입력 View
+                    // Todo, SubTodo 입력 View
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 0) {
                             TextField("투두 입력", text: $viewModel.content)
@@ -121,7 +121,7 @@ struct TodoAddView: View {
                     
                     Divider()
                     
-                    //  Tag 입력 View
+                    // Tag 입력 View
                     Group {
                         Label {
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -162,7 +162,7 @@ struct TodoAddView: View {
                         Divider()
                     }
                     
-                    //  나의 하루에 추가
+                    // 나의 하루에 추가
                     Group {
                         Label {
                             Toggle(isOn: $viewModel.isTodayTodo.animation()) {
@@ -188,7 +188,7 @@ struct TodoAddView: View {
                         Divider()
                     }
                     
-                    //  알림 설정
+                    // 알림 설정
                     Group {
                         Label {
                             Toggle(isOn: $viewModel.isSelectedAlarm.animation()) {
@@ -222,7 +222,7 @@ struct TodoAddView: View {
                         Divider()
                     }
                     
-                    //  마감 설정
+                    // 마감 설정
                     Group {
                         Label {
                             Toggle(isOn: $viewModel.isSelectedEndDate.animation()) {
@@ -295,7 +295,7 @@ struct TodoAddView: View {
                         Divider()
                     }
                     
-                    //  반복 설정
+                    // 반복 설정
                     Group {
                         Label {
                             Toggle(isOn: $viewModel.isSelectedRepeat.animation()) {
@@ -410,7 +410,7 @@ struct TodoAddView: View {
                         Divider()
                     }
                     
-                    //  메모 추가
+                    // 메모 추가
                     Group {
                         Label {
                             HStack {
@@ -483,8 +483,8 @@ struct TodoAddView: View {
                                 if viewModel.isSelectedRepeat {
                                     if viewModel.isPreviousRepeatStateEqual {
                                         Button("이 할 일만 수정") {
-                                            //  반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
-                                            //  아래 옵션을 false로 변경한다.
+                                            // 반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
+                                            // 아래 옵션을 false로 변경한다.
                                             viewModel.isSelectedRepeat = false
                                             
                                             viewModel.updateTodoWithRepeat(
@@ -494,7 +494,7 @@ struct TodoAddView: View {
                                                 case .success:
                                                     dismissAction.callAsFunction()
                                                 case let .failure(failure):
-                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                    print("[Debug] \(failure) \(#fileID) \(#function)")
                                                 }
                                             }
                                         }
@@ -513,7 +513,7 @@ struct TodoAddView: View {
                                                 case .success:
                                                     dismissAction.callAsFunction()
                                                 case let .failure(failure):
-                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                    print("[Debug] \(failure) \(#fileID) \(#function)")
                                                 }
                                             }
                                         }
@@ -529,7 +529,7 @@ struct TodoAddView: View {
                                                 case .success:
                                                     dismissAction.callAsFunction()
                                                 case let .failure(failure):
-                                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                    print("[Debug] \(failure) \(#fileID) \(#function)")
                                                 }
                                             }
                                         }
@@ -541,7 +541,7 @@ struct TodoAddView: View {
                                             case .success:
                                                 dismissAction.callAsFunction()
                                             case let .failure(failure):
-                                                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                                print("[Debug] \(failure) \(#fileID) \(#function)")
                                             }
                                         }
                                     }
@@ -582,7 +582,7 @@ struct TodoAddView: View {
                                 case .success:
                                     dismissAction.callAsFunction()
                                 case let .failure(failure):
-                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    print("[Debug] \(failure) \(#fileID) \(#function)")
                                 }
                             }
                         }
@@ -604,11 +604,11 @@ struct TodoAddView: View {
                                 } catch {
                                     switch error {
                                     case RepeatError.invalid:
-                                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
                                     case RepeatError.calculation:
-                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
                                     default:
-                                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                                     }
                                 }
                                 
@@ -617,7 +617,7 @@ struct TodoAddView: View {
                                     case .success:
                                         dismissAction.callAsFunction()
                                     case let .failure(failure):
-                                        print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                        print("[Debug] \(failure) \(#fileID) \(#function)")
                                     }
                                 }
                             }
@@ -629,7 +629,7 @@ struct TodoAddView: View {
                                 case .success:
                                     dismissAction.callAsFunction()
                                 case let .failure(failure):
-                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    print("[Debug] \(failure) \(#fileID) \(#function)")
                                 }
                             }
                         }
@@ -640,7 +640,7 @@ struct TodoAddView: View {
                                 case .success:
                                     dismissAction.callAsFunction()
                                 case let .failure(failure):
-                                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                                    print("[Debug] \(failure) \(#fileID) \(#function)")
                                 }
                             }
                         }

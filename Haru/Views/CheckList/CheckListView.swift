@@ -21,7 +21,7 @@ struct CheckListView: View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
-                    //  태그 리스트
+                    // 태그 리스트
                     TagListView(viewModel: viewModel) { tag in
                         withAnimation {
                             viewModel.selectedTag = tag
@@ -29,7 +29,7 @@ struct CheckListView: View {
                         }
                     }
 
-                    //  태그 설정창
+                    // 태그 설정창
                     Image("option-button")
                         .frame(width: 28, height: 28)
                         .onTapGesture {
@@ -41,7 +41,7 @@ struct CheckListView: View {
                 .padding(.bottom, 10)
                 .padding(.trailing, 20)
 
-                //  오늘 나의 하루
+                // 오늘 나의 하루
                 NavigationLink {
                     HaruView(
                         viewModel: viewModel,
@@ -52,7 +52,7 @@ struct CheckListView: View {
                 }
                 .padding(.bottom, 12)
 
-                //  체크 리스트
+                // 체크 리스트
                 if !viewModel.isEmpty {
                     if viewModel.selectedTag == nil {
                         ListView(checkListViewModel: viewModel) {
@@ -173,7 +173,6 @@ struct CheckListView: View {
                                     self.changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.completed.rawValue {
-                                //  FIXME: - 추후에 페이지네이션 함수로 교체 해야함
                                 ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
@@ -193,7 +192,7 @@ struct CheckListView: View {
                                     self.changeOffset($0)
                                 }
                             } else {
-                                //  Tag 클릭시
+                                // Tag 클릭시
                                 ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
