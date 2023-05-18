@@ -59,8 +59,6 @@ final class CalendarViewModel: ObservableObject {
     init() {
         setStartOnSunday(startOnSunday)
         getCategoryList()
-     
-        print("calendarVM init")
     }
     
     func setStartOnSunday(_ startOnSunday: Bool) {
@@ -321,7 +319,7 @@ final class CalendarViewModel: ObservableObject {
         }
     }
     
-    // offSet만큼 더해주고 빼주깈
+    // offSet만큼 더해주고 빼주기
     func getMoreProductivityList(isRight: Bool, offSet: Int, completion: @escaping () -> Void) {
         guard let toDate = isRight ? pivotDateList.last : pivotDateList.first else { return }
         let startValue = isRight ? 1 : -offSet

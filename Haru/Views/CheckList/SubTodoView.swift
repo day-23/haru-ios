@@ -17,15 +17,10 @@ struct SubTodoView: View {
         HStack(spacing: 0) {
             CompleteButton(isClicked: subTodo.completed)
                 .onTapGesture {
-                    checkListViewModel.completeSubTodo(subTodoId: subTodo.id,
-                                                       completed: !subTodo.completed) { result in
-                        switch result {
-                        case .success:
-                            checkListViewModel.fetchTodoList()
-                        case .failure(let failure):
-                            print("[Debug] \(failure) (\(#fileID), \(#function))")
-                        }
-                    }
+                    checkListViewModel.completeSubTodo(
+                        subTodoId: subTodo.id,
+                        completed: !subTodo.completed
+                    )
                 }
                 .padding(.trailing, 8)
 

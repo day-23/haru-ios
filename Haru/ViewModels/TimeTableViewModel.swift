@@ -223,7 +223,7 @@ final class TimeTableViewModel: ObservableObject {
         scheduleList = scheduleList.filter { $0.id != "PREVIEW" }
     }
 
-    //  MARK: - Read
+    // MARK: - Read
 
     func fetchScheduleList() {
         guard let startDate = thisWeek.first,
@@ -232,7 +232,9 @@ final class TimeTableViewModel: ObservableObject {
             return
         }
 
-        scheduleService.fetchScheduleList(startDate, endDate) { result in
+        scheduleService.fetchScheduleList(
+            startDate, endDate
+        ) { result in
             switch result {
             case .success(let scheduleList):
                 let dateFormatter = DateFormatter()
@@ -345,11 +347,11 @@ final class TimeTableViewModel: ObservableObject {
                                     } catch {
                                         switch error {
                                         case RepeatError.invalid:
-                                            print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                            print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
                                         case RepeatError.calculation:
-                                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
                                         default:
-                                            print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                            print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                                         }
                                     }
                                 }
@@ -496,7 +498,7 @@ final class TimeTableViewModel: ObservableObject {
                 self.findUnion()
                 self.processScheduleListWithoutTime()
             case .failure(let failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
@@ -546,11 +548,11 @@ final class TimeTableViewModel: ObservableObject {
                                 } catch {
                                     switch error {
                                     case RepeatError.invalid:
-                                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
                                     case RepeatError.calculation:
-                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
                                     default:
-                                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                                     }
                                 }
                             }
@@ -587,11 +589,11 @@ final class TimeTableViewModel: ObservableObject {
                                 } catch {
                                     switch error {
                                     case RepeatError.invalid:
-                                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
                                     case RepeatError.calculation:
-                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
                                     default:
-                                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                                        print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                                     }
                                 }
                             }
@@ -607,12 +609,12 @@ final class TimeTableViewModel: ObservableObject {
                     }
                 }
             case .failure(let failure):
-                print("[Debug] \(failure) (\(#fileID), \(#function))")
+                print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
 
-    //  MARK: - Update
+    // MARK: - Update
 
     func updateDraggingSchedule(
         startDate: Date,
@@ -646,7 +648,7 @@ final class TimeTableViewModel: ObservableObject {
                     self.draggingSchedule = nil
                     self.findUnion()
                 case .failure(let failure):
-                    print("[Debug] \(failure) (\(#fileID), \(#function))")
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
         } else {
@@ -668,11 +670,11 @@ final class TimeTableViewModel: ObservableObject {
                 } catch {
                     switch error {
                     case RepeatError.invalid:
-                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                        print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
                     case RepeatError.calculation:
-                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
                     default:
-                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                        print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                     }
                 }
                 return date
@@ -711,11 +713,11 @@ final class TimeTableViewModel: ObservableObject {
                 } catch {
                     switch error {
                     case RepeatError.invalid:
-                        print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                        print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
                     case RepeatError.calculation:
-                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                        print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
                     default:
-                        print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                        print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                     }
                 }
                 return date
@@ -743,7 +745,7 @@ final class TimeTableViewModel: ObservableObject {
                     self.draggingSchedule = nil
                     self.fetchScheduleList()
                 case .failure(let error):
-                    print("[Debug] \(error) \(#fileID), \(#function)")
+                    print("[Debug] \(error) \(#fileID) \(#function)")
                 }
             }
         }
@@ -761,7 +763,7 @@ final class TimeTableViewModel: ObservableObject {
                 continue
             }
 
-            //  찾는데 성공하였을 때
+            // 찾는데 성공하였을 때
             guard let endDate = draggingTodo.data.endDate else {
                 return
             }
@@ -815,7 +817,7 @@ final class TimeTableViewModel: ObservableObject {
                             }
                         }
                     case .failure(let error):
-                        print("[Debug] \(error) (\(#fileID), \(#function))")
+                        print("[Debug] \(error) \(#fileID) \(#function)")
                     }
                     self.draggingTodo = nil
                 }
@@ -855,11 +857,11 @@ final class TimeTableViewModel: ObservableObject {
                     } catch {
                         switch error {
                         case RepeatError.invalid:
-                            print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                            print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
                         case RepeatError.calculation:
-                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
                         default:
-                            print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                            print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                         }
                     }
                 } else if draggingTodo.at == .back {
@@ -868,11 +870,11 @@ final class TimeTableViewModel: ObservableObject {
                     } catch {
                         switch error {
                         case RepeatError.invalid:
-                            print("[Debug] 입력 데이터에 문제가 있습니다. (\(#fileID), \(#function))")
+                            print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
                         case RepeatError.calculation:
-                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. (\(#fileID), \(#function))")
+                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
                         default:
-                            print("[Debug] 알 수 없는 오류입니다. (\(#fileID), \(#function))")
+                            print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                         }
                     }
                 }

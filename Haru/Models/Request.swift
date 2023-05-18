@@ -16,7 +16,7 @@ struct Request: Codable {
     }()
 
     struct Todo: Codable {
-        //  MARK: - Request.Todo, Properties
+        // MARK: - Request.Todo, Properties
 
         var content: String
         var memo: String

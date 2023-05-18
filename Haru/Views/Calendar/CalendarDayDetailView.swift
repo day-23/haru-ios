@@ -8,13 +8,11 @@
 import SwiftUI
 
 struct CalendarDayDetailView: View {
-    var calendarVM: CalendarViewModel
-//    @StateObject var scheduleVM: ScheduleFormViewModel
-    var todoAddViewModel: TodoAddViewModel
+    @StateObject var calendarVM: CalendarViewModel
+    @StateObject var todoAddViewModel: TodoAddViewModel
+    var row: Int
     
     @State private var content: String = ""
-    
-    var row: Int
     
     var body: some View {
         VStack {
@@ -56,7 +54,16 @@ struct CalendarDayDetailView: View {
                         
                         ForEach(calendarVM.scheduleList[row].indices, id: \.self) { index in
                             NavigationLink {
-                                ScheduleFormView(scheduleFormVM: ScheduleFormViewModel(calendarVM: calendarVM, schedule: calendarVM.scheduleList[row][index]), isSchModalVisible: .constant(false), selectedIndex: row)
+                                ScheduleFormView(
+                                    scheduleFormVM: ScheduleFormViewModel(
+                                        schedule: calendarVM.scheduleList[row][index],
+                                        categoryList: calendarVM.categoryList
+                                    ) {
+                                        calendarVM.getCurMonthSchList(calendarVM.dateList)
+                                        calendarVM.getRefreshProductivityList()
+                                    },
+                                    isSchModalVisible: .constant(false)
+                                )
                             } label: {
                                 HStack(spacing: 20) {
                                     Circle()
@@ -87,7 +94,12 @@ struct CalendarDayDetailView: View {
                         
                         ForEach(calendarVM.todoList[row].indices, id: \.self) { index in
                             NavigationLink {
-                                Text("todo list 수정")
+                                TodoAddView(viewModel: todoAddViewModel)
+                                    .onAppear {
+                                        todoAddViewModel.applyTodoData(
+                                            todo: calendarVM.todoList[row][index]
+                                        )
+                                    }
                             } label: {
                                 HStack(spacing: 20) {
                                     Image("check-circle")
@@ -131,7 +143,14 @@ struct CalendarDayDetailView: View {
                             .cornerRadius(8)
                         
                         Button {
-                            ScheduleFormViewModel(calendarVM: calendarVM).addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
+                            ScheduleFormViewModel(
+                                selectionSet: calendarVM.selectionSet,
+                                categoryList: calendarVM.categoryList,
+                                successAction: {
+                                    calendarVM.getCurMonthSchList(calendarVM.dateList)
+                                    calendarVM.getRefreshProductivityList()
+                                }
+                            ).addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
                             self.content = ""
                         } label: {
                             Image("plus-button")

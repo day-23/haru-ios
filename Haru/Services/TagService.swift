@@ -29,7 +29,7 @@ struct TagService {
         return encoder
     }()
 
-    //  MARK: - CREATE API
+    // MARK: - CREATE API
 
     func createTag(
         content: String,
@@ -59,7 +59,7 @@ struct TagService {
         }
     }
 
-    //  MARK: - READ API
+    // MARK: - READ API
 
     func fetchTags(
         completion: @escaping (Result<[Tag], Error>) -> Void
@@ -82,7 +82,7 @@ struct TagService {
         }
     }
 
-    //  MARK: - UPDATE API
+    // MARK: - UPDATE API
 
     func updateIsSelected(
         tagId: String,
@@ -119,7 +119,7 @@ struct TagService {
         }
     }
 
-    //  MARK: - DELETE API
+    // MARK: - DELETE API
 
     func deleteTag(
         tagId: String,

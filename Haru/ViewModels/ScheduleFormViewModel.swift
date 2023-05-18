@@ -236,24 +236,27 @@ final class ScheduleFormViewModel: ObservableObject {
         return result
     }
     
-    var categoryList: [Category] {
-        calendarVM.categoryList
-    }
-    
     // MARK: - DI
 
-    private var calendarVM: CalendarViewModel
     private var scheduleService: ScheduleService = .init()
+    private var successAction: () -> Void
+    var categoryList: [Category]
 
     // MARK: init
 
     // add 시 scheduleVM 생성자
-    init(calendarVM: CalendarViewModel) {
-        self.calendarVM = calendarVM
-        
-        let selectionList = calendarVM.selectionSet.sorted(by: <)
+    init(
+        selectionSet: Set<DateValue>,
+        categoryList: [Category],
+        successAction: @escaping () -> Void
+    ) {
+        let selectionList = selectionSet.sorted(by: <)
         self.repeatStart = selectionList.first?.date ?? Date()
-        self.repeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+        self.repeatEnd = Calendar.current.date(
+            byAdding: .hour,
+            value: 1,
+            to: selectionList.last?.date ?? Date()
+        ) ?? Date()
         self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
         self.mode = .add
@@ -264,11 +267,17 @@ final class ScheduleFormViewModel: ObservableObject {
         self.tmpRepeatValue = nil
         self.tmpIsSelectedRepeatEnd = false
         self.tmpRealRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+        
+        self.categoryList = categoryList
+        self.successAction = successAction
     }
     
     // 수정 시 scheduleVM 생성자
-    init(calendarVM: CalendarViewModel, schedule: Schedule) {
-        self.calendarVM = calendarVM
+    init(
+        schedule: Schedule,
+        categoryList: [Category],
+        successAction: @escaping () -> Void
+    ) {
         self.mode = .edit
         
         self.scheduleId = schedule.id
@@ -314,6 +323,9 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.isSelectedRepeat = schedule.repeatOption != nil
         self.isSelectedRepeatEnd = schedule.realRepeatEnd != nil && schedule.realRepeatEnd!.year < 2200 ? true : false
+        
+        self.categoryList = categoryList
+        self.successAction = successAction
         
         self.repeatDay = isSelectedRepeat &&
             schedule.repeatOption == RepeatOption.everyDay.rawValue
@@ -477,7 +489,7 @@ final class ScheduleFormViewModel: ObservableObject {
             switch result {
             case .success:
                 // TODO: 추가된 일정을 로컬에서 가지고 있을 수 있나? (반복 일정의 경우 생각해볼 것)
-                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                self.successAction()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -498,8 +510,7 @@ final class ScheduleFormViewModel: ObservableObject {
             switch result {
             case .success:
                 // FIXME: getCurMonthSchList를 호출할 필요가 있나?
-                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                self.calendarVM.getRefreshProductivityList()
+                self.successAction()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -516,8 +527,7 @@ final class ScheduleFormViewModel: ObservableObject {
             switch result {
             case .success:
                 // FIXME: getCurMonthSchList를 호출할 필요가 있나?
-                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                self.calendarVM.getRefreshProductivityList()
+                self.successAction()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -533,8 +543,7 @@ final class ScheduleFormViewModel: ObservableObject {
             scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
-                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                    self.calendarVM.getRefreshProductivityList()
+                    self.successAction()
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
@@ -544,8 +553,7 @@ final class ScheduleFormViewModel: ObservableObject {
             scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
-                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                    self.calendarVM.getRefreshProductivityList()
+                    self.successAction()
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
@@ -555,8 +563,7 @@ final class ScheduleFormViewModel: ObservableObject {
             scheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
-                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                    self.calendarVM.getRefreshProductivityList()
+                    self.successAction()
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
@@ -571,8 +578,7 @@ final class ScheduleFormViewModel: ObservableObject {
         scheduleService.deleteSchedule(scheduleId: scheduleId) { result in
             switch result {
             case .success:
-                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                self.calendarVM.getRefreshProductivityList()
+                self.successAction()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -588,8 +594,7 @@ final class ScheduleFormViewModel: ObservableObject {
             scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
-                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                    self.calendarVM.getRefreshProductivityList()
+                    self.successAction()
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
@@ -598,8 +603,7 @@ final class ScheduleFormViewModel: ObservableObject {
             scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
                 case .success:
-                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                    self.calendarVM.getRefreshProductivityList()
+                    self.successAction()
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
@@ -608,8 +612,7 @@ final class ScheduleFormViewModel: ObservableObject {
             scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId, removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
-                    self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                    self.calendarVM.getRefreshProductivityList()
+                    self.successAction()
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
