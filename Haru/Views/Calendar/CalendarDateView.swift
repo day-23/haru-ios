@@ -73,7 +73,8 @@ struct CalendarDateView: View {
                             .tint(.gray1)
                         }
                     } // HStack
-                    .padding(.horizontal, 30)
+                    .padding(.leading, 34)
+                    .padding(.trailing, 20)
                     
                     Group {
                         // Day View ...

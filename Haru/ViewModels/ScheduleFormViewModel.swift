@@ -33,11 +33,15 @@ final class ScheduleFormViewModel: ObservableObject {
     var prevRepeatEnd: Date?
     var nextRepeatStart: Date?
     
+    var buttonDisable: Bool {
+        isWarning || content == ""
+    }
+    
     @Published var isWarning: Bool = false
 
     @Published var repeatStart: Date {
         willSet {
-            if newValue >= repeatEnd {
+            if newValue > repeatEnd {
                 repeatEnd = newValue.addingTimeInterval(60 * 60)
             } else {
                 isWarning = false
@@ -47,7 +51,7 @@ final class ScheduleFormViewModel: ObservableObject {
 
     @Published var repeatEnd: Date {
         willSet {
-            if newValue <= repeatEnd {
+            if newValue < repeatStart {
                 isWarning = true
             } else {
                 isWarning = false
@@ -76,7 +80,14 @@ final class ScheduleFormViewModel: ObservableObject {
     @Published var content: String = ""
     @Published var memo: String = ""
     
-    @Published var isAllDay: Bool = false
+    @Published var isAllDay: Bool = false {
+        willSet {
+            if newValue {
+                isWarning = false
+            }
+        }
+    }
+
     @Published var isSelectedAlarm: Bool = false
     @Published var selectIdxList = [Bool](repeating: false, count: 4) // 선택된 알람
     

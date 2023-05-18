@@ -68,19 +68,18 @@ struct HaruHeader<SearchContent: View>: View {
                     NavigationLink {
                         searchView()
                     } label: {
-                        Image(systemName: "magnifyingglass")
+                        Image("magnifyingglass")
                             .renderingMode(.template)
                             .resizable()
                             .foregroundColor(Color(0x191919))
-                            .frame(width: 20, height: 20)
+                            .frame(width: 28, height: 28)
                     }
                 }
                 Spacer()
                     .frame(height: 20)
             }
             .padding(.top, 10)
-            .padding(.leading, 20)
-            .padding(.trailing, 23)
+            .padding(.horizontal, 20)
         }
         .frame(height: 52)
     }

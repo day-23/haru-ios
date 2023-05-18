@@ -51,9 +51,11 @@ struct ScheduleFormView: View {
                     } label: {
                         Image("confirm")
                             .resizable()
-                            .colorMultiply(.mainBlack)
+                            .renderingMode(.template)
+                            .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
                             .frame(width: 28, height: 28)
                     }
+                    .disabled(scheduleFormVM.buttonDisable)
                 }
                 .padding(.horizontal, 37)
             }
@@ -370,7 +372,7 @@ struct ScheduleFormView: View {
                             .renderingMode(.template)
                             .frame(width: 28, height: 28)
                     }
-                    .foregroundColor(Color(0xF71E58))
+                    .foregroundColor(Color(0xf71e58))
                 }
                 .padding(.bottom, 20)
                 .actionSheet(isPresented: $showDeleteActionSheet, content: getDeleteActionSheet)
@@ -397,10 +399,13 @@ struct ScheduleFormView: View {
                         actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
                     } label: {
                         Image("confirm")
-                            .colorMultiply(.mainBlack)
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
                             .frame(width: 28, height: 28)
                     }
                     .actionSheet(isPresented: $showEditActionSheet, content: getEditActionSheet)
+                    .disabled(scheduleFormVM.buttonDisable)
                 }
             }
         }
