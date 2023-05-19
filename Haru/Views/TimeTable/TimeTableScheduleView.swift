@@ -11,6 +11,8 @@ struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
     @StateObject var calendarViewModel: CalendarViewModel
 
+    @Binding var isPopupVisible: Bool
+
     private let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "d"
@@ -35,10 +37,12 @@ struct TimeTableScheduleView: View {
 
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
-        calendarViewModel: StateObject<CalendarViewModel>
+        calendarViewModel: StateObject<CalendarViewModel>,
+        isPopupVisible: Binding<Bool>
     ) {
         _timeTableViewModel = timeTableViewModel
         _calendarViewModel = calendarViewModel
+        _isPopupVisible = isPopupVisible
     }
 
     var body: some View {
@@ -52,6 +56,9 @@ struct TimeTableScheduleView: View {
                             .font(.pretendard(size: 14, weight: .regular))
                             .foregroundColor(Color(0xacacac))
                             .padding(.bottom, 3)
+                            .onTapGesture {
+                                isPopupVisible = true
+                            }
                     }
                 }
 
@@ -67,12 +74,18 @@ struct TimeTableScheduleView: View {
                             .font(.pretendard(size: 14, weight: .regular))
                             .foregroundColor(Color(0x646464))
                             .padding(.top, 8)
+                            .onTapGesture {
+                                isPopupVisible = true
+                            }
                     }
                 }
 
                 if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
-                    TimeTableScheduleTopView(timeTableViewModel: _timeTableViewModel)
-                        .padding(.top, 2)
+                    TimeTableScheduleTopView(
+                        timeTableViewModel: _timeTableViewModel,
+                        isPopupVisible: _isPopupVisible
+                    )
+                    .padding(.top, 2)
                 }
             }
             .padding(.bottom, 5)

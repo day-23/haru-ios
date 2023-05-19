@@ -18,6 +18,7 @@ struct TimeTableMainView: View {
     @State private var isScheduleView: Bool = true
 
     @State private var isModalVisible: Bool = false
+    @State private var isPopupVisible: Bool = false
 
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
@@ -76,7 +77,8 @@ struct TimeTableMainView: View {
                 if isScheduleView {
                     TimeTableScheduleView(
                         timeTableViewModel: _timeTableViewModel,
-                        calendarViewModel: _calendarViewModel
+                        calendarViewModel: _calendarViewModel,
+                        isPopupVisible: $isPopupVisible
                     )
                     .padding(.trailing, 15)
                 } else {
@@ -122,6 +124,19 @@ struct TimeTableMainView: View {
                 .transition(.modal)
                 .zIndex(2)
             } else {
+                if isPopupVisible {
+                    Color.black.opacity(0.4)
+                        .edgesIgnoringSafeArea(.all)
+                        .zIndex(1)
+                        .onTapGesture {
+                            isPopupVisible = false
+                        }
+
+                    // TODO: - 아래 인덱스 에러 해결 필요
+//                    CalendarDayView(calendarViewModel: calendarViewModel)
+//                        .zIndex(2)
+                }
+
                 Button {
                     withAnimation {
                         isModalVisible = true
