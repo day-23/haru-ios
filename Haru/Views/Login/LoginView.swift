@@ -1,5 +1,5 @@
 //
-//  Login.swift
+//  LoginView.swift
 //  Haru
 //
 //  Created by 최정민 on 2023/05/19.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct Login: View {
+struct LoginView: View {
     @Binding var isLoggedIn: Bool
-    @StateObject var authViewModel : AuthViewModel = AuthViewModel()
+    @StateObject var authViewModel: AuthViewModel = .init()
 
     var body: some View {
         Image("background-main")
@@ -45,10 +45,9 @@ struct Login: View {
                             .frame(width: 312, height: 44)
                             .background(Color(0xfee500))
                             .cornerRadius(12)
-                            .onTapGesture{
-                                authViewModel.handleKakaoLogin() { isLoggedIn in
+                            .onTapGesture {
+                                authViewModel.handleKakaoLogin { isLoggedIn in
                                     self.isLoggedIn = isLoggedIn
-                                    print(isLoggedIn)
                                 }
                             }
 
@@ -75,7 +74,6 @@ struct Login: View {
                                     followingCount: 0,
                                     isFollowing: false
                                 )
-
                                 isLoggedIn = true
                             }
                     }
@@ -94,6 +92,6 @@ struct Login: View {
 
 struct Login_Previews: PreviewProvider {
     static var previews: some View {
-        Login(isLoggedIn: .constant(false))
+        LoginView(isLoggedIn: .constant(false))
     }
 }

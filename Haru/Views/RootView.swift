@@ -103,7 +103,7 @@ struct RootView: View {
                         }
                         .environmentObject(todoState)
                     } else {
-                        Login(
+                        LoginView(
                             isLoggedIn: $isLoggedIn
                         )
                     }

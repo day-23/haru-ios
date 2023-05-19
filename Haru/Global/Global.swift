@@ -8,19 +8,8 @@
 import Foundation
 
 final class Global {
-    static let shared: Global = .init()
-//    var user: User? = User(
-//        id: "005224c0-eec1-4638-9143-58cbfc9688c5",
-//        name: "테스트 계정",
-//        introduction: "For Test",
-//        postCount: 0,
-//        followerCount: 0,
-//        followingCount: 0,
-//        isFollowing: false
-//    )
-
-    var user: User?
-    
-    var me : Me?
     private init() {}
+
+    static let shared: Global = .init()
+    var user: User?
 }

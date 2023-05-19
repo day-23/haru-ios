@@ -9,8 +9,8 @@ import SwiftUI
 
 struct SplashView: View {
     @Binding var isLoggedIn: Bool
-    @StateObject var authViewModel : AuthViewModel = AuthViewModel()
-    
+    @StateObject var authViewModel: AuthViewModel = .init()
+
     var body: some View {
         Image("background-main")
             .resizable()
@@ -28,9 +28,8 @@ struct SplashView: View {
             }
             .onAppear {
                 // keyChain에 존재하는 accessToken을 통해 하루 서버에 인증
-                authViewModel.validateUserByHaruServer{ isLoggedIn in
+                authViewModel.validateUserByHaruServer { isLoggedIn in
                     self.isLoggedIn = isLoggedIn
-                    print(isLoggedIn)
                 }
             }
     }
