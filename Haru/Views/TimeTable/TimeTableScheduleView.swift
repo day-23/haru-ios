@@ -188,6 +188,8 @@ struct TimeTableScheduleView: View {
                         }
                     }
                 })
+
+                Spacer(minLength: 64)
             }
         }
     }

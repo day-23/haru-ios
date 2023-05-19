@@ -60,7 +60,13 @@ struct RootView: View {
 
             NavigationView {
                 TimeTableMainView(
-                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel())
+                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel()),
+                    todoAddViewModel: .init(
+                        wrappedValue: TodoAddViewModel(
+                            todoState: todoState,
+                            addAction: { _ in },
+                            updateAction: { _ in }
+                        ))
                 )
             }
             .tabItem {

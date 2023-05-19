@@ -11,18 +11,24 @@ import UniformTypeIdentifiers
 struct TimeTableMainView: View {
     // MARK: - Properties
 
-    @EnvironmentObject private var todoState: TodoState
     @StateObject var timeTableViewModel: TimeTableViewModel
     @StateObject var calendarViewModel: CalendarViewModel = .init()
+    @StateObject var todoAddViewModel: TodoAddViewModel
 
     @State private var isScheduleView: Bool = true
 
-    init(timeTableViewModel: StateObject<TimeTableViewModel>) {
+    @State private var isModalVisible: Bool = false
+
+    init(
+        timeTableViewModel: StateObject<TimeTableViewModel>,
+        todoAddViewModel: StateObject<TodoAddViewModel>
+    ) {
         _timeTableViewModel = timeTableViewModel
+        _todoAddViewModel = todoAddViewModel
     }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
                 HaruHeader {
                     // TODO: 검색 화면
@@ -64,7 +70,7 @@ struct TimeTableMainView: View {
                             isScheduleView.toggle()
                         }
                 }
-                .padding(.trailing)
+                .padding(.trailing, 20)
                 .padding(.bottom, 18)
 
                 if isScheduleView {
@@ -75,15 +81,51 @@ struct TimeTableMainView: View {
                     .padding(.trailing, 15)
                 } else {
                     TimeTableTodoView(
-                        todoAddViewModel: StateObject(
-                            wrappedValue: TodoAddViewModel(
-                                todoState: todoState,
-                                addAction: { _ in },
-                                updateAction: { _ in }
-                            )
-                        ),
+                        todoAddViewModel: _todoAddViewModel,
                         timeTableViewModel: _timeTableViewModel
                     )
+                }
+            }
+
+            if isModalVisible {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            isModalVisible = false
+                        }
+                    }
+
+                Modal(isActive: $isModalVisible, ratio: 0.9) {
+                    if isScheduleView {
+                        ScheduleFormView(
+                            scheduleFormVM: ScheduleFormViewModel(
+                                selectionSet: calendarViewModel.selectionSet,
+                                categoryList: calendarViewModel.categoryList,
+                                successAction: {}
+                            ),
+                            isSchModalVisible: $isModalVisible
+                        )
+                    } else {
+                        TodoAddView(
+                            viewModel: todoAddViewModel,
+                            isModalVisible: $isModalVisible
+                        )
+                    }
+                }
+                .transition(.modal)
+                .zIndex(2)
+            } else {
+                Button {
+                    withAnimation {
+                        isModalVisible = true
+                    }
+                } label: {
+                    Image("add-button")
+                        .shadow(radius: 10, x: 5, y: 0)
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 10)
                 }
             }
         }

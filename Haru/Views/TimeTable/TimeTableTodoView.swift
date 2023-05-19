@@ -22,47 +22,36 @@ struct TimeTableTodoView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            VStack(spacing: 2) {
-                ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                    TimeTableTodoRow(
-                        index: index,
-                        date: timeTableViewModel.thisWeek[index],
-                        todoList: $timeTableViewModel.todoListByDate[index],
-                        timeTableViewModel: timeTableViewModel,
-                        todoAddViewModel: todoAddViewModel
-                    )
-                    .background(
-                        index == Date.now.indexOfWeek()
-                            ? RadialGradient(
-                                gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)]),
-                                center: .center,
-                                startRadius: 0,
-                                endRadius: 200
-                            ).opacity(0.5)
-                            : RadialGradient(
-                                colors: [.white],
-                                center: .center,
-                                startRadius: 0,
-                                endRadius: 150
-                            ).opacity(0.5)
-                    )
-                    .onDrop(of: [.text], delegate: TodoDropDelegate(
-                        index: index,
-                        timeTableViewModel: timeTableViewModel
-                    ))
-                }
-                Spacer()
+        VStack(spacing: 2) {
+            ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                TimeTableTodoRow(
+                    index: index,
+                    date: timeTableViewModel.thisWeek[index],
+                    todoList: $timeTableViewModel.todoListByDate[index],
+                    timeTableViewModel: timeTableViewModel,
+                    todoAddViewModel: todoAddViewModel
+                )
+                .background(
+                    index == Date.now.indexOfWeek()
+                        ? RadialGradient(
+                            gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 200
+                        ).opacity(0.5)
+                        : RadialGradient(
+                            colors: [.white],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 150
+                        ).opacity(0.5)
+                )
+                .onDrop(of: [.text], delegate: TodoDropDelegate(
+                    index: index,
+                    timeTableViewModel: timeTableViewModel
+                ))
             }
-
-            Button {
-                
-            } label: {
-                Image("add-button")
-                    .shadow(radius: 10, x: 5, y: 0)
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 10)
-            }
+            Spacer()
         }
         .onAppear {
             timeTableViewModel.fetchTodoList()
