@@ -657,21 +657,17 @@ final class CalendarViewModel: ObservableObject {
         let todoList = todoList.filter { $0.endDate != nil }
         var todoIdx = 0, dateIdx = 0
 
-        var maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? 0
-        maxKey = maxKey > prodCnt ? prodCnt + 1 : maxKey
+        var maxKey: Int
         while todoIdx < todoList.count, dateIdx < dateList.count {
             if dateList[dateIdx].date.isEqual(other: todoList[todoIdx].endDate!) {
+                maxKey = result[dateIdx].keys.max(by: <) ?? -1
+                maxKey = maxKey >= prodCnt ? prodCnt : maxKey + 1
                 result[dateIdx][maxKey] = (result[dateIdx][maxKey] ?? []) + [todoList[todoIdx]]
-                maxKey = maxKey >= prodCnt ? prodCnt + 1 : maxKey + 1
                 todoIdx += 1
             } else if dateList[dateIdx].date > todoList[todoIdx].endDate! {
                 todoIdx += 1
             } else {
                 dateIdx += 1
-                if dateIdx < dateList.count {
-                    maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? 0
-                    maxKey = maxKey > prodCnt ? prodCnt + 1 : maxKey
-                }
             }
         }
     }
