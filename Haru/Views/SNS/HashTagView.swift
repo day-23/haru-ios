@@ -48,6 +48,7 @@ struct HashTagView: View {
                                 postVM.loadMorePosts()
                             }
                         }
+                        .padding(.vertical, 1)
                 }
             }
         }

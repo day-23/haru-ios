@@ -88,7 +88,6 @@ struct ListSectionView<Content>: View where Content: View {
                 .foregroundColor(Color(0x646464))
 
                 header()
-                    .padding(.top, 1)
                 Spacer()
             }
             .background(itemBackgroundColor)

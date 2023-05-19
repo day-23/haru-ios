@@ -47,7 +47,7 @@ class CalendarHelper {
      */
     class func extraDate(_ monthOffset: Int) -> [String] {
         let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY MMMM"
+        formatter.dateFormat = "YYYY M"
 
         let date = formatter.string(from: getCurrentMonth(monthOffset))
 

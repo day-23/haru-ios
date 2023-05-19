@@ -48,7 +48,6 @@ struct TagListView: View {
                     }
                 }
             }
-            .padding(.vertical, 1)
             .padding(.horizontal, 20)
         }
     }

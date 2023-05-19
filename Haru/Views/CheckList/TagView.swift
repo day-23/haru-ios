@@ -43,5 +43,6 @@ struct TagView: View {
                         lineWidth: 1
                     )
             )
+            .padding(.vertical, 1)
     }
 }

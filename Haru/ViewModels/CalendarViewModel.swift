@@ -1019,15 +1019,17 @@ final class CalendarViewModel: ObservableObject {
     
     func sucRepeatEveryMonth(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
         var result = [Schedule]()
-//        guard let repeatValue = schedule.repeatValue else {
-//            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
-//            return result
-//        }
-//
-//        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
-//
-//        let calendar = Calendar.current
-//        var dateComponents: DateComponents
+        guard let repeatValue = schedule.repeatValue else {
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            return result
+        }
+
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        
+        
         
         return result
     }

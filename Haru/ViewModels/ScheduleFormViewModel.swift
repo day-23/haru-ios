@@ -73,8 +73,14 @@ final class ScheduleFormViewModel: ObservableObject {
     var overDay: Bool {
         let startDate = CalendarHelper.removeTimeData(date: repeatStart)
         let endDate = CalendarHelper.removeTimeData(date: repeatEnd)
-    
-        return startDate.distance(to: endDate) >= 86400.0
+        
+        let result = startDate.distance(to: endDate) >= 86400.0
+        if result, repeatOption == .everyDay {
+            DispatchQueue.main.async {
+                self.repeatOption = .everyWeek
+            }
+        }
+        return result
     }
     
     @Published var content: String = ""
@@ -82,7 +88,13 @@ final class ScheduleFormViewModel: ObservableObject {
     
     @Published var isAllDay: Bool = false {
         willSet {
-            if newValue {
+            if !newValue {
+                if repeatEnd < repeatStart {
+                    isWarning = true
+                } else {
+                    isWarning = false
+                }
+            } else {
                 isWarning = false
             }
         }
@@ -351,7 +363,6 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.isSelectedAlarm = !schedule.alarms.isEmpty
 
-        self.repeatOption = .everyDay
         if let option = RepeatOption.allCases.first(where: { $0.rawValue == schedule.repeatOption }) {
             self.repeatOption = option
         }

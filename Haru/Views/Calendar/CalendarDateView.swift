@@ -31,7 +31,7 @@ struct CalendarDateView: View {
                             Text("\(CalendarHelper.extraDate(calendarVM.monthOffest)[0])년")
                                 .font(.pretendard(size: 28, weight: .bold))
                             
-                            Text(CalendarHelper.extraDate(calendarVM.monthOffest)[1])
+                            Text("\(CalendarHelper.extraDate(calendarVM.monthOffest)[1])월")
                                 .font(.pretendard(size: 28, weight: .bold))
                             
                             Button {
