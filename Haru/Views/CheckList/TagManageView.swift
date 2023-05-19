@@ -84,19 +84,10 @@ struct TagManageView: View {
                             }
 
                             ForEach($checkListViewModel.tagList) { $tag in
-                                TagOptionItem(tag: tag) {
-                                    checkListViewModel.toggleVisibility(
-                                        tagId: tag.id,
-                                        isSeleted: tag.isSelected
-                                    ) { result in
-                                        switch result {
-                                        case .success:
-                                            break
-                                        case .failure(let error):
-                                            print("[Debug] \(error) \(#fileID) \(#function)")
-                                        }
-                                    }
-                                }
+                                TagOptionItem(
+                                    checkListViewModel: checkListViewModel,
+                                    tag: tag
+                                )
                             }
                         }
                         .padding(.top, 18)
@@ -138,8 +129,9 @@ struct TagManageView: View {
 }
 
 private struct TagOptionItem: View {
+    @StateObject var checkListViewModel: CheckListViewModel
+
     var tag: Tag
-    var tapAction: () -> Void
 
     var body: some View {
         HStack {
@@ -149,13 +141,25 @@ private struct TagOptionItem: View {
                 disabled: !tag.isSelected
             )
             .onTapGesture {
-                tapAction()
+                checkListViewModel.toggleVisibility(
+                    tagId: tag.id,
+                    isSeleted: tag.isSelected
+                ) { result in
+                    switch result {
+                    case .success:
+                        break
+                    case .failure(let error):
+                        print("[Debug] \(error) \(#fileID) \(#function)")
+                    }
+                }
             }
 
             Spacer()
 
             NavigationLink {
                 TagDetailView(
+                    checkListViewModel: _checkListViewModel,
+                    tagId: tag.id,
                     content: tag.content,
                     onAlarm: true,
                     isSelected: tag.isSelected

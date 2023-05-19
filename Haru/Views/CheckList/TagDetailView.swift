@@ -10,15 +10,35 @@ import SwiftUI
 struct TagDetailView: View {
     @Environment(\.dismiss) var dismissAction
 
+    private let tagId: String
+    private let originalContent: String
+    private let originalOnAlarm: Bool
+    private let originalIsSelected: Bool
+
+    @StateObject var checkListViewModel: CheckListViewModel
     @State private var content: String
     @State private var onAlarm: Bool
     @State private var isSelected: Bool
 
+    private var noChanges: Bool {
+        return (originalContent == content
+            && originalOnAlarm == onAlarm
+            && originalIsSelected == isSelected)
+    }
+
     init(
+        checkListViewModel: StateObject<CheckListViewModel>,
+        tagId: String,
         content: String,
         onAlarm: Bool,
         isSelected: Bool
     ) {
+        self.tagId = tagId
+        originalContent = content
+        originalOnAlarm = onAlarm
+        originalIsSelected = isSelected
+
+        _checkListViewModel = checkListViewModel
         _content = .init(initialValue: content)
         _onAlarm = .init(initialValue: onAlarm)
         _isSelected = .init(initialValue: isSelected)
@@ -105,11 +125,27 @@ struct TagDetailView: View {
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {} label: {
+                Button {
+                    checkListViewModel.updateTag(
+                        tagId: tagId,
+                        params: [
+                            "content": content,
+                            "isSelected": isSelected
+                        ]
+                    ) { response in
+                        switch response {
+                        case .success(let success):
+                            dismissAction.callAsFunction()
+                        case .failure(let error):
+                            print("[Debug] \(error) \(#fileID) \(#function)")
+                        }
+                    }
+                } label: {
                     Image("confirm")
                         .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
+                        .foregroundColor(noChanges ? Color(0xacacac) : Color(0x191919))
                 }
+                .disabled(noChanges)
             }
         }
     }

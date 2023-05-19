@@ -50,7 +50,7 @@ struct TodoAddView: View {
                             } label: {
                                 Image("confirm")
                                     .renderingMode(.template)
-                                    .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
+                                    .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x191919))
                             }
                             .disabled(viewModel.isFieldEmpty)
                         }
@@ -432,7 +432,7 @@ struct TodoAddView: View {
                             } label: {
                                 Image("confirm")
                                     .renderingMode(.template)
-                                    .foregroundColor(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty ? Color(0xACACAC) : .black)
+                                    .foregroundColor(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x191919))
                             }
                             .disabled(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty)
                             .confirmationDialog(
