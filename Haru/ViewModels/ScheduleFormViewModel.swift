@@ -20,6 +20,9 @@ final class ScheduleFormViewModel: ObservableObject {
     var scheduleId: String?
     var mode: ScheduleFormMode
     
+    // Time Table에서 반복 일정 수정시에 필요한 데이터
+    var at: RepeatAt = .none
+    
     // 초기 값
     var tmpRepeatStart: Date
     var tmpRepeatEnd: Date
@@ -534,7 +537,7 @@ final class ScheduleFormViewModel: ObservableObject {
      * 반복 일정 하나만 편집하기
      */
     func updateTargetSchedule() {
-        if tmpRepeatStart == realRepeatStart {
+        if tmpRepeatStart == realRepeatStart || at == .front {
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
             scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -544,7 +547,7 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if tmpRepeatEnd == realRepeatEnd {
+        } else if tmpRepeatEnd == realRepeatEnd || at == .back {
             let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
             scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {

@@ -155,15 +155,20 @@ struct TimeTableScheduleView: View {
                                         .position(x: position.x, y: position.y)
                                 } else {
                                     NavigationLink {
+                                        let scheduleFormView = ScheduleFormViewModel(
+                                            schedule: schedule.data,
+                                            categoryList: calendarViewModel.categoryList
+                                        ) {
+                                            timeTableViewModel.fetchScheduleList()
+                                        }
+
                                         ScheduleFormView(
-                                            scheduleFormVM: ScheduleFormViewModel(
-                                                schedule: schedule.data,
-                                                categoryList: calendarViewModel.categoryList
-                                            ) {
-                                                timeTableViewModel.fetchScheduleList()
-                                            },
+                                            scheduleFormVM: scheduleFormView,
                                             isSchModalVisible: .constant(false)
                                         )
+                                        .onAppear {
+                                            scheduleFormView.at = schedule.at
+                                        }
                                     } label: {
                                         ScheduleItemView(schedule: $schedule)
                                     }
@@ -189,7 +194,7 @@ struct TimeTableScheduleView: View {
                     }
                 })
 
-                Spacer(minLength: 64)
+                Spacer(minLength: 80)
             }
         }
     }
