@@ -87,7 +87,7 @@ struct TagManageView: View {
                                 TagOptionItem(tag: tag) {
                                     checkListViewModel.toggleVisibility(
                                         tagId: tag.id,
-                                        isSeleted: tag.isSelected ?? true
+                                        isSeleted: tag.isSelected
                                     ) { result in
                                         switch result {
                                         case .success:
@@ -146,7 +146,7 @@ private struct TagOptionItem: View {
             TagView(
                 tag: tag,
                 isSelected: false,
-                disabled: !(tag.isSelected ?? false)
+                disabled: !tag.isSelected
             )
             .onTapGesture {
                 tapAction()
@@ -155,7 +155,11 @@ private struct TagOptionItem: View {
             Spacer()
 
             NavigationLink {
-                TagDetailView(tag: tag)
+                TagDetailView(
+                    content: tag.content,
+                    onAlarm: true,
+                    isSelected: tag.isSelected
+                )
             } label: {
                 Image("ellipsis")
                     .renderingMode(.template)

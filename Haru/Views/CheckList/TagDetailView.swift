@@ -10,16 +10,26 @@ import SwiftUI
 struct TagDetailView: View {
     @Environment(\.dismiss) var dismissAction
 
-    var tag: Tag
-    @State private var title: String = ""
-    @State private var onAlarm: Bool = false
-    @State private var isSelected: Bool = false
+    @State private var content: String
+    @State private var onAlarm: Bool
+    @State private var isSelected: Bool
+
+    init(
+        content: String,
+        onAlarm: Bool,
+        isSelected: Bool
+    ) {
+        _content = .init(initialValue: content)
+        _onAlarm = .init(initialValue: onAlarm)
+        _isSelected = .init(initialValue: isSelected)
+    }
 
     var body: some View {
         VStack(spacing: 14) {
-            TextField("", text: $title)
+            TextField("", text: $content)
                 .font(.pretendard(size: 24, weight: .bold))
                 .foregroundColor(Color(0x191919))
+                .padding(.top, 10)
                 .padding(.leading, 34)
                 .padding(.trailing, 20)
 
@@ -101,9 +111,6 @@ struct TagDetailView: View {
                         .foregroundColor(Color(0x191919))
                 }
             }
-        }
-        .onAppear {
-            title = tag.content
         }
     }
 }

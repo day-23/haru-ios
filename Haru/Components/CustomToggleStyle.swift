@@ -21,7 +21,11 @@ struct CustomToggleStyle: ToggleStyle {
                         .offset(x: configuration.isOn ? 8 : -8, y: 0)
                 )
                 .cornerRadius(20)
-                .onTapGesture { configuration.isOn.toggle() }
+                .onTapGesture {
+                    withAnimation(.easeInOut) {
+                        configuration.isOn.toggle()
+                    }
+                }
         }
     }
 }
