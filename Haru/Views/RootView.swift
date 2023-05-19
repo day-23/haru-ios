@@ -59,12 +59,16 @@ struct RootView: View {
             .navigationViewStyle(.stack)
 
             NavigationView {
+                let timeTableViewModel: TimeTableViewModel = .init()
+
                 TimeTableMainView(
-                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel()),
+                    timeTableViewModel: .init(wrappedValue: timeTableViewModel),
                     todoAddViewModel: .init(
                         wrappedValue: TodoAddViewModel(
                             todoState: todoState,
-                            addAction: { _ in },
+                            addAction: { _ in
+                                timeTableViewModel.fetchTodoList()
+                            },
                             updateAction: { _ in }
                         ))
                 )

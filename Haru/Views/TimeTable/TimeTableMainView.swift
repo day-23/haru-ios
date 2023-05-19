@@ -103,7 +103,9 @@ struct TimeTableMainView: View {
                             scheduleFormVM: ScheduleFormViewModel(
                                 selectionSet: calendarViewModel.selectionSet,
                                 categoryList: calendarViewModel.categoryList,
-                                successAction: {}
+                                successAction: {
+                                    timeTableViewModel.fetchScheduleList()
+                                }
                             ),
                             isSchModalVisible: $isModalVisible
                         )
@@ -112,6 +114,9 @@ struct TimeTableMainView: View {
                             viewModel: todoAddViewModel,
                             isModalVisible: $isModalVisible
                         )
+                        .onAppear {
+                            todoAddViewModel.isSelectedEndDate = true
+                        }
                     }
                 }
                 .transition(.modal)
