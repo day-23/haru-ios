@@ -33,7 +33,14 @@ final class CalendarViewModel: ObservableObject {
     
     @Published var numberOfWeeks: Int = 0 {
         didSet {
-            maxOrder = numberOfWeeks < 6 ? 4 : 3
+            let deviceSize = UIScreen.main.bounds.size
+            if deviceSize.height < 800 {
+                maxOrder = numberOfWeeks < 6 ? 2 : 1
+            } else if deviceSize.height < 920 {
+                maxOrder = numberOfWeeks < 6 ? 3 : 2
+            } else {
+                maxOrder = numberOfWeeks < 6 ? 4 : 3
+            }
         }
     } // 달력에 표시된 주차
     
@@ -466,7 +473,7 @@ final class CalendarViewModel: ObservableObject {
         var result_ = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: prodCnt), count: numberOfWeeks) // 달력에 보여질 결과물
 
         if !allCategoryOff {
-            fittingScheduleList(dateList, scheduleList, prodCnt, result: &result, result_: &result_)
+            fittingScheduleList(dateList, scheduleList, prodCnt, result: &result)
         }
         if !allTodoOff {
             fittingTodoList(dateList, todoList, prodCnt, result: &result)
@@ -580,8 +587,7 @@ final class CalendarViewModel: ObservableObject {
         _ dateList: [DateValue],
         _ scheduleList: [Schedule],
         _ prodCnt: Int,
-        result: inout [[Int: [Productivity]]],
-        result_: inout [[[(Int, Productivity?)]]]
+        result: inout [[Int: [Productivity]]]
     ) {
         let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
 
@@ -651,20 +657,20 @@ final class CalendarViewModel: ObservableObject {
         let todoList = todoList.filter { $0.endDate != nil }
         var todoIdx = 0, dateIdx = 0
 
-        var maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
-        maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+        var maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? 0
+        maxKey = maxKey > prodCnt ? prodCnt + 1 : maxKey
         while todoIdx < todoList.count, dateIdx < dateList.count {
             if dateList[dateIdx].date.isEqual(other: todoList[todoIdx].endDate!) {
                 result[dateIdx][maxKey] = (result[dateIdx][maxKey] ?? []) + [todoList[todoIdx]]
-                maxKey = maxKey >= prodCnt ? maxKey : maxKey + 1
+                maxKey = maxKey >= prodCnt ? prodCnt + 1 : maxKey + 1
                 todoIdx += 1
             } else if dateList[dateIdx].date > todoList[todoIdx].endDate! {
                 todoIdx += 1
             } else {
                 dateIdx += 1
                 if dateIdx < dateList.count {
-                    maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? -1
-                    maxKey = maxKey > prodCnt ? maxKey : maxKey + 1
+                    maxKey = result[dateIdx].max { $0.key < $1.key }?.key ?? 0
+                    maxKey = maxKey > prodCnt ? prodCnt + 1 : maxKey
                 }
             }
         }
@@ -1028,8 +1034,6 @@ final class CalendarViewModel: ObservableObject {
 
         let calendar = Calendar.current
         var dateComponents: DateComponents
-        
-        
         
         return result
     }
