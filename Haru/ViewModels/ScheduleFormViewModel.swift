@@ -291,7 +291,11 @@ final class ScheduleFormViewModel: ObservableObject {
         self.realRepeatEnd = schedule.realRepeatEnd != nil ? schedule.realRepeatEnd! : schedule.repeatEnd
         
         self.tmpRepeatStart = schedule.repeatStart
-        self.tmpRepeatEnd = schedule.repeatEnd
+        do {
+            self.tmpRepeatEnd = schedule.repeatEnd == schedule.realRepeatEnd ? schedule.repeatEnd : try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
+        } catch {
+            self.tmpRepeatEnd = schedule.repeatEnd
+        }
         self.tmpRepeatOption = schedule.repeatOption
         self.tmpRepeatValue = schedule.repeatValue
         self.tmpIsSelectedRepeatEnd = schedule.repeatOption != nil ? true : false
@@ -598,7 +602,7 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if tmpRepeatEnd == realRepeatEnd {
+        } else if tmpRepeatEnd >= realRepeatEnd {
             scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
                 case .success:

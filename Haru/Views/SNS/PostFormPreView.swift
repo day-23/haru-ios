@@ -100,7 +100,7 @@ struct PostFormPreView: View {
         .padding(.top, 12)
         .customNavigationBar {
             Button {
-                shouldPopToRootView = false
+                dismissAction.callAsFunction()
             } label: {
                 Image("cancel")
                     .renderingMode(.template)
@@ -110,7 +110,7 @@ struct PostFormPreView: View {
             HStack(spacing: 10) {
                 Button {
                     postFormVM.createPost {
-                        dismissAction.callAsFunction()
+                        shouldPopToRootView = false
                     }
                 } label: {
                     Text("게시하기")

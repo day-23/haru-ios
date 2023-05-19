@@ -9,8 +9,8 @@ import Foundation
 
 enum PostOption {
     case main // 친구 피드
-    case target_all
-    case target_image
-    case target_hashtag
-    case around
+    case target_feed
+    case target_media
+    case target_media_hashtag
+    case media // 사진만
 }

@@ -118,4 +118,24 @@ struct Request: Codable {
         var name: String
         var introduction: String
     }
+
+    struct Comment: Codable {
+        var content: String
+        var x: Double?
+        var y: Double?
+
+        init(content: String, x: Double? = nil, y: Double? = nil) {
+            self.content = content
+            if let x {
+                self.x = x / UIScreen.main.bounds.size.width * 100
+            } else {
+                self.x = nil
+            }
+            if let y {
+                self.y = y / UIScreen.main.bounds.size.width * 100
+            } else {
+                self.y = nil
+            }
+        }
+    }
 }
