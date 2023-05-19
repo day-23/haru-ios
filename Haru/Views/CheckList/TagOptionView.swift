@@ -197,12 +197,13 @@ extension TagOptionView {
                 ) { result in
                     switch result {
                     case .success:
-                        checkListViewModel.tagContent = ""
+                        break
                     case .failure(let error):
                         print("[Debug] \(error) \(#fileID), \(#function)")
                     }
                 }
             }
+            checkListViewModel.tagContent = ""
         }
     }
 
@@ -215,12 +216,13 @@ extension TagOptionView {
                 ) { result in
                     switch result {
                     case .success:
-                        checkListViewModel.tagContent = ""
+                        break
                     case .failure(let error):
                         print("[Debug] \(error) \(#fileID), \(#function)")
                     }
                 }
             }
+            checkListViewModel.tagContent = ""
         }
     }
 }
