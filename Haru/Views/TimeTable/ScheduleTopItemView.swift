@@ -21,7 +21,7 @@ struct ScheduleTopItemView: View {
                 .foregroundColor(color().fontColor)
                 .padding(.all, 2)
         }
-        .frame(width: width, height: height)
+        .frame(width: width - 2, height: height - 1)
         .cornerRadius(4)
     }
 }
