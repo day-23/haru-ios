@@ -58,7 +58,7 @@
 		1306678D29CEE1E300AACEE6 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306678429CEE1E300AACEE6 /* Modal.swift */; };
 		1306678E29CEE1E300AACEE6 /* CategoryModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306678529CEE1E300AACEE6 /* CategoryModal.swift */; };
 		1306678F29CEE1E300AACEE6 /* StarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306678629CEE1E300AACEE6 /* StarButton.swift */; };
-		1306679129CEE1E300AACEE6 /* MyToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306678829CEE1E300AACEE6 /* MyToggleStyle.swift */; };
+		1306679129CEE1E300AACEE6 /* CustomToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306678829CEE1E300AACEE6 /* CustomToggleStyle.swift */; };
 		1306679229CEE1E300AACEE6 /* CompleteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306678929CEE1E300AACEE6 /* CompleteButton.swift */; };
 		1306679329CEE1E300AACEE6 /* CustomDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306678A29CEE1E300AACEE6 /* CustomDatePicker.swift */; };
 		1306679429CEE1E300AACEE6 /* EmptySectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1306678B29CEE1E300AACEE6 /* EmptySectionView.swift */; };
@@ -213,7 +213,7 @@
 		1306678429CEE1E300AACEE6 /* Modal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		1306678529CEE1E300AACEE6 /* CategoryModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategoryModal.swift; sourceTree = "<group>"; };
 		1306678629CEE1E300AACEE6 /* StarButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StarButton.swift; sourceTree = "<group>"; };
-		1306678829CEE1E300AACEE6 /* MyToggleStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyToggleStyle.swift; sourceTree = "<group>"; };
+		1306678829CEE1E300AACEE6 /* CustomToggleStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomToggleStyle.swift; sourceTree = "<group>"; };
 		1306678929CEE1E300AACEE6 /* CompleteButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompleteButton.swift; sourceTree = "<group>"; };
 		1306678A29CEE1E300AACEE6 /* CustomDatePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomDatePicker.swift; sourceTree = "<group>"; };
 		1306678B29CEE1E300AACEE6 /* EmptySectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptySectionView.swift; sourceTree = "<group>"; };
@@ -456,7 +456,7 @@
 				1306678C29CEE1E300AACEE6 /* DayButton.swift */,
 				1306678B29CEE1E300AACEE6 /* EmptySectionView.swift */,
 				1306678429CEE1E300AACEE6 /* Modal.swift */,
-				1306678829CEE1E300AACEE6 /* MyToggleStyle.swift */,
+				1306678829CEE1E300AACEE6 /* CustomToggleStyle.swift */,
 				1306678629CEE1E300AACEE6 /* StarButton.swift */,
 				6F54DF5E29DDCA26002FAD7F /* PopupImagePicker.swift */,
 				6F1F9A222A00E36600C4ABF4 /* DropdownMenu.swift */,
@@ -683,7 +683,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1306679129CEE1E300AACEE6 /* MyToggleStyle.swift in Sources */,
+				1306679129CEE1E300AACEE6 /* CustomToggleStyle.swift in Sources */,
 				1306676229CEE19C00AACEE6 /* CategoryFormView.swift in Sources */,
 				6F566C8329CEEE73000F0555 /* Font.swift in Sources */,
 				130667AD29CEE1FE00AACEE6 /* RepeatOption.swift in Sources */,

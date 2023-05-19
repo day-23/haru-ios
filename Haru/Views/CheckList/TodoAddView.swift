@@ -166,17 +166,15 @@ struct TodoAddView: View {
                     Group {
                         Label {
                             Toggle(isOn: $viewModel.isTodayTodo.animation()) {
-                                Text("나의 하루에 추가\(viewModel.isTodayTodo ? "됨" : "")")
-                                    .font(.pretendard(size: 14, weight: .regular))
-                                    .frame(alignment: .leading)
-                                    .foregroundColor(viewModel.isTodayTodo ? Color(0x1DAFFF) : Color(0xACACAC))
+                                HStack {
+                                    Text("나의 하루에 추가\(viewModel.isTodayTodo ? "됨" : "")")
+                                        .font(.pretendard(size: 14, weight: .regular))
+                                        .frame(alignment: .leading)
+                                        .foregroundColor(viewModel.isTodayTodo ? Color(0x1DAFFF) : Color(0xACACAC))
+                                    Spacer()
+                                }
                             }
-                            .tint(LinearGradient(
-                                gradient: Gradient(
-                                    colors: [Constants.gradientStart, Constants.gradientEnd]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ))
+                            .toggleStyle(CustomToggleStyle())
                         } icon: {
                             Image("today-todo")
                                 .renderingMode(.template)
@@ -205,12 +203,7 @@ struct TodoAddView: View {
                                     }
                                 }
                             }
-                            .tint(LinearGradient(
-                                gradient: Gradient(colors: [Constants.gradientStart,
-                                                            Constants.gradientEnd]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ))
+                            .toggleStyle(CustomToggleStyle())
                         } icon: {
                             Image("alarm")
                                 .renderingMode(.template)
@@ -242,12 +235,7 @@ struct TodoAddView: View {
                                     }
                                 }
                             }
-                            .tint(LinearGradient(
-                                gradient: Gradient(
-                                    colors: [Constants.gradientStart, Constants.gradientEnd]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ))
+                            .toggleStyle(CustomToggleStyle())
                         } icon: {
                             Image("date")
                                 .renderingMode(.template)
@@ -275,14 +263,7 @@ struct TodoAddView: View {
                                         }
                                     }
                                 }
-                                .tint(LinearGradient(
-                                    gradient: Gradient(
-                                        colors: [Constants.gradientStart,
-                                                 Constants.gradientEnd]
-                                    ),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                ))
+                                .toggleStyle(CustomToggleStyle())
                             } icon: {
                                 Image(systemName: "clock")
                                     .frame(width: 28, height: 28)
@@ -304,16 +285,11 @@ struct TodoAddView: View {
                                         .font(.pretendard(size: 14, weight: .regular))
                                         .frame(alignment: .leading)
                                         .foregroundColor(viewModel.isSelectedRepeat ? Color(0x191919) : Color(0xACACAC))
+                                    
+                                    Spacer()
                                 }
                             }
-                            .tint(LinearGradient(
-                                gradient: Gradient(colors: [
-                                    Constants.gradientStart,
-                                    Constants.gradientEnd,
-                                ]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ))
+                            .toggleStyle(CustomToggleStyle())
                         } icon: {
                             Image("repeat")
                                 .renderingMode(.template)
@@ -392,12 +368,7 @@ struct TodoAddView: View {
                                         }
                                     }
                                 }
-                                .tint(LinearGradient(
-                                    gradient: Gradient(colors: [Constants.gradientStart,
-                                                                Constants.gradientEnd]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                ))
+                                .toggleStyle(CustomToggleStyle())
                             } icon: {
                                 Image(systemName: "calendar.badge.clock")
                                     .frame(width: 28, height: 28)
@@ -421,13 +392,7 @@ struct TodoAddView: View {
                                 
                                 Spacer()
                             }
-                            .tint(LinearGradient(
-                                gradient: Gradient(
-                                    colors: [Constants.gradientStart,
-                                             Constants.gradientEnd]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ))
+                            .toggleStyle(CustomToggleStyle())
                         } icon: {
                             Image("memo")
                                 .renderingMode(.template)
