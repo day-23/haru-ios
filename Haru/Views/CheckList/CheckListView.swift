@@ -291,7 +291,7 @@ struct CheckListView: View {
                         }
                     }
 
-                TagOptionView(
+                TagManageView(
                     checkListViewModel: viewModel,
                     isActive: $isTagManageModalVisible
                 )

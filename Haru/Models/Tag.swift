@@ -12,7 +12,24 @@ struct Tag: Codable, Identifiable {
 
     let id: String
     var content: String
-    var isSelected: Bool? = true
+    var isSelected: Bool
+
+    init(id: String, content: String, isSelected: Bool = true) {
+        self.id = id
+        self.content = content
+        self.isSelected = isSelected
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.content = try container.decode(String.self, forKey: .content)
+        do {
+            self.isSelected = try container.decode(Bool.self, forKey: .isSelected)
+        } catch {
+            self.isSelected = true
+        }
+    }
 
     // MARK: - Dates Properties
 
