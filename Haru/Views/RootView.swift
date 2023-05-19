@@ -16,6 +16,8 @@ struct RootView: View {
     var body: some View {
         Group {
             ZStack {
+                // MARK: - Splash View
+
                 if showSplash {
                     SplashView(
                         isLoggedIn: $isLoggedIn
@@ -30,6 +32,8 @@ struct RootView: View {
                 } else {
                     if isLoggedIn {
                         TabView {
+                            // MARK: - SNS View
+
                             NavigationView {
                                 SNSView()
                             }
@@ -39,6 +43,8 @@ struct RootView: View {
                             }
                             .tag("SNS")
                             .navigationViewStyle(.stack)
+
+                            // MARK: - CheckList View
 
                             NavigationView {
                                 let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
@@ -65,6 +71,8 @@ struct RootView: View {
                             .tag("Check-List")
                             .navigationViewStyle(.stack)
 
+                            // MARK: - Calendar View
+
                             NavigationView {
                                 CalendarMainView()
                             }
@@ -74,6 +82,8 @@ struct RootView: View {
                             }
                             .tag("Calendar")
                             .navigationViewStyle(.stack)
+
+                            // MARK: - TimeTable View
 
                             NavigationView {
                                 let timeTableViewModel: TimeTableViewModel = .init()
@@ -97,8 +107,19 @@ struct RootView: View {
                             .tag("Time-Table")
                             .navigationViewStyle(.stack)
 
+                            // MARK: - Setting View
+
                             NavigationView {
-                                Text("Setting SubView")
+                                Button {
+                                    isLoggedIn = false
+                                } label: {
+                                    Text("임시 로그아웃 (유저 정보 변경)")
+                                        .font(.pretendard(size: 14, weight: .bold))
+                                        .foregroundColor(Color(0xfdfdfd))
+                                        .frame(width: 312, height: 44)
+                                        .background(Color(0x191919))
+                                        .cornerRadius(12)
+                                }
                             }
                             .tabItem {
                                 Image(systemName: "person")
