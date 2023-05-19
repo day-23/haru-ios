@@ -18,7 +18,7 @@ struct ScheduleTopItemView: View {
 
             Text(schedule.data.content)
                 .font(.pretendard(size: 12, weight: .regular))
-                .foregroundColor(.white)
+                .foregroundColor(color().fontColor)
                 .padding(.all, 2)
         }
         .frame(width: width, height: height)
