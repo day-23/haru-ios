@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
-    @State var calendarViewModel: CalendarViewModel = .init()
+    @StateObject var calendarViewModel: CalendarViewModel
 
     private let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -19,7 +19,8 @@ struct TimeTableScheduleView: View {
 
     private let week = ["일", "월", "화", "수", "목", "금", "토"]
 
-    private let column = [GridItem(.fixed(31)), GridItem(.flexible(), spacing: 0),
+    private var fixed: Double = 25
+    private let column = [GridItem(.fixed(25)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0)]
@@ -31,63 +32,50 @@ struct TimeTableScheduleView: View {
     private var cellHeight: CGFloat = 72
     private var minuteInterval: Double = 5.0
     private let borderWidth = 1
-    private var fixed: Double = 31
 
-    init(timeTableViewModel: StateObject<TimeTableViewModel>) {
+    init(
+        timeTableViewModel: StateObject<TimeTableViewModel>,
+        calendarViewModel: StateObject<CalendarViewModel>
+    ) {
         _timeTableViewModel = timeTableViewModel
+        _calendarViewModel = calendarViewModel
     }
 
     var body: some View {
         Group {
-            VStack {
+            VStack(spacing: 0) {
                 LazyVGrid(columns: column) {
                     Text("")
 
                     ForEach(week, id: \.self) { day in
                         Text(day)
-                            .font(.pretendard(size: 14, weight: .medium))
-                            .foregroundColor(
-                                day == "일" ? Color(0xf71e58) : (day == "토" ? Color(0x1dafff) : Color(0x191919))
-                            )
+                            .font(.pretendard(size: 14, weight: .regular))
+                            .foregroundColor(Color(0xacacac))
+                            .padding(.bottom, 3)
                     }
                 }
 
                 Divider()
-                    .padding(.leading, 40)
+                    .padding(.leading, 32)
                     .foregroundColor(Color(0xdbdbdb))
 
                 LazyVGrid(columns: column) {
                     Text("")
 
                     ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                        if timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth {
-                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
-                                .font(.pretendard(size: 14, weight: .medium))
-                                .foregroundColor(
-                                    index == 0
-                                        ? Color(0xfdbbcd)
-                                        : (index == 6
-                                            ? Color(0xbbe7ff)
-                                            : Color(0xbababa))
-                                )
-                        } else {
-                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
-                                .font(.pretendard(size: 14, weight: .medium))
-                                .foregroundColor(
-                                    index == 0
-                                        ? Color(0xf71e58)
-                                        : (index == 6
-                                            ? Color(0x1dafff)
-                                            : Color(0x191919))
-                                )
-                        }
+                        Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                            .font(.pretendard(size: 14, weight: .regular))
+                            .foregroundColor(Color(0x646464))
+                            .padding(.top, 8)
                     }
                 }
 
-                if !timeTableViewModel.scheduleListWithoutTime.isEmpty {
+                if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
                     TimeTableScheduleTopView(timeTableViewModel: _timeTableViewModel)
+                        .padding(.top, 2)
                 }
             }
+            .padding(.bottom, 5)
 
             ScrollView {
                 LazyVGrid(
@@ -99,13 +87,22 @@ struct TimeTableScheduleView: View {
                             VStack {
                                 Spacer()
                                 Text("\(index / 8 + 1)")
-                                    .font(.pretendard(size: 10, weight: .medium))
+                                    .font(.pretendard(size: 12, weight: .regular))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             }
                         } else {
                             Rectangle()
                                 .foregroundColor(.white)
-                                .border(Color(0xededed))
+                                .border(
+                                    width: 1,
+                                    edges: [
+                                        .top,
+                                        .leading,
+                                        (index / 8 == 23) ? .bottom : .top,
+                                        (index % 8 == 7) ? .trailing : .leading
+                                    ],
+                                    color: Color(0xdbdbdb)
+                                )
                                 .frame(height: cellHeight)
                                 .background(
                                     GeometryReader(content: { proxy in
@@ -158,15 +155,20 @@ struct TimeTableScheduleView: View {
                                         .position(x: position.x, y: position.y)
                                 } else {
                                     NavigationLink {
+                                        let scheduleFormView = ScheduleFormViewModel(
+                                            schedule: schedule.data,
+                                            categoryList: calendarViewModel.categoryList
+                                        ) {
+                                            timeTableViewModel.fetchScheduleList()
+                                        }
+
                                         ScheduleFormView(
-                                            scheduleFormVM: ScheduleFormViewModel(
-                                                schedule: schedule.data,
-                                                categoryList: calendarViewModel.categoryList
-                                            ) {
-                                                timeTableViewModel.fetchScheduleList()
-                                            },
+                                            scheduleFormVM: scheduleFormView,
                                             isSchModalVisible: .constant(false)
                                         )
+                                        .onAppear {
+                                            scheduleFormView.at = schedule.at
+                                        }
                                     } label: {
                                         ScheduleItemView(schedule: $schedule)
                                     }
@@ -191,6 +193,8 @@ struct TimeTableScheduleView: View {
                         }
                     }
                 })
+
+                Spacer(minLength: 80)
             }
         }
     }

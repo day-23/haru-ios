@@ -24,16 +24,6 @@ struct RootView: View {
             .navigationViewStyle(.stack)
 
             NavigationView {
-                CalendarMainView()
-            }
-            .tabItem {
-                Image(systemName: "calendar")
-                Text("Calendar")
-            }
-            .tag("Calendar")
-            .navigationViewStyle(.stack)
-
-            NavigationView {
                 let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
                 let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
                     checkListViewModel.selectedTag = nil
@@ -59,8 +49,28 @@ struct RootView: View {
             .navigationViewStyle(.stack)
 
             NavigationView {
+                CalendarMainView()
+            }
+            .tabItem {
+                Image(systemName: "calendar")
+                Text("Calendar")
+            }
+            .tag("Calendar")
+            .navigationViewStyle(.stack)
+
+            NavigationView {
+                let timeTableViewModel: TimeTableViewModel = .init()
+
                 TimeTableMainView(
-                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel())
+                    timeTableViewModel: .init(wrappedValue: timeTableViewModel),
+                    todoAddViewModel: .init(
+                        wrappedValue: TodoAddViewModel(
+                            todoState: todoState,
+                            addAction: { _ in
+                                timeTableViewModel.fetchTodoList()
+                            },
+                            updateAction: { _ in }
+                        ))
                 )
             }
             .tabItem {

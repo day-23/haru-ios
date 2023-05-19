@@ -17,11 +17,11 @@ struct ScheduleTopItemView: View {
             color()
 
             Text(schedule.data.content)
-                .font(.pretendard(size: 10, weight: .medium))
-                .foregroundColor(.black)
-                .padding(.vertical, 2)
-                .padding(.horizontal, 3)
+                .font(.pretendard(size: 12, weight: .regular))
+                .foregroundColor(color().fontColor)
+                .padding(.all, 2)
         }
+        .frame(width: width, height: height)
         .cornerRadius(4)
     }
 }

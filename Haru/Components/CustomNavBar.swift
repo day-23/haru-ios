@@ -5,9 +5,9 @@
 //  Created by 이준호 on 2023/05/03.
 //
 
- import SwiftUI
+import SwiftUI
 
- struct CustomNavBar<C,L,R>: ViewModifier where C: View, L: View, R: View {
+struct CustomNavBar<C, L, R>: ViewModifier where C: View, L: View, R: View {
     let centerView: (() -> C)?
     let leftView: (() -> L)?
     let rightView: (() -> R)?
@@ -18,39 +18,39 @@
         self.rightView = rightView
     }
 
-     func body(content: Content) -> some View {
-         VStack(spacing: 0) {
-             ZStack {
-                 LinearGradient(
+    func body(content: Content) -> some View {
+        VStack(spacing: 0) {
+            ZStack {
+                LinearGradient(
                     colors: [.gradientStart2, .gradientEnd2],
                     startPoint: .leading,
                     endPoint: .trailing
-                 )
-                 .ignoresSafeArea(.all)
+                )
+                .ignoresSafeArea(.all)
                  
-                 HStack {
-                     self.leftView?()
+                HStack {
+                    self.leftView?()
                      
-                     Spacer()
+                    Spacer()
                      
-                     self.rightView?()
-                 }
-                 .padding(.horizontal, 20)
+                    self.rightView?()
+                }
+                .padding(.horizontal, 20)
                  
-                 HStack {
-                     Spacer()
+                HStack {
+                    Spacer()
                      
-                     self.centerView?()
+                    self.centerView?()
                      
-                     Spacer()
-                 }
-             }
-             .frame(height: 52)
+                    Spacer()
+                }
+            }
+            .frame(height: 52)
              
-             content
+            content
              
-             Spacer()
-         }
-         .toolbar(.hidden)
+            Spacer()
+        }
+        .toolbar(.hidden)
     }
- }
+}
