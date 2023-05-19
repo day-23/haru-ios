@@ -1,5 +1,5 @@
 //
-//  TagOptionView.swift
+//  TagManageView.swift
 //  Haru
 //
 //  Created by 최정민 on 2023/04/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TagOptionView: View {
+struct TagManageView: View {
     private let width = UIScreen.main.bounds.width * 0.78
     private let height = UIScreen.main.bounds.height * 0.8
 
@@ -96,17 +96,6 @@ struct TagOptionView: View {
                                             print("[Debug] \(error) \(#fileID) \(#function)")
                                         }
                                     }
-                                } removeAction: {
-                                    checkListViewModel.deleteTag(
-                                        tagId: tag.id)
-                                    { result in
-                                        switch result {
-                                        case .success:
-                                            break
-                                        case .failure(let error):
-                                            print("[Debug] \(error) \(#fileID) \(#function)")
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -151,7 +140,6 @@ struct TagOptionView: View {
 private struct TagOptionItem: View {
     var tag: Tag
     var tapAction: () -> Void
-    var removeAction: () -> Void
 
     var body: some View {
         HStack {
@@ -166,13 +154,8 @@ private struct TagOptionItem: View {
 
             Spacer()
 
-            Menu {
-                Button {
-                    removeAction()
-                } label: {
-                    Label("삭제", systemImage: "trash")
-                        .foregroundColor(Color(0xF71E58))
-                }
+            NavigationLink {
+                TagDetailView(tag: tag)
             } label: {
                 Image("ellipsis")
                     .renderingMode(.template)
@@ -183,7 +166,7 @@ private struct TagOptionItem: View {
     }
 }
 
-extension TagOptionView {
+extension TagManageView {
     func onChangeTag(_: String) {
         let trimTag = checkListViewModel.tagContent.trimmingCharacters(in: .whitespaces)
         if !trimTag.isEmpty

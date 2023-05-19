@@ -413,9 +413,6 @@ struct TodoAddView: View {
                 }
             }
             .padding(.top, isModalVisible ? 0 : 16)
-            .onDisappear {
-                viewModel.clear()
-            }
             .navigationBarBackButtonHidden()
             .toolbar {
                 if !isModalVisible {
@@ -523,7 +520,7 @@ struct TodoAddView: View {
                 } label: {
                     HStack(spacing: 10) {
                         Text("할 일 삭제하기")
-                            .font(.pretendard(size: 20, weight: .medium))
+                            .font(.pretendard(size: 20, weight: .regular))
                         Image("trash")
                             .renderingMode(.template)
                     }
