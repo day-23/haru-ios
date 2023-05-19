@@ -10,6 +10,7 @@ import SwiftUI
 struct TimeTableScheduleTopView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
 
+    @Binding var isPopupVisible: Bool
     @State private var topItemWidth: Double = 48
     private var topItemHeight: Double = 18
 
@@ -19,8 +20,12 @@ struct TimeTableScheduleTopView: View {
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0)]
 
-    init(timeTableViewModel: StateObject<TimeTableViewModel>) {
+    init(
+        timeTableViewModel: StateObject<TimeTableViewModel>,
+        isPopupVisible: Binding<Bool>
+    ) {
         _timeTableViewModel = timeTableViewModel
+        _isPopupVisible = isPopupVisible
     }
 
     var body: some View {
@@ -30,7 +35,9 @@ struct TimeTableScheduleTopView: View {
             ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
                 Rectangle()
                     .foregroundColor(.white)
-                    .frame(height: topItemHeight * CGFloat(timeTableViewModel.maxRowCount) + Double(timeTableViewModel.maxRowCount))
+                    .frame(
+                        height: topItemHeight * CGFloat(min(timeTableViewModel.maxRowCount, 3)) + Double(min(timeTableViewModel.maxRowCount, 3))
+                    )
                     .background(
                         GeometryReader(content: { proxy in
                             Color.clear.onAppear {
@@ -38,17 +45,25 @@ struct TimeTableScheduleTopView: View {
                             }
                         })
                     )
+                    .onTapGesture {
+                        isPopupVisible = true
+                    }
             }
         }
         .overlay {
             ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
                 ForEach($timeTableViewModel.scheduleListWithoutTime[index]) { $schedule in
-                    ScheduleTopItemView(
-                        schedule: $schedule, width: topItemWidth * CGFloat(schedule.weight), height: topItemHeight
-                    )
-                    .position(
-                        calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
-                    )
+                    if schedule.order <= 3 {
+                        ScheduleTopItemView(
+                            schedule: $schedule, width: topItemWidth * CGFloat(schedule.weight), height: topItemHeight
+                        )
+                        .position(
+                            calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
+                        )
+                        .onTapGesture {
+                            isPopupVisible = true
+                        }
+                    }
                 }
             }
         }
