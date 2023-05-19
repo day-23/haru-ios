@@ -12,4 +12,5 @@ final class Global {
 
     static let shared: Global = .init()
     var user: User?
+    var hashTagAll = HashTag(id: UUID().uuidString, content: "전체보기")
 }

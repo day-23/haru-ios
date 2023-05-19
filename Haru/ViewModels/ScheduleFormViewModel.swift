@@ -20,6 +20,9 @@ final class ScheduleFormViewModel: ObservableObject {
     var scheduleId: String?
     var mode: ScheduleFormMode
     
+    // Time Table에서 반복 일정 수정시에 필요한 데이터
+    var at: RepeatAt = .none
+    
     // 초기 값
     var tmpRepeatStart: Date
     var tmpRepeatEnd: Date
@@ -288,7 +291,11 @@ final class ScheduleFormViewModel: ObservableObject {
         self.realRepeatEnd = schedule.realRepeatEnd != nil ? schedule.realRepeatEnd! : schedule.repeatEnd
         
         self.tmpRepeatStart = schedule.repeatStart
-        self.tmpRepeatEnd = schedule.repeatEnd
+        do {
+            self.tmpRepeatEnd = schedule.repeatEnd == schedule.realRepeatEnd ? schedule.repeatEnd : try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
+        } catch {
+            self.tmpRepeatEnd = schedule.repeatEnd
+        }
         self.tmpRepeatOption = schedule.repeatOption
         self.tmpRepeatValue = schedule.repeatValue
         self.tmpIsSelectedRepeatEnd = schedule.repeatOption != nil ? true : false
@@ -534,7 +541,7 @@ final class ScheduleFormViewModel: ObservableObject {
      * 반복 일정 하나만 편집하기
      */
     func updateTargetSchedule() {
-        if tmpRepeatStart == realRepeatStart {
+        if tmpRepeatStart == realRepeatStart || at == .front {
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
             scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -544,7 +551,7 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if tmpRepeatEnd == realRepeatEnd {
+        } else if tmpRepeatEnd == realRepeatEnd || at == .back {
             let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
             scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -595,7 +602,7 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if tmpRepeatEnd == realRepeatEnd {
+        } else if tmpRepeatEnd >= realRepeatEnd {
             scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
                 case .success:

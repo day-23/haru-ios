@@ -50,7 +50,7 @@ struct FeedImage: View {
             .zIndex(1)
         }
         .clipped()
-        .frame(width: deviceSize.width > 395 ? 395 : deviceSize.width, height: deviceSize.width > 395 ? 395 : deviceSize.width, alignment: .center)
+        .frame(width: deviceSize.width, height: deviceSize.width, alignment: .center)
     }
 }
 

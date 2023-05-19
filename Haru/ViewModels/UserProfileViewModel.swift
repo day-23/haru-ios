@@ -33,7 +33,6 @@ final class UserProfileViewModel: ObservableObject {
             isFollowing: false
         )
         self.userId = userId
-        fetchUserProfile()
     }
 
     func fetchProfileImage(profileUrl: String) {
@@ -94,7 +93,7 @@ final class UserProfileViewModel: ObservableObject {
                     if let profileUrl = success.profileImage {
                         self.fetchProfileImage(profileUrl: profileUrl)
                     }
-                    
+
                     self.user = success
                     // FIXME: Global 변경 되면 수정해주기
                     Global.shared.user = success

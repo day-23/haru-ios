@@ -84,9 +84,9 @@ struct TagService {
 
     // MARK: - UPDATE API
 
-    func updateIsSelected(
+    func updateTag(
         tagId: String,
-        isSelected: Bool,
+        params: Parameters,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         struct Response: Codable {
@@ -96,10 +96,6 @@ struct TagService {
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json"
-        ]
-
-        let params: Parameters = [
-            "isSelected": !isSelected
         ]
 
         AF.request(

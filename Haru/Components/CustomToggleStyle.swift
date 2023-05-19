@@ -1,5 +1,5 @@
 //
-//  MyToggleStyle.swift
+//  CustomToggleStyle.swift
 //  Haru
 //
 //  Created by 이준호 on 2023/03/15.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct MyToggleStyle: ToggleStyle {
+struct CustomToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
-        HStack() {
+        HStack {
             configuration.label
             Rectangle()
                 .fill(configuration.isOn ? Gradient(colors: [.gradientStart2, .gradientEnd2]) : Gradient(colors: [.gray, .gray]))
@@ -21,7 +21,11 @@ struct MyToggleStyle: ToggleStyle {
                         .offset(x: configuration.isOn ? 8 : -8, y: 0)
                 )
                 .cornerRadius(20)
-                .onTapGesture { configuration.isOn.toggle() }
+                .onTapGesture {
+                    withAnimation(.easeInOut) {
+                        configuration.isOn.toggle()
+                    }
+                }
         }
     }
 }

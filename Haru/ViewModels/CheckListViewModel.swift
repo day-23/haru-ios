@@ -5,6 +5,7 @@
 //  Created by 최정민 on 2023/03/06.
 //
 
+import Alamofire
 import Foundation
 import SwiftUI
 
@@ -272,9 +273,32 @@ final class CheckListViewModel: ObservableObject {
         isSeleted: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        tagService.updateIsSelected(
+        let params: Parameters = [
+            "isSelected": !isSeleted
+        ]
+
+        tagService.updateTag(
             tagId: tagId,
-            isSelected: isSeleted
+            params: params
+        ) { result in
+            switch result {
+            case .success:
+                self.fetchTags()
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func updateTag(
+        tagId: String,
+        params: Parameters,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        tagService.updateTag(
+            tagId: tagId,
+            params: params
         ) { result in
             switch result {
             case .success:

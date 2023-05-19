@@ -150,7 +150,7 @@ struct ScheduleFormView: View {
                                     Spacer()
                                 }
                             })
-                            .toggleStyle(MyToggleStyle())
+                            .toggleStyle(CustomToggleStyle())
                         } icon: {
                             Image(systemName: "clock")
                                 .resizable()
@@ -211,7 +211,7 @@ struct ScheduleFormView: View {
                                     Spacer()
                                 }
                             })
-                            .toggleStyle(MyToggleStyle())
+                            .toggleStyle(CustomToggleStyle())
                         } icon: {
                             Image("alarm")
                                 .renderingMode(.template)
@@ -241,7 +241,7 @@ struct ScheduleFormView: View {
                                         Spacer()
                                     }
                                 })
-                                .toggleStyle(MyToggleStyle())
+                                .toggleStyle(CustomToggleStyle())
                             } icon: {
                                 Image("repeat")
                                     .renderingMode(.template)
@@ -312,7 +312,7 @@ struct ScheduleFormView: View {
                                             }
                                         }
                                     }
-                                    .toggleStyle(MyToggleStyle())
+                                    .toggleStyle(CustomToggleStyle())
                                 } icon: {
                                     Image(systemName: "calendar.badge.clock")
                                         .renderingMode(.template)

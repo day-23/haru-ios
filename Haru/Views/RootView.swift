@@ -20,13 +20,13 @@ struct RootView: View {
                     SplashView(
                         isLoggedIn: $isLoggedIn
                     )
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                withAnimation {
-                                    showSplash = false
-                                }
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            withAnimation {
+                                showSplash = false
                             }
                         }
+                    }
                 } else {
                     if isLoggedIn {
                         TabView {
@@ -39,17 +39,7 @@ struct RootView: View {
                             }
                             .tag("SNS")
                             .navigationViewStyle(.stack)
-                                
-                            NavigationView {
-                                CalendarMainView()
-                            }
-                            .tabItem {
-                                Image(systemName: "calendar")
-                                Text("Calendar")
-                            }
-                            .tag("Calendar")
-                            .navigationViewStyle(.stack)
-                                
+
                             NavigationView {
                                 let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
                                 let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
@@ -62,7 +52,7 @@ struct RootView: View {
                                     checkListViewModel.fetchTodoList()
                                     checkListViewModel.fetchTags()
                                 }
-                                    
+
                                 CheckListView(
                                     viewModel: checkListViewModel,
                                     addViewModel: todoAddViewModel
@@ -74,10 +64,30 @@ struct RootView: View {
                             }
                             .tag("Check-List")
                             .navigationViewStyle(.stack)
-                                
+
                             NavigationView {
+                                CalendarMainView()
+                            }
+                            .tabItem {
+                                Image(systemName: "calendar")
+                                Text("Calendar")
+                            }
+                            .tag("Calendar")
+                            .navigationViewStyle(.stack)
+
+                            NavigationView {
+                                let timeTableViewModel: TimeTableViewModel = .init()
+
                                 TimeTableMainView(
-                                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel())
+                                    timeTableViewModel: .init(wrappedValue: timeTableViewModel),
+                                    todoAddViewModel: .init(
+                                        wrappedValue: TodoAddViewModel(
+                                            todoState: todoState,
+                                            addAction: { _ in
+                                                timeTableViewModel.fetchTodoList()
+                                            },
+                                            updateAction: { _ in }
+                                        ))
                                 )
                             }
                             .tabItem {
@@ -86,7 +96,7 @@ struct RootView: View {
                             }
                             .tag("Time-Table")
                             .navigationViewStyle(.stack)
-                                
+
                             NavigationView {
                                 Text("Setting SubView")
                             }

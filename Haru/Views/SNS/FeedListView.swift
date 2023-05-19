@@ -9,16 +9,21 @@ import SwiftUI
 
 struct FeedListView: View {
     @StateObject var postVM: PostViewModel
-    @State var isAppear: Bool = false
 
     var comeToRoot: Bool = false
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 14) {
                 ForEach(postVM.postList) { post in
-                    FeedView(post: post, postImageList: postVM.postImageList[post.id] ?? [], postVM: postVM, comeToRoot: comeToRoot)
+                    FeedView(
+                        post: post,
+                        postImageList: postVM.postImageList[post.id] ?? [],
+                        postVM: postVM,
+                        comeToRoot: comeToRoot
+                    )
                 }
-                if !postVM.postList.isEmpty, (postVM.page + 1) <= postVM.totalPages {
+                if !postVM.postList.isEmpty, postVM.page <= postVM.feedTotalPage {
                     HStack {
                         Spacer()
                         ProgressView()
@@ -31,9 +36,17 @@ struct FeedListView: View {
                 }
             }
             .padding(.top, 14)
-        }.refreshable {
-            print("새로고침")
+        }
+        .onAppear {
+            postVM.option = postVM.targetId == nil ? .main : .target_feed
+
+            if postVM.feedTotalPage == -1 {
+                postVM.loadMorePosts()
+            }
+        }
+        .refreshable {
             postVM.refreshPosts()
+            postVM.loadMorePosts()
         }
     }
 }

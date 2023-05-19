@@ -19,7 +19,7 @@ struct ScheduleItemView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .padding(.all, 4)
                 .font(.pretendard(size: 12, weight: .medium))
-                .foregroundColor(.white)
+                .foregroundColor(color().fontColor)
         }
         .cornerRadius(10)
     }
