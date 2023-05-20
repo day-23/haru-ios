@@ -35,7 +35,12 @@ struct CalendarWeekView: View {
                         VStack(spacing: 2) {
                             Spacer().frame(height: 26)
                             ForEach(0 ..< calendarVM.maxOrder, id: \.self) { order in
-                                CalendarScheduleItem(productivityList: $calendarVM.viewProductivityList[week][order], cellWidth: cellWidth, month: calendarVM.dateList[10].date.month)
+                                CalendarScheduleItem(
+                                    productivityList: $calendarVM.viewProductivityList[week][order],
+                                    cellWidth: cellWidth,
+                                    month: calendarVM.dateList.isEmpty ?
+                                    Date().month : calendarVM.dateList[10].date.month
+                                )
                             }
                             moreText(week: week, dateColumns: dateColumns)
                         }
