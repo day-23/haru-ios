@@ -96,7 +96,9 @@ struct RootView: View {
                                             addAction: { _ in
                                                 timeTableViewModel.fetchTodoList()
                                             },
-                                            updateAction: { _ in }
+                                            updateAction: { _ in
+                                                timeTableViewModel.fetchTodoList()
+                                            }
                                         ))
                                 )
                             }
