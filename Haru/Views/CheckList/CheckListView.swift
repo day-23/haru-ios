@@ -346,6 +346,13 @@ struct CheckListView: View {
             viewModel.fetchTodoList()
             viewModel.fetchTags()
         }
+        .contentShape(Rectangle())
+        .gesture(
+            TapGesture()
+                .onEnded { _ in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
+        )
     }
 
     func changeOffset(_ value: CGPoint?) {
