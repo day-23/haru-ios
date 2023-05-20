@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Tag: Codable, Identifiable {
+struct Tag: Codable, Identifiable, Equatable {
     // MARK: - Properties
 
     let id: String
@@ -29,6 +29,10 @@ struct Tag: Codable, Identifiable {
         } catch {
             self.isSelected = true
         }
+    }
+
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        return (lhs.id == rhs.id)
     }
 
     // MARK: - Dates Properties

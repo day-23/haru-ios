@@ -24,8 +24,15 @@ struct CheckListView: View {
                     // 태그 리스트
                     TagListView(viewModel: viewModel) { tag in
                         withAnimation {
-                            viewModel.selectedTag = tag
-                            prevOffset = nil
+                            if let selectedTag = viewModel.selectedTag,
+                               selectedTag == tag
+                            {
+                                viewModel.selectedTag = nil
+                                prevOffset = nil
+                            } else {
+                                viewModel.selectedTag = tag
+                                prevOffset = nil
+                            }
                         }
                     }
 
