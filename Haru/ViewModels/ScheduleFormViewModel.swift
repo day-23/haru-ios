@@ -36,8 +36,32 @@ final class ScheduleFormViewModel: ObservableObject {
     var prevRepeatEnd: Date?
     var nextRepeatStart: Date?
     
-    @Published var repeatStart: Date
-    @Published var repeatEnd: Date
+    var buttonDisable: Bool {
+        isWarning || content == ""
+    }
+    
+    @Published var isWarning: Bool = false
+
+    @Published var repeatStart: Date {
+        willSet {
+            if newValue > repeatEnd {
+                repeatEnd = newValue.addingTimeInterval(60 * 60)
+            } else {
+                isWarning = false
+            }
+        }
+    }
+
+    @Published var repeatEnd: Date {
+        willSet {
+            if newValue < repeatStart {
+                isWarning = true
+            } else {
+                isWarning = false
+            }
+        }
+    }
+
     @Published var realRepeatEnd: Date
     
     // 시작과 끝이 7일 이상인가
@@ -52,14 +76,33 @@ final class ScheduleFormViewModel: ObservableObject {
     var overDay: Bool {
         let startDate = CalendarHelper.removeTimeData(date: repeatStart)
         let endDate = CalendarHelper.removeTimeData(date: repeatEnd)
-    
-        return startDate.distance(to: endDate) >= 86400.0
+        
+        let result = startDate.distance(to: endDate) >= 86400.0
+        if result, repeatOption == .everyDay {
+            DispatchQueue.main.async {
+                self.repeatOption = .everyWeek
+            }
+        }
+        return result
     }
     
     @Published var content: String = ""
     @Published var memo: String = ""
     
-    @Published var isAllDay: Bool = false
+    @Published var isAllDay: Bool = false {
+        willSet {
+            if !newValue {
+                if repeatEnd < repeatStart {
+                    isWarning = true
+                } else {
+                    isWarning = false
+                }
+            } else {
+                isWarning = false
+            }
+        }
+    }
+
     @Published var isSelectedAlarm: Bool = false
     @Published var selectIdxList = [Bool](repeating: false, count: 4) // 선택된 알람
     
@@ -254,18 +297,22 @@ final class ScheduleFormViewModel: ObservableObject {
         successAction: @escaping () -> Void
     ) {
         let selectionList = selectionSet.sorted(by: <)
-        self.repeatStart = selectionList.first?.date ?? Date()
-        self.repeatEnd = Calendar.current.date(
+        self.repeatStart = (selectionList.first?.date ?? Date()).roundToNearestFiveMinutes()
+        self.repeatEnd = (Calendar.current.date(
             byAdding: .hour,
             value: 1,
             to: selectionList.last?.date ?? Date()
-        ) ?? Date()
+        ) ?? Date()).roundToNearestFiveMinutes()
         self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
         self.mode = .add
         
-        self.tmpRepeatStart = selectionList.first?.date ?? Date()
-        self.tmpRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
+        self.tmpRepeatStart = (selectionList.first?.date ?? Date()).roundToNearestFiveMinutes()
+        self.tmpRepeatEnd = (Calendar.current.date(
+            byAdding: .hour,
+            value: 1,
+            to: selectionList.last?.date ?? Date()
+        ) ?? Date()).roundToNearestFiveMinutes()
         self.tmpRepeatOption = nil
         self.tmpRepeatValue = nil
         self.tmpIsSelectedRepeatEnd = false
@@ -319,7 +366,6 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.isSelectedAlarm = !schedule.alarms.isEmpty
 
-        self.repeatOption = .everyDay
         if let option = RepeatOption.allCases.first(where: { $0.rawValue == schedule.repeatOption }) {
             self.repeatOption = option
         }

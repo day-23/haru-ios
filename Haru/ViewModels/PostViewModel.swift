@@ -34,7 +34,7 @@ final class PostViewModel: ObservableObject {
         case .target_feed:
             return Int(ceil(Double(postList.count) / 5.0)) + 1
         case .target_media:
-            guard let mediaList = mediaList[selectedHashTag.id] else {
+            guard let mediaList = mediaList[Global.shared.hashTagAll.id] else {
                 return 1
             }
             return Int(ceil(Double(mediaList.count) / 12.0)) + 1
@@ -44,7 +44,7 @@ final class PostViewModel: ObservableObject {
             }
             return Int(ceil(Double(mediaList.count) / 12.0)) + 1
         case .media:
-            guard let mediaList = mediaList[selectedHashTag.id] else {
+            guard let mediaList = mediaList[Global.shared.hashTagAll.id] else {
                 return 1
             }
             return Int(ceil(Double(mediaList.count) / 12.0)) + 1
@@ -245,7 +245,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPage = pageInfo.totalPages
+                self.feedTotalPage = self.feedTotalPage == -1 ? pageInfo.totalPages : self.feedTotalPage
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -285,7 +285,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPage = pageInfo.totalPages
+                self.feedTotalPage = self.feedTotalPage == -1 ? pageInfo.totalPages : self.feedTotalPage
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -301,7 +301,6 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        print("[Debug] \(page) \(mediaTotalPage[Global.shared.hashTagAll.id])")
         postService.fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
@@ -321,7 +320,9 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
                 let pageInfo = success.1
-                self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
+                if self.mediaTotalPage[Global.shared.hashTagAll.id] == nil {
+                    self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
+                }
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -354,13 +355,17 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
                 let pageInfo = success.1
-                self.mediaTotalPage[hashTagId] = pageInfo.totalPages
+                if self.mediaTotalPage[hashTagId] == nil {
+                    self.mediaTotalPage[hashTagId] = pageInfo.totalPages
+                }
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
+
+    // MARK: - 게시물 이외
 
     func fetchTargetHashTags() {
         guard let targetId else { return }

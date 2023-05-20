@@ -14,7 +14,7 @@ struct ProfileInfoView: View {
     @State var toggleIsClicked: Bool = false
     @State private var isFeedSelected: Bool = true
 
-    var postVM: PostViewModel
+    @StateObject var postVM: PostViewModel
     @StateObject var userProfileVM: UserProfileViewModel
     
     var body: some View {

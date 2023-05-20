@@ -33,6 +33,8 @@ struct MediaListView: View {
                                             }
                                         Spacer()
                                     }
+                                } else {
+                                    Text("끝 \(postVM.page) \(postVM.mediaTotalPage[postVM.selectedHashTag.id] ?? 0)")
                                 }
                             }
                         } else {

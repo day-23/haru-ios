@@ -148,4 +148,20 @@ public extension Date {
         formatter.unitsStyle = .full
         return formatter.localizedString(for: self, relativeTo: Date.now)
     }
+    
+    internal func roundToNearestFiveMinutes() -> Date {
+        let calendar = Calendar.current
+        let minutes = calendar.component(.minute, from: self)
+        let minutesRemainder = minutes % 5
+        let roundedMinutes: Int
+        
+        if minutesRemainder < 3 {
+            roundedMinutes = minutes - minutesRemainder
+        } else {
+            roundedMinutes = minutes + (5 - minutesRemainder)
+        }
+        
+        let roundedDate = calendar.date(bySetting: .minute, value: roundedMinutes, of: self)!
+        return roundedDate
+    }
 }

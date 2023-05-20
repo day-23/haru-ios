@@ -233,7 +233,7 @@ final class PostService {
         targetId: String,
         hashTagId: String,
         page: Int,
-        limit: Int = 9,
+        limit: Int = 12,
         lastCreatedAt: Date?,
         completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
     ) {
