@@ -21,7 +21,7 @@ final class ScheduleFormViewModel: ObservableObject {
     var mode: ScheduleFormMode
     
     // Time Table에서 반복 일정 수정시에 필요한 데이터
-    var at: RepeatAt = .none
+    var at: RepeatAt
     
     // 초기 값
     var tmpRepeatStart: Date
@@ -320,15 +320,18 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.categoryList = categoryList
         self.successAction = successAction
+        self.at = .none
     }
     
     // 수정 시 scheduleVM 생성자
     init(
         schedule: Schedule,
         categoryList: [Category],
+        at: RepeatAt = .none,
         successAction: @escaping () -> Void
     ) {
         self.mode = .edit
+        self.at = at
         
         self.scheduleId = schedule.id
         
