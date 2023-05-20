@@ -111,6 +111,7 @@ struct RootView: View {
 
                             NavigationView {
                                 Button {
+                                    KeychainService.logout()
                                     isLoggedIn = false
                                 } label: {
                                     Text("임시 로그아웃 (유저 정보 변경)")
