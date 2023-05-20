@@ -622,8 +622,8 @@ final class TodoAddViewModel: ObservableObject {
         {
             if tagList.filter({ $0.content == trimTag }).isEmpty {
                 tagList.append(Tag(id: UUID().uuidString, content: trimTag))
-                tag = ""
             }
+            tag = ""
         }
     }
 
@@ -632,8 +632,8 @@ final class TodoAddViewModel: ObservableObject {
         if !trimTag.isEmpty {
             if tagList.filter({ $0.content == trimTag }).isEmpty {
                 tagList.append(Tag(id: UUID().uuidString, content: trimTag))
-                tag = ""
             }
+            tag = ""
         }
     }
 

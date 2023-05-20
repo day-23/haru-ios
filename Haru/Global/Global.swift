@@ -8,17 +8,9 @@
 import Foundation
 
 final class Global {
-    static let shared: Global = .init()
-    var user: User? = User(
-        id: "005224c0-eec1-4638-9143-58cbfc9688c5",
-        name: "테스트 계정",
-        introduction: "For Test",
-        postCount: 0,
-        followerCount: 0,
-        followingCount: 0,
-        isFollowing: false
-    )
-
-    var hashTagAll = HashTag(id: UUID().uuidString, content: "전체보기")
     private init() {}
+
+    static let shared: Global = .init()
+    var user: User?
+    var hashTagAll = HashTag(id: UUID().uuidString, content: "전체보기")
 }

@@ -34,10 +34,10 @@ struct TimeTableTodoView: View {
                 .background(
                     index == Date.now.indexOfWeek()
                         ? RadialGradient(
-                            gradient: Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]),
+                            gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)]),
                             center: .center,
                             startRadius: 0,
-                            endRadius: 150
+                            endRadius: 200
                         ).opacity(0.5)
                         : RadialGradient(
                             colors: [.white],

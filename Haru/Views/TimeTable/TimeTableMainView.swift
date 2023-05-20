@@ -11,31 +11,43 @@ import UniformTypeIdentifiers
 struct TimeTableMainView: View {
     // MARK: - Properties
 
-    @EnvironmentObject private var todoState: TodoState
     @StateObject var timeTableViewModel: TimeTableViewModel
+    @StateObject var calendarViewModel: CalendarViewModel = .init()
+    @StateObject var todoAddViewModel: TodoAddViewModel
 
     @State private var isScheduleView: Bool = true
 
-    init(timeTableViewModel: StateObject<TimeTableViewModel>) {
+    @State private var isModalVisible: Bool = false
+    @State private var isPopupVisible: Bool = false
+
+    init(
+        timeTableViewModel: StateObject<TimeTableViewModel>,
+        todoAddViewModel: StateObject<TodoAddViewModel>
+    ) {
         _timeTableViewModel = timeTableViewModel
+        _todoAddViewModel = todoAddViewModel
     }
 
     var body: some View {
-        ZStack {
-            VStack {
+        ZStack(alignment: .bottomTrailing) {
+            VStack(spacing: 0) {
+                HaruHeader {
+                    // TODO: 검색 화면
+                }
+
                 // 날짜 레이아웃
                 HStack(spacing: 0) {
                     Text("\(String(timeTableViewModel.currentYear))년")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
-                        .padding(.leading, 30)
+                        .padding(.leading, 34)
                     Text("\(timeTableViewModel.currentMonth)월")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
                         .padding(.leading, 10)
                     Image("toggle")
                         .renderingMode(.template)
-                        .foregroundColor(Color(0x767676))
+                        .foregroundColor(Color(0x191919))
                         .rotationEffect(Angle(degrees: 90))
                         .scaleEffect(1.25)
                         .scaledToFit()
@@ -59,24 +71,81 @@ struct TimeTableMainView: View {
                             isScheduleView.toggle()
                         }
                 }
-                .padding(.trailing)
+                .padding(.trailing, 20)
+                .padding(.bottom, 18)
 
                 if isScheduleView {
                     TimeTableScheduleView(
-                        timeTableViewModel: _timeTableViewModel
+                        timeTableViewModel: _timeTableViewModel,
+                        calendarViewModel: _calendarViewModel,
+                        isPopupVisible: $isPopupVisible
                     )
-                    .padding(.trailing)
+                    .padding(.trailing, 15)
                 } else {
                     TimeTableTodoView(
-                        todoAddViewModel: StateObject(
-                            wrappedValue: TodoAddViewModel(
-                                todoState: todoState,
-                                addAction: { _ in },
-                                updateAction: { _ in }
-                            )
-                        ),
+                        todoAddViewModel: _todoAddViewModel,
                         timeTableViewModel: _timeTableViewModel
                     )
+                }
+            }
+
+            if isModalVisible {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            isModalVisible = false
+                        }
+                    }
+
+                Modal(isActive: $isModalVisible, ratio: 0.9) {
+                    if isScheduleView {
+                        ScheduleFormView(
+                            scheduleFormVM: ScheduleFormViewModel(
+                                selectionSet: calendarViewModel.selectionSet,
+                                categoryList: calendarViewModel.categoryList,
+                                successAction: {
+                                    timeTableViewModel.fetchScheduleList()
+                                }
+                            ),
+                            isSchModalVisible: $isModalVisible
+                        )
+                    } else {
+                        TodoAddView(
+                            viewModel: todoAddViewModel,
+                            isModalVisible: $isModalVisible
+                        )
+                        .onAppear {
+                            todoAddViewModel.isSelectedEndDate = true
+                        }
+                    }
+                }
+                .transition(.modal)
+                .zIndex(2)
+            } else {
+                if isPopupVisible {
+                    Color.black.opacity(0.4)
+                        .edgesIgnoringSafeArea(.all)
+                        .zIndex(1)
+                        .onTapGesture {
+                            isPopupVisible = false
+                        }
+
+                    // TODO: - 아래 인덱스 에러 해결 필요
+//                    CalendarDayView(calendarViewModel: calendarViewModel)
+//                        .zIndex(2)
+                }
+
+                Button {
+                    withAnimation {
+                        isModalVisible = true
+                    }
+                } label: {
+                    Image("add-button")
+                        .shadow(radius: 10, x: 5, y: 0)
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 10)
                 }
             }
         }

@@ -21,14 +21,14 @@ struct HaruHeader<SearchContent: View>: View {
         self.backgroundColor = backgroundColor
         self.backgroundGradient = backgroundGradient
         self.searchView = searchView
-        
+
         if toggleIsClicked == nil {
             toggleOn = false
         } else {
             toggleOn = true
         }
     }
-    
+
     var body: some View {
         ZStack {
             if let backgroundGradient {

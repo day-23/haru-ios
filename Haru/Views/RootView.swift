@@ -10,80 +10,136 @@ import SwiftUI
 
 struct RootView: View {
     @StateObject private var todoState: TodoState = .init()
+    @State private var showSplash: Bool = true
+    @State private var isLoggedIn: Bool = false
 
     var body: some View {
-        TabView {
-            NavigationView {
-                SNSView()
-            }
-            .tabItem {
-                Image(systemName: "paperplane")
-                Text("SNS")
-            }
-            .tag("SNS")
-            .navigationViewStyle(.stack)
+        Group {
+            ZStack {
+                // MARK: - Splash View
 
-            NavigationView {
-                CalendarMainView()
-            }
-            .tabItem {
-                Image(systemName: "calendar")
-                Text("Calendar")
-            }
-            .tag("Calendar")
-            .navigationViewStyle(.stack)
+                if showSplash {
+                    SplashView(
+                        isLoggedIn: $isLoggedIn
+                    )
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            withAnimation {
+                                showSplash = false
+                            }
+                        }
+                    }
+                } else {
+                    if isLoggedIn {
+                        TabView {
+                            // MARK: - SNS View
 
-            NavigationView {
-                let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
-                let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
-                    checkListViewModel.selectedTag = nil
-                    checkListViewModel.justAddedTodoId = id
-                    checkListViewModel.fetchTags()
-                    checkListViewModel.fetchTodoList()
-                } updateAction: { id in
-                    checkListViewModel.justAddedTodoId = id
-                    checkListViewModel.fetchTodoList()
-                    checkListViewModel.fetchTags()
+                            NavigationView {
+                                SNSView()
+                            }
+                            .tabItem {
+                                Image(systemName: "paperplane")
+                                Text("SNS")
+                            }
+                            .tag("SNS")
+                            .navigationViewStyle(.stack)
+
+                            // MARK: - CheckList View
+
+                            NavigationView {
+                                let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
+                                let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
+                                    checkListViewModel.selectedTag = nil
+                                    checkListViewModel.justAddedTodoId = id
+                                    checkListViewModel.fetchTags()
+                                    checkListViewModel.fetchTodoList()
+                                } updateAction: { id in
+                                    checkListViewModel.justAddedTodoId = id
+                                    checkListViewModel.fetchTodoList()
+                                    checkListViewModel.fetchTags()
+                                }
+
+                                CheckListView(
+                                    viewModel: checkListViewModel,
+                                    addViewModel: todoAddViewModel
+                                )
+                            }
+                            .tabItem {
+                                Image(systemName: "checklist")
+                                Text("Check-List")
+                            }
+                            .tag("Check-List")
+                            .navigationViewStyle(.stack)
+
+                            // MARK: - Calendar View
+
+                            NavigationView {
+                                CalendarMainView()
+                            }
+                            .tabItem {
+                                Image(systemName: "calendar")
+                                Text("Calendar")
+                            }
+                            .tag("Calendar")
+                            .navigationViewStyle(.stack)
+
+                            // MARK: - TimeTable View
+
+                            NavigationView {
+                                let timeTableViewModel: TimeTableViewModel = .init()
+
+                                TimeTableMainView(
+                                    timeTableViewModel: .init(wrappedValue: timeTableViewModel),
+                                    todoAddViewModel: .init(
+                                        wrappedValue: TodoAddViewModel(
+                                            todoState: todoState,
+                                            addAction: { _ in
+                                                timeTableViewModel.fetchTodoList()
+                                            },
+                                            updateAction: { _ in }
+                                        ))
+                                )
+                            }
+                            .tabItem {
+                                Image(systemName: "calendar.day.timeline.left")
+                                Text("Time-Table")
+                            }
+                            .tag("Time-Table")
+                            .navigationViewStyle(.stack)
+
+                            // MARK: - Setting View
+
+                            NavigationView {
+                                Button {
+                                    isLoggedIn = false
+                                } label: {
+                                    Text("임시 로그아웃 (유저 정보 변경)")
+                                        .font(.pretendard(size: 14, weight: .bold))
+                                        .foregroundColor(Color(0xfdfdfd))
+                                        .frame(width: 312, height: 44)
+                                        .background(Color(0x191919))
+                                        .cornerRadius(12)
+                                }
+                            }
+                            .tabItem {
+                                Image(systemName: "person")
+                                Text("Setting")
+                            }
+                            .tag("Setting")
+                            .navigationViewStyle(.stack)
+                        }
+                        .onAppear {
+                            UITabBar.appearance().backgroundColor = .white
+                            UIDatePicker.appearance().minuteInterval = 5
+                        }
+                        .environmentObject(todoState)
+                    } else {
+                        LoginView(
+                            isLoggedIn: $isLoggedIn
+                        )
+                    }
                 }
-
-                CheckListView(
-                    viewModel: checkListViewModel,
-                    addViewModel: todoAddViewModel
-                )
             }
-            .tabItem {
-                Image(systemName: "checklist")
-                Text("Check-List")
-            }
-            .tag("Check-List")
-            .navigationViewStyle(.stack)
-
-            NavigationView {
-                TimeTableMainView(
-                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel())
-                )
-            }
-            .tabItem {
-                Image(systemName: "calendar.day.timeline.left")
-                Text("Time-Table")
-            }
-            .tag("Time-Table")
-            .navigationViewStyle(.stack)
-
-            NavigationView {
-                Text("Setting SubView")
-            }
-            .tabItem {
-                Image(systemName: "person")
-                Text("Setting")
-            }
-            .tag("Setting")
-            .navigationViewStyle(.stack)
         }
-        .onAppear {
-            UITabBar.appearance().backgroundColor = .white
-            UIDatePicker.appearance().minuteInterval = 5
-        }
-        .environmentObject(todoState)
     }
 }

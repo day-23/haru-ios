@@ -14,7 +14,8 @@ struct TimeTableTodoItem: View {
         ZStack {
             Text(todo.data.content)
                 .font(.pretendard(size: 16, weight: .bold))
-                .background(Color(0xFDFDFD))
+                .foregroundColor(Color(0x191919))
+                .background(.clear)
                 .padding(10)
                 .cornerRadius(8)
         }
