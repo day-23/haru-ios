@@ -67,6 +67,8 @@ final class TimeTableViewModel: ObservableObject {
         return result
     }
 
+    @Published var indices: [Int] = [-1, 0, 1]
+
     func processScheduleListWithoutTime() {
         struct Point: Hashable {
             let r: Int
