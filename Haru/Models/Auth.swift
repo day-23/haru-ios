@@ -29,3 +29,17 @@ struct UserVerify: Codable {
     let id: String
     let accessToken: String
 }
+
+
+struct UserAppleAuthResponse: Codable {
+    let success: Bool
+    let data: UserAppleAuth
+}
+
+struct UserAppleAuth: Codable {
+    let id: String
+    let name: String
+    let cookie: String
+    let accessToken: String
+    let refreshToken: String
+}

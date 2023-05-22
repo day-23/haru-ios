@@ -158,6 +158,7 @@
 		AE5085B92A16B44200A373BC /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5085B82A16B44200A373BC /* Auth.swift */; };
 		AE5085BB2A16C3B400A373BC /* Me.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5085BA2A16C3B400A373BC /* Me.swift */; };
 		AE5085BD2A16C9C200A373BC /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5085BC2A16C9C200A373BC /* KeyChainService.swift */; };
+		AE5085C02A176B2B00A373BC /* SignInWithAppleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE5085BF2A176B2B00A373BC /* SignInWithAppleButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -303,6 +304,8 @@
 		AE5085B82A16B44200A373BC /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		AE5085BA2A16C3B400A373BC /* Me.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Me.swift; sourceTree = "<group>"; };
 		AE5085BC2A16C9C200A373BC /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
+		AE5085BE2A17663B00A373BC /* Haru.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Haru.entitlements; sourceTree = "<group>"; };
+		AE5085BF2A176B2B00A373BC /* SignInWithAppleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -347,6 +350,7 @@
 		130666CA29CEDF4A00AACEE6 /* Haru */ = {
 			isa = PBXGroup;
 			children = (
+				AE5085BE2A17663B00A373BC /* Haru.entitlements */,
 				130666CF29CEDF4B00AACEE6 /* Assets.xcassets */,
 				130666DF29CEDFF300AACEE6 /* Components */,
 				130666E229CEE01800AACEE6 /* Enumerations */,
@@ -605,6 +609,7 @@
 			isa = PBXGroup;
 			children = (
 				13DE94BC2A16854500D43105 /* Login.swift */,
+				AE5085BF2A176B2B00A373BC /* SignInWithAppleButton.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -679,11 +684,12 @@
 			};
 			buildConfigurationList = 130666C329CEDF4A00AACEE6 /* Build configuration list for PBXProject "Haru" */;
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = 130666BF29CEDF4A00AACEE6;
 			packageReferences = (
@@ -833,6 +839,7 @@
 				130667A629CEE1F200AACEE6 /* View.swift in Sources */,
 				1306678F29CEE1E300AACEE6 /* StarButton.swift in Sources */,
 				1306677A29CEE19C00AACEE6 /* HaruView.swift in Sources */,
+				AE5085C02A176B2B00A373BC /* SignInWithAppleButton.swift in Sources */,
 				134F5FF629DF20160072704B /* TimeTableTodoItem.swift in Sources */,
 				1306677829CEE19C00AACEE6 /* TagListView.swift in Sources */,
 				13FB7E9A29F65A7E006DEE87 /* TagOptionView.swift in Sources */,
@@ -981,6 +988,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Haru/Haru.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Haru/Preview Content\"";
@@ -1015,6 +1023,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Haru/Haru.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Haru/Preview Content\"";
