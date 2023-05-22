@@ -35,10 +35,10 @@ struct TimeTableTodoRow: View {
                     Text("\(date.day)")
                         .font(.pretendard(size: 14, weight: .bold))
                         .foregroundColor(Color(0x1dafff))
-                        .padding(.vertical, 3)
-                        .padding(.horizontal, 6)
                         .background(
-                            Circle().stroke(.gradation1, lineWidth: 2)
+                            Circle()
+                                .stroke(.gradation1, lineWidth: 2)
+                                .padding(-2)
                         )
                 } else {
                     Text("\(date.day)")
@@ -63,14 +63,16 @@ struct TimeTableTodoRow: View {
                         )
                 }
             }
-            .frame(width: 60)
+            .frame(width: 20)
+            .padding(.leading, 24)
+            .padding(.trailing, 20)
 
             if todoList.isEmpty {
                 EmptySectionView()
                     .padding(1)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
+                    HStack(spacing: UIDevice.current.name.contains("SE") ? 8 : 10) {
                         ForEach(todoList) { todo in
                             NavigationLink {
                                 TodoAddView(
@@ -97,6 +99,6 @@ struct TimeTableTodoRow: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: 72)
+        .frame(maxWidth: .infinity, maxHeight: UIDevice.current.name.contains("SE") ? 72 : 76)
     }
 }

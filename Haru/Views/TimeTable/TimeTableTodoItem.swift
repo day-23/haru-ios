@@ -16,10 +16,11 @@ struct TimeTableTodoItem: View {
                 .font(.pretendard(size: 16, weight: .bold))
                 .foregroundColor(Color(0x191919))
                 .background(.clear)
-                .padding(10)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 10)
                 .cornerRadius(8)
         }
-        .frame(width: 68, height: 62)
+        .frame(width: 64, height: 58)
         .background(Color(0xFDFDFD))
         .cornerRadius(10)
         .overlay(
