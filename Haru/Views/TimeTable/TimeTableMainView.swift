@@ -20,6 +20,8 @@ struct TimeTableMainView: View {
     @State private var isModalVisible: Bool = false
     @State private var isPopupVisible: Bool = false
 
+    @State private var isDateButtonClicked: Bool = false
+
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
         todoAddViewModel: StateObject<TodoAddViewModel>
@@ -45,26 +47,46 @@ struct TimeTableMainView: View {
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
                         .padding(.leading, 10)
-                    Image("toggle")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
-                        .rotationEffect(Angle(degrees: 90))
-                        .scaleEffect(1.25)
-                        .scaledToFit()
-                        .padding(.leading, 10)
+
+                    Button {
+                        isDateButtonClicked.toggle()
+                    } label: {
+                        Image("toggle")
+                            .renderingMode(.template)
+                            .foregroundColor(Color(0x191919))
+                            .rotationEffect(Angle(degrees: 90))
+                            .scaleEffect(1.25)
+                            .scaledToFit()
+                            .padding(.leading, 10)
+                    }
+                    .popover(
+                        isPresented: $isDateButtonClicked,
+                        arrowDirection: .up
+                    ) {
+                        DatePicker(
+                            "",
+                            selection: $timeTableViewModel.currentDate,
+                            displayedComponents: .date
+                        )
+                        .datePickerStyle(.graphical)
+                    }
 
                     Spacer()
 
-                    Text("\(Date().day)")
-                        .font(.pretendard(size: 12, weight: .bold))
-                        .foregroundColor(Color(0x2ca4ff))
-                        .padding(.vertical, 3)
-                        .padding(.horizontal, 6)
-                        .background(
-                            Circle()
-                                .stroke(.gradation1, lineWidth: 2)
-                        )
-                        .padding(.trailing, 16)
+                    Button {
+                        timeTableViewModel.currentDate = .now
+                    } label: {
+                        Text("\(Date().day)")
+                            .font(.pretendard(size: 12, weight: .bold))
+                            .foregroundColor(Color(0x2ca4ff))
+                            .padding(.vertical, 3)
+                            .padding(.horizontal, 6)
+                            .background(
+                                Circle()
+                                    .stroke(.gradation1, lineWidth: 2)
+                            )
+                            .padding(.trailing, 16)
+                    }
 
                     Image(isScheduleView ? "time-table-todo" : "time-table-schedule")
                         .onTapGesture {
