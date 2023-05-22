@@ -21,13 +21,20 @@ struct TimeTableTodoRow: View {
             VStack(spacing: 0) {
                 Text(week[index])
                     .font(.pretendard(size: 14, weight: .regular))
-                    .foregroundColor(Color(0xACACAC))
+                    .foregroundColor(
+                        index == 0
+                            ? Color(0xf71e58)
+                            : (index == 6
+                                ? Color(0x1dafff)
+                                : Color(0x646464)
+                            )
+                    )
                     .padding(.bottom, 7)
 
                 if index == Date.now.indexOfWeek() {
                     Text("\(date.day)")
                         .font(.pretendard(size: 14, weight: .bold))
-                        .foregroundColor(Color(0x1DAFFF))
+                        .foregroundColor(Color(0x1dafff))
                         .padding(.vertical, 3)
                         .padding(.horizontal, 6)
                         .background(
@@ -35,8 +42,25 @@ struct TimeTableTodoRow: View {
                         )
                 } else {
                     Text("\(date.day)")
+                        .frame(maxWidth: .infinity, alignment: .center)
                         .font(.pretendard(size: 14, weight: .regular))
-                        .foregroundColor(Color(0x646464))
+                        .foregroundColor(
+                            timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth
+                                ? (index == 0
+                                    ? Color(0xfdbbcd)
+                                    : (index == 6
+                                        ? Color(0xbbe7ff)
+                                        : Color(0xebebeb)
+                                    )
+                                )
+                                : (index == 0
+                                    ? Color(0xf71e58)
+                                    : (index == 6
+                                        ? Color(0x1dafff)
+                                        : Color(0x646464)
+                                    )
+                                )
+                        )
                 }
             }
             .frame(width: 60)
