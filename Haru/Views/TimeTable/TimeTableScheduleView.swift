@@ -58,10 +58,32 @@ struct TimeTableScheduleView: View {
                         LazyVGrid(columns: column) {
                             Text("")
 
-                            ForEach(week, id: \.self) { day in
-                                Text(day)
+                            ForEach(week.indices, id: \.self) { index in
+                                Text(week[index])
                                     .font(.pretendard(size: 14, weight: .regular))
-                                    .foregroundColor(Color(0xacacac))
+                                    .foregroundColor(
+                                        index == 0
+                                            ? Color(0xf71e58)
+                                            : (index == 6
+                                                ? Color(0x1dafff)
+                                                : Color(0x646464)
+                                            )
+//                                        timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth
+//                                            ? (index == 0
+//                                                ? Color(0xfdbbcd)
+//                                                : (index == 6
+//                                                    ? Color(0xbbe7ff)
+//                                                    : Color(0xebebeb)
+//                                                )
+//                                            )
+//                                            : (index == 0
+//                                                ? Color(0xf71e58)
+//                                                : (index == 6
+//                                                    ? Color(0x1dafff)
+//                                                    : Color(0x646464)
+//                                                )
+//                                            )
+                                    )
                                     .padding(.bottom, 3)
                                     .onTapGesture {
                                         isPopupVisible = true
@@ -79,7 +101,23 @@ struct TimeTableScheduleView: View {
                             ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
                                 Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
                                     .font(.pretendard(size: 14, weight: .regular))
-                                    .foregroundColor(Color(0x646464))
+                                    .foregroundColor(
+                                        timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth
+                                            ? (index == 0
+                                                ? Color(0xfdbbcd)
+                                                : (index == 6
+                                                    ? Color(0xbbe7ff)
+                                                    : Color(0xebebeb)
+                                                )
+                                            )
+                                            : (index == 0
+                                                ? Color(0xf71e58)
+                                                : (index == 6
+                                                    ? Color(0x1dafff)
+                                                    : Color(0x646464)
+                                                )
+                                            )
+                                    )
                                     .padding(.top, 8)
                                     .onTapGesture {
                                         isPopupVisible = true
@@ -133,7 +171,7 @@ struct TimeTableScheduleView: View {
                 }
             }
 
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 LazyVGrid(
                     columns: column,
                     spacing: 0
