@@ -58,8 +58,14 @@ struct SignInWithAppleButton: UIViewRepresentable {
                             let _ = KeychainService.save(key: "accessToken", data: accessTokenData)
                             let _ = KeychainService.save(key: "refreshToken", data: refreshTokenData)
                             
-                            Global.shared.me = Me(
-                                id: data.data.id
+                            Global.shared.user = User(
+                                id: data.data.id,
+                                name: "loggedInUser",
+                                introduction: "loggedInUser",
+                                postCount: 0,
+                                followerCount: 0,
+                                followingCount: 0,
+                                isFollowing: false
                             )
                             
                             DispatchQueue.main.async {
