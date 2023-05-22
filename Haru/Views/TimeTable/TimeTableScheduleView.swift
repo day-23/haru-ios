@@ -265,7 +265,7 @@ private extension TimeTableScheduleView {
         let minuteFormatter = DateFormatter()
         minuteFormatter.dateFormat = "m"
 
-        let thisWeekString = Date.thisWeek().map { formatter.string(from: $0) }
+        let thisWeekString = timeTableViewModel.thisWeek.map { formatter.string(from: $0) }
 
         let dateString = formatter.string(from: schedule)
 

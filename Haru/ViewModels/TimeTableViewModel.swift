@@ -248,6 +248,8 @@ final class TimeTableViewModel: ObservableObject {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyyMMdd"
 
+                print(scheduleList.map { ($0.content, $0.repeatStart, $0.repeatEnd) })
+
                 self.scheduleList = []
                 self.scheduleListWithoutTime = Array(repeating: [], count: 7)
                 for schedule in scheduleList {
