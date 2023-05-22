@@ -99,9 +99,13 @@ struct TimeTableScheduleView: View {
                 .padding(.bottom, 5)
                 .overlay {
                     GeometryReader { proxy in
-                        Color.clear.onAppear {
-                            topViewHeight = proxy.size.height
-                        }
+                        Color.clear
+                            .onAppear {
+                                topViewHeight = proxy.size.height
+                            }
+                            .onChange(of: timeTableViewModel.maxRowCount) { _ in
+                                topViewHeight = proxy.size.height
+                            }
                     }
                 }
             }

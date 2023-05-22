@@ -46,7 +46,13 @@ final class TimeTableViewModel: ObservableObject {
     @Published var draggingTodo: TodoCell? = nil
     @Published var draggingSchedule: ScheduleCell? = nil
 
-    @Published var currentDate: Date = .now
+    @Published var currentDate: Date = .now {
+        didSet {
+            fetchTodoList()
+            fetchScheduleList()
+        }
+    }
+
     var currentYear: Int { currentDate.year }
     var currentMonth: Int { currentDate.month }
     var currentWeek: Int { currentDate.weekOfYear() }
