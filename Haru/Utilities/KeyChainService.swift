@@ -9,12 +9,12 @@ import Foundation
 import Security
 
 class KeychainService {
-
     class func save(key: String, data: Data) -> OSStatus {
         let query = [
-            kSecClass as String       : kSecClassGenericPassword as String,
-            kSecAttrAccount as String : key,
-            kSecValueData as String   : data ] as [String : Any]
+            kSecClass as String: kSecClassGenericPassword as String,
+            kSecAttrAccount as String: key,
+            kSecValueData as String: data,
+        ] as [String: Any]
 
         SecItemDelete(query as CFDictionary)
 
@@ -23,10 +23,11 @@ class KeychainService {
 
     class func load(key: String) -> Data? {
         let query = [
-            kSecClass as String       : kSecClassGenericPassword,
-            kSecAttrAccount as String : key,
-            kSecReturnData as String  : kCFBooleanTrue!,
-            kSecMatchLimit as String  : kSecMatchLimitOne ] as [String : Any]
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecReturnData as String: kCFBooleanTrue!,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+        ] as [String: Any]
 
         var dataTypeRef: AnyObject?
         let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
@@ -35,6 +36,20 @@ class KeychainService {
             return dataTypeRef as! Data?
         } else {
             return nil
+        }
+    }
+
+    class func logout() {
+        let secItemClasses = [
+            kSecClassGenericPassword,
+            kSecClassInternetPassword,
+            kSecClassCertificate,
+            kSecClassKey,
+            kSecClassIdentity,
+        ]
+        for itemClass in secItemClasses {
+            let spec: NSDictionary = [kSecClass: itemClass]
+            SecItemDelete(spec)
         }
     }
 

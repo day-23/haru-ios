@@ -10,7 +10,6 @@ import SwiftUI
 struct FeedView: View {
     var post: Post
     var postImageList: [PostImage?]
-    var profileImage: PostImage?
 
     @StateObject var postVM: PostViewModel
 
@@ -20,20 +19,16 @@ struct FeedView: View {
     }
 
     var body: some View {
-        let targetPostVM: PostViewModel = .init(postOption: .target_all, targetId: post.user.id)
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 NavigationLink {
                     ProfileInfoView(
-                        postVM: targetPostVM,
+                        postVM: PostViewModel(targetId: post.user.id, option: .target_feed),
                         userProfileVM: UserProfileViewModel(userId: post.user.id)
                     )
-                    .onAppear {
-                        targetPostVM.loadMorePosts()
-                    }
                 } label: {
                     HStack {
-                        ProfileImgView(profileImage: profileImage)
+                        ProfileImgView(profileImage: postVM.profileImage)
                             .frame(width: 30, height: 30)
 
                         Text("\(post.user.name)")
@@ -74,6 +69,7 @@ struct FeedView: View {
                 HStack(spacing: 10) {
                     NavigationLink {
                         CommentView(
+                            postId: post.id,
                             postImageList: post.images,
                             imageList: postImageList,
                             isMine: isMine

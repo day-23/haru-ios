@@ -14,7 +14,7 @@ struct ProfileInfoView: View {
     @State var toggleIsClicked: Bool = false
     @State private var isFeedSelected: Bool = true
 
-    var postVM: PostViewModel
+    @StateObject var postVM: PostViewModel
     @StateObject var userProfileVM: UserProfileViewModel
     
     var body: some View {
@@ -186,11 +186,9 @@ struct ProfileInfoView: View {
                 }
                 
                 if isFeedSelected {
-                    Spacer()
-                        .frame(height: 20)
                     FeedListView(postVM: postVM)
                 } else {
-                    MediaView()
+                    MediaListView(postVM: postVM)
                 }
             }
             
@@ -219,9 +217,9 @@ struct ProfileInfoView: View {
         }
         .navigationBarBackButtonHidden()
         .onAppear {
-//            postVM.loadMorePosts()
-            userProfileVM.fetchFollower(currentPage: 1)
-            userProfileVM.fetchFollowing(currentPage: 1)
+            userProfileVM.fetchUserProfile()
+//            userProfileVM.fetchFollower(currentPage: 1)
+//            userProfileVM.fetchFollowing(currentPage: 1)
         }
     }
 }

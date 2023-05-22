@@ -11,6 +11,7 @@ struct CustomDatePicker: View {
     @Binding var selection: Date
     var displayedComponents: [DatePicker.Components]
     var pastCutoffDate: Date?
+    @Binding var isWarning: Bool
 
     @State private var isDateClicked: Bool = false
     @State private var isTimeClicked: Bool = false
@@ -18,11 +19,13 @@ struct CustomDatePicker: View {
     init(
         selection: Binding<Date>,
         displayedComponents: [DatePicker.Components] = [.date, .hourAndMinute],
-        pastCutoffDate: Date? = nil
+        pastCutoffDate: Date? = nil,
+        isWarning: Binding<Bool> = .constant(false)
     ) {
         _selection = selection
         self.displayedComponents = displayedComponents
         self.pastCutoffDate = pastCutoffDate
+        _isWarning = isWarning
     }
 
     private let formatter: DateFormatter = {
@@ -42,7 +45,7 @@ struct CustomDatePicker: View {
             if displayedComponents.contains(.date) {
                 Text(formatter.string(from: selection))
                     .font(.pretendard(size: 14, weight: .regular))
-                    .foregroundColor(Color(0x1dafff))
+                    .foregroundColor(isWarning ? Color(0xf71e58) :Color(0x1dafff))
                     .padding(.vertical, 4)
                     .padding(.horizontal, 12)
                     .background(Color(0xf1f1f5))
@@ -75,7 +78,7 @@ struct CustomDatePicker: View {
             if displayedComponents.contains(.hourAndMinute) {
                 Text(timeFormatter.string(from: selection))
                     .font(.pretendard(size: 14, weight: .regular))
-                    .foregroundColor(Color(0x1dafff))
+                    .foregroundColor(isWarning ? Color(0xf71e58) :Color(0x1dafff))
                     .padding(.vertical, 4)
                     .padding(.horizontal, 12)
                     .background(Color(0xf1f1f5))

@@ -246,9 +246,9 @@ final class TimeTableViewModel: ObservableObject {
                     var data = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
 
                     // Schedule이 하루 종일이거나, 반복 일정이 아니면서 시작 날짜와 끝 날짜가 다를 경우.
-                    if schedule.isAllDay
-                        || (schedule.repeatOption == nil
-                            && dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd))
+                    if schedule.repeatOption == nil,
+                       schedule.isAllDay
+                       || dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd)
                     {
                         if var start = schedule.repeatStart.indexOfWeek(),
                            var end = schedule.repeatEnd.indexOfWeek()
@@ -325,7 +325,7 @@ final class TimeTableViewModel: ObservableObject {
                                     }
                                     repeatSchedule.repeatEnd = repeatEnd
 
-                                    let cell = ScheduleCell(
+                                    var cell = ScheduleCell(
                                         id: UUID().uuidString,
                                         data: repeatSchedule,
                                         weight: 1,
@@ -333,7 +333,32 @@ final class TimeTableViewModel: ObservableObject {
                                         at: at
                                     )
 
-                                    self.scheduleList.append(cell)
+                                    if repeatSchedule.isAllDay {
+                                        if var start = repeatSchedule.repeatStart.indexOfWeek(),
+                                           var end = repeatSchedule.repeatEnd.indexOfWeek()
+                                        {
+                                            if repeatSchedule.repeatStart.year < self.currentYear {
+                                                start = 0
+                                            } else if repeatSchedule.repeatStart.year == self.currentYear,
+                                                      repeatSchedule.repeatStart.weekOfYear() < self.currentWeek
+                                            {
+                                                start = 0
+                                            }
+
+                                            if repeatSchedule.repeatEnd.year == self.currentYear,
+                                               repeatSchedule.repeatEnd.weekOfYear() > self.currentWeek
+                                            {
+                                                end = 6
+                                            } else if repeatSchedule.repeatEnd.year > self.currentYear {
+                                                end = 6
+                                            }
+
+                                            cell.weight = end - start + 1
+                                            self.scheduleListWithoutTime[start].append(cell)
+                                        }
+                                    } else {
+                                        self.scheduleList.append(cell)
+                                    }
 
                                     do {
                                         date = try schedule.nextRepeatStartDate(curRepeatStart: date)

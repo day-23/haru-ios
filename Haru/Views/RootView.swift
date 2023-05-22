@@ -16,20 +16,24 @@ struct RootView: View {
     var body: some View {
         Group {
             ZStack {
+                // MARK: - Splash View
+
                 if showSplash {
                     SplashView(
                         isLoggedIn: $isLoggedIn
                     )
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                withAnimation {
-                                    showSplash = false
-                                }
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            withAnimation {
+                                showSplash = false
                             }
                         }
+                    }
                 } else {
                     if isLoggedIn {
                         TabView {
+                            // MARK: - SNS View
+
                             NavigationView {
                                 SNSView()
                             }
@@ -39,17 +43,9 @@ struct RootView: View {
                             }
                             .tag("SNS")
                             .navigationViewStyle(.stack)
-                                
-                            NavigationView {
-                                CalendarMainView()
-                            }
-                            .tabItem {
-                                Image(systemName: "calendar")
-                                Text("Calendar")
-                            }
-                            .tag("Calendar")
-                            .navigationViewStyle(.stack)
-                                
+
+                            // MARK: - CheckList View
+
                             NavigationView {
                                 let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
                                 let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
@@ -62,7 +58,7 @@ struct RootView: View {
                                     checkListViewModel.fetchTodoList()
                                     checkListViewModel.fetchTags()
                                 }
-                                    
+
                                 CheckListView(
                                     viewModel: checkListViewModel,
                                     addViewModel: todoAddViewModel
@@ -74,10 +70,34 @@ struct RootView: View {
                             }
                             .tag("Check-List")
                             .navigationViewStyle(.stack)
-                                
+
+                            // MARK: - Calendar View
+
                             NavigationView {
+                                CalendarMainView()
+                            }
+                            .tabItem {
+                                Image(systemName: "calendar")
+                                Text("Calendar")
+                            }
+                            .tag("Calendar")
+                            .navigationViewStyle(.stack)
+
+                            // MARK: - TimeTable View
+
+                            NavigationView {
+                                let timeTableViewModel: TimeTableViewModel = .init()
+
                                 TimeTableMainView(
-                                    timeTableViewModel: .init(wrappedValue: TimeTableViewModel())
+                                    timeTableViewModel: .init(wrappedValue: timeTableViewModel),
+                                    todoAddViewModel: .init(
+                                        wrappedValue: TodoAddViewModel(
+                                            todoState: todoState,
+                                            addAction: { _ in
+                                                timeTableViewModel.fetchTodoList()
+                                            },
+                                            updateAction: { _ in }
+                                        ))
                                 )
                             }
                             .tabItem {
@@ -86,9 +106,21 @@ struct RootView: View {
                             }
                             .tag("Time-Table")
                             .navigationViewStyle(.stack)
-                                
+
+                            // MARK: - Setting View
+
                             NavigationView {
-                                Text("Setting SubView")
+                                Button {
+                                    KeychainService.logout()
+                                    isLoggedIn = false
+                                } label: {
+                                    Text("임시 로그아웃 (유저 정보 변경)")
+                                        .font(.pretendard(size: 14, weight: .bold))
+                                        .foregroundColor(Color(0xfdfdfd))
+                                        .frame(width: 312, height: 44)
+                                        .background(Color(0x191919))
+                                        .cornerRadius(12)
+                                }
                             }
                             .tabItem {
                                 Image(systemName: "person")
@@ -103,7 +135,7 @@ struct RootView: View {
                         }
                         .environmentObject(todoState)
                     } else {
-                        Login(
+                        LoginView(
                             isLoggedIn: $isLoggedIn
                         )
                     }
