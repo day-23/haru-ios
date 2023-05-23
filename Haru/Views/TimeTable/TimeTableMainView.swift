@@ -152,9 +152,7 @@ struct TimeTableMainView: View {
                             .edgesIgnoringSafeArea(.all)
                             .zIndex(1)
                             .onTapGesture {
-                                withAnimation {
-                                    isPopupVisible = false
-                                }
+                                isPopupVisible = false
                             }
 
                         CalendarDayView(calendarViewModel: calendarViewModel)
