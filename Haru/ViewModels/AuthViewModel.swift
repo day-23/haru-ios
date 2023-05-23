@@ -96,7 +96,7 @@ class AuthViewModel: ObservableObject {
 //                            let email = user.kakaoAccount?.email ?? ""
                             Global.shared.user = User(
                                 id: data.data.id,
-                                name: "loggedInUser",
+                                name: data.data.name,
                                 introduction: "loggedInUser",
                                 postCount: 0,
                                 followerCount: 0,

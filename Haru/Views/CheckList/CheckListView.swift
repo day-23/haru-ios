@@ -24,8 +24,15 @@ struct CheckListView: View {
                     // 태그 리스트
                     TagListView(viewModel: viewModel) { tag in
                         withAnimation {
-                            viewModel.selectedTag = tag
-                            prevOffset = nil
+                            if let selectedTag = viewModel.selectedTag,
+                               selectedTag == tag
+                            {
+                                viewModel.selectedTag = nil
+                                prevOffset = nil
+                            } else {
+                                viewModel.selectedTag = tag
+                                prevOffset = nil
+                            }
                         }
                     }
 
@@ -346,6 +353,13 @@ struct CheckListView: View {
             viewModel.fetchTodoList()
             viewModel.fetchTags()
         }
+        .contentShape(Rectangle())
+        .gesture(
+            TapGesture()
+                .onEnded { _ in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
+        )
     }
 
     func changeOffset(_ value: CGPoint?) {

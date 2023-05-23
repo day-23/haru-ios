@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TimeTableScheduleTopView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
+    @StateObject var calendarViewModel: CalendarViewModel
 
     @Binding var isPopupVisible: Bool
     @State private var topItemWidth: Double = 48
@@ -22,9 +23,11 @@ struct TimeTableScheduleTopView: View {
 
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
+        calendarViewModel: StateObject<CalendarViewModel>,
         isPopupVisible: Binding<Bool>
     ) {
         _timeTableViewModel = timeTableViewModel
+        _calendarViewModel = calendarViewModel
         _isPopupVisible = isPopupVisible
     }
 
@@ -46,7 +49,11 @@ struct TimeTableScheduleTopView: View {
                         })
                     )
                     .onTapGesture {
-                        isPopupVisible = true
+                        calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
+                        calendarViewModel.getSelectedScheduleList()
+                        withAnimation {
+                            isPopupVisible = true
+                        }
                     }
             }
         }
@@ -61,7 +68,11 @@ struct TimeTableScheduleTopView: View {
                             calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
                         )
                         .onTapGesture {
-                            isPopupVisible = true
+                            calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
+                            calendarViewModel.getSelectedScheduleList()
+                            withAnimation {
+                                isPopupVisible = true
+                            }
                         }
                     }
                 }
