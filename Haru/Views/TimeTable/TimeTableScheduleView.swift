@@ -86,7 +86,11 @@ struct TimeTableScheduleView: View {
                                     )
                                     .padding(.bottom, 3)
                                     .onTapGesture {
-                                        isPopupVisible = true
+                                        calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
+                                        calendarViewModel.getSelectedScheduleList()
+                                        withAnimation {
+                                            isPopupVisible = true
+                                        }
                                     }
                             }
                         }
@@ -120,7 +124,11 @@ struct TimeTableScheduleView: View {
                                     )
                                     .padding(.top, 8)
                                     .onTapGesture {
-                                        isPopupVisible = true
+                                        calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
+                                        calendarViewModel.getSelectedScheduleList()
+                                        withAnimation {
+                                            isPopupVisible = true
+                                        }
                                     }
                             }
                         }
@@ -128,6 +136,7 @@ struct TimeTableScheduleView: View {
                         if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
                             TimeTableScheduleTopView(
                                 timeTableViewModel: _timeTableViewModel,
+                                calendarViewModel: _calendarViewModel,
                                 isPopupVisible: _isPopupVisible
                             )
                             .padding(.top, 2)

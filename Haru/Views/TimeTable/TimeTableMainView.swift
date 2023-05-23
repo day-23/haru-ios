@@ -147,27 +147,30 @@ struct TimeTableMainView: View {
                 .zIndex(2)
             } else {
                 if isPopupVisible {
-                    Color.black.opacity(0.4)
-                        .edgesIgnoringSafeArea(.all)
-                        .zIndex(1)
-                        .onTapGesture {
-                            isPopupVisible = false
-                        }
+                    ZStack {
+                        Color.black.opacity(0.4)
+                            .edgesIgnoringSafeArea(.all)
+                            .zIndex(1)
+                            .onTapGesture {
+                                withAnimation {
+                                    isPopupVisible = false
+                                }
+                            }
 
-                    // TODO: - 아래 인덱스 에러 해결 필요
-//                    CalendarDayView(calendarViewModel: calendarViewModel)
-//                        .zIndex(2)
-                }
-
-                Button {
-                    withAnimation {
-                        isModalVisible = true
+                        CalendarDayView(calendarViewModel: calendarViewModel)
+                            .zIndex(2)
                     }
-                } label: {
-                    Image("add-button")
-                        .shadow(radius: 10, x: 5, y: 0)
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 10)
+                } else {
+                    Button {
+                        withAnimation {
+                            isModalVisible = true
+                        }
+                    } label: {
+                        Image("add-button")
+                            .shadow(radius: 10, x: 5, y: 0)
+                            .padding(.trailing, 20)
+                            .padding(.bottom, 10)
+                    }
                 }
             }
         }

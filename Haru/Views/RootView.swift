@@ -23,7 +23,7 @@ struct RootView: View {
                         isLoggedIn: $isLoggedIn
                     )
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                             withAnimation {
                                 showSplash = false
                             }
