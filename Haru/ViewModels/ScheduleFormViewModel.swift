@@ -478,7 +478,7 @@ final class ScheduleFormViewModel: ObservableObject {
         dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
         dateComponents.hour = repeatEnd.hour
         dateComponents.minute = repeatEnd.minute
-
+        
         var reqRepStart: Date = repeatStart // Request.Schedule의 repeatStart에 들어갈 값
         if let repeatValue, repeatValue.first != "T" {
             var pattern = repeatValue.map { $0 == "0" ? false : true }
@@ -504,7 +504,8 @@ final class ScheduleFormViewModel: ObservableObject {
                     (isSelectedRepeatEnd ?
                         calendar.date(from: dateComponents) ?? realRepeatEnd
                         :
-                        CalendarHelper.getInfiniteDate(repeatEnd))
+                        CalendarHelper.getInfiniteDate(repeatEnd)
+                    )
                     : repeatEnd,
                 repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
                 repeatValue: isSelectedRepeat ? repeatValue : nil,
@@ -512,12 +513,22 @@ final class ScheduleFormViewModel: ObservableObject {
                 alarms: selectedAlarm
             )
         } else { // 반복이 아닌 일정 수정 혹은 반복 일정 중 "모든 일정 수정" 시
+            if let realRepeatStart {
+                reqRepStart = realRepeatStart > reqRepStart ? reqRepStart : realRepeatStart
+            }
+            
             return Request.Schedule(
                 content: content,
                 memo: memo,
                 isAllDay: isAllDay,
-                repeatStart: isSelectedRepeat ? (realRepeatStart ?? repeatStart) : repeatStart,
-                repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate(repeatEnd)) : repeatEnd,
+                repeatStart: isSelectedRepeat ? reqRepStart : repeatStart,
+                repeatEnd: isSelectedRepeat ?
+                    (isSelectedRepeatEnd ?
+                        calendar.date(from: dateComponents) ?? realRepeatEnd
+                        :
+                        CalendarHelper.getInfiniteDate(repeatEnd)
+                    )
+                    : repeatEnd,
                 repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
                 repeatValue: isSelectedRepeat ? repeatValue : nil,
                 categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
