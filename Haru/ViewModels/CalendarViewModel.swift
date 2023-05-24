@@ -16,7 +16,8 @@ final class CalendarViewModel: ObservableObject {
 
     @Published var scheduleList: [[Schedule]] = []
     @Published var todoList: [[Todo]] = []
-    @Published var pivotDateList: [Date] = []
+    @Published var pivotDateList: [Date] = Array(repeating: .now, count: 31)
+
     @Published var pivotDate: Date = .init()
     
     @Published var startOnSunday: Bool = true
@@ -1043,7 +1044,7 @@ final class CalendarViewModel: ObservableObject {
         dateFormatter.dateFormat = "yyyy-MM-dd"
 
         let dateStringPrev = "\(firstDate.year)-\(firstDate.month)-\(schedule.repeatStart.day)"
-        var dateStringCur: String? = nil
+        var dateStringCur: String?
         if let curDate {
             dateStringCur = "\(curDate.year)-\(curDate.month)-\(schedule.repeatStart.day)"
         }

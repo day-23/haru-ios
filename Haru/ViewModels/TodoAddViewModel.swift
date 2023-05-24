@@ -872,6 +872,11 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func removeSubTodo(index: Int) {
+        if index < 0
+            || index >= subTodoList.count
+        {
+            return
+        }
         subTodoList.remove(at: index)
     }
 

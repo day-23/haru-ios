@@ -51,11 +51,19 @@ struct LoginView: View {
                                 }
                             }
 
-                        Text("APPLE로 로그인하기")
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .foregroundColor(.white)
+//                        Text("APPLE로 로그인하기")
+//                            .font(.pretendard(size: 14, weight: .bold))
+//                            .foregroundColor(.white)
+//                            .frame(width: 312, height: 44)
+//                            .background(Color(0x000000))
+//                            .cornerRadius(12)
+//                            .onTapGesture{
+//                                //apple Login
+//                            }
+                        
+//                        //apple login
+                        SignInWithAppleButton(isLoggedIn: $isLoggedIn)
                             .frame(width: 312, height: 44)
-                            .background(Color(0x000000))
                             .cornerRadius(12)
 
                         Text("게스트로 로그인하기")

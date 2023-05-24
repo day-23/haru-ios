@@ -21,32 +21,58 @@ struct TimeTableTodoRow: View {
             VStack(spacing: 0) {
                 Text(week[index])
                     .font(.pretendard(size: 14, weight: .regular))
-                    .foregroundColor(Color(0xACACAC))
+                    .foregroundColor(
+                        index == 0
+                            ? Color(0xf71e58)
+                            : (index == 6
+                                ? Color(0x1dafff)
+                                : Color(0x646464)
+                            )
+                    )
                     .padding(.bottom, 7)
 
                 if index == Date.now.indexOfWeek() {
                     Text("\(date.day)")
                         .font(.pretendard(size: 14, weight: .bold))
-                        .foregroundColor(Color(0x1DAFFF))
-                        .padding(.vertical, 3)
-                        .padding(.horizontal, 6)
+                        .foregroundColor(Color(0x1dafff))
                         .background(
-                            Circle().stroke(.gradation1, lineWidth: 2)
+                            Circle()
+                                .stroke(.gradation1, lineWidth: 2)
+                                .padding(-2)
                         )
                 } else {
                     Text("\(date.day)")
+                        .frame(maxWidth: .infinity, alignment: .center)
                         .font(.pretendard(size: 14, weight: .regular))
-                        .foregroundColor(Color(0x646464))
+                        .foregroundColor(
+                            timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth
+                                ? (index == 0
+                                    ? Color(0xfdbbcd)
+                                    : (index == 6
+                                        ? Color(0xbbe7ff)
+                                        : Color(0xebebeb)
+                                    )
+                                )
+                                : (index == 0
+                                    ? Color(0xf71e58)
+                                    : (index == 6
+                                        ? Color(0x1dafff)
+                                        : Color(0x646464)
+                                    )
+                                )
+                        )
                 }
             }
-            .frame(width: 60)
+            .frame(width: 20)
+            .padding(.leading, 24)
+            .padding(.trailing, 20)
 
             if todoList.isEmpty {
                 EmptySectionView()
                     .padding(1)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
+                    HStack(spacing: UIDevice.current.name.contains("SE") ? 8 : 10) {
                         ForEach(todoList) { todo in
                             NavigationLink {
                                 TodoAddView(
@@ -73,6 +99,6 @@ struct TimeTableTodoRow: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: 72)
+        .frame(maxWidth: .infinity, maxHeight: UIDevice.current.name.contains("SE") ? 72 : 76)
     }
 }
