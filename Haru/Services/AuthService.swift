@@ -76,4 +76,40 @@ struct AuthService {
             }
         }
     }
+    
+    //apple login
+    func validateAppleUserWithToken(
+        token: String,
+        completion: @escaping (Result<UserAppleAuthResponse, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = ["authorization": "Bearer \(token)"]
+        validateAppleUser(headers: headers, completion: completion)
+    }
+
+    func validateAppleUser(
+        headers: HTTPHeaders,
+        completion: @escaping (Result<UserAppleAuthResponse, Error>) -> Void
+    ) {
+        AF.request(
+            AuthService.baseURL + "apple",
+            method: .post,
+            headers: headers
+        ).responseDecodable(of: UserAppleAuthResponse.self) { response in
+            switch response.result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func validateAppleUserWithAuthCode(
+        authCode: String,
+        completion: @escaping (Result<UserAppleAuthResponse, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = ["authCode": authCode]
+        validateAppleUser(headers: headers, completion: completion)
+    }
+    
 }
