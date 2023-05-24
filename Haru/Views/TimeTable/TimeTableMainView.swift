@@ -35,8 +35,17 @@ struct TimeTableMainView: View {
             VStack(spacing: 0) {
                 HaruHeader {
                     Color.white
-                } view: {
-                    // TODO: 검색 화며
+                } item: {
+                    NavigationLink {
+                        // TODO: 검색 뷰 만들어지면 넣어주기
+                        Text("검색")
+                    } label: {
+                        Image("magnifyingglass")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
                 }
 
                 // 날짜 레이아웃

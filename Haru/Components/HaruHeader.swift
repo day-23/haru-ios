@@ -9,15 +9,13 @@ import SwiftUI
 
 struct HaruHeader<
     HeaderBackground: View,
-    Icon: View,
-    Content: View
+    HeaderItem: View
 >: View {
     var toggleOn: Bool
 
     @Binding var toggleIsClicked: Bool
     @ViewBuilder var background: () -> HeaderBackground // 배경화면으로 보여질 화면을 추가한다.
-    @ViewBuilder var icon: () -> Icon // 상단 오른쪽에 보여질 아이콘을 넘겨주면 된다.
-    @ViewBuilder var view: () -> Content // 이동할 뷰를 넘겨주면 된다.
+    @ViewBuilder var item: () -> HeaderItem // 헤더 오른쪽에 들어갈 아이템을 정의한다.
 
     init(
         toggleIsClicked: Binding<Bool>? = nil,
@@ -33,19 +31,11 @@ struct HaruHeader<
             )
             .opacity(0.5)
         },
-        @ViewBuilder icon: @escaping () -> Icon = {
-            Image("magnifyingglass")
-                .renderingMode(.template)
-                .resizable()
-                .foregroundColor(Color(0x191919))
-                .frame(width: 28, height: 28)
-        },
-        @ViewBuilder view: @escaping () -> Content
+        @ViewBuilder item: @escaping () -> HeaderItem
     ) {
         _toggleIsClicked = toggleIsClicked ?? .constant(false)
         self.background = background
-        self.icon = icon
-        self.view = view
+        self.item = item
 
         if toggleIsClicked == nil {
             toggleOn = false
@@ -79,11 +69,8 @@ struct HaruHeader<
                     }
 
                     Spacer()
-                    NavigationLink {
-                        view()
-                    } label: {
-                        icon()
-                    }
+
+                    item()
                 }
                 Spacer()
                     .frame(height: 20)

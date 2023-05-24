@@ -16,10 +16,17 @@ struct SNSView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
-                HaruHeader(
-                    toggleIsClicked: $toggleIsClicked
-                ) {
-                    Text("검색창")
+                HaruHeader(toggleIsClicked: $toggleIsClicked) {
+                    NavigationLink {
+                        // TODO: 검색 뷰 만들어지면 넣어주기
+                        Text("검색")
+                    } label: {
+                        Image("magnifyingglass")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
                 }
 
                 FeedListView(postVM: PostViewModel(option: .main), comeToRoot: true)

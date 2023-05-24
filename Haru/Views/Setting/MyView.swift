@@ -8,17 +8,21 @@
 import SwiftUI
 
 struct MyView: View {
+    @Binding var isLoggedIn: Bool
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                HaruHeader(icon: {
-                    Image("setting")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
-                        .frame(width: 28, height: 28)
-                }, view: {
-                    // Setting View
-                })
+                HaruHeader {
+                    NavigationLink {
+                        SettingView(isLoggedIn: $isLoggedIn)
+                    } label: {
+                        Image("setting")
+                            .renderingMode(.template)
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
+                }
 
                 ScrollView {
                     VStack(spacing: 0) {}
@@ -30,6 +34,8 @@ struct MyView: View {
 
 struct MyView_Previews: PreviewProvider {
     static var previews: some View {
-        MyView()
+        MyView(
+            isLoggedIn: .constant(false)
+        )
     }
 }
