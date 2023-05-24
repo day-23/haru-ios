@@ -338,7 +338,11 @@ final class ScheduleFormViewModel: ObservableObject {
         self.repeatStart = schedule.repeatStart
         self.repeatEnd = schedule.repeatEnd
         self.realRepeatStart = schedule.realRepeatStart != nil ? schedule.realRepeatStart : schedule.repeatStart
-        self.realRepeatEnd = schedule.realRepeatEnd != nil ? schedule.realRepeatEnd! : schedule.repeatEnd
+        if let realRepeatEnd = schedule.realRepeatEnd, realRepeatEnd.year < 2200 {
+            self.realRepeatEnd = realRepeatEnd
+        } else {
+            self.realRepeatEnd = schedule.repeatEnd
+        }
         
         self.tmpRepeatStart = schedule.repeatStart
 //        do {
@@ -505,7 +509,11 @@ final class ScheduleFormViewModel: ObservableObject {
             memo: memo,
             isAllDay: isAllDay,
             repeatStart: repeatStart,
-            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate(repeatEnd)) : repeatEnd,
+            repeatEnd: isSelectedRepeat ?
+                (isSelectedRepeatEnd ?
+                    calendar.date(from: dateComponents) ?? realRepeatEnd
+                    : CalendarHelper.getInfiniteDate(repeatEnd))
+                : repeatEnd,
             repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
             repeatValue: isSelectedRepeat ? repeatValue : nil,
             categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
