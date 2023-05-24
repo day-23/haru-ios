@@ -21,8 +21,7 @@ struct ProfileInfoView: View {
         ZStack {
             VStack(spacing: 0) {
                 HaruHeader(
-                    toggleIsClicked: $toggleIsClicked,
-                    backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
+                    toggleIsClicked: $toggleIsClicked
                 ) {
                     // TODO: 검색 뷰 만들어주기
                     Text("검색창")

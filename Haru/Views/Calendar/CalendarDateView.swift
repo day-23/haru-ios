@@ -22,9 +22,12 @@ struct CalendarDateView: View {
         ZStack {
             VStack(spacing: 0) {
                 HaruHeader {
+                    Color.white
+                } view: {
                     // TODO: 검색 뷰 만들어지면 넣어주기
                     Text("검색")
                 }
+                
                 VStack(spacing: 10) {
                     HStack(spacing: 15) {
                         HStack(spacing: 10) {

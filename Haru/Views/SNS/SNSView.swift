@@ -17,8 +17,7 @@ struct SNSView: View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 HaruHeader(
-                    toggleIsClicked: $toggleIsClicked,
-                    backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
+                    toggleIsClicked: $toggleIsClicked
                 ) {
                     Text("검색창")
                 }

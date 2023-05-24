@@ -105,6 +105,7 @@
 		13D9B5AF29D5E6E400109C0E /* TimeTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */; };
 		13DE94BA2A16848700D43105 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DE94B92A16848700D43105 /* SplashView.swift */; };
 		13DE94BD2A16854500D43105 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DE94BC2A16854500D43105 /* LoginView.swift */; };
+		13FAE4402A1DD32D007C3C5D /* MyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13FAE43F2A1DD32D007C3C5D /* MyView.swift */; };
 		13FB7E9A29F65A7E006DEE87 /* TagManageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13FB7E9929F65A7E006DEE87 /* TagManageView.swift */; };
 		6F0B0F772A0E9FE00003F313 /* CommentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0B0F762A0E9FE00003F313 /* CommentService.swift */; };
 		6F0B0F792A0EABC00003F313 /* CommentFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0B0F782A0EABC00003F313 /* CommentFormViewModel.swift */; };
@@ -264,6 +265,7 @@
 		13D9B5AE29D5E6E400109C0E /* TimeTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableViewModel.swift; sourceTree = "<group>"; };
 		13DE94B92A16848700D43105 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		13DE94BC2A16854500D43105 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		13FAE43F2A1DD32D007C3C5D /* MyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyView.swift; sourceTree = "<group>"; };
 		13FB7E9929F65A7E006DEE87 /* TagManageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagManageView.swift; sourceTree = "<group>"; };
 		6F0B0F762A0E9FE00003F313 /* CommentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentService.swift; sourceTree = "<group>"; };
 		6F0B0F782A0EABC00003F313 /* CommentFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentFormViewModel.swift; sourceTree = "<group>"; };
@@ -468,6 +470,7 @@
 				1306674629CEE19C00AACEE6 /* CheckList */,
 				6FE8908029DC5C6000A6B35C /* SNS */,
 				1306672129CEE15A00AACEE6 /* TimeTable */,
+				13FAE43E2A1DD27F007C3C5D /* Setting */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -621,10 +624,18 @@
 		13DE94BB2A16853400D43105 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				13DE94BC2A16854500D43105 /* Login.swift */,
+				13DE94BC2A16854500D43105 /* LoginView.swift */,
 				AE5085BF2A176B2B00A373BC /* SignInWithAppleButton.swift */,
 			);
 			path = Login;
+			sourceTree = "<group>";
+		};
+		13FAE43E2A1DD27F007C3C5D /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				13FAE43F2A1DD32D007C3C5D /* MyView.swift */,
+			);
+			path = Setting;
 			sourceTree = "<group>";
 		};
 		6FE8908029DC5C6000A6B35C /* SNS */ = {
@@ -703,7 +714,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 				ko,
 			);
 			mainGroup = 130666BF29CEDF4A00AACEE6;
@@ -805,6 +815,7 @@
 				13D9B5AD29D5DDA100109C0E /* TimeTableTodoView.swift in Sources */,
 				1306671529CEE13200AACEE6 /* Alarm.swift in Sources */,
 				1306671029CEE13200AACEE6 /* Schedule.swift in Sources */,
+				13FAE4402A1DD32D007C3C5D /* MyView.swift in Sources */,
 				AE5085B92A16B44200A373BC /* Auth.swift in Sources */,
 				1306671129CEE13200AACEE6 /* Productivity.swift in Sources */,
 				1306677529CEE19C00AACEE6 /* ListSectionView.swift in Sources */,

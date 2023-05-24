@@ -34,7 +34,9 @@ struct TimeTableMainView: View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
                 HaruHeader {
-                    // TODO: 검색 화면
+                    Color.white
+                } view: {
+                    // TODO: 검색 화며
                 }
 
                 // 날짜 레이아웃
