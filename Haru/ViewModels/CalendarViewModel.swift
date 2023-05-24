@@ -727,7 +727,7 @@ final class CalendarViewModel: ObservableObject {
         switch oriRepeatSch.repeatOption {
         case "매주":
             return sucRepeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
-        case "2주마다":
+        case "격주":
             return sucRepeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
         case "매달":
             return sucRepeatEveryMonth(firstDate: firstDate, curDate: paramCurDate, lastDate: lastDate, schedule: oriRepeatSch)

@@ -323,7 +323,7 @@ final class ScheduleFormViewModel: ObservableObject {
         self.at = .none
     }
     
-    // 수정 시 scheduleVM 생성자
+    // edit 시 scheduleVM 생성자
     init(
         schedule: Schedule,
         categoryList: [Category],
@@ -341,15 +341,21 @@ final class ScheduleFormViewModel: ObservableObject {
         self.realRepeatEnd = schedule.realRepeatEnd != nil ? schedule.realRepeatEnd! : schedule.repeatEnd
         
         self.tmpRepeatStart = schedule.repeatStart
-        do {
-            self.tmpRepeatEnd = schedule.repeatEnd == schedule.realRepeatEnd ? schedule.repeatEnd : try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
-        } catch {
-            self.tmpRepeatEnd = schedule.repeatEnd
-        }
+//        do {
+//            self.tmpRepeatEnd = schedule.repeatEnd == schedule.realRepeatEnd ? schedule.repeatEnd : try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
+//        } catch {
+//            self.tmpRepeatEnd = schedule.repeatEnd
+//        }
+        self.tmpRepeatEnd = schedule.repeatEnd
         self.tmpRepeatOption = schedule.repeatOption
         self.tmpRepeatValue = schedule.repeatValue
         self.tmpIsSelectedRepeatEnd = schedule.repeatOption != nil ? true : false
-        self.tmpRealRepeatEnd = schedule.realRepeatEnd ?? schedule.repeatEnd
+        
+        if let realRepeatEnd = schedule.realRepeatEnd, realRepeatEnd.year < 2200 {
+            self.tmpRealRepeatEnd = realRepeatEnd
+        } else {
+            self.tmpRealRepeatEnd = schedule.repeatEnd
+        }
         
         self.prevRepeatEnd = schedule.prevRepeatEnd
         self.nextRepeatStart = schedule.nextRepeatStart
@@ -382,9 +388,12 @@ final class ScheduleFormViewModel: ObservableObject {
         self.repeatDay = isSelectedRepeat &&
             schedule.repeatOption == RepeatOption.everyDay.rawValue
             ? (schedule.repeatValue ?? "1") : "1"
-        initRepeatWeek(schedule: schedule)
-        initRepeatMonth(schedule: schedule)
-        initRepeatYear(schedule: schedule)
+        
+        if schedule.repeatValue?.first != "T" {
+            initRepeatWeek(schedule: schedule)
+            initRepeatMonth(schedule: schedule)
+            initRepeatYear(schedule: schedule)
+        }
     }
     
     func initRepeatWeek(schedule: Schedule) {
