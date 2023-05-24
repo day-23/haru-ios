@@ -38,7 +38,7 @@ struct SNSView: View {
                     }
                 } thirdContent: {
                     NavigationLink {
-                        ProfileInfoView(
+                        ProfileView(
                             postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
                             userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
                         )

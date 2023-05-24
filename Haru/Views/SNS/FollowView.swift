@@ -74,7 +74,7 @@ struct FollowView: View {
                         ForEach(isFollowing ? userProfileVM.followingList : userProfileVM.followerList, id: \.self) { user in
                             HStack {
                                 NavigationLink {
-                                    ProfileInfoView(
+                                    ProfileView(
                                         postVM: PostViewModel(targetId: user.id, option: .target_feed),
                                         userProfileVM: UserProfileViewModel(userId: user.id)
                                     )

@@ -22,7 +22,7 @@ struct FeedView: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 NavigationLink {
-                    ProfileInfoView(
+                    ProfileView(
                         postVM: PostViewModel(targetId: post.user.id, option: .target_feed),
                         userProfileVM: UserProfileViewModel(userId: post.user.id)
                     )

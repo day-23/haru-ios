@@ -24,17 +24,17 @@ final class ScheduleFormViewModel: ObservableObject {
     var at: RepeatAt
     
     // 초기 값
-    var tmpRepeatStart: Date
-    var tmpRepeatEnd: Date
+    var tmpRepeatStart: Date // 일정 시작일
+    var tmpRepeatEnd: Date // 일정 종료일
     var tmpRepeatOption: String?
     var tmpRepeatValue: String?
     var tmpIsSelectedRepeatEnd: Bool
-    var tmpRealRepeatEnd: Date
+    var tmpRealRepeatEnd: Date // 반복 일정 마감일
     
     // 수정 시 필요한 추가 정보
-    var realRepeatStart: Date?
-    var prevRepeatEnd: Date?
-    var nextRepeatStart: Date?
+    var realRepeatStart: Date? // 반복 일정 시작일 (반복의 첫 시작일)
+    var prevRepeatEnd: Date? // 이전 반복 일정의 종료일
+    var nextRepeatStart: Date? // 다음 반복 일정의 시작일
     
     var buttonDisable: Bool {
         isWarning || content == ""
