@@ -362,7 +362,7 @@ struct ScheduleFormView: View {
                 Spacer()
                 Button {
                     showDeleteActionSheet = true
-                    actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
+                    actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
                 } label: {
                     HStack {
                         Text("일정 삭제하기")
@@ -396,7 +396,7 @@ struct ScheduleFormView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showEditActionSheet = true
-                        actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
+                        actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
                     } label: {
                         Image("confirm")
                             .resizable()
@@ -458,7 +458,7 @@ struct ScheduleFormView: View {
         }
         
         let editAfterButton: ActionSheet.Button = .destructive(Text("이 일정부터 수정")) {
-            print("이 일정부터 편집")
+            scheduleFormVM.updateTargetSchedule(isAfter: true)
         }
         
         let editAllButton: ActionSheet.Button = .destructive(
@@ -472,25 +472,23 @@ struct ScheduleFormView: View {
 
         switch actionSheetOption {
         case .isRepeat:
-            if scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue ||
-                scheduleFormVM.tmpIsSelectedRepeatEnd != scheduleFormVM.isSelectedRepeat ||
-                scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd
+            if scheduleFormVM.tmpIsSelectedRepeatEnd != scheduleFormVM.isSelectedRepeatEnd ||
+                (scheduleFormVM.tmpIsSelectedRepeatEnd &&
+                    scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd)
             {
                 return ActionSheet(title: title,
                                    message: nil,
-                                   buttons: [editAllButton, cancleButton])
-            } else if scheduleFormVM.tmpRepeatStart.month != scheduleFormVM.repeatStart.month ||
-                scheduleFormVM.tmpRepeatStart.day != scheduleFormVM.repeatStart.day ||
-                scheduleFormVM.tmpRepeatEnd.month != scheduleFormVM.repeatEnd.month ||
-                scheduleFormVM.tmpRepeatEnd.day != scheduleFormVM.repeatEnd.day
+                                   buttons: [editAfterButton, editAllButton, cancleButton])
+            } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption.rawValue ||
+                scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
                 return ActionSheet(title: title,
                                    message: nil,
-                                   buttons: [editButton, cancleButton])
+                                   buttons: [editAfterButton, editAllButton, cancleButton])
             } else {
                 return ActionSheet(title: title,
                                    message: nil,
-                                   buttons: [editButton, editAllButton, cancleButton])
+                                   buttons: [editButton, editAfterButton, editAllButton, cancleButton])
             }
             
         case .isNotRepeat:

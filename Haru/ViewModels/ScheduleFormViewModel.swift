@@ -352,13 +352,9 @@ final class ScheduleFormViewModel: ObservableObject {
         self.tmpRepeatEnd = schedule.repeatEnd
         self.tmpRepeatOption = schedule.repeatOption
         self.tmpRepeatValue = schedule.repeatValue
-        self.tmpIsSelectedRepeatEnd = schedule.repeatOption != nil ? true : false
+        self.tmpIsSelectedRepeatEnd = schedule.realRepeatEnd != nil && schedule.realRepeatEnd!.year < 2200 ? true : false
         
-        if let realRepeatEnd = schedule.realRepeatEnd, realRepeatEnd.year < 2200 {
-            self.tmpRealRepeatEnd = realRepeatEnd
-        } else {
-            self.tmpRealRepeatEnd = schedule.repeatEnd
-        }
+        self.tmpRealRepeatEnd = schedule.realRepeatEnd ?? schedule.repeatEnd
         
         self.prevRepeatEnd = schedule.prevRepeatEnd
         self.nextRepeatStart = schedule.nextRepeatStart
@@ -654,8 +650,8 @@ final class ScheduleFormViewModel: ObservableObject {
     /**
      * 반복 일정 하나만 편집하기
      */
-    func updateTargetSchedule() {
-        if tmpRepeatStart == realRepeatStart || at == .front {
+    func updateTargetSchedule(isAfter: Bool = false) {
+        if tmpRepeatStart == oriSchedule?.realRepeatStart || at == .front {
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
             scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -665,7 +661,10 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if tmpRepeatEnd == realRepeatEnd || at == .back {
+        } else if isAfter ||
+            tmpRepeatEnd == oriSchedule?.realRepeatEnd ||
+            at == .back
+        {
             let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
             scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
