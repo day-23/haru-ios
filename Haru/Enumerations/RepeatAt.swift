@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum RepeatAt: String {
+enum RepeatAt: String, Codable {
     case none
     case front
     case middle

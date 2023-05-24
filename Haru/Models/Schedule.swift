@@ -47,7 +47,13 @@ extension Schedule: Productivity, Equatable {
 }
 
 extension Schedule {
-    static func createRepeatSchedule(schedule: Schedule, repeatStart: Date, repeatEnd: Date, prevRepeatEnd: Date? = nil, nextRepeatStart: Date? = nil) -> Schedule {
+    static func createRepeatSchedule(
+        schedule: Schedule,
+        repeatStart: Date,
+        repeatEnd: Date,
+        prevRepeatEnd: Date? = nil,
+        nextRepeatStart: Date? = nil
+    ) -> Schedule {
         Schedule(
             id: schedule.id,
             content: schedule.content,

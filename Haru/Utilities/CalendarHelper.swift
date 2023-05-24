@@ -302,4 +302,50 @@ class CalendarHelper {
         print(components.day! / 7)
         return components.day! / 7
     }
+
+    class func nextRepeatStartDate(
+        curDate: Date,
+        pattern: [Bool],
+        repeatOption: RepeatOption
+    ) -> Date {
+        let day = 60 * 60 * 24
+        let calendar = Calendar.current
+
+        var nextRepeatStart: Date = curDate
+
+        switch repeatOption {
+        case .everyDay:
+            break
+        case .everyWeek:
+            var index = (calendar.component(.weekday, from: curDate)) - 1
+            while pattern[index] == false {
+                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
+                index = (index + 1) % 7
+            }
+        case .everySecondWeek:
+            var index = (calendar.component(.weekday, from: curDate)) - 1
+            if index == 0 {
+                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
+            }
+            while pattern[index] == false {
+                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
+                index = (index + 1) % 7
+
+                if index == 0 {
+                    nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
+                }
+            }
+        case .everyMonth:
+            var index = nextRepeatStart.day - 1
+            while pattern[index] == false {
+                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
+                index = nextRepeatStart.day - 1
+            }
+        case .everyYear:
+            // TODO: 매년 repeat 처리해줘야함
+            print("매년 처리해주세요")
+        }
+
+        return nextRepeatStart
+    }
 }

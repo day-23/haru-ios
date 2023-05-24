@@ -17,6 +17,7 @@ final class ScheduleFormViewModel: ObservableObject {
     }
     
     // 추가 or 수정
+    var oriSchedule: Schedule? // 수정시 원본 일정 데이터
     var scheduleId: String?
     var mode: ScheduleFormMode
     
@@ -31,8 +32,10 @@ final class ScheduleFormViewModel: ObservableObject {
     var tmpIsSelectedRepeatEnd: Bool
     var tmpRealRepeatEnd: Date // 반복 일정 마감일
     
-    // 수정 시 필요한 추가 정보
+    // 반복 일정인 경우
     var realRepeatStart: Date? // 반복 일정 시작일 (반복의 첫 시작일)
+    
+    // 수정 시 필요한 추가 정보
     var prevRepeatEnd: Date? // 이전 반복 일정의 종료일
     var nextRepeatStart: Date? // 다음 반복 일정의 시작일
     
@@ -334,6 +337,7 @@ final class ScheduleFormViewModel: ObservableObject {
         self.at = at
         
         self.scheduleId = schedule.id
+        self.oriSchedule = schedule
         
         self.repeatStart = schedule.repeatStart
         self.repeatEnd = schedule.repeatEnd
@@ -345,11 +349,6 @@ final class ScheduleFormViewModel: ObservableObject {
         }
         
         self.tmpRepeatStart = schedule.repeatStart
-//        do {
-//            self.tmpRepeatEnd = schedule.repeatEnd == schedule.realRepeatEnd ? schedule.repeatEnd : try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
-//        } catch {
-//            self.tmpRepeatEnd = schedule.repeatEnd
-//        }
         self.tmpRepeatEnd = schedule.repeatEnd
         self.tmpRepeatOption = schedule.repeatOption
         self.tmpRepeatValue = schedule.repeatValue
@@ -479,24 +478,62 @@ final class ScheduleFormViewModel: ObservableObject {
         dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
         dateComponents.hour = repeatEnd.hour
         dateComponents.minute = repeatEnd.minute
+
+        var reqRepStart: Date = repeatStart // Request.Schedule의 repeatStart에 들어갈 값
+        if let repeatValue, repeatValue.first != "T" {
+            var pattern = repeatValue.map { $0 == "0" ? false : true }
+            
+            let compValue = CalendarHelper.nextRepeatStartDate(
+                curDate: reqRepStart,
+                pattern: pattern,
+                repeatOption: repeatOption
+            )
+            
+            if reqRepStart != compValue {
+                reqRepStart = compValue
+            }
+        }
         
-        return Request.Schedule(
-            content: content,
-            memo: memo,
-            isAllDay: isAllDay,
-            repeatStart: isSelectedRepeat ? (realRepeatStart ?? repeatStart) : repeatStart,
-            repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate(repeatEnd)) : repeatEnd,
-            repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
-            repeatValue: isSelectedRepeat ? repeatValue : nil,
-            categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
-            alarms: selectedAlarm
-        )
+        if mode == .add { // 일정 추가
+            return Request.Schedule(
+                content: content,
+                memo: memo,
+                isAllDay: isAllDay,
+                repeatStart: reqRepStart,
+                repeatEnd: isSelectedRepeat ?
+                    (isSelectedRepeatEnd ?
+                        calendar.date(from: dateComponents) ?? realRepeatEnd
+                        :
+                        CalendarHelper.getInfiniteDate(repeatEnd))
+                    : repeatEnd,
+                repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
+                repeatValue: isSelectedRepeat ? repeatValue : nil,
+                categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
+                alarms: selectedAlarm
+            )
+        } else { // 반복이 아닌 일정 수정 혹은 반복 일정 중 "모든 일정 수정" 시
+            return Request.Schedule(
+                content: content,
+                memo: memo,
+                isAllDay: isAllDay,
+                repeatStart: isSelectedRepeat ? (realRepeatStart ?? repeatStart) : repeatStart,
+                repeatEnd: isSelectedRepeat ? (isSelectedRepeatEnd ? calendar.date(from: dateComponents) ?? realRepeatEnd : CalendarHelper.getInfiniteDate(repeatEnd)) : repeatEnd,
+                repeatOption: isSelectedRepeat ? repeatOption.rawValue : nil,
+                repeatValue: isSelectedRepeat ? repeatValue : nil,
+                categoryId: selectionCategory != nil ? categoryList[selectionCategory!].id : nil,
+                alarms: selectedAlarm
+            )
+        }
     }
     
     /**
-     * Request.RepeatSchedule 만들기
+     * Request.RepeatSchedule 만들기 (반복 일정 중 "이 일정만 수정" 혹은 "이 일정부터 수정" 시에 호출됨)
      */
-    func createRepeatSchedule(nextRepeatStart: Date? = nil, changedDate: Date? = nil, preRepeatEnd: Date? = nil) -> Request.RepeatSchedule {
+    func createRepeatSchedule(
+        nextRepeatStart: Date? = nil,
+        changedDate: Date? = nil,
+        preRepeatEnd: Date? = nil
+    ) -> Request.RepeatSchedule {
         let calendar = Calendar.current
         var dateComponents: DateComponents
 

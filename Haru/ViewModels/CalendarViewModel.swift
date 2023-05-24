@@ -706,7 +706,7 @@ final class CalendarViewModel: ObservableObject {
             return repeatEveryDay(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
-        case "2주마다":
+        case "격주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
         case "매달":
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
@@ -1153,7 +1153,7 @@ final class CalendarViewModel: ObservableObject {
             return repeatEveryDay(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
         case "매주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo, weekTerm: 1)
-        case "2주마다":
+        case "격주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo, weekTerm: 2)
         case "매달":
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
