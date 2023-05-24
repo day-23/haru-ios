@@ -29,16 +29,8 @@ class AuthViewModel: ObservableObject {
                     print("UserVerifyResponse: \(data)")
 
                     // Save the ID and new access token into Keychain
-                    Global.shared.user = User(
-                        id: data.data.id,
-                        name: "loggedInUser",
-                        introduction: "loggedInUser",
-                        postCount: 0,
-                        followerCount: 0,
-                        followingCount: 0,
-                        isFollowing: false
-                    )
-                    _ = KeychainService.save(key: "accessToken", data: data.data.accessToken.data(using: .utf8)!)
+                    Global.shared.user = data
+                    _ = KeychainService.save(key: "accessToken", data: data.accessToken.data(using: .utf8)!)
                     completion(true)
                 case .failure(let error):
                     print("Error: \(error)")
@@ -88,23 +80,8 @@ class AuthViewModel: ObservableObject {
                     _ = KeychainService.save(key: "accessToken", data: accessTokenData)
                     _ = KeychainService.save(key: "refreshToken", data: refreshTokenData)
 
-                    UserApi.shared.me { user, error in
-                        if let error = error {
-                            print("Error fetching user email from Kakao", error)
-                            completion(false)
-                        } else if let user = user {
-//                            let email = user.kakaoAccount?.email ?? ""
-                            Global.shared.user = User(
-                                id: data.data.id,
-                                name: data.data.name,
-                                introduction: "loggedInUser",
-                                postCount: 0,
-                                followerCount: 0,
-                                followingCount: 0,
-                                isFollowing: false
-                            )
-                            completion(true)
-                        }
+                    self.validateUserByHaruServer { isLoggedIn in
+                        completion(isLoggedIn)
                     }
                 case .failure(let error):
                     print(error)

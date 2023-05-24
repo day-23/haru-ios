@@ -2,22 +2,27 @@
 //  Me.swift
 //  Haru
 //
-//  Created by 이민재 on 2023/05/19.
+//  Created by 최정민 on 2023/05/25.
 //
 
 import Foundation
 
-struct Me: Hashable, Equatable, Identifiable, Codable {
-    let id: String
+struct Me: Codable {
+    var user: User
 
-    init(
-        id: String
-    ) {
-        self.id = id
-    }
+    var haruId: String
+    var email: String
+    var socialAccountType: String
+    var isPostBrowsingEnabled: Bool
+    var isAllowFeedLike: Int
+    var isAllowFeedComment: Int
+    var isAllowSearch: Bool
+    let createdAt: Date
+    let accessToken: String
+}
 
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
+extension Me: Identifiable {
+    var id: String {
+        user.id
     }
 }

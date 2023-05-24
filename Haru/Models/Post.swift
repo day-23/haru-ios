@@ -69,7 +69,7 @@ struct Post: Identifiable, Codable {
             createdAt = try container.decode(Date.self, forKey: .createdAt)
             updatedAt = (try? container.decode(Date.self, forKey: .updatedAt)) ?? nil
             
-            user = (try? container.decode(Post.User.self, forKey: .user)) ?? Post.User(id: Global.shared.user?.id ?? "unknown", name: Global.shared.user?.name ?? "unknown")
+            user = (try? container.decode(Post.User.self, forKey: .user)) ?? Post.User(id: Global.shared.user?.user.id ?? "unknown", name: Global.shared.user?.user.name ?? "unknown")
         }
     }
     

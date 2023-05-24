@@ -51,16 +51,6 @@ struct LoginView: View {
                                 }
                             }
 
-//                        Text("APPLE로 로그인하기")
-//                            .font(.pretendard(size: 14, weight: .bold))
-//                            .foregroundColor(.white)
-//                            .frame(width: 312, height: 44)
-//                            .background(Color(0x000000))
-//                            .cornerRadius(12)
-//                            .onTapGesture{
-//                                //apple Login
-//                            }
-                        
 //                        //apple login
                         SignInWithAppleButton(isLoggedIn: $isLoggedIn)
                             .frame(width: 312, height: 44)
@@ -73,15 +63,27 @@ struct LoginView: View {
                             .background(Color(0xfdfdfd))
                             .cornerRadius(12)
                             .onTapGesture {
-                                Global.shared.user = User(
-                                    id: "005224c0-eec1-4638-9143-58cbfc9688c5",
-                                    name: "테스트 계정",
-                                    introduction: "For Test",
-                                    postCount: 0,
-                                    followerCount: 0,
-                                    followingCount: 0,
-                                    isFollowing: false
+                                Global.shared.user = Me(
+                                    user: User(
+                                        id: "005224c0-eec1-4638-9143-58cbfc9688c5",
+                                        name: "Guest",
+                                        introduction: "게스트 계정입니다.",
+                                        postCount: 0,
+                                        friendCount: 0,
+                                        friendStatus: 0,
+                                        isPublicAccount: true
+                                    ),
+                                    haruId: "Guest",
+                                    email: "Guest@haru.com",
+                                    socialAccountType: "K",
+                                    isPostBrowsingEnabled: true,
+                                    isAllowFeedLike: 2,
+                                    isAllowFeedComment: 2,
+                                    isAllowSearch: true,
+                                    createdAt: .now,
+                                    accessToken: "GUEST"
                                 )
+
                                 isLoggedIn = true
                             }
                     }

@@ -30,7 +30,9 @@ struct RootView: View {
                         }
                     }
                 } else {
-                    if isLoggedIn {
+                    if let me = Global.shared.user,
+                       !me.user.name.isEmpty
+                    {
                         TabView {
                             // MARK: - SNS View
 
@@ -136,6 +138,11 @@ struct RootView: View {
                             UIDatePicker.appearance().minuteInterval = 5
                         }
                         .environmentObject(todoState)
+                    } else if let me = Global.shared.user,
+                              me.user.name.isEmpty
+                    {
+                        // 회원 가입
+                        Text("회원 가입")
                     } else {
                         LoginView(
                             isLoggedIn: $isLoggedIn
@@ -144,5 +151,6 @@ struct RootView: View {
                 }
             }
         }
+        .onChange(of: isLoggedIn) { _ in }
     }
 }

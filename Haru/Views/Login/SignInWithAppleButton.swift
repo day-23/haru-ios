@@ -5,19 +5,19 @@
 //  Created by 이민재 on 2023/05/19.
 //
 
+import AuthenticationServices
 import Foundation
 import SwiftUI
-import AuthenticationServices
 
 struct SignInWithAppleButton: UIViewRepresentable {
     @Binding var isLoggedIn: Bool
-    
+
     func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
         let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
         button.addTarget(context.coordinator, action: #selector(Coordinator.buttonTapped), for: .touchUpInside)
         return button
     }
-    
+
     func updateUIView(_ uiView: ASAuthorizationAppleIDButton, context: Context) {}
 
     func makeCoordinator() -> Coordinator {
@@ -43,35 +43,35 @@ struct SignInWithAppleButton: UIViewRepresentable {
 
         func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
             if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-                
                 if let authCodeData = appleIDCredential.authorizationCode,
-                    let authCode = String(data: authCodeData, encoding: .utf8) {
+                   let authCode = String(data: authCodeData, encoding: .utf8)
+                {
                     AuthService().validateAppleUserWithAuthCode(authCode: authCode) { result in
                         switch result {
                         case .success(let data):
                             print("Data: \(data)")
-                            
+
                             // Save the tokens
                             let accessTokenData = Data(data.data.accessToken.utf8)
                             let refreshTokenData = Data(data.data.refreshToken.utf8)
-                            
-                            let _ = KeychainService.save(key: "accessToken", data: accessTokenData)
-                            let _ = KeychainService.save(key: "refreshToken", data: refreshTokenData)
-                            
-                            Global.shared.user = User(
-                                id: data.data.id,
-                                name: "loggedInUser",
-                                introduction: "loggedInUser",
-                                postCount: 0,
-                                followerCount: 0,
-                                followingCount: 0,
-                                isFollowing: false
-                            )
-                            
+
+                            _ = KeychainService.save(key: "accessToken", data: accessTokenData)
+                            _ = KeychainService.save(key: "refreshToken", data: refreshTokenData)
+
+//                            Global.shared.user = User(
+//                                id: data.data.id,
+//                                name: "loggedInUser",
+//                                introduction: "loggedInUser",
+//                                postCount: 0,
+//                                followerCount: 0,
+//                                followingCount: 0,
+//                                isFollowing: false
+//                            )
+
                             DispatchQueue.main.async {
                                 self.parent.isLoggedIn = true // Set isLoggedIn to true on successful login
                             }
-                            
+
                         case .failure(let error):
                             print("Error: \(error)")
                         }
@@ -79,7 +79,7 @@ struct SignInWithAppleButton: UIViewRepresentable {
                 }
             }
         }
-        
+
         func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
             // Handle error
         }
