@@ -20,6 +20,8 @@ struct TimeTableMainView: View {
     @State private var isModalVisible: Bool = false
     @State private var isPopupVisible: Bool = false
 
+    @State private var isDateButtonClicked: Bool = false
+
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
         todoAddViewModel: StateObject<TodoAddViewModel>
@@ -45,26 +47,46 @@ struct TimeTableMainView: View {
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
                         .padding(.leading, 10)
-                    Image("toggle")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
-                        .rotationEffect(Angle(degrees: 90))
-                        .scaleEffect(1.25)
-                        .scaledToFit()
-                        .padding(.leading, 10)
+
+                    Button {
+                        isDateButtonClicked.toggle()
+                    } label: {
+                        Image("toggle")
+                            .renderingMode(.template)
+                            .foregroundColor(Color(0x191919))
+                            .rotationEffect(Angle(degrees: 90))
+                            .scaleEffect(1.25)
+                            .scaledToFit()
+                            .padding(.leading, 10)
+                    }
+                    .popover(
+                        isPresented: $isDateButtonClicked,
+                        arrowDirection: .up
+                    ) {
+                        DatePicker(
+                            "",
+                            selection: $timeTableViewModel.currentDate,
+                            displayedComponents: .date
+                        )
+                        .datePickerStyle(.graphical)
+                    }
 
                     Spacer()
 
-                    Text("\(Date().day)")
-                        .font(.pretendard(size: 12, weight: .bold))
-                        .foregroundColor(Color(0x2ca4ff))
-                        .padding(.vertical, 3)
-                        .padding(.horizontal, 6)
-                        .background(
-                            Circle()
-                                .stroke(.gradation1, lineWidth: 2)
-                        )
-                        .padding(.trailing, 16)
+                    Button {
+                        timeTableViewModel.currentDate = .now
+                    } label: {
+                        Text("\(Date().day)")
+                            .font(.pretendard(size: 12, weight: .bold))
+                            .foregroundColor(Color(0x2ca4ff))
+                            .padding(.vertical, 3)
+                            .padding(.horizontal, 6)
+                            .background(
+                                Circle()
+                                    .stroke(.gradation1, lineWidth: 2)
+                            )
+                            .padding(.trailing, 16)
+                    }
 
                     Image(isScheduleView ? "time-table-todo" : "time-table-schedule")
                         .onTapGesture {
@@ -125,27 +147,28 @@ struct TimeTableMainView: View {
                 .zIndex(2)
             } else {
                 if isPopupVisible {
-                    Color.black.opacity(0.4)
-                        .edgesIgnoringSafeArea(.all)
-                        .zIndex(1)
-                        .onTapGesture {
-                            isPopupVisible = false
-                        }
+                    ZStack {
+                        Color.black.opacity(0.4)
+                            .edgesIgnoringSafeArea(.all)
+                            .zIndex(1)
+                            .onTapGesture {
+                                isPopupVisible = false
+                            }
 
-                    // TODO: - 아래 인덱스 에러 해결 필요
-//                    CalendarDayView(calendarViewModel: calendarViewModel)
-//                        .zIndex(2)
-                }
-
-                Button {
-                    withAnimation {
-                        isModalVisible = true
+                        CalendarDayView(calendarViewModel: calendarViewModel)
+                            .zIndex(2)
                     }
-                } label: {
-                    Image("add-button")
-                        .shadow(radius: 10, x: 5, y: 0)
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 10)
+                } else {
+                    Button {
+                        withAnimation {
+                            isModalVisible = true
+                        }
+                    } label: {
+                        Image("add-button")
+                            .shadow(radius: 10, x: 5, y: 0)
+                            .padding(.trailing, 20)
+                            .padding(.bottom, 10)
+                    }
                 }
             }
         }

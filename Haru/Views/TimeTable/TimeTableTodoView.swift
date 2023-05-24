@@ -22,7 +22,7 @@ struct TimeTableTodoView: View {
     }
 
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 0) {
             ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
                 TimeTableTodoRow(
                     index: index,

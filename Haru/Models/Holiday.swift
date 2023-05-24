@@ -8,7 +8,7 @@
 import Foundation
 
 struct Holiday: Codable {
-    let id: String
+    let id: Int
     let content: String
     let repeatStart: Date
     let repeatEnd: Date
