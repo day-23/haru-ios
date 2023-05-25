@@ -20,6 +20,21 @@ struct SignUpView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            LinearGradient(
+                colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: 168.33, height: 84.74)
+            .mask(
+                Image("logo")
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 168.33, height: 84.74)
+            )
+            .padding(.vertical, 30)
+
             ZStack(alignment: .bottomTrailing) {
                 if let image {
                     Image(uiImage: image)
@@ -37,46 +52,43 @@ struct SignUpView: View {
             .onTapGesture {
                 openPhoto = true
             }
-            .padding(.top, 20)
-
-            Spacer()
-                .frame(height: 60)
+            .padding(.bottom, 20)
 
             Group {
-                VStack(spacing: 16) {
-                    HStack(spacing: 20) {
+                VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("하루 ID")
+                            .font(.pretendard(size: 20, weight: .bold))
+
+                        TextField("ID를 입력해 주세요.", text: $haruId)
+                            .font(.pretendard(size: 24, weight: .regular))
+                    }
+
+                    Divider()
+
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("하루 ID는 타 사용자가 나의 계정을 검색할 때 외에 노출되지 않습니다.")
+                            .lineLimit(1)
+                        Text("ID는 초기 생성 이후 변경이 가능합니다.")
+                    }
+                    .font(.pretendard(size: 10, weight: .regular))
+                    .foregroundColor(Color(0xACACAC))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    VStack(alignment: .leading, spacing: 14) {
                         Text("닉네임")
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .frame(width: 50, alignment: .leading)
-                        TextField("닉네임을 입력해주세요.", text: $nickname)
-                            .font(.pretendard(size: 14, weight: .regular))
+                            .font(.pretendard(size: 20, weight: .bold))
+
+                        TextField("최대 8글자를 입력해 주세요", text: $nickname)
+                            .font(.pretendard(size: 24, weight: .regular))
                     }
-                    Divider()
-                    HStack(spacing: 20) {
-                        Text("자기소개")
-                            .font(.pretendard(size: 14, weight: .bold))
-                        TextField("자기소개를 입력하세요.", text: $introduction)
-                            .font(.pretendard(size: 14, weight: .regular))
-                    }
-                    Divider()
-                    HStack(spacing: 20) {
-                        Text("ID")
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .frame(width: 50, alignment: .leading)
-                        TextField("검색에 사용될 ID를 입력해주세요.", text: $haruId)
-                            .font(.pretendard(size: 14, weight: .regular))
-                    }
+
                     Divider()
                 }
             }
-            .padding(.horizontal, 35)
-        }
-        .customNavigationBar(centerView: {
-            Text("회원 가입")
-                .font(.pretendard(size: 20, weight: .bold))
-        }, leftView: {
-            EmptyView()
-        }, rightView: {
+            .padding(.leading, 36)
+            .padding(.trailing, 33)
+
             Button {
                 if let user = Global.shared.user {
                     if let image {
@@ -113,11 +125,22 @@ struct SignUpView: View {
                     }
                 }
             } label: {
-                Image("confirm")
-                    .renderingMode(.template)
-                    .foregroundColor(Color(0x191919))
+                Text("프로필 생성 완료")
+                    .font(.pretendard(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.vertical, 13)
+                    .padding(.horizontal, 104)
+                    .background(
+                        LinearGradient(
+                            colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(10)
             }
-        })
+            .padding(.top, 50)
+        }
         .popupImagePicker(show: $openPhoto, mode: .single) { assets in
             let manager = PHCachingImageManager.default()
             let options = PHImageRequestOptions()
@@ -133,11 +156,5 @@ struct SignUpView: View {
                 }
             }
         }
-    }
-}
-
-struct SignUpView_Previews: PreviewProvider {
-    static var previews: some View {
-        SignUpView()
     }
 }

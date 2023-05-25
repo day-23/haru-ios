@@ -21,11 +21,18 @@ struct ProfileInfoView: View {
         ZStack {
             VStack(spacing: 0) {
                 HaruHeader(
-                    toggleIsClicked: $toggleIsClicked,
-                    backgroundGradient: Gradient(colors: [.gradientStart2, .gradientEnd2])
+                    toggleIsClicked: $toggleIsClicked
                 ) {
-                    // TODO: 검색 뷰 만들어주기
-                    Text("검색창")
+                    NavigationLink {
+                        // TODO: 검색 뷰 만들어지면 넣어주기
+                        Text("검색")
+                    } label: {
+                        Image("magnifyingglass")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
                 }
                 .padding(.bottom, 20)
                 

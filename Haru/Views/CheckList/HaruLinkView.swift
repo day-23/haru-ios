@@ -19,8 +19,10 @@ struct HaruLinkView: View {
             Text("오늘 나의 하루")
                 .font(.pretendard(size: 20, weight: .bold))
             Spacer()
-            Image(systemName: "chevron.right")
+            Image("back-button")
+                .renderingMode(.template)
                 .frame(width: 28, height: 28)
+                .rotationEffect(Angle(degrees: 180))
                 .padding(.trailing, 20)
         }
         .frame(height: 52)

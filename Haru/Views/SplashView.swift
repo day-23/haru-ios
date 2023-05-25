@@ -12,25 +12,31 @@ struct SplashView: View {
     @StateObject var authViewModel: AuthViewModel = .init()
 
     var body: some View {
-        Image("background-main")
-            .resizable()
-            .edgesIgnoringSafeArea(.all)
+        ZStack {
+            Image("background-main")
+                .resizable()
+                .edgesIgnoringSafeArea(.all)
+
+            VStack(spacing: 0) {
+                Image("logo")
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 168.33, height: 84.74)
+                    .foregroundColor(Color(0xffffff))
+                    .padding(.top, 55)
+
+                Spacer()
+            }
             .overlay {
-                VStack(spacing: 0) {
-                    Image("haru")
-                        .renderingMode(.template)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .foregroundColor(Color(0xffffff))
-                        .frame(width: 400, height: 57)
-                    Image("character-main")
-                }
+                Image("character-main")
             }
-            .onAppear {
-                // keyChain에 존재하는 accessToken을 통해 하루 서버에 인증
-                authViewModel.validateUserByHaruServer { isLoggedIn in
-                    self.isLoggedIn = isLoggedIn
-                }
+        }
+        .onAppear {
+            // keyChain에 존재하는 accessToken을 통해 하루 서버에 인증
+            authViewModel.validateUserByHaruServer { isLoggedIn in
+                self.isLoggedIn = isLoggedIn
             }
+        }
     }
 }

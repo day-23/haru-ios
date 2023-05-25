@@ -7,20 +7,35 @@
 
 import SwiftUI
 
-struct HaruHeader<SearchContent: View>: View {
+struct HaruHeader<
+    HeaderBackground: View,
+    HeaderItem: View
+>: View {
     var toggleOn: Bool
 
     @Binding var toggleIsClicked: Bool
+    @ViewBuilder var background: () -> HeaderBackground // 배경화면으로 보여질 화면을 추가한다.
+    @ViewBuilder var item: () -> HeaderItem // 헤더 오른쪽에 들어갈 아이템을 정의한다.
 
-    var backgroundColor: Color
-    var backgroundGradient: Gradient?
-    @ViewBuilder var searchView: () -> SearchContent // 검색 버튼 눌렀을 때 이동할 뷰를 넘겨주면 된다.
-
-    init(toggleIsClicked: Binding<Bool>? = nil, backgroundColor: Color = .white, backgroundGradient: Gradient? = nil, @ViewBuilder searchView: @escaping () -> SearchContent) {
+    init(
+        toggleIsClicked: Binding<Bool>? = nil,
+        @ViewBuilder background: @escaping () -> HeaderBackground = {
+            LinearGradient(
+                colors: [
+                    Color(0xD2D7FF),
+                    Color(0xAAD7FF),
+                    Color(0xD2D7FF),
+                ],
+                startPoint: .bottomLeading,
+                endPoint: .topTrailing
+            )
+            .opacity(0.5)
+        },
+        @ViewBuilder item: @escaping () -> HeaderItem
+    ) {
         _toggleIsClicked = toggleIsClicked ?? .constant(false)
-        self.backgroundColor = backgroundColor
-        self.backgroundGradient = backgroundGradient
-        self.searchView = searchView
+        self.background = background
+        self.item = item
 
         if toggleIsClicked == nil {
             toggleOn = false
@@ -31,24 +46,13 @@ struct HaruHeader<SearchContent: View>: View {
 
     var body: some View {
         ZStack {
-            if let backgroundGradient {
-                LinearGradient(
-                    gradient: backgroundGradient,
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ).ignoresSafeArea()
-            } else {
-                LinearGradient(
-                    colors: [backgroundColor],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ).ignoresSafeArea()
-            }
+            background()
+                .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 0) {
                 HStack {
-                    Text("HARU")
-                        .font(.pretendard(size: 20, weight: .bold))
+                    Image("logo")
+                        .renderingMode(.template)
                         .foregroundColor(Color(0x191919))
 
                     if toggleOn {
@@ -65,15 +69,8 @@ struct HaruHeader<SearchContent: View>: View {
                     }
 
                     Spacer()
-                    NavigationLink {
-                        searchView()
-                    } label: {
-                        Image("magnifyingglass")
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundColor(Color(0x191919))
-                            .frame(width: 28, height: 28)
-                    }
+
+                    item()
                 }
                 Spacer()
                     .frame(height: 20)

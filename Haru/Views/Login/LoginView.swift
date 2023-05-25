@@ -17,17 +17,23 @@ struct LoginView: View {
             .edgesIgnoringSafeArea(.all)
             .overlay {
                 VStack(spacing: 0) {
-                    Image("haru")
+                    Image("logo")
                         .renderingMode(.template)
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .foregroundColor(Color(0xfdfdfd))
-                        .frame(width: 400, height: 57)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 168.33, height: 84.74)
+                        .foregroundColor(Color(0xffffff))
+                        .padding(.top, 55)
 
-                    Text("나의 하루를 가치 있게 만드는 습관\n지금 하루와 함께 시작해 보세요!")
+                    Text("하나씩 이루어가는 습관,")
                         .font(.pretendard(size: 16, weight: .medium))
                         .foregroundColor(.white)
-                        .padding(.top, 38)
+                        .padding(.top, 51)
+
+                    Text("지금 하루와 함께하자!")
+                        .font(.pretendard(size: 16, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.top, 13)
 
                     Text("1초만에 간편 로그인!")
                         .font(.pretendard(size: 16, weight: .bold))
@@ -89,12 +95,7 @@ struct LoginView: View {
                     }
                     .padding(.top, 33)
 
-                    Image("character-login")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 251.82 * 1.5, height: 69.09 * 1.5)
-                        .padding(.top, 37)
-                        .allowsHitTesting(false)
+                    Spacer()
                 }
             }
     }
