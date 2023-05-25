@@ -42,9 +42,13 @@ struct SignUpView: View {
                         .frame(width: 94, height: 94)
                         .clipShape(Circle())
                 } else {
-                    Circle()
-                        .foregroundColor(.gray)
-                        .frame(width: 94, height: 94)
+                    LinearGradient(
+                        colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .mask(Circle().frame(width: 94, height: 94))
+                    .frame(width: 94, height: 94)
                 }
                 Image("camera")
                     .frame(width: 30, height: 30)
