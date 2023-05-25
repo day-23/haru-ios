@@ -99,15 +99,15 @@ struct FollowView: View {
                                 Spacer()
                                 Button {
                                     targetUser = user
-                                    if user.isFollowing {
-                                        withAnimation {
-                                            cancelFollowingModalVis = true
-                                        }
-                                    } else {
-                                        withAnimation {
-                                            addFollowModalVis = true
-                                        }
-                                    }
+//                                    if user.isFollowing {
+//                                        withAnimation {
+//                                            cancelFollowingModalVis = true
+//                                        }
+//                                    } else {
+//                                        withAnimation {
+//                                            addFollowModalVis = true
+//                                        }
+//                                    }
                                 } label: {
                                     Image("ellipsis")
                                 }
@@ -159,11 +159,11 @@ struct FollowView: View {
                                 Spacer()
                                 
                                 Button {
-                                    userProfileVM.cancelFollowing(followingId: user.id) {
-                                        userProfileVM.fetchFollowing(currentPage: 1)
-                                        userProfileVM.fetchFollower(currentPage: 1)
-                                    }
-                                    cancelFollowingModalVis = false
+//                                    userProfileVM.cancelFollowing(followingId: user.id) {
+//                                        userProfileVM.fetchFollowing(currentPage: 1)
+//                                        userProfileVM.fetchFollower(currentPage: 1)
+//                                    }
+//                                    cancelFollowingModalVis = false
                                 } label: {
                                     Text("확인")
                                         .font(.pretendard(size: 20, weight: .regular))
@@ -220,11 +220,11 @@ struct FollowView: View {
                                 Spacer()
                                 
                                 Button {
-                                    userProfileVM.addFollowing(followId: user.id) {
-                                        userProfileVM.fetchFollower(currentPage: 1)
-                                        userProfileVM.fetchFollowing(currentPage: 1)
-                                    }
-                                    addFollowModalVis = false
+//                                    userProfileVM.addFollowing(followId: user.id) {
+//                                        userProfileVM.fetchFollower(currentPage: 1)
+//                                        userProfileVM.fetchFollowing(currentPage: 1)
+//                                    }
+//                                    addFollowModalVis = false
                                 } label: {
                                     Text("확인")
                                         .font(.pretendard(size: 20, weight: .regular))

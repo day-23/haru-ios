@@ -613,5 +613,8 @@ struct TodoAddView: View {
         .onDisappear {
             viewModel.clear()
         }
+        .onChange(of: viewModel.at) { _ in
+            print(viewModel.at)
+        }
     }
 }

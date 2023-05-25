@@ -10,6 +10,8 @@ import SwiftUI
 
 @main
 struct HaruApp: App {
+    @StateObject var global: Global = .shared
+
     init() {
         print(UIDevice.current.name)
         // Kakao SDK 초기화
@@ -19,12 +21,14 @@ struct HaruApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView().onOpenURL { url in
-                // Handle the URL callback from KakaoTalk login
-                if AuthApi.isKakaoTalkLoginUrl(url) {
-                    _ = AuthController.handleOpenUrl(url: url)
+            RootView()
+                .environmentObject(global)
+                .onOpenURL { url in
+                    // Handle the URL callback from KakaoTalk login
+                    if AuthApi.isKakaoTalkLoginUrl(url) {
+                        _ = AuthController.handleOpenUrl(url: url)
+                    }
                 }
-            }
         }
     }
 }

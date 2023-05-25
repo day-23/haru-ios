@@ -28,9 +28,9 @@ final class UserProfileViewModel: ObservableObject {
             name: "",
             introduction: "",
             postCount: 0,
-            followerCount: 0,
-            followingCount: 0,
-            isFollowing: false
+            friendCount: 0,
+            friendStatus: 0,
+            isPublicAccount: false
         )
         self.userId = userId
     }
@@ -96,7 +96,7 @@ final class UserProfileViewModel: ObservableObject {
 
                     self.user = success
                     // FIXME: Global 변경 되면 수정해주기
-                    Global.shared.user = success
+                    Global.shared.user?.user = success
                     completion(.success(true))
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -109,7 +109,7 @@ final class UserProfileViewModel: ObservableObject {
                 case .success(let success):
                     self.user = success
                     // FIXME: Global 변경 되면 수정해주기
-                    Global.shared.user = success
+                    Global.shared.user?.user = success
                     completion(.success(true))
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -146,39 +146,39 @@ final class UserProfileViewModel: ObservableObject {
     /**
      * 나의 계정에서 userProfileVM의 user에게 팔로우를 신청
      */
-    func addFollowing(followId: String, completion: @escaping () -> Void) {
-        followService.addFollowing(followId: followId) { result in
-            switch result {
-            case .success:
-                self.user.isFollowing = true
-                if self.isMe {
-                    self.user.followingCount += 1
-                } else {
-                    self.user.followerCount += 1
-                }
-                completion()
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
-            }
-        }
-    }
-
-    func cancelFollowing(followingId: String, completion: @escaping () -> Void) {
-        followService.cancelFollowing(followingId: followingId) { result in
-            switch result {
-            case .success:
-                self.user.isFollowing = false
-                if self.isMe {
-                    self.user.followingCount -= 1
-                } else {
-                    self.user.followerCount -= 1
-                }
-                completion()
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
-            }
-        }
-    }
+//    func addFollowing(followId: String, completion: @escaping () -> Void) {
+//        followService.addFollowing(followId: followId) { result in
+//            switch result {
+//            case .success:
+//                self.user.isFollowing = true
+//                if self.isMe {
+//                    self.user.followingCount += 1
+//                } else {
+//                    self.user.followerCount += 1
+//                }
+//                completion()
+//            case .failure(let failure):
+//                print("[Debug] \(failure) \(#fileID) \(#function)")
+//            }
+//        }
+//    }
+//
+//    func cancelFollowing(followingId: String, completion: @escaping () -> Void) {
+//        followService.cancelFollowing(followingId: followingId) { result in
+//            switch result {
+//            case .success:
+//                self.user.isFollowing = false
+//                if self.isMe {
+//                    self.user.followingCount -= 1
+//                } else {
+//                    self.user.followerCount -= 1
+//                }
+//                completion()
+//            case .failure(let failure):
+//                print("[Debug] \(failure) \(#fileID) \(#function)")
+//            }
+//        }
+//    }
 
     enum ProfileError: Error {
         case invalidUser

@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct RootView: View {
+    @EnvironmentObject var global: Global
     @StateObject private var todoState: TodoState = .init()
     @State private var showSplash: Bool = true
     @State private var isLoggedIn: Bool = false
@@ -30,7 +31,10 @@ struct RootView: View {
                         }
                     }
                 } else {
-                    if isLoggedIn {
+                    if let me = global.user,
+                       isLoggedIn,
+                       !me.user.name.isEmpty
+                    {
                         TabView {
                             // MARK: - SNS View
 
@@ -112,17 +116,9 @@ struct RootView: View {
                             // MARK: - Setting View
 
                             NavigationView {
-                                Button {
-                                    KeychainService.logout()
-                                    isLoggedIn = false
-                                } label: {
-                                    Text("임시 로그아웃 (유저 정보 변경)")
-                                        .font(.pretendard(size: 14, weight: .bold))
-                                        .foregroundColor(Color(0xfdfdfd))
-                                        .frame(width: 312, height: 44)
-                                        .background(Color(0x191919))
-                                        .cornerRadius(12)
-                                }
+                                MyView(
+                                    isLoggedIn: $isLoggedIn
+                                )
                             }
                             .tabItem {
                                 Image(systemName: "person")
@@ -136,6 +132,12 @@ struct RootView: View {
                             UIDatePicker.appearance().minuteInterval = 5
                         }
                         .environmentObject(todoState)
+                    } else if let me = global.user,
+                              isLoggedIn,
+                              me.user.name.isEmpty
+                    {
+                        // 회원 가입
+                        SignUpView()
                     } else {
                         LoginView(
                             isLoggedIn: $isLoggedIn
