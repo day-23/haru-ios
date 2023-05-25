@@ -146,7 +146,6 @@ struct ProfileService {
     func initUserProfileWithImage(
         userId: String,
         name: String,
-        introduction: String?,
         haruId: String,
         profileImage: UIImage,
         completion: @escaping (Result<Me, Error>) -> Void
@@ -160,16 +159,10 @@ struct ProfileService {
             "Content-Type": "multipart/form-data; boundary=Boundary-\(UUID().uuidString)",
         ]
 
-        var params: Parameters = [
+        let params: Parameters = [
             "name": name,
             "haruId": haruId,
         ]
-
-        if let introduction {
-            params["introduction"] = introduction
-        } else {
-            params["introduction"] = ""
-        }
 
         AF.upload(
             multipartFormData: { multipartFormData in
@@ -202,7 +195,6 @@ struct ProfileService {
     func initUserProfileWithoutImage(
         userId: String,
         name: String,
-        introduction: String?,
         haruId: String,
         completion: @escaping (Result<Me, Error>) -> Void
     ) {
@@ -215,16 +207,10 @@ struct ProfileService {
             "Content-Type": "application/json",
         ]
 
-        var params: Parameters = [
+        let params: Parameters = [
             "name": name,
             "haruId": haruId,
         ]
-
-        if let introduction {
-            params["introduction"] = introduction
-        } else {
-            params["introduction"] = ""
-        }
 
         AF.request(
             ProfileService.baseURL + "\(userId)/profile/init",

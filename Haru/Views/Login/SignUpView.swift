@@ -12,9 +12,7 @@ struct SignUpView: View {
     private var profileService: ProfileService = .init()
 
     @State private var nickname: String = ""
-    @State private var introduction: String = ""
     @State private var haruId: String = ""
-    @State private var image: UIImage? = nil
 
     @State var openPhoto: Bool = false
 
@@ -33,30 +31,8 @@ struct SignUpView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 168.33, height: 84.74)
             )
-            .padding(.vertical, 30)
-
-            ZStack(alignment: .bottomTrailing) {
-                if let image {
-                    Image(uiImage: image)
-                        .resizable()
-                        .frame(width: 94, height: 94)
-                        .clipShape(Circle())
-                } else {
-                    LinearGradient(
-                        colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .mask(Circle().frame(width: 94, height: 94))
-                    .frame(width: 94, height: 94)
-                }
-                Image("camera")
-                    .frame(width: 30, height: 30)
-            }
-            .onTapGesture {
-                openPhoto = true
-            }
-            .padding(.bottom, 20)
+            .padding(.top, 55)
+            .padding(.bottom, 100)
 
             Group {
                 VStack(alignment: .leading, spacing: 14) {
@@ -75,9 +51,11 @@ struct SignUpView: View {
                             .lineLimit(1)
                         Text("ID는 초기 생성 이후 변경이 가능합니다.")
                     }
-                    .font(.pretendard(size: 10, weight: .regular))
+                    .font(.pretendard(size: 12, weight: .regular))
                     .foregroundColor(Color(0xACACAC))
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 58)
+                    .padding(.trailing, -12)
 
                     VStack(alignment: .leading, spacing: 14) {
                         Text("닉네임")
@@ -95,36 +73,16 @@ struct SignUpView: View {
 
             Button {
                 if let user = Global.shared.user {
-                    if let image {
-                        profileService.initUserProfileWithImage(
-                            userId: user.id,
-                            name: nickname,
-                            introduction: introduction,
-                            haruId: haruId,
-                            profileImage: image
-                        ) { result in
-                            switch result {
-                            case .success(let response):
-                                // 로그인 되었음을 알려야 함
-                                Global.shared.user = response
-                            case .failure(let error):
-                                print("[Debug] \(error) with Image \(#fileID) \(#function)")
-                            }
-                        }
-                    } else {
-                        profileService.initUserProfileWithoutImage(
-                            userId: user.id,
-                            name: nickname,
-                            introduction: introduction,
-                            haruId: haruId
-                        ) { result in
-                            switch result {
-                            case .success(let response):
-                                // 로그인 되었음을 알려야 함
-                                Global.shared.user = response
-                            case .failure(let error):
-                                print("[Debug] \(error) without Image \(#fileID) \(#function)")
-                            }
+                    profileService.initUserProfileWithoutImage(
+                        userId: user.id,
+                        name: nickname,
+                        haruId: haruId
+                    ) { result in
+                        switch result {
+                        case .success(let response):
+                            Global.shared.user = response
+                        case .failure(let error):
+                            print("[Debug] \(error) without Image \(#fileID) \(#function)")
                         }
                     }
                 }
@@ -144,21 +102,8 @@ struct SignUpView: View {
                     .cornerRadius(10)
             }
             .padding(.top, 50)
-        }
-        .popupImagePicker(show: $openPhoto, mode: .single) { assets in
-            let manager = PHCachingImageManager.default()
-            let options = PHImageRequestOptions()
-            options.isSynchronous = true
-            DispatchQueue.global(qos: .userInteractive).async {
-                assets.forEach { asset in
-                    manager.requestImage(for: asset, targetSize: .init(), contentMode: .default, options: options) { image, _ in
-                        guard let image else { return }
-                        DispatchQueue.main.async {
-                            self.image = image
-                        }
-                    }
-                }
-            }
+
+            Spacer()
         }
     }
 }
