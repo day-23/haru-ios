@@ -13,21 +13,8 @@ struct SettingView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Button {
-                    dismissAction.callAsFunction()
-                } label: {
-                    Image("back-button")
-                        .frame(width: 28, height: 28)
-                }
-                .padding(.leading, 20)
-
-                Spacer()
-            }
-            .overlay {
-                Text("설정")
-                    .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(Color(0x191919))
+            SettingHeader(header: "설정") {
+                dismissAction.callAsFunction()
             }
 
             Divider()
