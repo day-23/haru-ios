@@ -94,7 +94,7 @@ struct PopupImagePicker: View {
         // Making It to Take Full Screen Space
         .frame(width: deviceSize.width, height: deviceSize.height, alignment: .bottom)
         // TODO: 하단 탭바 삭제하면 안해줘도 됨
-        .padding(.bottom, 110)
+//        .padding(.bottom, 110)
     }
 
     // MARK: Grid Image Content

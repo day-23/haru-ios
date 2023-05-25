@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct RootView: View {
+    @EnvironmentObject var global: Global
     @StateObject private var todoState: TodoState = .init()
     @State private var showSplash: Bool = true
     @State private var isLoggedIn: Bool = false
@@ -30,7 +31,7 @@ struct RootView: View {
                         }
                     }
                 } else {
-                    if let me = Global.shared.user,
+                    if let me = global.user,
                        isLoggedIn,
                        !me.user.name.isEmpty
                     {
@@ -139,12 +140,12 @@ struct RootView: View {
                             UIDatePicker.appearance().minuteInterval = 5
                         }
                         .environmentObject(todoState)
-                    } else if let me = Global.shared.user,
+                    } else if let me = global.user,
                               isLoggedIn,
                               me.user.name.isEmpty
                     {
                         // 회원 가입
-                        Text("회원 가입")
+                        SignUpView()
                     } else {
                         LoginView(
                             isLoggedIn: $isLoggedIn
@@ -153,6 +154,5 @@ struct RootView: View {
                 }
             }
         }
-        .onChange(of: isLoggedIn) { _ in }
     }
 }

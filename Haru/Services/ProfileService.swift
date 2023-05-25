@@ -182,7 +182,7 @@ struct ProfileService {
                     }
                 }
             },
-            to: ProfileService.baseURL + "\(userId)/profile/image",
+            to: ProfileService.baseURL + "\(userId)/profile/image/init",
             usingThreshold: .init(),
             method: .patch,
             headers: headers

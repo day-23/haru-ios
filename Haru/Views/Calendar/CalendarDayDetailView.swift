@@ -94,7 +94,6 @@ struct CalendarDayDetailView: View {
                         
                         ForEach(calendarVM.todoList[row].indices, id: \.self) { index in
                             NavigationLink {
-                                // TODO: at 위치 판단하고 TodoAddView에 생성자로 넘겨주기
                                 TodoAddView(
                                     viewModel: todoAddViewModel
                                 )
