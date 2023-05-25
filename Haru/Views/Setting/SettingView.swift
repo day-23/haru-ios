@@ -22,7 +22,7 @@ struct SettingView: View {
 
             VStack(spacing: 14) {
                 SettingRow(iconName: "account", content: "계정") {
-                    // TODO: 계정으로 연결
+                    AccountView()
                 }
 
                 SettingRow(iconName: "privacy", content: "개인정보 보호") {
@@ -77,5 +77,43 @@ struct SettingView: View {
             .padding(.bottom, 64)
         }
         .navigationBarBackButtonHidden()
+    }
+}
+
+struct SettingRow<Destination: View>: View {
+    let iconName: String
+    let content: String
+    @ViewBuilder var destination: () -> Destination
+
+    var body: some View {
+        VStack(spacing: 0) {
+            NavigationLink {
+                destination()
+            } label: {
+                HStack(spacing: 0) {
+                    Image(iconName)
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x646464))
+                        .frame(width: 28, height: 28)
+                        .padding(.trailing, 10)
+
+                    Text(content)
+                        .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(Color(0x191919))
+
+                    Spacer()
+
+                    Image("back-button")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x646464))
+                        .opacity(0.5)
+                        .rotationEffect(Angle(degrees: 180))
+                        .frame(width: 28, height: 28)
+                }
+            }
+
+            Divider()
+                .padding(.top, 8)
+        }
     }
 }
