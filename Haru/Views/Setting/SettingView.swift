@@ -26,7 +26,7 @@ struct SettingView: View {
                 }
 
                 SettingRow(iconName: "privacy", content: "개인정보 보호") {
-                    // TODO: 개인정보 보호로 연결
+                    PrivacyView()
                 }
 
                 SettingRow(iconName: "screen", content: "화면") {

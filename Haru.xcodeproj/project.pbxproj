@@ -92,6 +92,7 @@
 		1342D4DC2A1F7A74006758E9 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1342D4DB2A1F7A74006758E9 /* SignUpView.swift */; };
 		1342D4DE2A1FBDB0006758E9 /* SettingHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1342D4DD2A1FBDB0006758E9 /* SettingHeader.swift */; };
 		1342D4E02A1FBE87006758E9 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1342D4DF2A1FBE87006758E9 /* AccountView.swift */; };
+		1342D4E22A1FD4EC006758E9 /* PrivacyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1342D4E12A1FD4EC006758E9 /* PrivacyView.swift */; };
 		134F5FEE29DD356C0072704B /* ScheduleItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 134F5FED29DD356C0072704B /* ScheduleItemView.swift */; };
 		134F5FF029DD7BE80072704B /* ScheduleTopItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 134F5FEF29DD7BE80072704B /* ScheduleTopItemView.swift */; };
 		134F5FF229DF1A240072704B /* TimeTableScheduleTopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 134F5FF129DF1A240072704B /* TimeTableScheduleTopView.swift */; };
@@ -256,6 +257,7 @@
 		1342D4DB2A1F7A74006758E9 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		1342D4DD2A1FBDB0006758E9 /* SettingHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingHeader.swift; sourceTree = "<group>"; };
 		1342D4DF2A1FBE87006758E9 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		1342D4E12A1FD4EC006758E9 /* PrivacyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyView.swift; sourceTree = "<group>"; };
 		134F5FED29DD356C0072704B /* ScheduleItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleItemView.swift; sourceTree = "<group>"; };
 		134F5FEF29DD7BE80072704B /* ScheduleTopItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTopItemView.swift; sourceTree = "<group>"; };
 		134F5FF129DF1A240072704B /* TimeTableScheduleTopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTableScheduleTopView.swift; sourceTree = "<group>"; };
@@ -649,6 +651,7 @@
 				13FAE4412A1DDA30007C3C5D /* SettingView.swift */,
 				1342D4DD2A1FBDB0006758E9 /* SettingHeader.swift */,
 				1342D4DF2A1FBE87006758E9 /* AccountView.swift */,
+				1342D4E12A1FD4EC006758E9 /* PrivacyView.swift */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -850,6 +853,7 @@
 				6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */,
 				13A57DBD2A13587E0010A481 /* TodoState.swift in Sources */,
 				130667A529CEE1F200AACEE6 /* ShapeStyle.swift in Sources */,
+				1342D4E22A1FD4EC006758E9 /* PrivacyView.swift in Sources */,
 				1306676629CEE19C00AACEE6 /* CalendarMainView.swift in Sources */,
 				130666FA29CEE0AC00AACEE6 /* Global.swift in Sources */,
 				1306671329CEE13200AACEE6 /* Todo.swift in Sources */,
