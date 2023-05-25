@@ -31,6 +31,7 @@ struct RootView: View {
                     }
                 } else {
                     if let me = Global.shared.user,
+                       isLoggedIn,
                        !me.user.name.isEmpty
                     {
                         TabView {
@@ -139,6 +140,7 @@ struct RootView: View {
                         }
                         .environmentObject(todoState)
                     } else if let me = Global.shared.user,
+                              isLoggedIn,
                               me.user.name.isEmpty
                     {
                         // 회원 가입

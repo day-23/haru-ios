@@ -5,6 +5,7 @@
 //  Created by 이민재 on 2023/05/19.
 //
 
+import Alamofire
 import AuthenticationServices
 import Foundation
 import SwiftUI
@@ -58,18 +59,25 @@ struct SignInWithAppleButton: UIViewRepresentable {
                             _ = KeychainService.save(key: "accessToken", data: accessTokenData)
                             _ = KeychainService.save(key: "refreshToken", data: refreshTokenData)
 
-//                            Global.shared.user = User(
-//                                id: data.data.id,
-//                                name: "loggedInUser",
-//                                introduction: "loggedInUser",
-//                                postCount: 0,
-//                                followerCount: 0,
-//                                followingCount: 0,
-//                                isFollowing: false
-//                            )
+                            let headers: HTTPHeaders = [
+                                "accessToken": data.data.accessToken,
+                                "refreshToken": data.data.refreshToken
+                            ]
 
-                            DispatchQueue.main.async {
-                                self.parent.isLoggedIn = true // Set isLoggedIn to true on successful login
+                            AuthService().validateUser(headers: headers) { result in
+                                switch result {
+                                case .success(let data):
+                                    print("UserVerifyResponse: \(data)")
+
+                                    // Save the ID and new access token into Keychain
+                                    Global.shared.user = data
+                                    _ = KeychainService.save(key: "accessToken", data: data.accessToken.data(using: .utf8)!)
+                                    DispatchQueue.main.async {
+                                        self.parent.isLoggedIn = true // Set isLoggedIn to true on successful login
+                                    }
+                                case .failure(let error):
+                                    print("Error: \(error)")
+                                }
                             }
 
                         case .failure(let error):
