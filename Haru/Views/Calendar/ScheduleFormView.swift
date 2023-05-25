@@ -476,19 +476,37 @@ struct ScheduleFormView: View {
                 (scheduleFormVM.tmpIsSelectedRepeatEnd &&
                     scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd)
             {
-                return ActionSheet(title: title,
-                                   message: nil,
-                                   buttons: [editAfterButton, editAllButton, cancleButton])
+                if scheduleFormVM.oriSchedule?.at == .front {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAllButton, cancleButton])
+                } else {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAfterButton, editAllButton, cancleButton])
+                }
             } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption.rawValue ||
                 scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
-                return ActionSheet(title: title,
-                                   message: nil,
-                                   buttons: [editAfterButton, editAllButton, cancleButton])
+                if scheduleFormVM.oriSchedule?.at == .front {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAllButton, cancleButton])
+                } else {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAfterButton, editAllButton, cancleButton])
+                }
             } else {
-                return ActionSheet(title: title,
-                                   message: nil,
-                                   buttons: [editButton, editAfterButton, editAllButton, cancleButton])
+                if scheduleFormVM.oriSchedule?.at == .front {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editButton, editAllButton, cancleButton])
+                } else {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editButton, editAfterButton, editAllButton, cancleButton])
+                }
             }
             
         case .isNotRepeat:

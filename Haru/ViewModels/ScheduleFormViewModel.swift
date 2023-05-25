@@ -651,7 +651,8 @@ final class ScheduleFormViewModel: ObservableObject {
      * 반복 일정 하나만 편집하기
      */
     func updateTargetSchedule(isAfter: Bool = false) {
-        if tmpRepeatStart == oriSchedule?.realRepeatStart || at == .front {
+        if oriSchedule?.at == .front || at == .front {
+            print("front")
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
             scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -662,9 +663,10 @@ final class ScheduleFormViewModel: ObservableObject {
                 }
             }
         } else if isAfter ||
-            tmpRepeatEnd == oriSchedule?.realRepeatEnd ||
+            oriSchedule?.at == .back ||
             at == .back
         {
+            print("back")
             let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
             scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -674,11 +676,26 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else {
+        } else if oriSchedule?.at == .middle ||
+            at == .middle
+        {
+            print("middle")
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: repeatStart)
             scheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
+                    self.successAction()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else {
+            print("default")
+            let schedule = createSchedule()
+            scheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+                switch result {
+                case .success:
+                    // FIXME: getCurMonthSchList를 호출할 필요가 있나?
                     self.successAction()
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")

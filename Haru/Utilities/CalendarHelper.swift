@@ -348,4 +348,25 @@ class CalendarHelper {
 
         return nextRepeatStart
     }
+
+    // 현재 날짜의 다음 달 ex) 5/5 -> 6/5, 8/31 -> 10/31
+    class func nextMonthDate(curDate: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var year = curDate.year
+        var month = curDate.month
+        while true {
+            if month + 1 > 12 {
+                month = 1
+                year += 1
+            } else {
+                month += 1
+            }
+            var dateString = "\(year)-\(month)-\(curDate.day)"
+            if let result = dateFormatter.date(from: dateString) {
+                return result
+            }
+        }
+    }
 }
