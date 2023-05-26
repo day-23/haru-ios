@@ -12,7 +12,7 @@ struct MyView: View {
     @EnvironmentObject var global: Global
 
     @Binding var isLoggedIn: Bool
-    @State private var now: Date = .now
+    @State private var now: Date = .now.startOfMonth()
     @State private var completed: Int = 0
     @State private var totalItems: Int = 0
 
@@ -79,7 +79,10 @@ struct MyView: View {
 
                                     HStack(spacing: 10) {
                                         Button {
-                                            // TODO: 이전 달
+                                            guard let prevMonth = Calendar.current.date(byAdding: .month, value: -1, to: now) else {
+                                                return
+                                            }
+                                            now = prevMonth
                                         } label: {
                                             Image("back-button")
                                                 .renderingMode(.template)
@@ -94,7 +97,10 @@ struct MyView: View {
                                             .foregroundColor(Color(0x646464))
 
                                         Button {
-                                            // TODO: 다음 달
+                                            guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: now) else {
+                                                return
+                                            }
+                                            now = nextMonth
                                         } label: {
                                             Image("back-button")
                                                 .renderingMode(.template)
@@ -178,6 +184,22 @@ struct MyView: View {
             }
         }
         .onAppear {
+            todoService.fetchStatisticsByRange(
+                startDate: now.startOfMonth(),
+                endDate: now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
+            ) { result in
+                switch result {
+                case .success(let success):
+                    withAnimation {
+                        completed = success.completed
+                        totalItems = success.totalItems
+                    }
+                case .failure(let error):
+                    print("[Debug] \(error) \(#fileID) \(#function)")
+                }
+            }
+        }
+        .onChange(of: now) { _ in
             todoService.fetchStatisticsByRange(
                 startDate: now.startOfMonth(),
                 endDate: now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
