@@ -14,7 +14,7 @@ struct RootView: View {
     @State private var showSplash: Bool = true
     @State private var isLoggedIn: Bool = false
 
-    @State private var selection: Int = 0
+    @State private var selection: Tab = .sns
 
     var body: some View {
         Group {
@@ -40,11 +40,11 @@ struct RootView: View {
                         NavigationView {
                             ZStack {
                                 VStack {
-                                    if selection == 0 {
+                                    if selection == .sns {
                                         // MARK: - SNS View
 
                                         SNSView()
-                                    } else if selection == 1 {
+                                    } else if selection == .todo {
                                         // MARK: - CheckList View
 
                                         Group {
@@ -65,11 +65,11 @@ struct RootView: View {
                                                 addViewModel: todoAddViewModel
                                             )
                                         }
-                                    } else if selection == 2 {
+                                    } else if selection == .calendar {
                                         // MARK: - Calendar View
 
                                         CalendarMainView()
-                                    } else if selection == 3 {
+                                    } else if selection == .timetable {
                                         // MARK: - TimeTable View
 
                                         Group {
@@ -89,7 +89,7 @@ struct RootView: View {
                                                     ))
                                             )
                                         }
-                                    } else if selection == 4 {
+                                    } else if selection == .my {
                                         // MARK: - Setting View
 
                                         MyView(

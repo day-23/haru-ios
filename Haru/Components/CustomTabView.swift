@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CustomTabView: View {
-    @Binding var selection: Int
+    @Binding var selection: Tab
 
     var body: some View {
         ZStack {
@@ -16,70 +16,23 @@ struct CustomTabView: View {
                 .edgesIgnoringSafeArea(.all)
 
             HStack(spacing: 0) {
-                TabViewItem(
-                    icon: selection != 0
-                        ? "sns"
-                        : "sns-gradient",
-                    content: "SNS",
-                    isSelected: selection == 0
-                )
-                .onTapGesture {
-                    selection = 0
-                }
-
                 Spacer()
 
-                TabViewItem(
-                    icon: selection != 1
-                        ? "todo"
-                        : "todo-gradient",
-                    content: "TODO",
-                    isSelected: selection == 1
-                )
-                .onTapGesture {
-                    selection = 1
-                }
+                ForEach(Tab.allCases, id: \.self) { tab in
+                    TabViewItem(
+                        icon: selection == tab
+                            ? tab.selectedIcon
+                            : tab.icon,
+                        content: tab.title,
+                        isSelected: selection == tab
+                    )
+                    .onTapGesture {
+                        selection = tab
+                    }
 
-                Spacer()
-
-                TabViewItem(
-                    icon: selection != 2
-                        ? "calendar-tabview"
-                        : "calendar-gradient",
-                    content: "CAL",
-                    isSelected: selection == 2
-                )
-                .onTapGesture {
-                    selection = 2
-                }
-
-                Spacer()
-
-                TabViewItem(
-                    icon: selection != 3
-                        ? "timetable"
-                        : "timetable-gradient",
-                    content: "T.T",
-                    isSelected: selection == 3
-                )
-                .onTapGesture {
-                    selection = 3
-                }
-
-                Spacer()
-
-                TabViewItem(
-                    icon: selection != 4
-                        ? "my"
-                        : "my-gradient",
-                    content: "MY",
-                    isSelected: selection == 4
-                )
-                .onTapGesture {
-                    selection = 4
+                    Spacer()
                 }
             }
-            .padding(.horizontal, 36)
         }
         .frame(height: 56)
     }
@@ -104,11 +57,5 @@ private struct TabViewItem: View {
                         : Color(0x646464)
                 )
         }
-    }
-}
-
-struct CustomTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        CustomTabView(selection: .constant(0))
     }
 }
