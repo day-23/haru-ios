@@ -72,7 +72,14 @@ final class ScheduleFormViewModel: ObservableObject {
         let startDate = CalendarHelper.removeTimeData(date: repeatStart)
         let endDate = CalendarHelper.removeTimeData(date: repeatEnd)
         
-        return startDate.distance(to: endDate) >= 86400.0 * 7
+        let flag = startDate.distance(to: endDate) >= 86400.0 * 7
+        if flag {
+            DispatchQueue.main.async {
+                self.isSelectedRepeat = false
+            }
+        }
+        
+        return flag
     }
     
     // 시작과 끝이 1일 이상인가
@@ -87,6 +94,19 @@ final class ScheduleFormViewModel: ObservableObject {
             }
         }
         return result
+    }
+    
+    // 시작과 끝이 달을 넘어가는 경우
+    var overMonth: Bool {
+        let flag = repeatStart.month != repeatEnd.month
+        
+        if flag {
+            DispatchQueue.main.async {
+                self.isSelectedRepeat = false
+            }
+        }
+        
+        return flag
     }
     
     @Published var content: String = ""

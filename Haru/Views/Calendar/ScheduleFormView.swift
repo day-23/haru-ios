@@ -92,7 +92,7 @@ struct ScheduleFormView: View {
                                         .padding(.horizontal, 30)
                                         .shadow(radius: 2.0)
                                         .onAppear {
-                                            selectedIdx = self.scheduleFormVM.selectionCategory
+                                            selectedIdx = scheduleFormVM.selectionCategory
                                         }
                                 } customize: {
                                     $0
@@ -235,7 +235,7 @@ struct ScheduleFormView: View {
                     }
                     
                     // 반복 설정
-                    if !scheduleFormVM.overWeek {
+                    if !scheduleFormVM.overWeek || !scheduleFormVM.overMonth {
                         Group {
                             Label {
                                 Toggle(isOn: $scheduleFormVM.isSelectedRepeat.animation(), label: {
