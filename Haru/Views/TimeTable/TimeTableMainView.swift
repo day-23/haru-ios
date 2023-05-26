@@ -164,6 +164,7 @@ struct TimeTableMainView: View {
                             .zIndex(1)
                             .onTapGesture {
                                 isPopupVisible = false
+                                Global.shared.isFaded = false
                             }
 
                         CalendarDayView(calendarViewModel: calendarViewModel)

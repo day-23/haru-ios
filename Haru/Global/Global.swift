@@ -16,4 +16,5 @@ final class Global: ObservableObject {
     var hashTagAll = HashTag(id: UUID().uuidString, content: "전체보기")
 
     @Published var isTabViewActive: Bool = true
+    @Published var isFaded: Bool = false
 }

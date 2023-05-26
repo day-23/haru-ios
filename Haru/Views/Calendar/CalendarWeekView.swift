@@ -27,7 +27,10 @@ struct CalendarWeekView: View {
                                     .onTapGesture {
                                         calendarVM.pivotDate = calendarVM.dateList[week * 7 + day].date
                                         calendarVM.getSelectedScheduleList()
-                                        isDayModalVisible = true
+                                        withAnimation {
+                                            isDayModalVisible = true
+                                            Global.shared.isFaded = true
+                                        }
                                     }
                             }
                         }
