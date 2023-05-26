@@ -74,6 +74,7 @@ struct CalendarDateView: View {
                             Button {
                                 withAnimation {
                                     isOptionModalVisible = true
+                                    Global.shared.isFaded = true
                                     x = 0
                                 }
                             } label: {
@@ -190,8 +191,12 @@ struct CalendarDateView: View {
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
-                        isDayModalVisible = false
+                        withAnimation {
+                            isDayModalVisible = false
+                            Global.shared.isFaded = false
+                        }
                     }
+                
                 CalendarDayView(calendarViewModel: calendarVM)
                     .zIndex(2)
             }
@@ -206,6 +211,7 @@ struct CalendarDateView: View {
                             withAnimation {
                                 x = UIScreen.main.bounds.width
                                 isOptionModalVisible = false
+                                Global.shared.isFaded = false
                             }
                         }
                 }
@@ -223,6 +229,7 @@ struct CalendarDateView: View {
                             if x > width / 3 {
                                 x = UIScreen.main.bounds.width
                                 isOptionModalVisible = false
+                                Global.shared.isFaded = false
                             } else {
                                 x = 0
                             }

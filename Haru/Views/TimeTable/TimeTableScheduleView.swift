@@ -90,6 +90,7 @@ struct TimeTableScheduleView: View {
                                         calendarViewModel.getSelectedScheduleList()
                                         withAnimation {
                                             isPopupVisible = true
+                                            Global.shared.isFaded = true
                                         }
                                     }
                             }
@@ -128,6 +129,7 @@ struct TimeTableScheduleView: View {
                                         calendarViewModel.getSelectedScheduleList()
                                         withAnimation {
                                             isPopupVisible = true
+                                            Global.shared.isFaded = true
                                         }
                                     }
                             }

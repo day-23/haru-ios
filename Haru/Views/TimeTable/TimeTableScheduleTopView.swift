@@ -53,6 +53,7 @@ struct TimeTableScheduleTopView: View {
                         calendarViewModel.getSelectedScheduleList()
                         withAnimation {
                             isPopupVisible = true
+                            Global.shared.isFaded = true
                         }
                     }
             }
@@ -64,6 +65,7 @@ struct TimeTableScheduleTopView: View {
                         ScheduleTopItemView(
                             schedule: $schedule, width: topItemWidth * CGFloat(schedule.weight), height: topItemHeight
                         )
+                        .allowsHitTesting(false)
                         .position(
                             calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
                         )
@@ -72,6 +74,7 @@ struct TimeTableScheduleTopView: View {
                             calendarViewModel.getSelectedScheduleList()
                             withAnimation {
                                 isPopupVisible = true
+                                Global.shared.isFaded = true
                             }
                         }
                     }

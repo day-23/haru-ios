@@ -94,24 +94,26 @@ struct RootView: View {
 
                                 if global.isTabViewActive {
                                     Spacer()
+                                        .frame(height: .zero)
+                                    
                                     CustomTabView(selection: $selection)
                                         .overlay {
                                             if global.isFaded {
                                                 Color.black.opacity(0.4)
                                                     .edgesIgnoringSafeArea(.all)
+                                                    .onTapGesture {
+                                                        withAnimation {
+                                                            global.isFaded = false
+                                                        }
+                                                    }
                                             }
                                         }
                                 }
                             }
-                            .background(
-                                global.isFaded
-                                    ? Color.black.opacity(0.4)
-                                    : .clear
-                            )
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
                     }
                     .onAppear {
-                        UITabBar.appearance().backgroundColor = .white
                         UIDatePicker.appearance().minuteInterval = 5
                     }
                     .environmentObject(todoState)
