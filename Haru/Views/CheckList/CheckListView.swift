@@ -12,13 +12,18 @@ struct CheckListView: View {
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
     @State private var isModalVisible: Bool = false
-    @State private var isTagManageModalVisible: Bool = false
     @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
+        var isTagManageModalVisible: Binding<Bool> = .init {
+            Global.shared.isFaded
+        } set: {
+            Global.shared.isFaded = $0
+        }
+
+        return ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
                 HaruHeader {
                     Color.white
@@ -57,7 +62,7 @@ struct CheckListView: View {
                         .frame(width: 28, height: 28)
                         .onTapGesture {
                             withAnimation {
-                                isTagManageModalVisible = true
+                                isTagManageModalVisible.wrappedValue = true
                             }
                         }
                 }
@@ -285,6 +290,7 @@ struct CheckListView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
+            .background(.white)
 
             if isModalVisible {
                 Color.black.opacity(0.4)
@@ -304,19 +310,19 @@ struct CheckListView: View {
                 }
                 .transition(.modal)
                 .zIndex(2)
-            } else if isTagManageModalVisible {
+            } else if isTagManageModalVisible.wrappedValue {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
                         withAnimation {
-                            isTagManageModalVisible = false
+                            isTagManageModalVisible.wrappedValue = false
                         }
                     }
 
                 TagManageView(
                     checkListViewModel: viewModel,
-                    isActive: $isTagManageModalVisible
+                    isActive: isTagManageModalVisible
                 )
                 .position(
                     x: UIScreen.main.bounds.width - UIScreen.main.bounds.width * 0.78 + (UIScreen.main.bounds.width * 0.78 * 0.5),
@@ -364,7 +370,7 @@ struct CheckListView: View {
         }
         .onAppear {
             isModalVisible = false
-            isTagManageModalVisible = false
+            isTagManageModalVisible.wrappedValue = false
             viewModel.selectedTag = nil
             viewModel.fetchTodoList()
             viewModel.fetchTags()
