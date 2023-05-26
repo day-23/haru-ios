@@ -1,0 +1,21 @@
+<svg id="구성_요소_51_4" data-name="구성 요소 51 – 4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#acacac"/>
+      <stop offset="1" stop-color="#565656"/>
+    </linearGradient>
+    <clipPath id="clip-path">
+      <rect id="사각형_25708" data-name="사각형 25708" width="22.846" height="23.023" transform="translate(0 0)" fill="url(#linear-gradient)"/>
+    </clipPath>
+    <linearGradient id="linear-gradient-2" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9ea9ff"/>
+      <stop offset="1" stop-color="#1dafff"/>
+    </linearGradient>
+  </defs>
+  <rect id="사각형_25702" data-name="사각형 25702" width="28" height="28" fill="none"/>
+  <g id="그룹_21274" data-name="그룹 21274" transform="translate(3 3)">
+    <g id="그룹_21273" data-name="그룹 21273" clip-path="url(#clip-path)">
+      <path id="합치기_17" data-name="합치기 17" d="M-12280.5-2876.975c-1.933,0-3.5-1.193-3.5-2.664v-13.118c0-1.313,1.252-2.4,2.9-2.614v3.561a3.5,3.5,0,0,0,3.5,3.5,3.5,3.5,0,0,0,3.5-3.5v-3.607h3.055v3.607a3.5,3.5,0,0,0,3.5,3.5,3.506,3.506,0,0,0,3.5-3.5v-3.561c1.644.219,2.9,1.3,2.9,2.614v13.118c0,1.47-1.566,2.664-3.5,2.664Zm11.453-14.835v-6.69a1.5,1.5,0,0,1,1.5-1.5,1.5,1.5,0,0,1,1.5,1.5v6.69a1.5,1.5,0,0,1-1.5,1.5A1.5,1.5,0,0,1-12269.049-2891.81Zm-10.053,0v-6.69a1.5,1.5,0,0,1,1.5-1.5,1.5,1.5,0,0,1,1.5,1.5v6.69a1.5,1.5,0,0,1-1.5,1.5A1.5,1.5,0,0,1-12279.1-2891.81Z" transform="translate(12284 2900)" stroke="rgba(0,0,0,0)" stroke-width="1" fill="url(#linear-gradient-2)"/>
+    </g>
+  </g>
+</svg>
