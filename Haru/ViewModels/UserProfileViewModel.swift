@@ -16,11 +16,11 @@ final class UserProfileViewModel: ObservableObject {
         user.id == Global.shared.user?.id
     }
 
-    @Published var followerList: [User] = []
-    @Published var followingList: [User] = []
+    @Published var friendList: [User] = []
+    @Published var requestFriendList: [User] = [] // 사용자한테 친구 신청한 사람 (아직 수락하진 않은 상태)
 
     private let profileService: ProfileService = .init()
-    private let followService: FollowService = .init()
+    private let friendService: FriendService = .init()
 
     init(userId: String) {
         self.user = User(
@@ -34,6 +34,8 @@ final class UserProfileViewModel: ObservableObject {
         )
         self.userId = userId
     }
+
+    // MARK: - 이미지 캐싱
 
     func fetchProfileImage(profileUrl: String) {
         DispatchQueue.global().async {
@@ -119,29 +121,29 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
-    // MARK: - 팔로우를 위한 함수
+    // MARK: - 친구를 위한 함수
 
-    func fetchFollower(currentPage: Int) {
-        followService.fetchFollower(userId: user.id, page: currentPage) { result in
-            switch result {
-            case .success(let success):
-                self.followerList = success.0
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
-            }
-        }
-    }
-
-    func fetchFollowing(currentPage: Int) {
-        followService.fetchFollowing(userId: user.id, page: currentPage) { result in
-            switch result {
-            case .success(let success):
-                self.followingList = success.0
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
-            }
-        }
-    }
+//    func fetchFollower(currentPage: Int) {
+//        followService.fetchFollower(userId: user.id, page: currentPage) { result in
+//            switch result {
+//            case .success(let success):
+//                self.followerList = success.0
+//            case .failure(let failure):
+//                print("[Debug] \(failure) \(#fileID) \(#function)")
+//            }
+//        }
+//    }
+//
+//    func fetchFollowing(currentPage: Int) {
+//        followService.fetchFollowing(userId: user.id, page: currentPage) { result in
+//            switch result {
+//            case .success(let success):
+//                self.followingList = success.0
+//            case .failure(let failure):
+//                print("[Debug] \(failure) \(#fileID) \(#function)")
+//            }
+//        }
+//    }
 
     /**
      * 나의 계정에서 userProfileVM의 user에게 팔로우를 신청
@@ -163,22 +165,84 @@ final class UserProfileViewModel: ObservableObject {
 //        }
 //    }
 //
-//    func cancelFollowing(followingId: String, completion: @escaping () -> Void) {
-//        followService.cancelFollowing(followingId: followingId) { result in
-//            switch result {
-//            case .success:
-//                self.user.isFollowing = false
-//                if self.isMe {
-//                    self.user.followingCount -= 1
-//                } else {
-//                    self.user.followerCount -= 1
-//                }
-//                completion()
-//            case .failure(let failure):
-//                print("[Debug] \(failure) \(#fileID) \(#function)")
-//            }
-//        }
-//    }
+
+    // TODO: 페이지네이션 적용하기
+    func fetchFriend(userId: String, page: Int) {
+        friendService.fetchFriend(userId: userId, page: page) { result in
+            switch result {
+            case .success(let success):
+                self.friendList = success.0
+            // TODO: 친구 프로필 이미지 캐싱하기
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    // TODO: 페이지네이션 적용하기
+    func fetchRequestFriend(userId: String, page: Int) {
+        friendService.fetchRequestFriend(userId: userId, page: page) { result in
+            switch result {
+            case .success(let success):
+                self.requestFriendList = success.0
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func requestFriend(
+        followId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        friendService.requestFriend(followId: followId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    func acceptRequestFriend(
+        requestId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        friendService.acceptRequestFriend(requestId: requestId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    func cancelRequestFriend(
+        acceptorId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        friendService.cancelRequestFriend(acceptorId: acceptorId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    func deleteFreined(followingId: String, completion: @escaping () -> Void) {
+        friendService.deleteFriend(followingId: followingId) { result in
+            switch result {
+            case .success:
+                completion()
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
 
     enum ProfileError: Error {
         case invalidUser

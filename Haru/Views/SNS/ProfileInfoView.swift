@@ -11,8 +11,6 @@ struct ProfileInfoView: View {
     @StateObject var userProfileVM: UserProfileViewModel
     
     var body: some View {
-        // ---
-        
         HStack(spacing: 20) {
             ProfileImgView(profileImage: userProfileVM.profileImage)
                 .frame(width: 62, height: 62)
@@ -55,33 +53,45 @@ struct ProfileInfoView: View {
                                 .stroke(.gradation2, lineWidth: 1)
                         )
                 } else {
-//                    if userProfileVM.user.isFollowing {
-//                        Button {
-//                            userProfileVM.cancelFollowing(followingId: userProfileVM.user.id) {}
-//                        } label: {
-//                            Text("팔로우 취소")
-//                                .foregroundColor(.mainBlack)
-//                                .font(.pretendard(size: 14, weight: .bold))
-//                                .frame(width: 64, height: 16)
-//                                .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
-//                                .overlay(
-//                                    RoundedRectangle(cornerRadius: 9)
-//                                        .stroke(.gradation2, lineWidth: 1)
-//                                )
-//                        }
-//                    } else {
-//                        Button {
-//                            userProfileVM.addFollowing(followId: userProfileVM.user.id) {}
-//                        } label: {
-//                            Text("팔로우 신청")
-//                                .foregroundColor(.mainBlack)
-//                                .font(.pretendard(size: 14, weight: .bold))
-//                                .frame(width: 64, height: 16)
-//                                .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
-//                                .background(Color(0xEDEDED))
-//                                .cornerRadius(10)
-//                        }
-//                    }
+                    if userProfileVM.user.friendStatus == 0 {
+                        Button {
+                            // TODO: 친구 신청
+                            print("친구 신청")
+                        } label: {
+                            Text("친구 신청")
+                                .foregroundColor(.white)
+                                .font(.pretendard(size: 16, weight: .bold))
+                                .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                                .background(
+                                    Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)])
+                                )
+                                .cornerRadius(10)
+                        }
+                    } else if userProfileVM.user.friendStatus == 1 {
+                        Button {
+                            // TODO: 신청 취소
+                            print("신청 취소")
+                        } label: {
+                            Text("신청 취소")
+                                .font(.pretendard(size: 16, weight: .regular))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color(0xF1F1F5))
+                                .cornerRadius(10)
+                        }
+                    } else {
+                        Button {
+                            // TODO: 친구 삭제
+                            print("친구 삭제")
+                        } label: {
+                            Text("내 친구")
+                                .font(.pretendard(size: 16, weight: .regular))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color(0xF1F1F5))
+                                .cornerRadius(10)
+                        }
+                    }
                 }
             }
         }
@@ -99,34 +109,18 @@ struct ProfileInfoView: View {
                     .font(.pretendard(size: 14, weight: .regular))
             }
             Spacer()
-            
-//            NavigationLink {
-//                FollowView(userProfileVM: userProfileVM, isFollowing: true)
-//            } label: {
-//                VStack {
-//                    Text("\(userProfileVM.user.followingCount)")
-//                        .font(.pretendard(size: 20, weight: .bold))
-//                    Text("팔로윙")
-//                        .font(.pretendard(size: 14, weight: .regular))
-//                }
-//            }
-//            .foregroundColor(Color(0x191919))
-//
-//            Spacer()
-//
-//            NavigationLink {
-//                FollowView(userProfileVM: userProfileVM, isFollowing: false)
-//            } label: {
-//                VStack {
-//                    Text("\(userProfileVM.user.followerCount)")
-//                        .font(.pretendard(size: 20, weight: .bold))
-//                    Text("팔로워")
-//                        .font(.pretendard(size: 14, weight: .regular))
-//                }
-//            }
-//            .foregroundColor(Color(0x191919))
-//
-//            Spacer()
+            NavigationLink {
+                FriendView(userProfileVM: userProfileVM)
+            } label: {
+                VStack {
+                    Text("\(userProfileVM.user.friendCount)")
+                        .font(.pretendard(size: 20, weight: .bold))
+                    Text("친구")
+                        .font(.pretendard(size: 14, weight: .regular))
+                }
+            }
+            .foregroundColor(.mainBlack)
+            Spacer()
         }
     }
 }
