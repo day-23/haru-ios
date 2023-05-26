@@ -1189,7 +1189,13 @@ final class CalendarViewModel: ObservableObject {
         var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
         let maxRepeatEndDate = calendar.date(from: dateComponents)!
 
-        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(
+            firstDate: firstDate,
+            repeatStart: todoEndDate,
+            lastDate: lastDate,
+            repeatEnd: todo.repeatEnd ?? maxRepeatEndDate,
+            isTodo: true
+        )
         
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         
@@ -1227,7 +1233,13 @@ final class CalendarViewModel: ObservableObject {
         var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
         let maxRepeatEndDate = calendar.date(from: dateComponents)!
 
-        var (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        var (startDate, endDate) = CalendarHelper.fittingStartEndDate(
+            firstDate: firstDate,
+            repeatStart: todoEndDate,
+            lastDate: lastDate,
+            repeatEnd: todo.repeatEnd ?? maxRepeatEndDate,
+            isTodo: true
+        )
         
         let offset = calendar.component(.weekday, from: startDate) - 1
         
@@ -1283,7 +1295,13 @@ final class CalendarViewModel: ObservableObject {
         var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
         let maxRepeatEndDate = calendar.date(from: dateComponents)!
 
-        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(
+            firstDate: firstDate,
+            repeatStart: todoEndDate,
+            lastDate: lastDate,
+            repeatEnd: todo.repeatEnd ?? maxRepeatEndDate,
+            isTodo: true
+        )
         
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         
