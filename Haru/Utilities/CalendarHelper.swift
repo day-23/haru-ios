@@ -364,6 +364,45 @@ class CalendarHelper {
         return nextRepeatStart
     }
 
+    // 현재 날짜의 이전 달 ex) 5/5 -> 4/5, 7/31 -> 5/31
+    class func prevMonthDate(curDate: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var year = curDate.year
+        var month = curDate.month
+        while true {
+            if month - 1 == 0 {
+                month = 12
+                year -= 1
+            } else {
+                month -= 1
+            }
+            let dateString = "\(year)-\(month)-\(curDate.day)"
+            if let date = dateFormatter.date(from: dateString) {
+                var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+                dateComponents.hour = curDate.hour
+                dateComponents.minute = curDate.minute
+                dateComponents.second = curDate.second
+                return calendar.date(from: dateComponents) ?? Date()
+            }
+        }
+    }
+
+    class func prevYearDate(curDate: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var year = curDate.year
+        while true {
+            year -= 1
+            let dateString = "\(year)-\(curDate.month)-\(curDate.day)"
+            if let result = dateFormatter.date(from: dateString) {
+                return result
+            }
+        }
+    }
+
     // 현재 날짜의 다음 달 ex) 5/5 -> 6/5, 8/31 -> 10/31
     class func nextMonthDate(curDate: Date) -> Date {
         let dateFormatter = DateFormatter()

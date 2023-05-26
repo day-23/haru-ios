@@ -438,9 +438,17 @@ struct ScheduleFormView: View {
             
         switch actionSheetOption {
         case .isRepeat:
-            return ActionSheet(title: title,
-                               message: nil,
-                               buttons: [deleteButton, deleteAfterButton, deleteAllButton, cancleButton])
+            if scheduleFormVM.oriSchedule?.at == .front ||
+                scheduleFormVM.oriSchedule?.at == RepeatAt.none
+            {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [deleteAllButton, cancleButton])
+            } else {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [deleteButton, deleteAfterButton, deleteAllButton, cancleButton])
+            }
 
         case .isNotRepeat:
             return ActionSheet(title: title,
