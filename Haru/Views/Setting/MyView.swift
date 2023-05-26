@@ -180,7 +180,7 @@ struct MyView: View {
         .onAppear {
             todoService.fetchStatisticsByRange(
                 startDate: now.startOfMonth(),
-                endDate: now.endOfMonth()
+                endDate: now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
             ) { result in
                 switch result {
                 case .success(let success):
