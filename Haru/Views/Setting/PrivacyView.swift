@@ -26,7 +26,7 @@ struct PrivacyView: View {
             return user.isPostBrowsingEnabled
         } set: { self.global.user?.isPostBrowsingEnabled = $0 }
 
-        let isAllowFeedLike: Binding<String> = Binding {
+        var isAllowFeedLike: Binding<String> = Binding {
             guard let user = self.global.user else {
                 return "허용 안함"
             }
@@ -156,17 +156,34 @@ struct PrivacyView: View {
 
                         Spacer()
 
-                        Text(isAllowFeedLike.wrappedValue)
-                            .font(.pretendard(size: 14, weight: .regular))
-                            .foregroundColor(Color(0x646464))
-                            .padding(.trailing, 10)
+                        Menu {
+                            Button("허용 안함") {
+                                isAllowFeedLike.wrappedValue = "허용 안함"
+                            }
+                            Button("친구만") {
+                                isAllowFeedLike.wrappedValue = "친구만"
+                            }
+                            Button("모든 사람") {
+                                isAllowFeedLike.wrappedValue = "모든 사람"
+                            }
+                        } label: {
+                            HStack(spacing: 10) {
+                                Text(isAllowFeedLike.wrappedValue)
+                                    .font(.pretendard(size: 14, weight: .regular))
+                                    .foregroundColor(Color(0x1dafff))
 
-                        Image("back-button")
-                            .renderingMode(.template)
-                            .foregroundColor(Color(0x646464))
-                            .opacity(0.5)
-                            .rotationEffect(Angle(degrees: 180))
-                            .frame(width: 28, height: 28)
+//                                Image("back-button")
+//                                    .renderingMode(.template)
+//                                    .foregroundColor(Color(0x646464))
+//                                    .opacity(0.5)
+//                                    .rotationEffect(
+//                                        Angle(
+//                                            degrees: isAllowFeedLikeClicked ? 270 : 180
+//                                        )
+//                                    )
+//                                    .frame(width: 28, height: 28)
+                            }
+                        }
                     }
 
                     HStack(spacing: 0) {
@@ -176,23 +193,46 @@ struct PrivacyView: View {
 
                         Spacer()
 
-                        Text(isAllowFeedComment.wrappedValue)
-                            .font(.pretendard(size: 14, weight: .regular))
-                            .foregroundColor(Color(0x646464))
-                            .padding(.trailing, 10)
+                        Menu {
+                            Button("허용 안함") {
+                                isAllowFeedComment.wrappedValue = "허용 안함"
+                            }
+                            Button("친구만") {
+                                isAllowFeedComment.wrappedValue = "친구만"
+                            }
+                            Button("모든 사람") {
+                                isAllowFeedComment.wrappedValue = "모든 사람"
+                            }
+                        } label: {
+                            HStack(spacing: 10) {
+                                Text(isAllowFeedComment.wrappedValue)
+                                    .font(.pretendard(size: 14, weight: .regular))
+                                    .foregroundColor(Color(0x1dafff))
 
-                        Image("back-button")
-                            .renderingMode(.template)
-                            .foregroundColor(Color(0x646464))
-                            .opacity(0.5)
-                            .rotationEffect(Angle(degrees: 180))
-                            .frame(width: 28, height: 28)
+//                                Image("back-button")
+//                                    .renderingMode(.template)
+//                                    .foregroundColor(Color(0x646464))
+//                                    .opacity(0.5)
+//                                    .rotationEffect(
+//                                        Angle(
+//                                            degrees: isAllowFeedCommentClicked ? 270 : 180
+//                                        )
+//                                    )
+//                                    .frame(width: 28, height: 28)
+                            }
+                        }
                     }
 
-                    Text("나의 피드의 둘러보기 페이지 노출 여부를 선택할 수 있습니다.\n피드에 좋아요와 코멘트를 남길 수 있는 대상 범위를 설정할 수 있습니다.")
-                        .font(.pretendard(size: 12, weight: .regular))
-                        .foregroundColor(Color(0xacacac))
-                        .lineSpacing(6)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("나의 피드의 둘러보기 페이지 노출 여부를 선택할 수 있습니다.")
+                            .font(.pretendard(size: 12, weight: .regular))
+                            .foregroundColor(Color(0xacacac))
+
+                        Text("피드에 좋아요와 코멘트를 남길 수 있는 대상 범위를 설정할 수 있습니다.")
+                            .font(.pretendard(size: 12, weight: .regular))
+                            .foregroundColor(Color(0xacacac))
+                    }
+                    .frame(alignment: .leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 14)
@@ -230,6 +270,7 @@ struct PrivacyView: View {
             Spacer()
         }
         .navigationBarBackButtonHidden()
+        .contentShape(Rectangle())
     }
 }
 
