@@ -16,8 +16,15 @@ struct ProfileInfoView: View {
                 .frame(width: 62, height: 62)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(userProfileVM.user.name)
-                    .font(.pretendard(size: 20, weight: .bold))
+                HStack(spacing: 4) {
+                    Text(userProfileVM.isFriend ? userProfileVM.user.name : "비공계 계정")
+                        .font(.pretendard(size: 20, weight: .bold))
+                    if !userProfileVM.isFriend {
+                        Image("privacy")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                    }
+                }
                 Text(userProfileVM.user.introduction)
                     .font(.pretendard(size: 14, weight: .regular))
             }
@@ -73,6 +80,7 @@ struct ProfileInfoView: View {
                             print("신청 취소")
                         } label: {
                             Text("신청 취소")
+                                .foregroundColor(Color(0x646464))
                                 .font(.pretendard(size: 16, weight: .regular))
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
@@ -85,6 +93,7 @@ struct ProfileInfoView: View {
                             print("친구 삭제")
                         } label: {
                             Text("내 친구")
+                                .foregroundColor(Color(0x646464))
                                 .font(.pretendard(size: 16, weight: .regular))
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)

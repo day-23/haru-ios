@@ -15,6 +15,9 @@ final class UserProfileViewModel: ObservableObject {
     var isMe: Bool {
         user.id == Global.shared.user?.id
     }
+    var isFriend: Bool {
+        user.friendStatus == 2
+    }
 
     @Published var friendList: [User] = []
     @Published var requestFriendList: [User] = [] // 사용자한테 친구 신청한 사람 (아직 수락하진 않은 상태)
