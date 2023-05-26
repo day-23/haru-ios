@@ -14,4 +14,6 @@ final class Global: ObservableObject {
     static let shared: Global = .init()
     @Published var user: Me?
     var hashTagAll = HashTag(id: UUID().uuidString, content: "전체보기")
+
+    @Published var isTabViewActive: Bool = true
 }

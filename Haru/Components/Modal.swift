@@ -56,7 +56,15 @@ struct Modal<Content>: View where Content: View {
                             }
                     )
                     .transition(.move(edge: .bottom))
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            Global.shared.isTabViewActive = false
+                        }
+                    }
                     .onDisappear {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            Global.shared.isTabViewActive = true
+                        }
                         modalOffset = .zero
                     }
                 }
