@@ -8,10 +8,10 @@
 import Alamofire
 import Foundation
 
-final class FollowService {
-    private static let baseURL = Constants.baseURL + "follows/"
+final class FriendService {
+    private static let baseURL = Constants.baseURL + "friends/"
     
-    func fetchFollower(
+    func fetchFriend(
         userId: String,
         page: Int,
         completion: @escaping (Result<([User], Post.Pagination), Error>) -> Void
@@ -31,7 +31,7 @@ final class FollowService {
         ]
         
         AF.request(
-            FollowService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(userId)/follow",
+            Constants.baseURL + "follows" + (Global.shared.user?.id ?? "unknown") + "/\(userId)/following",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
@@ -46,7 +46,7 @@ final class FollowService {
         }
     }
     
-    func fetchFollowing(
+    func fetchRequestFriend(
         userId: String,
         page: Int,
         completion: @escaping (Result<([User], Post.Pagination), Error>) -> Void
@@ -66,7 +66,7 @@ final class FollowService {
         ]
         
         AF.request(
-            FollowService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(userId)/following",
+            FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/request",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
@@ -81,7 +81,7 @@ final class FollowService {
         }
     }
     
-    func addFollowing(
+    func requestFriend(
         followId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -94,10 +94,10 @@ final class FollowService {
         ]
         
         AF.request(
-            FollowService.baseURL + (Global.shared.user?.id ?? "unknown") + "/follow",
+            Constants.baseURL + "follows" + (Global.shared.user?.id ?? "unknown") + "/follow",
             method: .post,
             parameters: parameters,
-            encoding: JSONEncoding.default,
+            encoding: URLEncoding.default,
             headers: headers
         )
         .response { response in
@@ -110,8 +110,9 @@ final class FollowService {
         }
     }
     
-    func cancelFollowing(
-        followingId: String,
+    // requestId => 친구 신청 요청을 보낸 사용자
+    func acceptRequestFriend(
+        requestId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
@@ -119,11 +120,39 @@ final class FollowService {
         ]
         
         let parameters: Parameters = [
-            "followingId": followingId,
+            "requestId": requestId,
         ]
         
         AF.request(
-            FollowService.baseURL + (Global.shared.user?.id ?? "unknown") + "/following",
+            FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/accept",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func cancelRequestFriend(
+        acceptorId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        let parameters: Parameters = [
+            "acceptorId": acceptorId,
+        ]
+        
+        AF.request(
+            FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/request",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
@@ -139,8 +168,8 @@ final class FollowService {
         }
     }
     
-    func deleteFollower(
-        followId: String,
+    func deleteFriend(
+        followingId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
@@ -148,11 +177,11 @@ final class FollowService {
         ]
         
         let parameters: Parameters = [
-            "followId": followId,
+            "followingId": followingId,
         ]
         
         AF.request(
-            FollowService.baseURL + (Global.shared.user?.id ?? "unknown") + "/follow",
+            Constants.baseURL + "follows" + (Global.shared.user?.id ?? "unknown") + "/following",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,

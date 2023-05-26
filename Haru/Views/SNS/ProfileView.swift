@@ -33,45 +33,59 @@ struct ProfileView: View {
                 Spacer()
                     .frame(height: 38)
                 
-                VStack(spacing: 0) {
-                    HStack(spacing: 0) {
-                        Text("내 피드")
-                            .frame(width: 175, height: 20)
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .foregroundColor(isFeedSelected ? .gradientStart1 : .mainBlack)
-                            .onTapGesture {
-                                withAnimation {
-                                    isFeedSelected = true
+                if userProfileVM.isMe || userProfileVM.isFriend {
+                    VStack(spacing: 0) {
+                        HStack(spacing: 0) {
+                            Text("내 피드")
+                                .frame(width: 175, height: 20)
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(isFeedSelected ? .gradientStart1 : .mainBlack)
+                                .onTapGesture {
+                                    withAnimation {
+                                        isFeedSelected = true
+                                    }
                                 }
-                            }
+                            
+                            Text("미디어")
+                                .frame(width: 175, height: 20)
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(isFeedSelected ? .mainBlack : .gradientStart1)
+                                .onTapGesture {
+                                    withAnimation {
+                                        isFeedSelected = false
+                                    }
+                                }
+                        }
                         
-                        Text("미디어")
-                            .frame(width: 175, height: 20)
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .foregroundColor(isFeedSelected ? .mainBlack : .gradientStart1)
-                            .onTapGesture {
-                                withAnimation {
-                                    isFeedSelected = false
-                                }
-                            }
+                        ZStack(alignment: .leading) {
+                            Rectangle()
+                                .fill(.gray4)
+                                .frame(width: 175 * 2, height: 4)
+                            
+                            Rectangle()
+                                .fill(.gradation2)
+                                .frame(width: 175, height: 4)
+                                .offset(x: isFeedSelected ? 0 : 175)
+                        }
                     }
                     
-                    ZStack(alignment: .leading) {
-                        Rectangle()
-                            .fill(.gray4)
-                            .frame(width: 175 * 2, height: 4)
-                        
-                        Rectangle()
-                            .fill(.gradation2)
-                            .frame(width: 175, height: 4)
-                            .offset(x: isFeedSelected ? 0 : 175)
+                    if isFeedSelected {
+                        FeedListView(postVM: postVM)
+                    } else {
+                        MediaListView(postVM: postVM)
                     }
-                }
-                
-                if isFeedSelected {
-                    FeedListView(postVM: postVM)
                 } else {
-                    MediaListView(postVM: postVM)
+                    VStack(spacing: 0) {
+                        Image("bg-picture-1")
+                            .resizable()
+                            .frame(width: 160, height: 190)
+                            .padding(.top, 68)
+                            .padding(.bottom, 55)
+                        Text("비공개 계정입니다.")
+                            .padding(.bottom, 5)
+                        Text("수락된 친구만 게시글을 볼 수 있어요.")
+                        Spacer()
+                    }
                 }
             }
             
