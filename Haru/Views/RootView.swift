@@ -38,86 +38,70 @@ struct RootView: View {
                        !me.user.name.isEmpty
                     {
                         NavigationView {
-                            TabView(selection: $selection) {
-                                // MARK: - SNS View
+                            ZStack {
+                                VStack {
+                                    if selection == 0 {
+                                        // MARK: - SNS View
 
-                                SNSView()
-                                    .tabItem {
-                                        Image(systemName: "paperplane")
-                                        Text("SNS")
+                                        SNSView()
+                                    } else if selection == 1 {
+                                        // MARK: - CheckList View
+
+                                        Group {
+                                            let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
+                                            let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
+                                                checkListViewModel.selectedTag = nil
+                                                checkListViewModel.justAddedTodoId = id
+                                                checkListViewModel.fetchTags()
+                                                checkListViewModel.fetchTodoList()
+                                            } updateAction: { id in
+                                                checkListViewModel.justAddedTodoId = id
+                                                checkListViewModel.fetchTodoList()
+                                                checkListViewModel.fetchTags()
+                                            }
+
+                                            CheckListView(
+                                                viewModel: checkListViewModel,
+                                                addViewModel: todoAddViewModel
+                                            )
+                                        }
+                                    } else if selection == 2 {
+                                        // MARK: - Calendar View
+
+                                        CalendarMainView()
+                                    } else if selection == 3 {
+                                        // MARK: - TimeTable View
+
+                                        Group {
+                                            let timeTableViewModel: TimeTableViewModel = .init()
+
+                                            TimeTableMainView(
+                                                timeTableViewModel: .init(wrappedValue: timeTableViewModel),
+                                                todoAddViewModel: .init(
+                                                    wrappedValue: TodoAddViewModel(
+                                                        todoState: todoState,
+                                                        addAction: { _ in
+                                                            timeTableViewModel.fetchTodoList()
+                                                        },
+                                                        updateAction: { _ in
+                                                            timeTableViewModel.fetchTodoList()
+                                                        }
+                                                    ))
+                                            )
+                                        }
+                                    } else if selection == 4 {
+                                        // MARK: - Setting View
+
+                                        MyView(
+                                            isLoggedIn: $isLoggedIn
+                                        )
                                     }
-                                    .tag(0)
-                                
-                                // MARK: - CheckList View
-                                
-                                Group {
-                                    let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
-                                    let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
-                                        checkListViewModel.selectedTag = nil
-                                        checkListViewModel.justAddedTodoId = id
-                                        checkListViewModel.fetchTags()
-                                        checkListViewModel.fetchTodoList()
-                                    } updateAction: { id in
-                                        checkListViewModel.justAddedTodoId = id
-                                        checkListViewModel.fetchTodoList()
-                                        checkListViewModel.fetchTags()
+
+                                    if global.isTabViewActive {
+                                        Spacer()
+                                        CustomTabView(selection: $selection)
                                     }
-                                    
-                                    CheckListView(
-                                        viewModel: checkListViewModel,
-                                        addViewModel: todoAddViewModel
-                                    )
                                 }
-                                .tabItem {
-                                    Image(systemName: "checklist")
-                                    Text("Check-List")
-                                }
-                                .tag(1)
-                                
-                                // MARK: - Calendar View
-                                
-                                CalendarMainView()
-                                    .tabItem {
-                                        Image(systemName: "calendar")
-                                        Text("Calendar")
-                                    }
-                                    .tag(2)
-                                
-                                // MARK: - TimeTable View
-                                
-                                Group {
-                                    let timeTableViewModel: TimeTableViewModel = .init()
-                                    
-                                    TimeTableMainView(
-                                        timeTableViewModel: .init(wrappedValue: timeTableViewModel),
-                                        todoAddViewModel: .init(
-                                            wrappedValue: TodoAddViewModel(
-                                                todoState: todoState,
-                                                addAction: { _ in
-                                                    timeTableViewModel.fetchTodoList()
-                                                },
-                                                updateAction: { _ in
-                                                    timeTableViewModel.fetchTodoList()
-                                                }
-                                            ))
-                                    )
-                                }
-                                .tabItem {
-                                    Image(systemName: "calendar.day.timeline.left")
-                                    Text("Time-Table")
-                                }
-                                .tag(3)
-                                
-                                // MARK: - Setting View
-                                
-                                MyView(
-                                    isLoggedIn: $isLoggedIn
-                                )
-                                .tabItem {
-                                    Image(systemName: "person")
-                                    Text("Setting")
-                                }
-                                .tag(4)
                             }
                         }
                         .onAppear {

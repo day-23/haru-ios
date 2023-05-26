@@ -23,6 +23,9 @@ struct CustomTabView: View {
                     content: "SNS",
                     isSelected: selection == 0
                 )
+                .onTapGesture {
+                    selection = 0
+                }
 
                 Spacer()
 
@@ -33,6 +36,9 @@ struct CustomTabView: View {
                     content: "TODO",
                     isSelected: selection == 1
                 )
+                .onTapGesture {
+                    selection = 1
+                }
 
                 Spacer()
 
@@ -43,6 +49,9 @@ struct CustomTabView: View {
                     content: "CAL",
                     isSelected: selection == 2
                 )
+                .onTapGesture {
+                    selection = 2
+                }
 
                 Spacer()
 
@@ -53,6 +62,9 @@ struct CustomTabView: View {
                     content: "T.T",
                     isSelected: selection == 3
                 )
+                .onTapGesture {
+                    selection = 3
+                }
 
                 Spacer()
 
@@ -63,6 +75,9 @@ struct CustomTabView: View {
                     content: "MY",
                     isSelected: selection == 4
                 )
+                .onTapGesture {
+                    selection = 4
+                }
             }
             .padding(.horizontal, 36)
         }
