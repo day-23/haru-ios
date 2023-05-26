@@ -39,7 +39,7 @@ struct RootView: View {
                     {
                         NavigationView {
                             ZStack {
-                                VStack {
+                                VStack(spacing: 0) {
                                     if selection == .sns {
                                         // MARK: - SNS View
 
@@ -47,24 +47,22 @@ struct RootView: View {
                                     } else if selection == .todo {
                                         // MARK: - CheckList View
 
-                                        Group {
-                                            let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
-                                            let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
-                                                checkListViewModel.selectedTag = nil
-                                                checkListViewModel.justAddedTodoId = id
-                                                checkListViewModel.fetchTags()
-                                                checkListViewModel.fetchTodoList()
-                                            } updateAction: { id in
-                                                checkListViewModel.justAddedTodoId = id
-                                                checkListViewModel.fetchTodoList()
-                                                checkListViewModel.fetchTags()
-                                            }
-
-                                            CheckListView(
-                                                viewModel: checkListViewModel,
-                                                addViewModel: todoAddViewModel
-                                            )
+                                        let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
+                                        let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
+                                            checkListViewModel.selectedTag = nil
+                                            checkListViewModel.justAddedTodoId = id
+                                            checkListViewModel.fetchTags()
+                                            checkListViewModel.fetchTodoList()
+                                        } updateAction: { id in
+                                            checkListViewModel.justAddedTodoId = id
+                                            checkListViewModel.fetchTodoList()
+                                            checkListViewModel.fetchTags()
                                         }
+
+                                        CheckListView(
+                                            viewModel: checkListViewModel,
+                                            addViewModel: todoAddViewModel
+                                        )
                                     } else if selection == .calendar {
                                         // MARK: - Calendar View
 
@@ -72,23 +70,21 @@ struct RootView: View {
                                     } else if selection == .timetable {
                                         // MARK: - TimeTable View
 
-                                        Group {
-                                            let timeTableViewModel: TimeTableViewModel = .init()
+                                        let timeTableViewModel: TimeTableViewModel = .init()
 
-                                            TimeTableMainView(
-                                                timeTableViewModel: .init(wrappedValue: timeTableViewModel),
-                                                todoAddViewModel: .init(
-                                                    wrappedValue: TodoAddViewModel(
-                                                        todoState: todoState,
-                                                        addAction: { _ in
-                                                            timeTableViewModel.fetchTodoList()
-                                                        },
-                                                        updateAction: { _ in
-                                                            timeTableViewModel.fetchTodoList()
-                                                        }
-                                                    ))
-                                            )
-                                        }
+                                        TimeTableMainView(
+                                            timeTableViewModel: .init(wrappedValue: timeTableViewModel),
+                                            todoAddViewModel: .init(
+                                                wrappedValue: TodoAddViewModel(
+                                                    todoState: todoState,
+                                                    addAction: { _ in
+                                                        timeTableViewModel.fetchTodoList()
+                                                    },
+                                                    updateAction: { _ in
+                                                        timeTableViewModel.fetchTodoList()
+                                                    }
+                                                ))
+                                        )
                                     } else if selection == .my {
                                         // MARK: - Setting View
 

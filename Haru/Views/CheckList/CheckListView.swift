@@ -20,6 +20,22 @@ struct CheckListView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
+                HaruHeader {
+                    Color.white
+                        .edgesIgnoringSafeArea(.all)
+                } item: {
+                    NavigationLink {
+                        // TODO: 검색 뷰 만들어지면 넣어주기
+                        Text("검색")
+                    } label: {
+                        Image("magnifyingglass")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
+                }
+
                 HStack(spacing: 0) {
                     // 태그 리스트
                     TagListView(viewModel: viewModel) { tag in
