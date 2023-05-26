@@ -17,9 +17,9 @@ struct ProfileInfoView: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 4) {
-                    Text(userProfileVM.isFriend ? userProfileVM.user.name : "비공계 계정")
+                    Text(userProfileVM.isPublic ? userProfileVM.user.name : "비공계 계정")
                         .font(.pretendard(size: 20, weight: .bold))
-                    if !userProfileVM.isFriend {
+                    if !userProfileVM.isPublic {
                         Image("privacy")
                             .resizable()
                             .frame(width: 20, height: 20)

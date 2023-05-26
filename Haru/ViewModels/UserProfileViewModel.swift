@@ -15,8 +15,9 @@ final class UserProfileViewModel: ObservableObject {
     var isMe: Bool {
         user.id == Global.shared.user?.id
     }
-    var isFriend: Bool {
-        user.friendStatus == 2
+
+    var isPublic: Bool {
+        user.friendStatus == 2 || isMe || user.isPublicAccount
     }
 
     @Published var friendList: [User] = []
