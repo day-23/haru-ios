@@ -58,8 +58,7 @@ extension Schedule {
             case "매달":
                 nextRepeatEnd = CalendarHelper.nextMonthDate(curDate: repeatEnd)
             case "매년":
-                // TODO: 매년 처리해주기
-                return .none
+                nextRepeatEnd = CalendarHelper.nextYearDate(curDate: repeatEnd)
             default:
                 return .none
             }
@@ -167,6 +166,13 @@ extension Schedule {
             while pattern[index] == false {
                 nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
                 index = nextRepeatStart.day - 1
+            }
+        case RepeatOption.everyYear.rawValue:
+            var index = curRepeatStart.month % 12
+            nextRepeatStart = CalendarHelper.nextMonthDate(curDate: curRepeatStart)
+            while pattern[index] == false {
+                nextRepeatStart = CalendarHelper.nextMonthDate(curDate: nextRepeatStart)
+                index = nextRepeatStart.month - 1
             }
         default:
             throw RepeatError.invalid

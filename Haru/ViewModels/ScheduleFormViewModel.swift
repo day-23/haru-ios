@@ -10,11 +10,7 @@ import SwiftUI
 
 final class ScheduleFormViewModel: ObservableObject {
     // TODO: 반복 설정, 하루종일 설정
-    @Published var setRepeatTime: Bool = false {
-        didSet {
-            print("hi")
-        }
-    }
+    @Published var setRepeatTime: Bool = false
     
     // 추가 or 수정
     var oriSchedule: Schedule? // 수정시 원본 일정 데이터
@@ -494,6 +490,7 @@ final class ScheduleFormViewModel: ObservableObject {
         dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
         dateComponents.hour = repeatEnd.hour
         dateComponents.minute = repeatEnd.minute
+        dateComponents.second = repeatEnd.second
         
         var reqRepStart: Date = repeatStart // Request.Schedule의 repeatStart에 들어갈 값
         if let repeatValue, repeatValue.first != "T" {
@@ -672,7 +669,6 @@ final class ScheduleFormViewModel: ObservableObject {
      */
     func updateTargetSchedule(isAfter: Bool = false) {
         if oriSchedule?.at == .front || at == .front {
-            print("front")
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
             scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -686,7 +682,6 @@ final class ScheduleFormViewModel: ObservableObject {
             oriSchedule?.at == .back ||
             at == .back
         {
-            print("back")
             let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
             scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -699,7 +694,6 @@ final class ScheduleFormViewModel: ObservableObject {
         } else if oriSchedule?.at == .middle ||
             at == .middle
         {
-            print("middle")
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: repeatStart)
             scheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -710,7 +704,6 @@ final class ScheduleFormViewModel: ObservableObject {
                 }
             }
         } else {
-            print("default")
             let schedule = createSchedule()
             scheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {

@@ -265,7 +265,7 @@ struct ScheduleFormView: View {
                                 .pickerStyle(.segmented)
                                 .padding(.horizontal, 55)
                                 
-                                if scheduleFormVM.repeatOption == .everyYear {
+                                if !scheduleFormVM.overDay, scheduleFormVM.repeatOption == .everyYear {
                                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
                                         ForEach(scheduleFormVM.repeatYear.indices, id: \.self) { index in
                                             DayButton(content: scheduleFormVM.repeatYear[index].content, isClicked: scheduleFormVM.repeatYear[index].isClicked) {

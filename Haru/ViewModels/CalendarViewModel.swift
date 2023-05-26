@@ -704,7 +704,7 @@ final class CalendarViewModel: ObservableObject {
         case "매달":
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매년":
-            return [Schedule]()
+            return repeatEveryYear(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         default:
             return [Schedule]()
         }
@@ -962,6 +962,68 @@ final class CalendarViewModel: ObservableObject {
                     )
                 )
             }
+        }
+        
+        return result
+    }
+    
+    func repeatEveryYear(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
+        var result = [Schedule]()
+        
+        guard let repeatValue = schedule.repeatValue else {
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let (_, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
+        let day = 60 * 60 * 24
+        
+        var prevRepeatEnd = schedule.repeatStart
+        var checkDate = schedule.repeatStart
+        
+        while checkDate < firstDate, checkDate < endDate {
+            prevRepeatEnd = checkDate
+            do {
+                checkDate = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
+            } catch {
+                print("[Error] schedule nextRepeatStartDate 함수의 매년 로직 다시 구현")
+                print("\(#fileID) \(#function)")
+            }
+        }
+        
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        
+        while firstDate <= checkDate, checkDate < endDate {
+            var nextRepeatStart = checkDate
+            do {
+                nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: checkDate)
+            } catch {
+                print("[Error] schedule nextRepeatStartDate 함수의 매년 로직 다시 구현")
+                print("\(#fileID) \(#function)")
+            }
+            
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: checkDate)
+            dateComponents.hour = schedule.repeatEnd.hour
+            dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
+            
+            guard let repeatEnd = calendar.date(from: dateComponents) else {
+                print("[Error] endDate의 hour: \(endDate.hour) \(endDate.minute) \(#fileID) \(#function)")
+                continue
+            }
+            
+            result.append(
+                Schedule.createRepeatSchedule(
+                    schedule: schedule,
+                    repeatStart: checkDate,
+                    repeatEnd: repeatEnd,
+                    prevRepeatEnd: prevRepeatEnd,
+                    nextRepeatStart: nextRepeatStart
+                )
+            )
+            checkDate = nextRepeatStart
         }
         
         return result

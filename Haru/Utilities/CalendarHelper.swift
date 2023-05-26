@@ -298,8 +298,6 @@ class CalendarHelper {
         var date1 = date1
         var date2 = date2
 
-        print(date1)
-        print(date2)
         var dayOfWeek1 = calendar.component(.weekday, from: date1)
         while dayOfWeek1 > 1 {
             date1 = date1.addingTimeInterval(TimeInterval(-day))
@@ -313,10 +311,10 @@ class CalendarHelper {
         }
 
         let components = calendar.dateComponents([.day], from: date1, to: date2)
-        print(components.day! / 7)
         return components.day! / 7
     }
 
+    // 연속이지 않은 반복 일정에서 정확한 시작 점을 찾기 위해 사용하는 함수
     class func nextRepeatStartDate(
         curDate: Date,
         pattern: [Bool],
@@ -325,7 +323,7 @@ class CalendarHelper {
         let day = 60 * 60 * 24
         let calendar = Calendar.current
 
-        var nextRepeatStart: Date = curDate
+        var nextRepeatStart: Date = curDate // curDate가 이미 하루를 더한 값임
 
         switch repeatOption {
         case .everyDay:
@@ -356,8 +354,11 @@ class CalendarHelper {
                 index = nextRepeatStart.day - 1
             }
         case .everyYear:
-            // TODO: 매년 repeat 처리해줘야함
-            print("매년 처리해주세요")
+            var index = nextRepeatStart.month - 1
+            while pattern[index] == false {
+                nextRepeatStart = nextMonthDate(curDate: nextRepeatStart)
+                index = nextRepeatStart.month - 1
+            }
         }
 
         return nextRepeatStart
@@ -378,6 +379,24 @@ class CalendarHelper {
                 month += 1
             }
             let dateString = "\(year)-\(month)-\(curDate.day)"
+            if let date = dateFormatter.date(from: dateString) {
+                var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+                dateComponents.hour = curDate.hour
+                dateComponents.minute = curDate.minute
+                dateComponents.second = curDate.second
+                return calendar.date(from: dateComponents) ?? Date()
+            }
+        }
+    }
+
+    class func nextYearDate(curDate: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var year = curDate.year
+        while true {
+            year += 1
+            let dateString = "\(year)-\(curDate.month)-\(curDate.day)"
             if let result = dateFormatter.date(from: dateString) {
                 return result
             }
