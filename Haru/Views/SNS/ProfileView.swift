@@ -33,10 +33,10 @@ struct ProfileView: View {
                 Spacer()
                     .frame(height: 38)
                 
-                if userProfileVM.isMe || userProfileVM.isFriend {
+                if userProfileVM.isPublic {
                     VStack(spacing: 0) {
                         HStack(spacing: 0) {
-                            Text("내 피드")
+                            Text("피드")
                                 .frame(width: 175, height: 20)
                                 .font(.pretendard(size: 14, weight: .bold))
                                 .foregroundColor(isFeedSelected ? .gradientStart1 : .mainBlack)
