@@ -65,7 +65,6 @@ struct TimeTableScheduleTopView: View {
                         ScheduleTopItemView(
                             schedule: $schedule, width: topItemWidth * CGFloat(schedule.weight), height: topItemHeight
                         )
-                        .allowsHitTesting(false)
                         .position(
                             calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
                         )
@@ -77,6 +76,7 @@ struct TimeTableScheduleTopView: View {
                                 Global.shared.isFaded = true
                             }
                         }
+                        .allowsHitTesting(false)
                     }
                 }
             }
