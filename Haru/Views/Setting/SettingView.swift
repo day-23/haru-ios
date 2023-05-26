@@ -30,7 +30,7 @@ struct SettingView: View {
                 }
 
                 SettingRow(iconName: "screen", content: "화면") {
-                    // TODO: 화면으로 연결
+                    ScreenView()
                 }
 
                 SettingRow(iconName: "alarm", content: "알림") {
@@ -38,7 +38,7 @@ struct SettingView: View {
                 }
 
                 SettingRow(iconName: "information", content: "정보") {
-                    // TODO: 정보로 연결
+                    InformationView()
                 }
 
                 SettingRow(iconName: "invite-friend", content: "친구 초대") {
