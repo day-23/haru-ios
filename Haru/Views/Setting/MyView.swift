@@ -8,17 +8,28 @@
 import SwiftUI
 
 struct MyView: View {
+    private let todoService: TodoService = .init()
     @EnvironmentObject var global: Global
+
     @Binding var isLoggedIn: Bool
     @State private var now: Date = .now
+    @State private var completed: Int = 0
+    @State private var totalItems: Int = 0
 
-    let dateFormatter: DateFormatter = {
+    private var completionRate: Double {
+        if totalItems == 0 {
+            return 0
+        }
+        return Double(completed) / Double(totalItems)
+    }
+
+    private let dateFormatter: DateFormatter = {
         let formatter: DateFormatter = .init()
         formatter.dateFormat = "yyyy년 M월 나의 하루"
         return formatter
     }()
 
-    var fromCreatedAt: Int {
+    private var fromCreatedAt: Int {
         guard let user = global.user else {
             return 0
         }
@@ -98,7 +109,7 @@ struct MyView: View {
 
                                 HStack(spacing: 0) {
                                     VStack(spacing: 4) {
-                                        Text("15")
+                                        Text("\(completed)")
                                             .font(.pretendard(size: 20, weight: .bold))
                                             .foregroundColor(Color(0x1dafff))
                                         Text("완료한 일")
@@ -107,7 +118,7 @@ struct MyView: View {
                                     }
                                     Spacer()
                                     VStack(spacing: 4) {
-                                        Text("20")
+                                        Text("\(totalItems)")
                                             .font(.pretendard(size: 20, weight: .bold))
                                             .foregroundColor(Color(0x191919))
                                         Text("할 일")
@@ -119,10 +130,10 @@ struct MyView: View {
                                 .padding(.trailing, 81)
 
                                 CircularProgressView(
-                                    progress: 0.75
+                                    progress: completionRate
                                 )
                                 .overlay {
-                                    Text("75%")
+                                    Text("\(Int(completionRate * 100))%")
                                         .font(.pretendard(size: 30, weight: .bold))
                                         .foregroundColor(Color(0x1dafff))
                                 }
@@ -163,6 +174,22 @@ struct MyView: View {
                         .padding(.top, 20)
                         .padding(.bottom, 28)
                     }
+                }
+            }
+        }
+        .onAppear {
+            todoService.fetchStatisticsByRange(
+                startDate: now.startOfMonth(),
+                endDate: now.endOfMonth()
+            ) { result in
+                switch result {
+                case .success(let success):
+                    withAnimation {
+                        completed = success.completed
+                        totalItems = success.totalItems
+                    }
+                case .failure(let error):
+                    print("[Debug] \(error) \(#fileID) \(#function)")
                 }
             }
         }
