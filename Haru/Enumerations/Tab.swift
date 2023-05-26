@@ -26,21 +26,11 @@ enum Tab: Int, CaseIterable {
 
     var icon: String {
         switch self {
-        case .sns: return "sns"
+        case .sns: return "sns-tabview"
         case .calendar: return "calendar-tabview"
-        case .todo: return "todo"
-        case .timetable: return "timetable"
-        case .my: return "my"
-        }
-    }
-
-    var selectedIcon: String {
-        switch self {
-        case .sns: return "sns-gradient"
-        case .calendar: return "calendar-gradient"
-        case .todo: return "todo-gradient"
-        case .timetable: return "timetable-gradient"
-        case .my: return "my-gradient"
+        case .todo: return "todo-tabview"
+        case .timetable: return "timetable-tabview"
+        case .my: return "my-tabview"
         }
     }
 }

@@ -1,0 +1,21 @@
+<svg id="구성_요소_53_4" data-name="구성 요소 53 – 4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" y1="-1.42" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#acacac"/>
+      <stop offset="1" stop-color="#565656"/>
+    </linearGradient>
+    <clipPath id="clip-path">
+      <rect id="사각형_25710" data-name="사각형 25710" width="17.519" height="21.666" transform="translate(0 0)" fill="url(#linear-gradient)"/>
+    </clipPath>
+    <linearGradient id="linear-gradient-2" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9ea9ff"/>
+      <stop offset="1" stop-color="#1dafff"/>
+    </linearGradient>
+  </defs>
+  <rect id="사각형_25705" data-name="사각형 25705" width="28" height="28" fill="none"/>
+  <g id="그룹_21278" data-name="그룹 21278" transform="translate(5 4)">
+    <g id="그룹_21277" data-name="그룹 21277" clip-path="url(#clip-path)">
+      <path id="합치기_16" data-name="합치기 16" d="M-12423.238-2879.332h-6.728c-1.457,0-2.449-1.853-1.862-3.507.689-1.947,1.7-4.15,2.967-5.023a9.749,9.749,0,0,1,5.623-1.81,9.745,9.745,0,0,1,5.619,1.81c1.264.874,2.277,3.076,2.967,5.023.587,1.654-.405,3.507-1.862,3.507Zm-4.837-16.833a4.836,4.836,0,0,1,4.837-4.833,4.836,4.836,0,0,1,4.833,4.833,4.836,4.836,0,0,1-4.833,4.836A4.837,4.837,0,0,1-12428.075-2896.165Z" transform="translate(12432 2901)" stroke="rgba(0,0,0,0)" stroke-width="1" fill="url(#linear-gradient-2)"/>
+    </g>
+  </g>
+</svg>

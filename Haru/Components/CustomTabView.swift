@@ -20,9 +20,7 @@ struct CustomTabView: View {
 
                 ForEach(Tab.allCases, id: \.self) { tab in
                     TabViewItem(
-                        icon: selection == tab
-                            ? tab.selectedIcon
-                            : tab.icon,
+                        icon: tab.icon,
                         content: tab.title,
                         isSelected: selection == tab
                     )
@@ -45,9 +43,17 @@ private struct TabViewItem: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Image(icon)
-                .resizable()
-                .frame(width: 26, height: 26)
+            if isSelected {
+                Image(icon)
+                    .resizable()
+                    .frame(width: 28, height: 28)
+            } else {
+                Image(icon)
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 28, height: 28)
+                    .foregroundColor(Color(0xacacac))
+            }
 
             Text(content)
                 .font(.pretendard(size: 10, weight: .bold))
