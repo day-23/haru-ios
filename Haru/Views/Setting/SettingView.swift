@@ -13,21 +13,8 @@ struct SettingView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Button {
-                    dismissAction.callAsFunction()
-                } label: {
-                    Image("back-button")
-                        .frame(width: 28, height: 28)
-                }
-                .padding(.leading, 20)
-
-                Spacer()
-            }
-            .overlay {
-                Text("설정")
-                    .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(Color(0x191919))
+            SettingHeader(header: "설정") {
+                dismissAction.callAsFunction()
             }
 
             Divider()
@@ -35,15 +22,15 @@ struct SettingView: View {
 
             VStack(spacing: 14) {
                 SettingRow(iconName: "account", content: "계정") {
-                    // TODO: 계정으로 연결
+                    AccountView()
                 }
 
                 SettingRow(iconName: "privacy", content: "개인정보 보호") {
-                    // TODO: 개인정보 보호로 연결
+                    PrivacyView()
                 }
 
                 SettingRow(iconName: "screen", content: "화면") {
-                    // TODO: 화면으로 연결
+                    ScreenView()
                 }
 
                 SettingRow(iconName: "alarm", content: "알림") {
@@ -51,7 +38,7 @@ struct SettingView: View {
                 }
 
                 SettingRow(iconName: "information", content: "정보") {
-                    // TODO: 정보로 연결
+                    InformationView()
                 }
 
                 SettingRow(iconName: "invite-friend", content: "친구 초대") {
@@ -90,5 +77,43 @@ struct SettingView: View {
             .padding(.bottom, 64)
         }
         .navigationBarBackButtonHidden()
+    }
+}
+
+struct SettingRow<Destination: View>: View {
+    let iconName: String
+    let content: String
+    @ViewBuilder var destination: () -> Destination
+
+    var body: some View {
+        VStack(spacing: 0) {
+            NavigationLink {
+                destination()
+            } label: {
+                HStack(spacing: 0) {
+                    Image(iconName)
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x646464))
+                        .frame(width: 28, height: 28)
+                        .padding(.trailing, 10)
+
+                    Text(content)
+                        .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(Color(0x191919))
+
+                    Spacer()
+
+                    Image("back-button")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x646464))
+                        .opacity(0.5)
+                        .rotationEffect(Angle(degrees: 180))
+                        .frame(width: 28, height: 28)
+                }
+            }
+
+            Divider()
+                .padding(.top, 8)
+        }
     }
 }
