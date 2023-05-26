@@ -15,7 +15,7 @@ struct CalendarDateView: View {
 
     @StateObject var calendarVM: CalendarViewModel
     
-    @State var width = UIScreen.main.bounds.width - 33
+    @State var width = UIScreen.main.bounds.width - 50
     @State var x = UIScreen.main.bounds.width
 
     var body: some View {
@@ -99,7 +99,7 @@ struct CalendarDateView: View {
                         } // HStack
                         
                         TabView(selection: $calendarVM.monthOffest) {
-                            ForEach(-10 ... 10, id: \.self) { _ in
+                            ForEach(-10 ... 100, id: \.self) { _ in
                                 GeometryReader { proxy in
                                     
                                     let longPress = LongPressGesture(minimumDuration: 0.3)
@@ -136,6 +136,11 @@ struct CalendarDateView: View {
                     .padding(.horizontal, 20)
                     Spacer().frame(height: 20)
                 } // VStack
+            }
+            .onAppear {
+                calendarVM.dayList = CalendarHelper.getDays(calendarVM.startOnSunday)
+                calendarVM.getCategoryList()
+                calendarVM.getCurDateList(calendarVM.monthOffest, calendarVM.startOnSunday)
             }
 
             // 일정 추가 버튼
@@ -245,6 +250,11 @@ struct CalendarDateView: View {
         }
         .onChange(of: calendarVM.startOnSunday) { newValue in
             calendarVM.setStartOnSunday(newValue)
+        }
+        .onChange(of: isOptionModalVisible) { newValue in
+            if newValue == false {
+                calendarVM.setAllCategoryList()
+            }
         }
     }
 }

@@ -32,18 +32,7 @@ final class CalendarViewModel: ObservableObject {
 
     @Published var dateList: [DateValue] = [] // 달력에 표시할 날짜들
     
-    @Published var numberOfWeeks: Int = 0 {
-        didSet {
-            let deviceSize = UIScreen.main.bounds.size
-            if deviceSize.height < 800 {
-                maxOrder = numberOfWeeks < 6 ? 2 : 1
-            } else if deviceSize.height < 920 {
-                maxOrder = numberOfWeeks < 6 ? 3 : 2
-            } else {
-                maxOrder = numberOfWeeks < 6 ? 4 : 3
-            }
-        }
-    } // 달력에 표시된 주차
+    @Published var numberOfWeeks: Int = 0 // 달력에 표시된 주차
     
     var maxOrder: Int = 0
     
@@ -58,37 +47,46 @@ final class CalendarViewModel: ObservableObject {
     
     @Published var allCategoryOff: Bool = false // 카테고리 달력에서 안보이게 하기
     @Published var allTodoOff: Bool = false // 할일 달력에서 안보이게 하기
-    
+    @Published var nonCompTodoOff: Bool = false // 미완료 할일 달력에서 안보이게 하기
+    @Published var compTodoOff: Bool = false // 완료 할일 달력에서 안보이게 하기
+    var allOff: Bool {
+        allCategoryOff && allTodoOff
+    }
+
     // MARK: - Service
 
     private let scheduleService = ScheduleService()
     private let categoryService = CategoryService()
     
-    init() {
-        setStartOnSunday(startOnSunday)
-        getCategoryList()
-    }
-    
     func setStartOnSunday(_ startOnSunday: Bool) {
         self.startOnSunday = startOnSunday
         
         dayList = CalendarHelper.getDays(startOnSunday)
-        
+        getCategoryList()
         getCurDateList(monthOffest, startOnSunday)
     }
     
     func getCurDateList(_ monthOffset: Int, _ startOnSunday: Bool) {
         dateList = CalendarHelper.extractDate(monthOffset, startOnSunday)
         
-        numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+        let nOW = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+        let deviceSize = UIScreen.main.bounds.size
+        if deviceSize.height < 800 {
+            maxOrder = nOW < 6 ? 2 : 1
+        } else if deviceSize.height < 920 {
+            maxOrder = nOW < 6 ? 3 : 2
+        } else {
+            maxOrder = nOW < 6 ? 4 : 3
+        }
         getCurMonthSchList(dateList)
+        numberOfWeeks = nOW
     }
 
     // MARK: 달력에 해당하는 월에 맞는 스케줄 + 할일 표시해주기 위한 함수
 
     func getCurMonthSchList(_ dateList: [DateValue]) {
         productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
-        viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: maxOrder), count: numberOfWeeks)
+        viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: maxOrder), count: CalendarHelper.numberOfWeeksInMonth(dateList.count))
         
         guard let firstDate = dateList.first?.date, let startDate = Calendar.current.date(byAdding: .day, value: -1, to: firstDate) else { return }
         guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
@@ -655,7 +653,10 @@ final class CalendarViewModel: ObservableObject {
         _ prodCnt: Int,
         result: inout [[Int: [Productivity]]]
     ) {
-        let todoList = todoList.filter { $0.endDate != nil }
+        let todoList = todoList.filter {
+            $0.endDate != nil &&
+                ($0.completed == true ? !compTodoOff : !nonCompTodoOff)
+        }
         var todoIdx = 0, dateIdx = 0
 
         var maxKey: Int
@@ -706,12 +707,12 @@ final class CalendarViewModel: ObservableObject {
             return repeatEveryDay(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
-        case "2주마다":
+        case "격주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
         case "매달":
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매년":
-            return [Schedule]()
+            return repeatEveryYear(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         default:
             return [Schedule]()
         }
@@ -727,12 +728,12 @@ final class CalendarViewModel: ObservableObject {
         switch oriRepeatSch.repeatOption {
         case "매주":
             return sucRepeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
-        case "2주마다":
+        case "격주":
             return sucRepeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
         case "매달":
             return sucRepeatEveryMonth(firstDate: firstDate, curDate: paramCurDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매년":
-            return [Schedule]()
+            return sucRepeatEveryYear(firstDate: firstDate, curDate: paramCurDate, lastDate: lastDate, schedule: oriRepeatSch)
         default:
             return [Schedule]()
         }
@@ -754,11 +755,13 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
 
             var nextDateComp = dateComponents
             nextDateComp.day! += 1
             nextDateComp.hour = schedule.repeatStart.hour
             nextDateComp.minute = schedule.repeatStart.minute
+            nextDateComp.second = schedule.repeatStart.second
             if let nextRepStart = calendar.date(from: nextDateComp) {
                 nextRepeatStart = nextRepStart
             }
@@ -819,6 +822,8 @@ final class CalendarViewModel: ObservableObject {
                     dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatStart)
                     dateComponents.hour = startDate.hour
                     dateComponents.minute = startDate.minute
+                    dateComponents.second = startDate.second
+                    
                     guard let repeatStart = calendar.date(from: dateComponents) else {
                         print("[Error] startDate의 hour: \(startDate.hour) \(startDate.minute) \(#fileID) \(#function)")
                         continue
@@ -826,6 +831,8 @@ final class CalendarViewModel: ObservableObject {
                     
                     dateComponents.hour = endDate.hour
                     dateComponents.minute = endDate.minute
+                    dateComponents.second = endDate.second
+                    
                     guard let repeatEnd = calendar.date(from: dateComponents) else {
                         print("[Error] endDate의 hour: \(endDate.hour) \(endDate.minute) \(#fileID) \(#function)")
                         continue
@@ -922,6 +929,8 @@ final class CalendarViewModel: ObservableObject {
                 dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
                 dateComponents.hour = schedule.repeatStart.hour
                 dateComponents.minute = schedule.repeatStart.minute
+                dateComponents.second = schedule.repeatStart.second
+                
                 guard let curRepeatStart = calendar.date(from: dateComponents) else {
                     print("[Error] schedule.repeatStart가 Date 타입이 아닙니다. \(#fileID) \(#function)")
                     continue
@@ -929,6 +938,8 @@ final class CalendarViewModel: ObservableObject {
                 
                 dateComponents.hour = schedule.repeatEnd.hour
                 dateComponents.minute = schedule.repeatEnd.minute
+                dateComponents.second = schedule.repeatEnd.second
+                
                 guard let curRepeatEnd = calendar.date(from: dateComponents) else {
                     print("[Error] schedule.repeatEnd가 Date 타입이 아닙니다. \(#fileID) \(#function)")
                     continue
@@ -964,6 +975,66 @@ final class CalendarViewModel: ObservableObject {
         return result
     }
     
+    func repeatEveryYear(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
+        var result = [Schedule]()
+        
+        guard schedule.repeatValue != nil else {
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let (_, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
+        var prevRepeatEnd = schedule.repeatStart
+        var checkDate = schedule.repeatStart
+        
+        while checkDate < firstDate, checkDate < endDate {
+            prevRepeatEnd = checkDate
+            do {
+                checkDate = try schedule.nextRepeatStartDate(curRepeatStart: checkDate)
+            } catch {
+                print("[Error] schedule nextRepeatStartDate 함수의 매년 로직 다시 구현")
+                print("\(#fileID) \(#function)")
+            }
+        }
+        
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        
+        while firstDate <= checkDate, checkDate < endDate {
+            var nextRepeatStart = checkDate
+            do {
+                nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: checkDate)
+            } catch {
+                print("[Error] schedule nextRepeatStartDate 함수의 매년 로직 다시 구현")
+                print("\(#fileID) \(#function)")
+            }
+            
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: checkDate)
+            dateComponents.hour = schedule.repeatEnd.hour
+            dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
+            
+            guard let repeatEnd = calendar.date(from: dateComponents) else {
+                print("[Error] endDate의 hour: \(endDate.hour) \(endDate.minute) \(#fileID) \(#function)")
+                continue
+            }
+            
+            result.append(
+                Schedule.createRepeatSchedule(
+                    schedule: schedule,
+                    repeatStart: checkDate,
+                    repeatEnd: repeatEnd,
+                    prevRepeatEnd: prevRepeatEnd,
+                    nextRepeatStart: nextRepeatStart
+                )
+            )
+            checkDate = nextRepeatStart
+        }
+        
+        return result
+    }
+    
     // MARK: TODO: 긴 반복 일정 로직 구현
 
     func sucRepeatEveryWeek(firstDate: Date, lastDate: Date, schedule: Schedule, weekTerm: Int) -> [Schedule] {
@@ -991,25 +1062,31 @@ final class CalendarViewModel: ObservableObject {
             }
         }
         
+        var nextRepeatStart: Date = pivotRepStart.addingTimeInterval(TimeInterval(day * 7 * weekTerm))
+        var prevRepeatEnd: Date = pivotRepStart.addingTimeInterval(TimeInterval(-(day * 7 * weekTerm)))
         while pivotRepStart < endDate {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: pivotRepStart)
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
+            
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 continue
             }
             
-            let repeatEnd = repeatStart.addingTimeInterval(
+            let repeatEnd_ = repeatStart.addingTimeInterval(
                 TimeInterval(
                     Double(
                         repeatValue.split(separator: "T")[0]
                     ) ?? 0
                 )
             )
-            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
+            
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd_)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
             
             guard let repeatEnd = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
@@ -1020,11 +1097,15 @@ final class CalendarViewModel: ObservableObject {
                 Schedule.createRepeatSchedule(
                     schedule: schedule,
                     repeatStart: repeatStart,
-                    repeatEnd: repeatEnd
+                    repeatEnd: repeatEnd,
+                    prevRepeatEnd: prevRepeatEnd,
+                    nextRepeatStart: nextRepeatStart
                 )
             )
             
+            prevRepeatEnd = pivotRepStart
             pivotRepStart = pivotRepStart.addingTimeInterval(TimeInterval(day * 7 * weekTerm))
+            nextRepeatStart = pivotRepStart.addingTimeInterval(TimeInterval(day * 7 * weekTerm))
         }
         
         return result
@@ -1056,24 +1137,42 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date1)
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
-                return []
+                return result
             }
             
-            let repeatEnd = repeatStart.addingTimeInterval(
+            let repeatEnd_ = repeatStart.addingTimeInterval(
                 TimeInterval(
                     Double(
                         repeatValue.split(separator: "T")[0]
                     ) ?? 0
                 )
             )
-            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
+            
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd_)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
-            result.append(
-                Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd)
-            )
+            dateComponents.second = schedule.repeatEnd.second
+            
+            guard let repeatEnd = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
+                return result
+            }
+            
+            // 달이 넘어가는건 빠진다.
+            if repeatStart.month == repeatEnd.month {
+                result.append(
+                    Schedule.createRepeatSchedule(
+                        schedule: schedule,
+                        repeatStart: repeatStart,
+                        repeatEnd: repeatEnd,
+                        prevRepeatEnd: CalendarHelper.prevMonthDate(curDate: repeatStart),
+                        nextRepeatStart: CalendarHelper.nextMonthDate(curDate: repeatStart)
+                    )
+                )
+            }
         }
         
         if let dateStringCur,
@@ -1084,24 +1183,42 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date2)
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 return []
             }
             
-            let repeatEnd = repeatStart.addingTimeInterval(
+            let repeatEnd_ = repeatStart.addingTimeInterval(
                 TimeInterval(
                     Double(
                         repeatValue.split(separator: "T")[0]
                     ) ?? 0
                 )
             )
-            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
+            
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd_)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
-            result.append(
-                Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd)
-            )
+            dateComponents.second = schedule.repeatEnd.second
+            
+            guard let repeatEnd = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
+                return result
+            }
+            
+            // 달이 넘어가는건 빠진다.
+            if repeatStart.month == repeatEnd.month {
+                result.append(
+                    Schedule.createRepeatSchedule(
+                        schedule: schedule,
+                        repeatStart: repeatStart,
+                        repeatEnd: repeatEnd,
+                        prevRepeatEnd: CalendarHelper.prevMonthDate(curDate: repeatStart),
+                        nextRepeatStart: CalendarHelper.nextMonthDate(curDate: repeatStart)
+                    )
+                )
+            }
         }
         
         if let date3 = dateFormatter.date(from: dateStringNext),
@@ -1110,24 +1227,110 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date3)
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 return []
             }
             
-            let repeatEnd = repeatStart.addingTimeInterval(
+            let repeatEnd_ = repeatStart.addingTimeInterval(
                 TimeInterval(
                     Double(
                         repeatValue.split(separator: "T")[0]
                     ) ?? 0
                 )
             )
-            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
+            
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd_)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
-            result.append(
-                Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd)
+            dateComponents.second = schedule.repeatEnd.second
+            
+            guard let repeatEnd = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
+                return result
+            }
+            
+            // 달이 넘어가는건 빠진다.
+            if repeatStart.month == repeatEnd.month {
+                result.append(
+                    Schedule.createRepeatSchedule(
+                        schedule: schedule,
+                        repeatStart: repeatStart,
+                        repeatEnd: repeatEnd,
+                        prevRepeatEnd: CalendarHelper.prevMonthDate(curDate: repeatStart),
+                        nextRepeatStart: CalendarHelper.nextMonthDate(curDate: repeatStart)
+                    )
+                )
+            }
+        }
+        
+        return result
+    }
+    
+    func sucRepeatEveryYear(firstDate: Date, curDate: Date?, lastDate: Date, schedule: Schedule) -> [Schedule] {
+        var result = [Schedule]()
+        guard let repeatValue = schedule.repeatValue else {
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        var dateString = ""
+        
+        if schedule.repeatStart.month == firstDate.month {
+            dateString = "\(firstDate.year)-\(firstDate.month)-\(schedule.repeatStart.day)"
+        } else if let curDate, schedule.repeatStart.month == curDate.month {
+            dateString = "\(curDate.year)-\(curDate.month)-\(schedule.repeatStart.day)"
+        } else if schedule.repeatStart.month == lastDate.month {
+            dateString = "\(lastDate.year)-\(lastDate.month)-\(schedule.repeatStart.day)"
+        }
+        
+        if let date = dateFormatter.date(from: dateString) {
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+            dateComponents.hour = schedule.repeatStart.hour
+            dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
+            
+            guard let repeatStart = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
+                return result
+            }
+            
+            let repeatEnd_ = repeatStart.addingTimeInterval(
+                TimeInterval(
+                    Double(
+                        repeatValue.split(separator: "T")[0]
+                    ) ?? 0
+                )
             )
+            
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd_)
+            dateComponents.hour = schedule.repeatEnd.hour
+            dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
+            
+            guard let repeatEnd = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
+                return result
+            }
+            
+            if repeatStart.month == repeatEnd.month {
+                result.append(
+                    Schedule.createRepeatSchedule(
+                        schedule: schedule,
+                        repeatStart: repeatStart,
+                        repeatEnd: repeatEnd,
+                        prevRepeatEnd: CalendarHelper.prevYearDate(curDate: repeatStart),
+                        nextRepeatStart: CalendarHelper.nextYearDate(curDate: repeatStart)
+                    )
+                )
+            }
         }
         
         return result
@@ -1153,12 +1356,12 @@ final class CalendarViewModel: ObservableObject {
             return repeatEveryDay(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
         case "매주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo, weekTerm: 1)
-        case "2주마다":
+        case "격주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo, weekTerm: 2)
         case "매달":
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
         case "매년":
-            return [Todo]()
+            return repeatEveryYear(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
         default:
             return [Todo]()
         }
@@ -1176,7 +1379,13 @@ final class CalendarViewModel: ObservableObject {
         var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
         let maxRepeatEndDate = calendar.date(from: dateComponents)!
 
-        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(
+            firstDate: firstDate,
+            repeatStart: todoEndDate,
+            lastDate: lastDate,
+            repeatEnd: todo.repeatEnd ?? maxRepeatEndDate,
+            isTodo: true
+        )
         
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         
@@ -1184,6 +1393,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
             dateComponents.hour = todoEndDate.hour
             dateComponents.minute = todoEndDate.minute
+            dateComponents.second = todoEndDate.second
             
             guard let curEndDate = calendar.date(from: dateComponents) else {
                 print("[Error] endDate에 문제가 있습니다. \(#fileID) \(#function)")
@@ -1213,7 +1423,13 @@ final class CalendarViewModel: ObservableObject {
         var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
         let maxRepeatEndDate = calendar.date(from: dateComponents)!
 
-        var (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        var (startDate, endDate) = CalendarHelper.fittingStartEndDate(
+            firstDate: firstDate,
+            repeatStart: todoEndDate,
+            lastDate: lastDate,
+            repeatEnd: todo.repeatEnd ?? maxRepeatEndDate,
+            isTodo: true
+        )
         
         let offset = calendar.component(.weekday, from: startDate) - 1
         
@@ -1235,6 +1451,7 @@ final class CalendarViewModel: ObservableObject {
                     dateComponents = calendar.dateComponents([.year, .month, .day], from: curEndDate)
                     dateComponents.hour = todoEndDate.hour
                     dateComponents.minute = todoEndDate.minute
+                    dateComponents.second = todoEndDate.second
                     guard let curEndDate = calendar.date(from: dateComponents) else {
                         print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
                         continue
@@ -1268,7 +1485,13 @@ final class CalendarViewModel: ObservableObject {
         var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
         let maxRepeatEndDate = calendar.date(from: dateComponents)!
 
-        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: todoEndDate, lastDate: lastDate, repeatEnd: todo.repeatEnd ?? maxRepeatEndDate)
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(
+            firstDate: firstDate,
+            repeatStart: todoEndDate,
+            lastDate: lastDate,
+            repeatEnd: todo.repeatEnd ?? maxRepeatEndDate,
+            isTodo: true
+        )
         
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         
@@ -1279,6 +1502,7 @@ final class CalendarViewModel: ObservableObject {
                 dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
                 dateComponents.hour = todoEndDate.hour
                 dateComponents.minute = todoEndDate.minute
+                dateComponents.second = todoEndDate.second
                 guard let curEndDate = calendar.date(from: dateComponents) else {
                     print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
                     continue
@@ -1288,6 +1512,47 @@ final class CalendarViewModel: ObservableObject {
             }
         }
         
+        return result
+    }
+    
+    func repeatEveryYear(firstDate: Date, lastDate: Date, todo: Todo) -> [Todo] {
+        var result = [Todo]()
+        
+        guard let todoEndDate = todo.endDate else {
+            print("[Error] 반복 Todo는 endDate가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        guard let todoRepeatValue = todo.repeatValue else {
+            print("[Error] 반복 Todo는 repeatValue가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let calendar = Calendar.current
+        let dateComponents = DateComponents(year: 2200, month: 1, day: 1)
+        let maxRepeatEndDate = calendar.date(from: dateComponents)!
+
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(
+            firstDate: firstDate,
+            repeatStart: todoEndDate,
+            lastDate: lastDate,
+            repeatEnd: todo.repeatEnd ?? maxRepeatEndDate,
+            isTodo: true
+        )
+        
+        let repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
+        
+        var comp = startDate.month
+        for month in startDate.month ... (endDate.month < startDate.month ? 12 + endDate.month : endDate.month) {
+            if repeatValue[(month - 1) % 12] == 1 {
+                let dateString = "\(comp < month ? startDate.year : endDate.year)-\(month)-\(todoEndDate.day)"
+                if let curEndDate = CalendarHelper.stringToDate(dateString: dateString, curDate: todo.endDate) {
+                    result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
+                }
+            }
+            comp = month
+        }
+
         return result
     }
 }

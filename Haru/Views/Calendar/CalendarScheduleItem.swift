@@ -22,8 +22,8 @@ struct CalendarScheduleItem: View {
                                 .font(.pretendard(size: 12, weight: .regular))
                                 .padding(4)
                                 .frame(width: cellWidth * CGFloat(productivityList[index].0) - 4, height: 16, alignment: .center)
-                                .background(Color(schedule.category?.color, true))
-                                .foregroundColor(Color(schedule.category?.color, true).fontColor)
+                                .background(Color(schedule.category?.color))
+                                .foregroundColor(Color(schedule.category?.color).fontColor)
                                 .cornerRadius(4)
                                 .opacity(month == schedule.repeatStart.month || month == schedule.repeatEnd.month ? 1 : 0.3)
                         } else if let todo = productivity as? Todo {

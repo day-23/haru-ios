@@ -74,7 +74,7 @@ struct ScheduleFormView: View {
                         HStack {
                             if let selectIndex = scheduleFormVM.selectionCategory {
                                 Circle()
-                                    .fill(Color(scheduleFormVM.categoryList[selectIndex].color, true))
+                                    .fill(Color(scheduleFormVM.categoryList[selectIndex].color))
                                     .padding(5)
                                     .frame(width: 28, height: 28)
                                 
@@ -92,7 +92,7 @@ struct ScheduleFormView: View {
                                         .padding(.horizontal, 30)
                                         .shadow(radius: 2.0)
                                         .onAppear {
-                                            selectedIdx = self.scheduleFormVM.selectionCategory
+                                            selectedIdx = scheduleFormVM.selectionCategory
                                         }
                                 } customize: {
                                     $0
@@ -235,7 +235,7 @@ struct ScheduleFormView: View {
                     }
                     
                     // 반복 설정
-                    if !scheduleFormVM.overWeek {
+                    if !scheduleFormVM.overWeek || !scheduleFormVM.overMonth {
                         Group {
                             Label {
                                 Toggle(isOn: $scheduleFormVM.isSelectedRepeat.animation(), label: {
@@ -265,7 +265,7 @@ struct ScheduleFormView: View {
                                 .pickerStyle(.segmented)
                                 .padding(.horizontal, 55)
                                 
-                                if scheduleFormVM.repeatOption == .everyYear {
+                                if !scheduleFormVM.overDay, scheduleFormVM.repeatOption == .everyYear {
                                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
                                         ForEach(scheduleFormVM.repeatYear.indices, id: \.self) { index in
                                             DayButton(content: scheduleFormVM.repeatYear[index].content, isClicked: scheduleFormVM.repeatYear[index].isClicked) {
@@ -362,7 +362,7 @@ struct ScheduleFormView: View {
                 Spacer()
                 Button {
                     showDeleteActionSheet = true
-                    actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
+                    actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
                 } label: {
                     HStack {
                         Text("일정 삭제하기")
@@ -396,7 +396,7 @@ struct ScheduleFormView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showEditActionSheet = true
-                        actionSheetOption = scheduleFormVM.tmpIsSelectedRepeatEnd ? .isRepeat : .isNotRepeat
+                        actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
                     } label: {
                         Image("confirm")
                             .resizable()
@@ -417,21 +417,38 @@ struct ScheduleFormView: View {
     }
     
     func getDeleteActionSheet() -> ActionSheet {
-        let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 삭제하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 삭제하시겠습니까?")
-        let deleteButton: ActionSheet.Button = .destructive(Text("이 이벤트만 삭제")) {
+        let title = Text(actionSheetOption == .isRepeat ? "이 일정을 삭제할까요? 반복되는 일정입니다." : "이 일정을 삭제할까요?")
+        
+        let deleteButton: ActionSheet.Button = .default(Text("이 일정만 삭제")) {
             scheduleFormVM.deleteTargetSchedule()
         }
-        let deleteAllButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "모든 이벤트 삭제" : "이 이벤트 삭제")) {
+        
+        let deleteAfterButton: ActionSheet.Button = .destructive(Text("이 일정부터 삭제")) {
+            scheduleFormVM.deleteTargetSchedule(isAfter: true)
+        }
+        
+        let deleteAllButton: ActionSheet.Button = .destructive(
+            Text(actionSheetOption == .isRepeat ? "모든 이벤트 삭제" : "삭제하기")
+        ) {
             scheduleFormVM.deleteSchedule()
             dismissAction.callAsFunction()
         }
+        
         let cancleButton: ActionSheet.Button = .cancel()
             
         switch actionSheetOption {
         case .isRepeat:
-            return ActionSheet(title: title,
-                               message: nil,
-                               buttons: [deleteButton, deleteAllButton, cancleButton])
+            if scheduleFormVM.oriSchedule?.at == .front ||
+                scheduleFormVM.oriSchedule?.at == RepeatAt.none
+            {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [deleteAllButton, cancleButton])
+            } else {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [deleteButton, deleteAfterButton, deleteAllButton, cancleButton])
+            }
 
         case .isNotRepeat:
             return ActionSheet(title: title,
@@ -441,38 +458,67 @@ struct ScheduleFormView: View {
     }
     
     func getEditActionSheet() -> ActionSheet {
-        let title = Text(actionSheetOption == .isRepeat ? "이 이벤트를 편집하시겠습니까? 반복되는 이벤트입니다." : "이 이벤트를 편집하시겠습니까?")
-        let editButton: ActionSheet.Button = .destructive(Text("이 이벤트만 편집")) {
+        let title = Text(actionSheetOption == .isRepeat ? "수정사항을 저장할까요? 반복되는 일정입니다." : "수정사항을 저장할까요?")
+        
+        let editButton: ActionSheet.Button = .default(Text("이 일정만 편집")) {
             scheduleFormVM.isSelectedRepeat = false
             scheduleFormVM.updateTargetSchedule()
         }
-        let editAllButton: ActionSheet.Button = .destructive(Text(actionSheetOption == .isRepeat ? "모든 이벤트 편집" : "이 이벤트 편집")) {
+        
+        let editAfterButton: ActionSheet.Button = .destructive(Text("이 일정부터 수정")) {
+            scheduleFormVM.updateTargetSchedule(isAfter: true)
+        }
+        
+        let editAllButton: ActionSheet.Button = .destructive(
+            Text(actionSheetOption == .isRepeat ? "반복 일정 모두 수정" : "저장하기")
+        ) {
             scheduleFormVM.updateSchedule()
             dismissAction.callAsFunction()
         }
+        
         let cancleButton: ActionSheet.Button = .cancel()
 
         switch actionSheetOption {
         case .isRepeat:
-            if scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue ||
-                scheduleFormVM.tmpIsSelectedRepeatEnd != scheduleFormVM.isSelectedRepeat ||
-                scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd
+            if scheduleFormVM.tmpIsSelectedRepeatEnd != scheduleFormVM.isSelectedRepeatEnd ||
+                (scheduleFormVM.tmpIsSelectedRepeatEnd &&
+                    scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd)
             {
-                return ActionSheet(title: title,
-                                   message: nil,
-                                   buttons: [editAllButton, cancleButton])
-            } else if scheduleFormVM.tmpRepeatStart.month != scheduleFormVM.repeatStart.month ||
-                scheduleFormVM.tmpRepeatStart.day != scheduleFormVM.repeatStart.day ||
-                scheduleFormVM.tmpRepeatEnd.month != scheduleFormVM.repeatEnd.month ||
-                scheduleFormVM.tmpRepeatEnd.day != scheduleFormVM.repeatEnd.day
+                if scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.oriSchedule?.at == RepeatAt.none {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAllButton, cancleButton])
+                } else {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAfterButton, editAllButton, cancleButton])
+                }
+            } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption.rawValue ||
+                scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
-                return ActionSheet(title: title,
-                                   message: nil,
-                                   buttons: [editButton, cancleButton])
+                if scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.oriSchedule?.at == RepeatAt.none {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAllButton, cancleButton])
+                } else {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAfterButton, editAllButton, cancleButton])
+                }
             } else {
-                return ActionSheet(title: title,
-                                   message: nil,
-                                   buttons: [editButton, editAllButton, cancleButton])
+                if scheduleFormVM.oriSchedule?.at == .front {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editButton, editAllButton, cancleButton])
+                } else if scheduleFormVM.oriSchedule?.at == RepeatAt.none {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAllButton, cancleButton])
+                } else {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editButton, editAfterButton, editAllButton, cancleButton])
+                }
             }
             
         case .isNotRepeat:

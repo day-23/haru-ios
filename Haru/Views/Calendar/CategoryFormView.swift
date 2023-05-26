@@ -10,12 +10,18 @@ import SwiftUI
 struct CategoryFormView: View {
     @Environment(\.dismiss) var dismissAction
     
-    @State private var isColorModelVisible: Bool = false
-    @State private var content: String = ""
-    @State private var color: Color = .gradientStart1
-    @State private var selectedIdx: Int = -1
+    @State var content: String = ""
+    @State var color: Color?
+    @State var selectedIdx: Int = -1
+    @State var isToggle: Bool = false
+    
+    var disable: Bool {
+        content == "" || selectedIdx == -1
+    }
     
     var colors = [
+        [Color(0x2E2E2E), Color(0x656565), Color(0x818181), Color(0x9D9D9D), Color(0xB9B9B9), Color(0xD5D5D5)],
+        
         [Color(0xFF0959), Color(0xFF509C), Color(0xFF5AB6), Color(0xFE7DCD), Color(0xFFAAE5), Color(0xFFBDFB)],
         
         [Color(0xB237BB), Color(0xC93DEB), Color(0xB34CED), Color(0x9D5BE3), Color(0xBB93F8), Color(0xC6B2FF)],
@@ -30,62 +36,72 @@ struct CategoryFormView: View {
     ]
     
     var calendarVM: CalendarViewModel
+    var mode: CategoryFormMode = .add
 
     var body: some View {
-        ZStack {
-            VStack(alignment: .leading, spacing: 20) {
+        VStack(spacing: 20) {
+            HStack {
                 TextField("카테고리 입력", text: $content)
                     .font(.pretendard(size: 24, weight: .medium))
-                    .padding(.horizontal, 30)
-                Divider()
-                HStack {
-                    Text("색상")
-                        .font(.pretendard(size: 14, weight: .medium))
-                    Spacer()
-                    Circle()
-                        .fill(color)
-                        .frame(width: 16, height: 16)
-                }
-                .padding(.horizontal, 30)
-                .background(.white)
-                .onTapGesture {
-                    isColorModelVisible = true
-                }
-                
-                Divider()
+                    
                 Spacer()
-                HStack {
-                    Button {
-                        dismissAction.callAsFunction()
-                    } label: {
-                        Text("취소")
-                    }
-                    Spacer()
-                    Button {
-                        calendarVM.addCategory(content, color.toHex()) {
-                            dismissAction.callAsFunction()
-                        }
-                    } label: {
-                        Text("추가")
-                    }
+                
+                if content != "" {
+                    Image("edit-pencil")
+                        .resizable()
+                        .frame(width: 28, height: 28)
                 }
-                .padding(.horizontal, 64)
             }
+            .padding(.horizontal, 30)
+            Divider()
+            HStack {
+                Text("이벤트 알림")
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .foregroundColor(!isToggle ? Color(0x646464) : Color(0x191919))
+                Spacer()
+                Toggle("", isOn: $isToggle.animation())
+                    .toggleStyle(CustomToggleStyle())
+                    .frame(width: 38, height: 18)
+            }
+            .padding(.horizontal, 30)
+            .background(.white)
+                
+            Divider()
+            HStack {
+                Text("색상 선택")
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .foregroundColor(selectedIdx == -1 ? Color(0x646464) : Color(0x191919))
+                Spacer()
+            }
+            .padding(.horizontal, 30)
+            .background(.white)
+                
+            colorPicker()
+                    
+            Spacer()
             
-            if isColorModelVisible {
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        selectColor()
-                        isColorModelVisible = false
+            if mode == .edit {
+                Button {
+                    print("삭제")
+                } label: {
+                    HStack(spacing: 10) {
+                        Text("카테고리 삭제하기")
+                            .font(.pretendard(size: 20, weight: .regular))
+                            .foregroundColor(Color(0xF71E58))
+                        Image("trash")
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundColor(Color(0xF71E58))
+                            .frame(width: 28, height: 28)
                     }
-                Modal(isActive: $isColorModelVisible, ratio: 0.9) {
-                    colorPicker()
                 }
-                .zIndex(2)
             }
         }
+        .onAppear {
+            print(selectedIdx)
+        }
+        .padding(.top, 25)
+        .padding(.bottom, 40)
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -93,18 +109,37 @@ struct CategoryFormView: View {
                     dismissAction.callAsFunction()
                 } label: {
                     Image("back-button")
+                        .resizable()
                         .frame(width: 28, height: 28)
                 }
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    if mode == .add {
+                        calendarVM.addCategory(content, color?.toHex()) {
+                            dismissAction.callAsFunction()
+                        }
+                    } else {
+                        print("카테고리 편집")
+                    }
+                } label: {
+                    Image("confirm")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(disable ? Color(0x646464) : Color(0x191919))
+                        .frame(width: 28, height: 28)
+                }
+                .disabled(disable)
             }
         }
     }
     
     @ViewBuilder
     func colorPicker() -> some View {
-        VStack(spacing: 35) {
-            Text("색상 선택")
+        VStack(spacing: 30) {
             ForEach(0 ... 5, id: \.self) { row in
-                HStack(spacing: 25) {
+                HStack(spacing: 20) {
                     ForEach(colors[row].indices, id: \.self) { col in
                         ZStack {
                             Image("circle")
@@ -117,22 +152,15 @@ struct CategoryFormView: View {
                                 .frame(width: 28, height: 28)
                                 .onTapGesture {
                                     selectedIdx = row * 6 + col
+                                    selectColor()
                                 }
                         }
                     }
                 }
-                .padding(.horizontal, 30)
+                .padding(.horizontal, 40)
             }
-            Button {
-                withAnimation {
-                    selectColor()
-                    isColorModelVisible = false
-                }
-            } label: {
-                Text("확인")
-            }
-            Spacer()
         }
+        .padding(.top, 20)
     }
     
     func selectColor() {

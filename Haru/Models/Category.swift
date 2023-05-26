@@ -23,6 +23,12 @@ struct Category: Identifiable, Codable {
 
 // MARK: - Extensions
 
+extension Category: Equatable {
+    static func == (lhs: Category, rhs: Category) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 extension Category {
     mutating func setContent(_ content: String) {
         self.content = content
