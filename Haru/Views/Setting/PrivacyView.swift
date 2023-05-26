@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PrivacyView: View {
+    private let userService: UserService = .init()
+
     @Environment(\.dismiss) var dismissAction
     @EnvironmentObject var global: Global
 
@@ -17,16 +19,22 @@ struct PrivacyView: View {
                 return false
             }
             return !user.user.isPublicAccount
-        } set: { self.global.user?.user.isPublicAccount = !$0 }
+        } set: {
+            self.global.user?.user.isPublicAccount = !$0
+            userService.updateUserOption(isPublicAccount: !$0) { _ in }
+        }
 
         let isPostBrowsingEnabled: Binding<Bool> = Binding {
             guard let user = self.global.user else {
                 return false
             }
             return user.isPostBrowsingEnabled
-        } set: { self.global.user?.isPostBrowsingEnabled = $0 }
+        } set: {
+            self.global.user?.isPostBrowsingEnabled = $0
+            userService.updateUserOption(isPostBrowsingEnabled: $0) { _ in }
+        }
 
-        var isAllowFeedLike: Binding<String> = Binding {
+        let isAllowFeedLike: Binding<String> = Binding {
             guard let user = self.global.user else {
                 return "허용 안함"
             }
@@ -44,12 +52,16 @@ struct PrivacyView: View {
             switch $0 {
             case "허용 안함":
                 self.global.user?.isAllowFeedLike = 0
+                userService.updateUserOption(isAllowFeedLike: 0) { _ in }
             case "친구만":
                 self.global.user?.isAllowFeedLike = 1
+                userService.updateUserOption(isAllowFeedLike: 1) { _ in }
             case "모든 사람":
                 self.global.user?.isAllowFeedLike = 2
+                userService.updateUserOption(isAllowFeedLike: 2) { _ in }
             default:
                 self.global.user?.isAllowFeedLike = 0
+                userService.updateUserOption(isAllowFeedLike: 0) { _ in }
             }
         }
 
@@ -71,12 +83,16 @@ struct PrivacyView: View {
             switch $0 {
             case "허용 안함":
                 self.global.user?.isAllowFeedComment = 0
+                userService.updateUserOption(isAllowFeedComment: 0) { _ in }
             case "친구만":
                 self.global.user?.isAllowFeedComment = 1
+                userService.updateUserOption(isAllowFeedComment: 1) { _ in }
             case "모든 사람":
                 self.global.user?.isAllowFeedComment = 2
+                userService.updateUserOption(isAllowFeedComment: 2) { _ in }
             default:
                 self.global.user?.isAllowFeedComment = 0
+                userService.updateUserOption(isAllowFeedComment: 0) { _ in }
             }
         }
 
@@ -85,7 +101,10 @@ struct PrivacyView: View {
                 return false
             }
             return user.isAllowSearch
-        } set: { self.global.user?.isAllowSearch = $0 }
+        } set: {
+            self.global.user?.isAllowSearch = $0
+            userService.updateUserOption(isAllowSearch: $0) { _ in }
+        }
 
         return VStack(spacing: 0) {
             SettingHeader(header: "개인정보 보호") {
