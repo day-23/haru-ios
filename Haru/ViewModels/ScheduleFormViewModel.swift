@@ -477,7 +477,7 @@ final class ScheduleFormViewModel: ObservableObject {
         
         var reqRepStart: Date = repeatStart // Request.Schedule의 repeatStart에 들어갈 값
         if let repeatValue, repeatValue.first != "T" {
-            var pattern = repeatValue.map { $0 == "0" ? false : true }
+            let pattern = repeatValue.map { $0 == "0" ? false : true }
             
             let compValue = CalendarHelper.nextRepeatStartDate(
                 curDate: reqRepStart,

@@ -125,6 +125,11 @@ struct CalendarDateView: View {
                     Spacer().frame(height: 20)
                 } // VStack
             }
+            .onAppear {
+                calendarVM.dayList = CalendarHelper.getDays(calendarVM.startOnSunday)
+                calendarVM.getCategoryList()
+                calendarVM.getCurDateList(calendarVM.monthOffest, calendarVM.startOnSunday)
+            }
 
             // 일정 추가 버튼
             if !isDayModalVisible, !isOptionModalVisible {

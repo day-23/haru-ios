@@ -37,11 +37,43 @@ struct Todo: Identifiable, Codable {
     // MARK: 반복 api를 위한 필드 (임의로 프론트에서 넣어주는 값들) 추후에 DTO를 새로 작성할 필요성 있음
 
     var realRepeatStart: Date?
-    var realRepeatEnd: Date?
-    
 }
 
 // MARK: - Extensions
+
+extension Todo {
+    var at: RepeatAt {
+        if repeatOption == nil || repeatValue == nil {
+            return .none
+        }
+
+        var nextEndDate: Date?
+
+        do {
+            nextEndDate = try self.nextEndDate()
+        } catch {
+            switch error {
+            case RepeatError.invalid:
+                print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
+            case RepeatError.calculation:
+                print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
+            default:
+                print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
+            }
+        }
+
+        if nextEndDate == nil {
+            if realRepeatStart == endDate {
+                return .none
+            }
+            return .back
+        } else if realRepeatStart == endDate {
+            return .front
+        } else {
+            return .middle
+        }
+    }
+}
 
 extension Todo: Equatable {
     static func == (lhs: Self, rhs: Self) -> Bool {
@@ -458,7 +490,8 @@ extension Todo {
             subTodos: todo.subTodos,
             tags: todo.tags,
             alarms: todo.alarms,
-            createdAt: todo.createdAt
+            createdAt: todo.createdAt,
+            realRepeatStart: todo.endDate
         )
     }
 }

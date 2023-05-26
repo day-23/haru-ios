@@ -49,11 +49,6 @@ extension Schedule {
         var nextRepeatEnd: Date
         if repeatValue.first == "T" {
             let day = 60 * 60 * 24
-            let timeInterval = TimeInterval(
-                Double(
-                    repeatValue.split(separator: "T")[0]
-                ) ?? 0
-            )
 
             switch repeatOption {
             case "매주":

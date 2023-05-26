@@ -363,7 +363,7 @@ class CalendarHelper {
             } else {
                 month += 1
             }
-            var dateString = "\(year)-\(month)-\(curDate.day)"
+            let dateString = "\(year)-\(month)-\(curDate.day)"
             if let result = dateFormatter.date(from: dateString) {
                 return result
             }

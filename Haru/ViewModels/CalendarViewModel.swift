@@ -53,16 +53,11 @@ final class CalendarViewModel: ObservableObject {
     private let scheduleService = ScheduleService()
     private let categoryService = CategoryService()
     
-    init() {
-        setStartOnSunday(startOnSunday)
-        getCategoryList()
-    }
-    
     func setStartOnSunday(_ startOnSunday: Bool) {
         self.startOnSunday = startOnSunday
         
         dayList = CalendarHelper.getDays(startOnSunday)
-        
+        getCategoryList()
         getCurDateList(monthOffest, startOnSunday)
     }
     
@@ -819,6 +814,8 @@ final class CalendarViewModel: ObservableObject {
                     dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatStart)
                     dateComponents.hour = startDate.hour
                     dateComponents.minute = startDate.minute
+                    dateComponents.second = startDate.second
+                    
                     guard let repeatStart = calendar.date(from: dateComponents) else {
                         print("[Error] startDate의 hour: \(startDate.hour) \(startDate.minute) \(#fileID) \(#function)")
                         continue
@@ -826,6 +823,8 @@ final class CalendarViewModel: ObservableObject {
                     
                     dateComponents.hour = endDate.hour
                     dateComponents.minute = endDate.minute
+                    dateComponents.second = endDate.second
+                    
                     guard let repeatEnd = calendar.date(from: dateComponents) else {
                         print("[Error] endDate의 hour: \(endDate.hour) \(endDate.minute) \(#fileID) \(#function)")
                         continue
@@ -923,6 +922,7 @@ final class CalendarViewModel: ObservableObject {
                 dateComponents.hour = schedule.repeatStart.hour
                 dateComponents.minute = schedule.repeatStart.minute
                 dateComponents.second = schedule.repeatStart.second
+                
                 guard let curRepeatStart = calendar.date(from: dateComponents) else {
                     print("[Error] schedule.repeatStart가 Date 타입이 아닙니다. \(#fileID) \(#function)")
                     continue
@@ -931,6 +931,7 @@ final class CalendarViewModel: ObservableObject {
                 dateComponents.hour = schedule.repeatEnd.hour
                 dateComponents.minute = schedule.repeatEnd.minute
                 dateComponents.second = schedule.repeatEnd.second
+                
                 guard let curRepeatEnd = calendar.date(from: dateComponents) else {
                     print("[Error] schedule.repeatEnd가 Date 타입이 아닙니다. \(#fileID) \(#function)")
                     continue
@@ -998,6 +999,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
             dateComponents.second = schedule.repeatStart.second
+            
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 continue
@@ -1010,6 +1012,7 @@ final class CalendarViewModel: ObservableObject {
                     ) ?? 0
                 )
             )
+            
             dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
@@ -1194,6 +1197,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
             dateComponents.hour = todoEndDate.hour
             dateComponents.minute = todoEndDate.minute
+            dateComponents.second = todoEndDate.second
             
             guard let curEndDate = calendar.date(from: dateComponents) else {
                 print("[Error] endDate에 문제가 있습니다. \(#fileID) \(#function)")
@@ -1245,6 +1249,7 @@ final class CalendarViewModel: ObservableObject {
                     dateComponents = calendar.dateComponents([.year, .month, .day], from: curEndDate)
                     dateComponents.hour = todoEndDate.hour
                     dateComponents.minute = todoEndDate.minute
+                    dateComponents.second = todoEndDate.second
                     guard let curEndDate = calendar.date(from: dateComponents) else {
                         print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
                         continue
@@ -1289,6 +1294,7 @@ final class CalendarViewModel: ObservableObject {
                 dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
                 dateComponents.hour = todoEndDate.hour
                 dateComponents.minute = todoEndDate.minute
+                dateComponents.second = todoEndDate.second
                 guard let curEndDate = calendar.date(from: dateComponents) else {
                     print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
                     continue

@@ -100,8 +100,11 @@ struct CalendarDayDetailView: View {
                                 )
                                 .onAppear {
                                     todoAddViewModel.applyTodoData(
-                                        todo: calendarVM.todoList[row][index]
+                                        todo: calendarVM.todoList[row][index],
+                                        at: calendarVM.todoList[row][index].at
                                     )
+                                    
+                                    print(calendarVM.todoList[row][index].at)
                                 }
                             } label: {
                                 HStack(spacing: 20) {
@@ -154,7 +157,7 @@ struct CalendarDayDetailView: View {
                                     calendarVM.getRefreshProductivityList()
                                 }
                             ).addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
-                            self.content = ""
+                            content = ""
                         } label: {
                             Image("plus-button")
                                 .resizable()
