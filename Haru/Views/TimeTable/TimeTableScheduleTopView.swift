@@ -67,13 +67,7 @@ struct TimeTableScheduleTopView: View {
                         .position(
                             calcTopItemPosition(weight: schedule.weight, index: index, order: schedule.order)
                         )
-                        .onTapGesture {
-                            calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
-                            calendarViewModel.getSelectedScheduleList()
-                            withAnimation {
-                                isPopupVisible = true
-                            }
-                        }
+                        .allowsHitTesting(false)
                     }
                 }
             }
