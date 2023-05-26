@@ -1508,4 +1508,45 @@ final class CalendarViewModel: ObservableObject {
         
         return result
     }
+    
+    func repeatEveryYear(firstDate: Date, lastDate: Date, todo: Todo) -> [Todo] {
+        var result = [Todo]()
+        
+        guard let todoEndDate = todo.endDate else {
+            print("[Error] 반복 Todo는 endDate가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        guard let todoRepeatValue = todo.repeatValue else {
+            print("[Error] 반복 Todo는 repeatValue가 반드시 필요합니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let calendar = Calendar.current
+        var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
+        let maxRepeatEndDate = calendar.date(from: dateComponents)!
+
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(
+            firstDate: firstDate,
+            repeatStart: todoEndDate,
+            lastDate: lastDate,
+            repeatEnd: todo.repeatEnd ?? maxRepeatEndDate,
+            isTodo: true
+        )
+        
+        let repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
+        
+        var comp = startDate.month
+        for month in startDate.month ... (endDate.month < startDate.month ? 12 + endDate.month : endDate.month) {
+            if repeatValue[(month - 1) % 12] == 1 {
+                let dateString = "\(comp < month ? startDate.year : endDate.year)-\(month)-\(todoEndDate.day)"
+                if let curEndDate = CalendarHelper.stringToDate(dateString: dateString, curDate: todo.endDate) {
+                    result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
+                }
+            }
+            comp = month
+        }
+
+        return result
+    }
 }

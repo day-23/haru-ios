@@ -441,4 +441,23 @@ class CalendarHelper {
             }
         }
     }
+
+    // 포맷은 yyyy-MM-dd로
+    class func stringToDate(dateString: String, curDate: Date? = nil) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        if let date = dateFormatter.date(from: dateString) {
+            if let curDate {
+                var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+                dateComponents.hour = curDate.hour
+                dateComponents.minute = curDate.minute
+                dateComponents.second = curDate.second
+                return calendar.date(from: dateComponents)
+            }
+            return date
+        } else {
+            return nil
+        }
+    }
 }

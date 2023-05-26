@@ -124,7 +124,7 @@ extension Schedule {
 }
 
 extension Schedule {
-    // pivotDate는 다음 repeatStart를 구하고 싶은 현재 repeatStart
+    // curRepeatStart의 다음 repeatStart를 구하는 함수
     func nextRepeatStartDate(curRepeatStart: Date) throws -> Date {
         guard let repeatOption,
               let repeatValue
@@ -142,12 +142,14 @@ extension Schedule {
         switch repeatOption {
         case RepeatOption.everyDay.rawValue:
             break
+
         case RepeatOption.everyWeek.rawValue:
             var index = (calendar.component(.weekday, from: curRepeatStart)) % 7
             while pattern[index] == false {
                 nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
                 index = (index + 1) % 7
             }
+
         case RepeatOption.everySecondWeek.rawValue:
             var index = (calendar.component(.weekday, from: curRepeatStart)) % 7
             if index == 0 {
@@ -161,12 +163,14 @@ extension Schedule {
                     nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
                 }
             }
+
         case RepeatOption.everyMonth.rawValue:
             var index = nextRepeatStart.day - 1
             while pattern[index] == false {
                 nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
                 index = nextRepeatStart.day - 1
             }
+
         case RepeatOption.everyYear.rawValue:
             var index = curRepeatStart.month % 12
             nextRepeatStart = CalendarHelper.nextMonthDate(curDate: curRepeatStart)
@@ -237,6 +241,14 @@ extension Schedule {
             while pattern[index] == false {
                 prevRepeatEnd = prevRepeatEnd.addingTimeInterval(TimeInterval(-day))
                 index = prevRepeatEnd.day - 1
+            }
+
+        case RepeatOption.everyYear.rawValue:
+            prevRepeatEnd = CalendarHelper.prevMonthDate(curDate: curRepeatEnd)
+            var index = prevRepeatEnd.month - 1
+            while pattern[index] == false {
+                prevRepeatEnd = CalendarHelper.prevMonthDate(curDate: prevRepeatEnd)
+                index = prevRepeatEnd.month - 1
             }
 
         default:

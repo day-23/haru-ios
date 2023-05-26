@@ -424,7 +424,7 @@ struct ScheduleFormView: View {
         }
         
         let deleteAfterButton: ActionSheet.Button = .destructive(Text("이 일정부터 삭제")) {
-            print("이 일정부터 삭제")
+            scheduleFormVM.deleteTargetSchedule(isAfter: true)
         }
         
         let deleteAllButton: ActionSheet.Button = .destructive(

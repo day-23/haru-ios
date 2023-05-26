@@ -734,9 +734,10 @@ final class ScheduleFormViewModel: ObservableObject {
     /**
      * 반복 일정 하나만 삭제하기
      */
-    func deleteTargetSchedule() {
+    func deleteTargetSchedule(isAfter: Bool = false) {
         // front 호출
-        if tmpRepeatStart == realRepeatStart {
+        if oriSchedule?.at == .front || at == .front {
+            let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
             scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
@@ -745,7 +746,11 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if tmpRepeatEnd >= realRepeatEnd {
+        } else if isAfter ||
+            oriSchedule?.at == .back ||
+            at == .back
+        {
+            let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
             scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
                 case .success:
@@ -754,8 +759,21 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else {
+        } else if oriSchedule?.at == .middle ||
+            at == .middle
+        {
+            let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: repeatStart)
             scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId, removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
+                switch result {
+                case .success:
+                    self.successAction()
+                case .failure(let failure):
+                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                }
+            }
+        } else {
+            let schedule = createSchedule()
+            scheduleService.deleteSchedule(scheduleId: scheduleId) { result in
                 switch result {
                 case .success:
                     self.successAction()
