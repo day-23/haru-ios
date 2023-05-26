@@ -476,7 +476,7 @@ struct ScheduleFormView: View {
                 (scheduleFormVM.tmpIsSelectedRepeatEnd &&
                     scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd)
             {
-                if scheduleFormVM.oriSchedule?.at == .front {
+                if scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.oriSchedule?.at == RepeatAt.none {
                     return ActionSheet(title: title,
                                        message: nil,
                                        buttons: [editAllButton, cancleButton])
@@ -488,7 +488,7 @@ struct ScheduleFormView: View {
             } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption.rawValue ||
                 scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
-                if scheduleFormVM.oriSchedule?.at == .front {
+                if scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.oriSchedule?.at == RepeatAt.none {
                     return ActionSheet(title: title,
                                        message: nil,
                                        buttons: [editAllButton, cancleButton])
@@ -502,6 +502,10 @@ struct ScheduleFormView: View {
                     return ActionSheet(title: title,
                                        message: nil,
                                        buttons: [editButton, editAllButton, cancleButton])
+                } else if scheduleFormVM.oriSchedule?.at == RepeatAt.none {
+                    return ActionSheet(title: title,
+                                       message: nil,
+                                       buttons: [editAllButton, cancleButton])
                 } else {
                     return ActionSheet(title: title,
                                        message: nil,

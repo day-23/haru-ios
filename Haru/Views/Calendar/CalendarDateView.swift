@@ -87,7 +87,7 @@ struct CalendarDateView: View {
                         } // HStack
                         
                         TabView(selection: $calendarVM.monthOffest) {
-                            ForEach(-10 ... 10, id: \.self) { _ in
+                            ForEach(-10 ... 100, id: \.self) { _ in
                                 GeometryReader { proxy in
                                     
                                     let longPress = LongPressGesture(minimumDuration: 0.3)

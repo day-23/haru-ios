@@ -39,7 +39,7 @@ struct CalendarWeekView: View {
                                     productivityList: $calendarVM.viewProductivityList[week][order],
                                     cellWidth: cellWidth,
                                     month: calendarVM.dateList.isEmpty ?
-                                    Date().month : calendarVM.dateList[10].date.month
+                                        Date().month : calendarVM.dateList[10].date.month
                                 )
                             }
                             moreText(week: week, dateColumns: dateColumns)

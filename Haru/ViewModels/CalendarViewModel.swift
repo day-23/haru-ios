@@ -32,18 +32,7 @@ final class CalendarViewModel: ObservableObject {
 
     @Published var dateList: [DateValue] = [] // 달력에 표시할 날짜들
     
-    @Published var numberOfWeeks: Int = 0 {
-        didSet {
-            let deviceSize = UIScreen.main.bounds.size
-            if deviceSize.height < 800 {
-                maxOrder = numberOfWeeks < 6 ? 2 : 1
-            } else if deviceSize.height < 920 {
-                maxOrder = numberOfWeeks < 6 ? 3 : 2
-            } else {
-                maxOrder = numberOfWeeks < 6 ? 4 : 3
-            }
-        }
-    } // 달력에 표시된 주차
+    @Published var numberOfWeeks: Int = 0 // 달력에 표시된 주차
     
     var maxOrder: Int = 0
     
@@ -80,15 +69,24 @@ final class CalendarViewModel: ObservableObject {
     func getCurDateList(_ monthOffset: Int, _ startOnSunday: Bool) {
         dateList = CalendarHelper.extractDate(monthOffset, startOnSunday)
         
-        numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+        let nOW = CalendarHelper.numberOfWeeksInMonth(dateList.count)
+        let deviceSize = UIScreen.main.bounds.size
+        if deviceSize.height < 800 {
+            maxOrder = nOW < 6 ? 2 : 1
+        } else if deviceSize.height < 920 {
+            maxOrder = nOW < 6 ? 3 : 2
+        } else {
+            maxOrder = nOW < 6 ? 4 : 3
+        }
         getCurMonthSchList(dateList)
+        numberOfWeeks = nOW
     }
 
     // MARK: 달력에 해당하는 월에 맞는 스케줄 + 할일 표시해주기 위한 함수
 
     func getCurMonthSchList(_ dateList: [DateValue]) {
         productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
-        viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: maxOrder), count: numberOfWeeks)
+        viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: maxOrder), count: CalendarHelper.numberOfWeeksInMonth(dateList.count))
         
         guard let firstDate = dateList.first?.date, let startDate = Calendar.current.date(byAdding: .day, value: -1, to: firstDate) else { return }
         guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
@@ -754,11 +752,13 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
 
             var nextDateComp = dateComponents
             nextDateComp.day! += 1
             nextDateComp.hour = schedule.repeatStart.hour
             nextDateComp.minute = schedule.repeatStart.minute
+            nextDateComp.second = schedule.repeatStart.second
             if let nextRepStart = calendar.date(from: nextDateComp) {
                 nextRepeatStart = nextRepStart
             }
@@ -922,6 +922,7 @@ final class CalendarViewModel: ObservableObject {
                 dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
                 dateComponents.hour = schedule.repeatStart.hour
                 dateComponents.minute = schedule.repeatStart.minute
+                dateComponents.second = schedule.repeatStart.second
                 guard let curRepeatStart = calendar.date(from: dateComponents) else {
                     print("[Error] schedule.repeatStart가 Date 타입이 아닙니다. \(#fileID) \(#function)")
                     continue
@@ -929,6 +930,7 @@ final class CalendarViewModel: ObservableObject {
                 
                 dateComponents.hour = schedule.repeatEnd.hour
                 dateComponents.minute = schedule.repeatEnd.minute
+                dateComponents.second = schedule.repeatEnd.second
                 guard let curRepeatEnd = calendar.date(from: dateComponents) else {
                     print("[Error] schedule.repeatEnd가 Date 타입이 아닙니다. \(#fileID) \(#function)")
                     continue
@@ -995,6 +997,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: pivotRepStart)
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 continue
@@ -1010,6 +1013,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
             
             guard let repeatEnd = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
@@ -1056,6 +1060,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date1)
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 return []
@@ -1071,6 +1076,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
             result.append(
                 Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd)
             )
@@ -1084,6 +1090,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date2)
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 return []
@@ -1099,6 +1106,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
             result.append(
                 Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd)
             )
@@ -1110,6 +1118,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date3)
             dateComponents.hour = schedule.repeatStart.hour
             dateComponents.minute = schedule.repeatStart.minute
+            dateComponents.second = schedule.repeatStart.second
             guard let repeatStart = calendar.date(from: dateComponents) else {
                 print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 return []
@@ -1125,6 +1134,7 @@ final class CalendarViewModel: ObservableObject {
             dateComponents = calendar.dateComponents([.year, .month, .day], from: repeatEnd)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
+            dateComponents.second = schedule.repeatEnd.second
             result.append(
                 Schedule.createRepeatSchedule(schedule: schedule, repeatStart: repeatStart, repeatEnd: repeatEnd)
             )
