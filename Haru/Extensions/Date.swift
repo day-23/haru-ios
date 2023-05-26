@@ -161,7 +161,7 @@ public extension Date {
             roundedMinutes = minutes + (5 - minutesRemainder)
         }
         
-        let roundedDate = calendar.date(bySetting: .minute, value: roundedMinutes, of: self)!
+        let roundedDate = calendar.date(bySetting: .minute, value: roundedMinutes, of: self) ?? Date()
         return roundedDate
     }
 }

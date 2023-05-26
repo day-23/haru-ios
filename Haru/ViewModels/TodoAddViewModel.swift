@@ -14,6 +14,7 @@ final class TodoAddViewModel: ObservableObject {
     private let todoState: TodoState
     var addAction: (_ todoId: String) -> Void
     var updateAction: (_ todoId: String) -> Void
+    var deleteAction: (_ todoId: String) -> Void
     var mode: TodoAddMode
     var todo: Todo?
     var at: RepeatAt = .none
@@ -70,8 +71,8 @@ final class TodoAddViewModel: ObservableObject {
     @Published var buttonDisabledList: [Bool] = Array(repeating: false, count: 12)
     @Published var isSelectedEndDate: Bool = false {
         didSet {
-            if !isSelectedEndDate
-                && isSelectedRepeat
+            if !isSelectedEndDate,
+               isSelectedRepeat
             {
                 isSelectedRepeat = false
             }
@@ -93,8 +94,8 @@ final class TodoAddViewModel: ObservableObject {
     @Published var repeatOption: RepeatOption = .everyDay
     @Published var isSelectedRepeat: Bool = false {
         didSet {
-            if isSelectedRepeat
-                && !isSelectedEndDate
+            if isSelectedRepeat,
+               !isSelectedEndDate
             {
                 isSelectedEndDate = true
             }
@@ -243,12 +244,12 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     var selectedRepeatEnd: Date? {
-        if isSelectedRepeat && isSelectedRepeatEnd { return repeatEnd }
+        if isSelectedRepeat, isSelectedRepeatEnd { return repeatEnd }
         return nil
     }
 
     var repeatValue: String? {
-        if isSelectedEndDate && isSelectedRepeat {
+        if isSelectedEndDate, isSelectedRepeat {
             var value: [Day] = []
             switch repeatOption {
             case .everyDay:
@@ -280,15 +281,15 @@ final class TodoAddViewModel: ObservableObject {
                     return true
                 }
             case .everyWeek, .everySecondWeek:
-                if repeatWeek.filter({ $0.isClicked }).isEmpty {
+                if repeatWeek.filter(\.isClicked).isEmpty {
                     return true
                 }
             case .everyMonth:
-                if repeatMonth.filter({ $0.isClicked }).isEmpty {
+                if repeatMonth.filter(\.isClicked).isEmpty {
                     return true
                 }
             case .everyYear:
-                if repeatYear.filter({ $0.isClicked }).isEmpty {
+                if repeatYear.filter(\.isClicked).isEmpty {
                     return true
                 }
             }
@@ -361,8 +362,8 @@ final class TodoAddViewModel: ObservableObject {
 
         let formatter: DateFormatter = {
             let formatter = DateFormatter()
-            if isAllDay == true
-                && isAllDay == todo.isAllDay
+            if isAllDay == true,
+               isAllDay == todo.isAllDay
             {
                 formatter.dateFormat = "yyyyMMddhhmm"
             } else {
@@ -404,7 +405,7 @@ final class TodoAddViewModel: ObservableObject {
         }
 
         // FIXME: alarm 비교하는 코드 추가 필요
-        return (todo.content == content
+        return todo.content == content
             && todo.flag == flag
             && todo.subTodos.elementsEqual(subTodoList, by: { lhs, rhs in
                 lhs.id == rhs.id
@@ -416,25 +417,27 @@ final class TodoAddViewModel: ObservableObject {
             && isPreviousAlarmEqual
             && isPreviousEndDateEqual
             && isPreviousRepeatStateEqual
-            && todo.memo == memo)
+            && todo.memo == memo
     }
 
     init(
         todoState: TodoState,
         mode: TodoAddMode = .add,
         addAction: @escaping (_ todoId: String) -> Void,
-        updateAction: @escaping (_ todoId: String) -> Void
+        updateAction: @escaping (_ todoId: String) -> Void,
+        deleteAction: @escaping (_ todoId: String) -> Void = { _ in }
     ) {
         self.todoState = todoState
         self.mode = mode
         self.addAction = addAction
         self.updateAction = updateAction
+        self.deleteAction = deleteAction
     }
 
     // MARK: - Create
 
     private func createTodoData() -> Request.Todo {
-        return Request.Todo(
+        Request.Todo(
             content: content,
             memo: memo,
             todayTodo: isTodayTodo,
@@ -451,15 +454,15 @@ final class TodoAddViewModel: ObservableObject {
             repeatEnd: (!isSelectedEndDate || !isSelectedRepeat)
                 ? nil
                 : selectedRepeatEnd,
-            tags: tagList.map { $0.content },
+            tags: tagList.map(\.content),
             subTodos: subTodoList
                 .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-                .map { $0.content },
+                .map(\.content),
             subTodosCompleted: mode == .add
                 ? nil
                 : (subTodoList.isEmpty
                     ? []
-                    : subTodoList.map { $0.completed })
+                    : subTodoList.map(\.completed))
         )
     }
 
@@ -617,8 +620,8 @@ final class TodoAddViewModel: ObservableObject {
 
     func onChangeTag(_: String) {
         let trimTag = tag.trimmingCharacters(in: .whitespaces)
-        if !trimTag.isEmpty
-            && tag[tag.index(tag.endIndex, offsetBy: -1)] == " "
+        if !trimTag.isEmpty,
+           tag[tag.index(tag.endIndex, offsetBy: -1)] == " "
         {
             if tagList.filter({ $0.content == trimTag }).isEmpty {
                 tagList.append(Tag(id: UUID().uuidString, content: trimTag))
@@ -651,7 +654,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func initRepeatWeek(todo: Todo? = nil) {
-        if let todo = todo {
+        if let todo {
             if todo.repeatOption != RepeatOption.everyWeek.rawValue ||
                 todo.repeatOption != RepeatOption.everyWeek.rawValue
             {
@@ -677,7 +680,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func initRepeatMonth(todo: Todo? = nil) {
-        if let todo = todo {
+        if let todo {
             if todo.repeatOption != RepeatOption.everyMonth.rawValue {
                 return
             }
@@ -701,7 +704,7 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func initRepeatYear(todo: Todo? = nil) {
-        if let todo = todo {
+        if let todo {
             if todo.repeatOption != RepeatOption.everyYear.rawValue {
                 return
             }
@@ -784,6 +787,7 @@ final class TodoAddViewModel: ObservableObject {
         todoState.deleteTodo(todoId: todo.id) { result in
             switch result {
             case .success:
+                self.deleteAction(todo.id)
                 completion(.success(true))
             case let .failure(failure):
                 completion(.failure(failure))
@@ -808,6 +812,7 @@ final class TodoAddViewModel: ObservableObject {
                     ) { result in
                         switch result {
                         case .success:
+                            self.deleteAction(todo.id)
                             completion(.success(true))
                         case let .failure(error):
                             completion(.failure(error))
@@ -823,6 +828,7 @@ final class TodoAddViewModel: ObservableObject {
                 ) { result in
                     switch result {
                     case .success:
+                        self.deleteAction(todo.id)
                         completion(.success(true))
                     case let .failure(error):
                         completion(.failure(error))
@@ -853,6 +859,7 @@ final class TodoAddViewModel: ObservableObject {
                 ) { result in
                     switch result {
                     case .success:
+                        self.deleteAction(todo.id)
                         completion(.success(true))
                     case let .failure(error):
                         completion(.failure(error))

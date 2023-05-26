@@ -20,11 +20,13 @@ struct CalendarDayView: View {
     @State var prevPageIndex: Int = 15
 
     var body: some View {
-        Pager(page: page, data: self.data.indices, id: \.self) { index in
+        Pager(page: page, data: data.indices, id: \.self) { index in
             CalendarDayDetailView(
                 calendarVM: calendarViewModel,
                 todoAddViewModel: TodoAddViewModel(todoState: todoState, addAction: { todoId in
                 }, updateAction: { todoId in
+                    calendarViewModel.getRefreshProductivityList()
+                }, deleteAction: { todoId in
                     calendarViewModel.getRefreshProductivityList()
                 }),
                 row: index
@@ -45,26 +47,26 @@ struct CalendarDayView: View {
             }
 
             if pageIndex == data.count - 5 {
-                guard let last = self.data.last else { return }
-                self.data.append(contentsOf: last + 1 ... last + 5)
-                self.data.removeFirst(5)
+                guard let last = data.last else { return }
+                data.append(contentsOf: last + 1 ... last + 5)
+                data.removeFirst(5)
                 calendarViewModel.getMoreProductivityList(isRight: true, offSet: 5) {
-                    self.page.index -= 5
-                    self.prevPageIndex -= 5
+                    page.index -= 5
+                    prevPageIndex -= 5
                 }
             }
 
             if pageIndex == 4 {
-                guard let first = self.data.first else { return }
-                self.data.insert(contentsOf: first - 5 ... first - 1, at: 0)
-                self.data.removeLast(5)
+                guard let first = data.first else { return }
+                data.insert(contentsOf: first - 5 ... first - 1, at: 0)
+                data.removeLast(5)
                 calendarViewModel.getMoreProductivityList(isRight: false, offSet: 5) {
-                    self.page.index += 5
-                    self.prevPageIndex += 5
+                    page.index += 5
+                    prevPageIndex += 5
                 }
             }
 
-            prevPageIndex = self.page.index
+            prevPageIndex = page.index
             print("\(prevPageIndex)")
         }
         .frame(height: 480, alignment: .center)

@@ -67,7 +67,7 @@ struct CalendarDayDetailView: View {
                             } label: {
                                 HStack(spacing: 20) {
                                     Circle()
-                                        .fill(Color(calendarVM.scheduleList[row][index].category?.color, true))
+                                        .fill(Color(calendarVM.scheduleList[row][index].category?.color))
                                         .frame(width: 14, height: 14)
                                     VStack(alignment: .leading) {
                                         Text("\(calendarVM.scheduleList[row][index].content)")
@@ -99,8 +99,11 @@ struct CalendarDayDetailView: View {
                                 )
                                 .onAppear {
                                     todoAddViewModel.applyTodoData(
-                                        todo: calendarVM.todoList[row][index]
+                                        todo: calendarVM.todoList[row][index],
+                                        at: calendarVM.todoList[row][index].at
                                     )
+                                    
+                                    print(calendarVM.todoList[row][index].at)
                                 }
                             } label: {
                                 HStack(spacing: 20) {
@@ -153,7 +156,7 @@ struct CalendarDayDetailView: View {
                                     calendarVM.getRefreshProductivityList()
                                 }
                             ).addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
-                            self.content = ""
+                            content = ""
                         } label: {
                             Image("plus-button")
                                 .resizable()

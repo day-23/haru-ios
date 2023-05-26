@@ -238,7 +238,13 @@ class CalendarHelper {
 
     // 반복 시작일과 반복 종료일 계산
     // startDate는 repeatStart의 hour, minute를 계산해서 넘긴다
-    class func fittingStartEndDate(firstDate: Date, repeatStart: Date, lastDate: Date, repeatEnd: Date) -> (Date, Date) {
+    class func fittingStartEndDate(
+        firstDate: Date,
+        repeatStart: Date,
+        lastDate: Date,
+        repeatEnd: Date,
+        isTodo: Bool = false
+    ) -> (Date, Date) {
         var startDate = firstDate > repeatStart ? firstDate : repeatStart
         var endDate = lastDate > repeatEnd ? repeatEnd : lastDate
 
@@ -249,14 +255,22 @@ class CalendarHelper {
         // Set the hour and minute components
         dateComponents.hour = repeatStart.hour
         dateComponents.minute = repeatStart.minute
+        dateComponents.second = repeatStart.second
 
         startDate = calendar.date(from: dateComponents) ?? Date()
 
         dateComponents = calendar.dateComponents([.year, .month, .day], from: endDate)
 
         // Set the hour and minute components
-        dateComponents.hour = repeatEnd.hour
-        dateComponents.minute = repeatEnd.minute
+        if isTodo {
+            dateComponents.hour = repeatStart.hour
+            dateComponents.minute = repeatStart.minute
+            dateComponents.second = repeatStart.second
+        } else {
+            dateComponents.hour = repeatEnd.hour
+            dateComponents.minute = repeatEnd.minute
+            dateComponents.second = repeatEnd.second
+        }
 
         endDate = calendar.date(from: dateComponents) ?? Date()
 
@@ -284,8 +298,6 @@ class CalendarHelper {
         var date1 = date1
         var date2 = date2
 
-        print(date1)
-        print(date2)
         var dayOfWeek1 = calendar.component(.weekday, from: date1)
         while dayOfWeek1 > 1 {
             date1 = date1.addingTimeInterval(TimeInterval(-day))
@@ -299,7 +311,153 @@ class CalendarHelper {
         }
 
         let components = calendar.dateComponents([.day], from: date1, to: date2)
-        print(components.day! / 7)
         return components.day! / 7
+    }
+
+    // 연속이지 않은 반복 일정에서 정확한 시작 점을 찾기 위해 사용하는 함수
+    class func nextRepeatStartDate(
+        curDate: Date,
+        pattern: [Bool],
+        repeatOption: RepeatOption
+    ) -> Date {
+        let day = 60 * 60 * 24
+        let calendar = Calendar.current
+
+        var nextRepeatStart: Date = curDate // curDate가 이미 하루를 더한 값임
+
+        switch repeatOption {
+        case .everyDay:
+            break
+        case .everyWeek:
+            var index = (calendar.component(.weekday, from: curDate)) - 1
+            while pattern[index] == false {
+                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
+                index = (index + 1) % 7
+            }
+        case .everySecondWeek:
+            var index = (calendar.component(.weekday, from: curDate)) - 1
+            if index == 0 {
+                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
+            }
+            while pattern[index] == false {
+                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
+                index = (index + 1) % 7
+
+                if index == 0 {
+                    nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
+                }
+            }
+        case .everyMonth:
+            var index = nextRepeatStart.day - 1
+            while pattern[index] == false {
+                nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
+                index = nextRepeatStart.day - 1
+            }
+        case .everyYear:
+            var index = nextRepeatStart.month - 1
+            while pattern[index] == false {
+                nextRepeatStart = nextMonthDate(curDate: nextRepeatStart)
+                index = nextRepeatStart.month - 1
+            }
+        }
+
+        return nextRepeatStart
+    }
+
+    // 현재 날짜의 이전 달 ex) 5/5 -> 4/5, 7/31 -> 5/31
+    class func prevMonthDate(curDate: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var year = curDate.year
+        var month = curDate.month
+        while true {
+            if month - 1 == 0 {
+                month = 12
+                year -= 1
+            } else {
+                month -= 1
+            }
+            let dateString = "\(year)-\(month)-\(curDate.day)"
+            if let date = dateFormatter.date(from: dateString) {
+                var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+                dateComponents.hour = curDate.hour
+                dateComponents.minute = curDate.minute
+                dateComponents.second = curDate.second
+                return calendar.date(from: dateComponents) ?? Date()
+            }
+        }
+    }
+
+    class func prevYearDate(curDate: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var year = curDate.year
+        while true {
+            year -= 1
+            let dateString = "\(year)-\(curDate.month)-\(curDate.day)"
+            if let result = dateFormatter.date(from: dateString) {
+                return result
+            }
+        }
+    }
+
+    // 현재 날짜의 다음 달 ex) 5/5 -> 6/5, 8/31 -> 10/31
+    class func nextMonthDate(curDate: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var year = curDate.year
+        var month = curDate.month
+        while true {
+            if month + 1 > 12 {
+                month = 1
+                year += 1
+            } else {
+                month += 1
+            }
+            let dateString = "\(year)-\(month)-\(curDate.day)"
+            if let date = dateFormatter.date(from: dateString) {
+                var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+                dateComponents.hour = curDate.hour
+                dateComponents.minute = curDate.minute
+                dateComponents.second = curDate.second
+                return calendar.date(from: dateComponents) ?? Date()
+            }
+        }
+    }
+
+    class func nextYearDate(curDate: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        var year = curDate.year
+        while true {
+            year += 1
+            let dateString = "\(year)-\(curDate.month)-\(curDate.day)"
+            if let result = dateFormatter.date(from: dateString) {
+                return result
+            }
+        }
+    }
+
+    // 포맷은 yyyy-MM-dd로
+    class func stringToDate(dateString: String, curDate: Date? = nil) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        if let date = dateFormatter.date(from: dateString) {
+            if let curDate {
+                var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+                dateComponents.hour = curDate.hour
+                dateComponents.minute = curDate.minute
+                dateComponents.second = curDate.second
+                return calendar.date(from: dateComponents)
+            }
+            return date
+        } else {
+            return nil
+        }
     }
 }

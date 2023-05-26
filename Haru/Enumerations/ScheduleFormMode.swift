@@ -11,3 +11,8 @@ enum ScheduleFormMode {
     case add
     case edit
 }
+
+enum CategoryFormMode {
+    case add
+    case edit
+}

@@ -40,6 +40,55 @@ struct Schedule: Identifiable, Codable {
 
 // MARK: - extension
 
+extension Schedule {
+    var at: RepeatAt {
+        guard let repeatValue, let repeatOption else {
+            return .none
+        }
+
+        var nextRepeatEnd: Date
+        if repeatValue.first == "T" {
+            let day = 60 * 60 * 24
+
+            switch repeatOption {
+            case "매주":
+                nextRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(day * 7))
+            case "격주":
+                nextRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(day * 7 * 2))
+            case "매달":
+                nextRepeatEnd = CalendarHelper.nextMonthDate(curDate: repeatEnd)
+            case "매년":
+                nextRepeatEnd = CalendarHelper.nextYearDate(curDate: repeatEnd)
+            default:
+                return .none
+            }
+        } else {
+            let calendar = Calendar.current
+            var dateComponents: DateComponents
+
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: nextRepeatStart ?? repeatStart)
+            dateComponents.hour = repeatEnd.hour
+            dateComponents.minute = repeatEnd.minute
+
+            nextRepeatEnd = calendar.date(from: dateComponents) ?? repeatEnd
+        }
+
+        if repeatEnd <= realRepeatEnd ?? CalendarHelper.getInfiniteDate(),
+           realRepeatEnd ?? CalendarHelper.getInfiniteDate() < nextRepeatEnd
+        {
+            if realRepeatStart == repeatStart {
+                return .none
+            }
+
+            return .back
+        } else if realRepeatStart == repeatStart {
+            return .front
+        } else {
+            return .middle
+        }
+    }
+}
+
 extension Schedule: Productivity, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
         lhs.id == rhs.id && lhs.repeatStart == rhs.repeatStart
@@ -47,7 +96,13 @@ extension Schedule: Productivity, Equatable {
 }
 
 extension Schedule {
-    static func createRepeatSchedule(schedule: Schedule, repeatStart: Date, repeatEnd: Date, prevRepeatEnd: Date? = nil, nextRepeatStart: Date? = nil) -> Schedule {
+    static func createRepeatSchedule(
+        schedule: Schedule,
+        repeatStart: Date,
+        repeatEnd: Date,
+        prevRepeatEnd: Date? = nil,
+        nextRepeatStart: Date? = nil
+    ) -> Schedule {
         Schedule(
             id: schedule.id,
             content: schedule.content,
@@ -69,7 +124,7 @@ extension Schedule {
 }
 
 extension Schedule {
-    // pivotDate는 다음 repeatStart를 구하고 싶은 현재 repeatStart
+    // curRepeatStart의 다음 repeatStart를 구하는 함수
     func nextRepeatStartDate(curRepeatStart: Date) throws -> Date {
         guard let repeatOption,
               let repeatValue
@@ -87,12 +142,14 @@ extension Schedule {
         switch repeatOption {
         case RepeatOption.everyDay.rawValue:
             break
+
         case RepeatOption.everyWeek.rawValue:
             var index = (calendar.component(.weekday, from: curRepeatStart)) % 7
             while pattern[index] == false {
                 nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
                 index = (index + 1) % 7
             }
+
         case RepeatOption.everySecondWeek.rawValue:
             var index = (calendar.component(.weekday, from: curRepeatStart)) % 7
             if index == 0 {
@@ -106,11 +163,20 @@ extension Schedule {
                     nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
                 }
             }
+
         case RepeatOption.everyMonth.rawValue:
             var index = nextRepeatStart.day - 1
             while pattern[index] == false {
                 nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
                 index = nextRepeatStart.day - 1
+            }
+
+        case RepeatOption.everyYear.rawValue:
+            var index = curRepeatStart.month % 12
+            nextRepeatStart = CalendarHelper.nextMonthDate(curDate: curRepeatStart)
+            while pattern[index] == false {
+                nextRepeatStart = CalendarHelper.nextMonthDate(curDate: nextRepeatStart)
+                index = nextRepeatStart.month - 1
             }
         default:
             throw RepeatError.invalid
@@ -175,6 +241,14 @@ extension Schedule {
             while pattern[index] == false {
                 prevRepeatEnd = prevRepeatEnd.addingTimeInterval(TimeInterval(-day))
                 index = prevRepeatEnd.day - 1
+            }
+
+        case RepeatOption.everyYear.rawValue:
+            prevRepeatEnd = CalendarHelper.prevMonthDate(curDate: curRepeatEnd)
+            var index = prevRepeatEnd.month - 1
+            while pattern[index] == false {
+                prevRepeatEnd = CalendarHelper.prevMonthDate(curDate: prevRepeatEnd)
+                index = prevRepeatEnd.month - 1
             }
 
         default:
