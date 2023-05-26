@@ -47,7 +47,12 @@ final class CalendarViewModel: ObservableObject {
     
     @Published var allCategoryOff: Bool = false // 카테고리 달력에서 안보이게 하기
     @Published var allTodoOff: Bool = false // 할일 달력에서 안보이게 하기
-    
+    @Published var nonCompTodoOff: Bool = false // 미완료 할일 달력에서 안보이게 하기
+    @Published var compTodoOff: Bool = false // 완료 할일 달력에서 안보이게 하기
+    var allOff: Bool {
+        allCategoryOff && allTodoOff
+    }
+
     // MARK: - Service
 
     private let scheduleService = ScheduleService()
@@ -648,7 +653,10 @@ final class CalendarViewModel: ObservableObject {
         _ prodCnt: Int,
         result: inout [[Int: [Productivity]]]
     ) {
-        let todoList = todoList.filter { $0.endDate != nil }
+        let todoList = todoList.filter {
+            $0.endDate != nil &&
+                ($0.completed == true ? !compTodoOff : !nonCompTodoOff)
+        }
         var todoIdx = 0, dateIdx = 0
 
         var maxKey: Int
@@ -970,14 +978,12 @@ final class CalendarViewModel: ObservableObject {
     func repeatEveryYear(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
         var result = [Schedule]()
         
-        guard let repeatValue = schedule.repeatValue else {
+        guard schedule.repeatValue != nil else {
             print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
             return result
         }
         
         let (_, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
-        
-        let day = 60 * 60 * 24
         
         var prevRepeatEnd = schedule.repeatStart
         var checkDate = schedule.repeatStart
@@ -1355,7 +1361,7 @@ final class CalendarViewModel: ObservableObject {
         case "매달":
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
         case "매년":
-            return [Todo]()
+            return repeatEveryYear(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
         default:
             return [Todo]()
         }
@@ -1523,7 +1529,7 @@ final class CalendarViewModel: ObservableObject {
         }
         
         let calendar = Calendar.current
-        var dateComponents = DateComponents(year: 2200, month: 1, day: 1)
+        let dateComponents = DateComponents(year: 2200, month: 1, day: 1)
         let maxRepeatEndDate = calendar.date(from: dateComponents)!
 
         let (startDate, endDate) = CalendarHelper.fittingStartEndDate(

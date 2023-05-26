@@ -67,7 +67,7 @@ struct CalendarDayDetailView: View {
                             } label: {
                                 HStack(spacing: 20) {
                                     Circle()
-                                        .fill(Color(calendarVM.scheduleList[row][index].category?.color, true))
+                                        .fill(Color(calendarVM.scheduleList[row][index].category?.color))
                                         .frame(width: 14, height: 14)
                                     VStack(alignment: .leading) {
                                         Text("\(calendarVM.scheduleList[row][index].content)")

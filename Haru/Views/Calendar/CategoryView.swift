@@ -28,11 +28,12 @@ struct CategoryView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Group {
                         ForEach(Array(scheduleFormVM.categoryList.enumerated()),
-                                id: \.offset) { index, category in
+                                id: \.offset)
+                        { index, category in
                             HStack(spacing: 20) {
                                 Circle()
-                                    .strokeBorder(Color(scheduleFormVM.categoryList[index].color, true))
-                                    .background(Circle().foregroundColor(selectedIdx == index ? Color(scheduleFormVM.categoryList[index].color, true) : .white))
+                                    .strokeBorder(Color(scheduleFormVM.categoryList[index].color))
+                                    .background(Circle().foregroundColor(selectedIdx == index ? Color(scheduleFormVM.categoryList[index].color) : .white))
                                     .frame(width: 20, height: 20)
 
                                 Text("\(category.content)")
@@ -42,7 +43,7 @@ struct CategoryView: View {
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                self.selectedIdx = index
+                                selectedIdx = index
                             }
                         }
                     }

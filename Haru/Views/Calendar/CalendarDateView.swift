@@ -15,7 +15,7 @@ struct CalendarDateView: View {
 
     @StateObject var calendarVM: CalendarViewModel
     
-    @State var width = UIScreen.main.bounds.width - 33
+    @State var width = UIScreen.main.bounds.width - 50
     @State var x = UIScreen.main.bounds.width
 
     var body: some View {
@@ -232,6 +232,11 @@ struct CalendarDateView: View {
         }
         .onChange(of: calendarVM.startOnSunday) { newValue in
             calendarVM.setStartOnSunday(newValue)
+        }
+        .onChange(of: isOptionModalVisible) { newValue in
+            if newValue == false {
+                calendarVM.setAllCategoryList()
+            }
         }
     }
 }

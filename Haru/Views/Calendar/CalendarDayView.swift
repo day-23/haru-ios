@@ -26,6 +26,8 @@ struct CalendarDayView: View {
                 todoAddViewModel: TodoAddViewModel(todoState: todoState, addAction: { todoId in
                 }, updateAction: { todoId in
                     calendarViewModel.getRefreshProductivityList()
+                }, deleteAction: { todoId in
+                    calendarViewModel.getRefreshProductivityList()
                 }),
                 row: index
             )

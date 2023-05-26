@@ -36,7 +36,7 @@ extension Color {
         )
     }
 
-    init(_ hexString: String?, _ isCategory: Bool, opacity: Double = 1) {
+    init(_ hexString: String?, opacity: Double = 1) {
         if let hexString, let hex = Int(hexString.suffix(6), radix: 16) {
             self.init(
                 red: CGFloat((hex >> 16) & 0xFF) / 255.0,

@@ -8,24 +8,20 @@
 import SwiftUI
 
 struct SlideOptionView: View {
-    
     var calendarVM: CalendarViewModel
     
     var body: some View {
-        VStack(spacing:0) {
-            Spacer(minLength: 0)
+        VStack(spacing: 0) {
             HStack(spacing: 0) {
                 Spacer(minLength: 0)
                 
                 CalendarOptionView(calendarVM: calendarVM)
-                    .frame(width: UIScreen.main.bounds.width - 33, height: UIScreen.main.bounds.height - 200)
+                    .frame(width: UIScreen.main.bounds.width - 80, height: UIScreen.main.bounds.height - 200)
                     .background(.white)
                     .cornerRadius(10, corners: [.topLeft, .bottomLeft])
-                
             }
             Spacer(minLength: 0)
         }
-        
     }
 }
 

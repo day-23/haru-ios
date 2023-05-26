@@ -74,7 +74,7 @@ struct ScheduleFormView: View {
                         HStack {
                             if let selectIndex = scheduleFormVM.selectionCategory {
                                 Circle()
-                                    .fill(Color(scheduleFormVM.categoryList[selectIndex].color, true))
+                                    .fill(Color(scheduleFormVM.categoryList[selectIndex].color))
                                     .padding(5)
                                     .frame(width: 28, height: 28)
                                 
