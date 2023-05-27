@@ -134,6 +134,17 @@ struct TimeTableScheduleView: View {
                         .padding(.top, 2)
                     }
                 }
+                .overlay {
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear {
+                                topViewHeight = proxy.size.height
+                            }
+                            .onChange(of: timeTableViewModel.maxRowCount) { _ in
+                                topViewHeight = proxy.size.height
+                            }
+                    }
+                }
             }.onPageChanged { index in
                 let weight = TimeInterval(60 * 60 * 24 * 7)
 
@@ -148,6 +159,8 @@ struct TimeTableScheduleView: View {
                 }
                 page.update(.new(index: 1))
             }
+            .frame(height: topViewHeight)
+            .padding(.bottom, 5)
 
             ScrollView(showsIndicators: false) {
                 LazyVGrid(
