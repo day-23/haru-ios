@@ -15,8 +15,8 @@ struct TimeTableScheduleTopView: View {
     @State private var topItemWidth: Double = 48
     private var topItemHeight: Double = 18
 
-    private var fixed: Double = 25
-    private let column = [GridItem(.fixed(25)), GridItem(.flexible(), spacing: 0),
+    private var fixed: Double = 20
+    private let column = [GridItem(.fixed(20)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0)]

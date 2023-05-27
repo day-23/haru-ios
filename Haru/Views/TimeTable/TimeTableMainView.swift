@@ -53,22 +53,21 @@ struct TimeTableMainView: View {
                     Text("\(String(timeTableViewModel.currentYear))년")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
-                        .padding(.leading, 34)
+                        .padding(.leading, 33)
                     Text("\(timeTableViewModel.currentMonth)월")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
                         .padding(.leading, 10)
+                        .padding(.trailing, 6)
 
                     Button {
                         isDateButtonClicked.toggle()
                     } label: {
-                        Image("toggle")
+                        Image("toggle-datepicker")
+                            .resizable()
                             .renderingMode(.template)
                             .foregroundColor(Color(0x191919))
-                            .rotationEffect(Angle(degrees: 90))
-                            .scaleEffect(1.25)
-                            .scaledToFit()
-                            .padding(.leading, 10)
+                            .frame(width: 28, height: 28)
                     }
                     .popover(
                         isPresented: $isDateButtonClicked,
@@ -96,16 +95,22 @@ struct TimeTableMainView: View {
                                 Circle()
                                     .stroke(.gradation1, lineWidth: 2)
                             )
-                            .padding(.trailing, 16)
+                            .padding(.trailing, 10)
                     }
 
-                    Image(isScheduleView ? "time-table-todo" : "time-table-schedule")
-                        .onTapGesture {
-                            isScheduleView.toggle()
-                        }
+                    Image(
+                        isScheduleView
+                            ? "time-table-todo"
+                            : "time-table-schedule"
+                    )
+                    .resizable()
+                    .frame(width: 28, height: 28)
+                    .onTapGesture {
+                        isScheduleView.toggle()
+                    }
                 }
                 .padding(.trailing, 20)
-                .padding(.bottom, 18)
+                .padding(.bottom, 14)
 
                 if isScheduleView {
                     TimeTableScheduleView(
@@ -113,7 +118,7 @@ struct TimeTableMainView: View {
                         calendarViewModel: _calendarViewModel,
                         isPopupVisible: $isPopupVisible
                     )
-                    .padding(.trailing, 15)
+                    .padding(.trailing, 20)
                 } else {
                     TimeTableTodoView(
                         todoAddViewModel: _todoAddViewModel,

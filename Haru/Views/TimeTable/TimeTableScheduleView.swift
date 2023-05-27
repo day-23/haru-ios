@@ -21,8 +21,8 @@ struct TimeTableScheduleView: View {
 
     private let week = ["일", "월", "화", "수", "목", "금", "토"]
 
-    private var fixed: Double = 25
-    private let column = [GridItem(.fixed(25)), GridItem(.flexible(), spacing: 0),
+    private var fixed: Double = 20
+    private let column = [GridItem(.fixed(20)), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0),
                           GridItem(.flexible(), spacing: 0), GridItem(.flexible(), spacing: 0)]
@@ -55,7 +55,7 @@ struct TimeTableScheduleView: View {
             TabView(selection: $index) {
                 ForEach($timeTableViewModel.indices, id: \.self) { _ in
                     VStack(spacing: 0) {
-                        LazyVGrid(columns: column) {
+                        LazyVGrid(columns: column, spacing: 30) {
                             Text("")
 
                             ForEach(week.indices, id: \.self) { index in
@@ -95,13 +95,14 @@ struct TimeTableScheduleView: View {
                                     }
                             }
                         }
+                        .padding(.leading, -8)
 
                         Rectangle()
                             .frame(height: 1)
-                            .padding(.leading, 24)
+                            .padding(.leading, 20)
                             .foregroundColor(Color(0xdbdbdb))
 
-                        LazyVGrid(columns: column) {
+                        LazyVGrid(columns: column, spacing: 30) {
                             Text("")
 
                             ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
@@ -135,6 +136,7 @@ struct TimeTableScheduleView: View {
                                     }
                             }
                         }
+                        .padding(.leading, -8)
 
                         if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
                             TimeTableScheduleTopView(
@@ -195,6 +197,7 @@ struct TimeTableScheduleView: View {
                                 Text("\(index / 8 + 1)")
                                     .font(.pretendard(size: 12, weight: .regular))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .offset(y: 6)
                             }
                         } else {
                             Rectangle()
