@@ -172,7 +172,7 @@ struct TimeTableScheduleView: View {
                                 Text("\(index / 8 + 1)")
                                     .font(.pretendard(size: 12, weight: .regular))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .offset(y: 6)
+                                    .offset(x: 6, y: 6)
                             }
                         } else {
                             Rectangle()
