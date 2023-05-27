@@ -235,7 +235,7 @@ struct ScheduleFormView: View {
                     }
                     
                     // 반복 설정
-                    if !scheduleFormVM.overWeek || !scheduleFormVM.overMonth {
+                    if !scheduleFormVM.overWeek {
                         Group {
                             Label {
                                 Toggle(isOn: $scheduleFormVM.isSelectedRepeat.animation(), label: {
@@ -258,8 +258,16 @@ struct ScheduleFormView: View {
                             if scheduleFormVM.isSelectedRepeat {
                                 Picker("", selection: $scheduleFormVM.repeatOption.animation()) {
                                     ForEach(getRepeatOption(), id: \.self) {
-                                        Text($0.rawValue)
-                                            .font(.pretendard(size: 14, weight: .medium))
+                                        if scheduleFormVM.overMonth,
+                                           $0.rawValue == "매달" ||
+                                           $0.rawValue == "매년"
+                                        {
+                                            Text($0.rawValue)
+                                                .font(.pretendard(size: 14, weight: .bold))
+                                        } else {
+                                            Text($0.rawValue)
+                                                .font(.pretendard(size: 14, weight: .medium))
+                                        }
                                     }
                                 }
                                 .pickerStyle(.segmented)

@@ -95,13 +95,6 @@ final class ScheduleFormViewModel: ObservableObject {
     // 시작과 끝이 달을 넘어가는 경우
     var overMonth: Bool {
         let flag = repeatStart.month != repeatEnd.month
-        
-        if flag {
-            DispatchQueue.main.async {
-                self.isSelectedRepeat = false
-            }
-        }
-        
         return flag
     }
     

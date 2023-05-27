@@ -15,6 +15,11 @@ struct CheckListView: View {
     @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
+    @FocusState private var isTextFieldFocused: Bool {
+        didSet {
+            Global.shared.isTabViewActive = isTextFieldFocused
+        }
+    }
 
     var body: some View {
         var isTagManageModalVisible: Binding<Bool> = .init {
@@ -160,7 +165,7 @@ struct CheckListView: View {
                                 .padding(.leading, 10)
                             }
                         } offsetChanged: {
-                            self.changeOffset($0)
+                            changeOffset($0)
                         }
                     } else {
                         if let tag = viewModel.selectedTag {
@@ -180,7 +185,7 @@ struct CheckListView: View {
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    self.changeOffset($0)
+                                    changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.unclassified.rawValue {
                                 ListView(checkListViewModel: viewModel) {
@@ -198,7 +203,7 @@ struct CheckListView: View {
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    self.changeOffset($0)
+                                    changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.completed.rawValue {
                                 ListView(checkListViewModel: viewModel) {
@@ -217,7 +222,7 @@ struct CheckListView: View {
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    self.changeOffset($0)
+                                    changeOffset($0)
                                 }
                             } else {
                                 // Tag 클릭시
@@ -277,7 +282,7 @@ struct CheckListView: View {
                                     }
 
                                 } offsetChanged: {
-                                    self.changeOffset($0)
+                                    changeOffset($0)
                                 }
                             }
                         }
@@ -349,6 +354,7 @@ struct CheckListView: View {
                         .cornerRadius(8)
                         .padding(.trailing, 18)
                         .padding(.bottom, 4)
+                        .focused($isTextFieldFocused)
                         .onSubmit {
                             addViewModel.addSimpleTodo()
                         }
@@ -376,17 +382,12 @@ struct CheckListView: View {
             viewModel.fetchTags()
         }
         .contentShape(Rectangle())
-        .gesture(
-            TapGesture()
-                .onEnded { _ in
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                }
-        )
+        .onAppear(perform: UIApplication.shared.addTapGestureRecognizer)
     }
 
     func changeOffset(_ value: CGPoint?) {
         if self.prevOffset == nil {
-            self.viewIsShown = true
+            viewIsShown = true
             self.prevOffset = value?.y
             return
         }
@@ -400,11 +401,11 @@ struct CheckListView: View {
 
         withAnimation(.easeInOut(duration: 0.25)) {
             if offset >= 0 {
-                self.viewIsShown = true
+                viewIsShown = true
             } else if prevOffset > offset {
-                self.viewIsShown = false
+                viewIsShown = false
             } else {
-                self.viewIsShown = true
+                viewIsShown = true
             }
             self.prevOffset = offset
         }

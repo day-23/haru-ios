@@ -36,7 +36,7 @@ struct Me: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.user = try container.decode(User.self, forKey: .user)
-        self.haruId = try container.decode(String.self, forKey: .haruId)
+        self.haruId = try container.decodeIfPresent(String.self, forKey: .haruId) ?? ""
         self.email = try container.decode(String.self, forKey: .email)
         self.socialAccountType = try container.decode(String.self, forKey: .socialAccountType)
         self.isPostBrowsingEnabled = try container.decode(Bool.self, forKey: .isPostBrowsingEnabled)
