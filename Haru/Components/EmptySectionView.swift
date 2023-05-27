@@ -13,7 +13,7 @@ struct EmptySectionView: View {
     var body: some View {
         Text(content)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .font(.pretendard(size: 14, weight: .medium))
+            .font(.pretendard(size: 14, weight: .regular))
             .foregroundColor(Color(0x000000, opacity: 0.5))
             .padding(.vertical, 14)
     }

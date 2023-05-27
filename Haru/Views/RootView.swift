@@ -95,7 +95,7 @@ struct RootView: View {
                                 if global.isTabViewActive {
                                     Spacer()
                                         .frame(height: .zero)
-                                    
+
                                     CustomTabView(selection: $selection)
                                         .overlay {
                                             if global.isFaded {

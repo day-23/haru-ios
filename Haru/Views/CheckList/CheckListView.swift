@@ -15,9 +15,10 @@ struct CheckListView: View {
     @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
+    @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
-        var isTagManageModalVisible: Binding<Bool> = .init {
+        let isTagManageModalVisible: Binding<Bool> = .init {
             Global.shared.isFaded
         } set: {
             Global.shared.isFaded = $0
@@ -349,6 +350,7 @@ struct CheckListView: View {
                         .cornerRadius(8)
                         .padding(.trailing, 18)
                         .padding(.bottom, 4)
+                        .focused($isTextFieldFocused)
                         .onSubmit {
                             addViewModel.addSimpleTodo()
                         }
@@ -374,19 +376,19 @@ struct CheckListView: View {
             viewModel.selectedTag = nil
             viewModel.fetchTodoList()
             viewModel.fetchTags()
+            UIApplication.shared.addTapGestureRecognizer()
         }
+        .onChange(of: isTextFieldFocused, perform: { value in
+            withAnimation {
+                Global.shared.isTabViewActive = !value
+            }
+        })
         .contentShape(Rectangle())
-        .gesture(
-            TapGesture()
-                .onEnded { _ in
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                }
-        )
     }
 
     func changeOffset(_ value: CGPoint?) {
         if self.prevOffset == nil {
-            self.viewIsShown = true
+            viewIsShown = true
             self.prevOffset = value?.y
             return
         }

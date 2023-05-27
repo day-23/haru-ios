@@ -167,15 +167,14 @@ struct HaruView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 HStack {
-                    Button {
-                        dismissAction.callAsFunction()
-                    } label: {
-                        Image("back-button")
-                            .frame(width: 28, height: 28)
-                    }
+                    Image("back-button")
+                        .frame(width: 28, height: 28)
 
                     Text(formatter.string(from: .now))
                         .font(.system(size: 20, weight: .bold))
+                }
+                .onTapGesture {
+                    dismissAction.callAsFunction()
                 }
             }
         }

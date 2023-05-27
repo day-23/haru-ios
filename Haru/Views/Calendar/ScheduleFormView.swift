@@ -256,7 +256,10 @@ struct ScheduleFormView: View {
                             .foregroundColor(scheduleFormVM.isSelectedRepeat ? .mainBlack : .gray2)
                             
                             if scheduleFormVM.isSelectedRepeat {
-                                Picker("", selection: $scheduleFormVM.repeatOption.animation()) {
+                                Picker(
+                                    "",
+                                    selection: $scheduleFormVM.repeatOption.animation()
+                                ) {
                                     ForEach(getRepeatOption(), id: \.self) {
                                         Text($0.rawValue)
                                             .font(.pretendard(size: 14, weight: .medium))

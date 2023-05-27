@@ -96,8 +96,9 @@ struct TimeTableScheduleView: View {
                             }
                         }
 
-                        Divider()
-                            .padding(.leading, 32)
+                        Rectangle()
+                            .frame(height: 1)
+                            .padding(.leading, 24)
                             .foregroundColor(Color(0xdbdbdb))
 
                         LazyVGrid(columns: column) {
