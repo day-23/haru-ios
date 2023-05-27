@@ -11,6 +11,7 @@ struct CategoryView: View {
     @ObservedObject var scheduleFormVM: ScheduleFormViewModel
 
     @Binding var selectedIdx: Int?
+    @Binding var showCategorySheet: Bool
 
     var body: some View {
         VStack {
@@ -44,6 +45,10 @@ struct CategoryView: View {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 selectedIdx = index
+                                Task {
+                                    try? await Task.sleep(nanoseconds: 250_000_000)
+                                    showCategorySheet = false
+                                }
                             }
                         }
                     }

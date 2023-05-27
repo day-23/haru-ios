@@ -103,4 +103,68 @@ final class CategoryService {
             }
         }
     }
+    
+    func updateCategory(
+        categoryId: String,
+        category: Request.Category,
+        completion: @escaping (Result<Category, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: Category
+        }
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        AF.request(
+            CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(categoryId)",
+            method: .patch,
+            parameters: category,
+            encoder: JSONParameterEncoder(),
+            headers: headers
+        ).responseDecodable(of: Response.self) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func deleteCategory(
+        categoryId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+        }
+        
+        struct Request: Codable {
+            let categoryIds: [String]
+        }
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        let requestBody = Request(categoryIds: [categoryId])
+        
+        AF.request(
+            CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/categories",
+            method: .delete,
+            parameters: requestBody,
+            encoder: JSONParameterEncoder(),
+            headers: headers
+        ).responseDecodable(of: Response.self) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.success))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 }
