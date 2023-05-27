@@ -82,11 +82,10 @@ struct TimeTableScheduleView: View {
                                 }
                         }
                     }
-                    .padding(.leading, -8)
 
                     Rectangle()
                         .frame(height: 1)
-                        .padding(.leading, 20)
+                        .padding(.leading, 28)
                         .foregroundColor(Color(0xdbdbdb))
 
                     LazyVGrid(columns: column, spacing: 30) {
@@ -123,7 +122,6 @@ struct TimeTableScheduleView: View {
                                 }
                         }
                     }
-                    .padding(.leading, -8)
 
                     if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
                         TimeTableScheduleTopView(
@@ -281,6 +279,7 @@ struct TimeTableScheduleView: View {
                 Spacer(minLength: 80)
             }
         }
+        .padding(.leading, -8)
     }
 }
 

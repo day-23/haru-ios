@@ -39,7 +39,7 @@ struct TimeTableScheduleTopView: View {
                 Rectangle()
                     .foregroundColor(.white)
                     .frame(
-                        height: topItemHeight * CGFloat(min(timeTableViewModel.maxRowCount, 3)) + Double(min(timeTableViewModel.maxRowCount, 3))
+                        height: topItemHeight * CGFloat(min(timeTableViewModel.maxRowCount, 3)) + 2 * Double(min(timeTableViewModel.maxRowCount, 3))
                     )
                     .background(
                         GeometryReader(content: { proxy in
