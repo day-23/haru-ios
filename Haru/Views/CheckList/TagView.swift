@@ -32,17 +32,19 @@ struct TagView: View {
                         : LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing))
             )
             .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(
-                        Gradient(
-                            colors: !disabled
-                                ? [Color(0xD2D7FF), Color(0xAAD7FF)]
-                                : [.clear]
-                        ),
-                        lineWidth: 1
-                    )
-            )
+            .overlay(content: {
+                if !isSelected {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(
+                            Gradient(
+                                colors: !disabled
+                                    ? [Color(0xD2D7FF), Color(0xAAD7FF)]
+                                    : [.clear]
+                            ),
+                            lineWidth: 1
+                        )
+                }
+            })
             .padding(.vertical, 1)
     }
 }

@@ -49,7 +49,7 @@ struct CalendarWeekView: View {
                         }
                         .frame(width: cellWidth * 7, height: cellHeight, alignment: .top)
                     }
-                    .border(width: 1, edges: [.top], color: Color(0xDBDBDB))
+                    .border(width: 1, edges: [.top], color: Color(0xdbdbdb))
                 }
             }
         } // Group

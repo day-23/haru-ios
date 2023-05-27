@@ -96,16 +96,15 @@ struct RootView: View {
                                     Spacer()
                                         .frame(height: .zero)
 
-                                    CustomTabView(
-                                        selection: $selection
-                                    )
-                                    .overlay {
-                                        if global.isFaded {
-                                            Color.black.opacity(0.4)
-                                                .edgesIgnoringSafeArea(.all)
-                                                .onTapGesture {
-                                                    withAnimation {
-                                                        global.isFaded = false
+                                    CustomTabView(selection: $selection)
+                                        .overlay {
+                                            if global.isFaded {
+                                                Color.black.opacity(0.4)
+                                                    .edgesIgnoringSafeArea(.all)
+                                                    .onTapGesture {
+                                                        withAnimation {
+                                                            global.isFaded = false
+                                                        }
                                                     }
                                                 }
                                         }

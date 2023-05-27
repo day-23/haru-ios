@@ -109,7 +109,9 @@ struct TodoAddView: View {
                                         .font(.pretendard(size: 16, weight: .regular))
                                 } icon: {
                                     Image("add-sub-todo")
+                                        .renderingMode(.template)
                                         .frame(width: 28, height: 28)
+                                        .foregroundColor(Color(0xACACAC))
                                 }
                             }
                             .padding(.leading, 14)
@@ -299,7 +301,10 @@ struct TodoAddView: View {
                         .padding(.horizontal, 20)
                         
                         if viewModel.isSelectedRepeat {
-                            Picker("", selection: $viewModel.repeatOption.animation()) {
+                            Picker(
+                                "",
+                                selection: $viewModel.repeatOption.animation()
+                            ) {
                                 ForEach(RepeatOption.allCases, id: \.self) {
                                     Text($0.rawValue)
                                         .font(.pretendard(size: 14, weight: .regular))
@@ -307,9 +312,7 @@ struct TodoAddView: View {
                             }
                             .pickerStyle(.segmented)
                             .padding(.horizontal, 55)
-                        }
-                        
-                        if viewModel.isSelectedRepeat {
+                            
                             if viewModel.repeatOption == .everyYear {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 20) {
                                     ForEach(viewModel.repeatYear.indices, id: \.self) { index in

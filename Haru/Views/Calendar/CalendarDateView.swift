@@ -36,53 +36,53 @@ struct CalendarDateView: View {
                     }
                 }
                 
-                VStack(spacing: 10) {
-                    HStack(spacing: 15) {
-                        HStack(spacing: 10) {
+                VStack(spacing: 0) {
+                    HStack(spacing: 0) {
+                        HStack(spacing: 6) {
                             Text("\(CalendarHelper.extraDate(calendarVM.monthOffest)[0])년")
                                 .font(.pretendard(size: 28, weight: .bold))
+                                .padding(.trailing, 4)
                             
                             Text("\(CalendarHelper.extraDate(calendarVM.monthOffest)[1])월")
                                 .font(.pretendard(size: 28, weight: .bold))
                             
-                            Button {
-                                print("달력 보여주기")
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .font(.system(size: 20, weight: .bold))
-                            }
-                            .tint(.gray1)
+                            Image("toggle-datepicker")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x191919))
+                                .frame(width: 28, height: 28)
                         } // HStack
                         
                         Spacer()
                         
-                        HStack(spacing: 8) {
+                        HStack(spacing: 10) {
                             Button {
                                 calendarVM.monthOffest = 0
                             } label: {
                                 Text("\(Date().day)")
-                                    .font(.pretendard(size: 14, weight: .bold))
-                                    .padding(6)
+                                    .font(.pretendard(size: 12, weight: .bold))
+                                    .foregroundColor(Color(0x2ca4ff))
+                                    .padding(.vertical, 3)
+                                    .padding(.horizontal, 6)
                                     .background(
                                         Circle()
                                             .stroke(.gradation1, lineWidth: 2)
-                                            .frame(width: 22, height: 22)
                                     )
                             }
                             .tint(Color.gradientStart1)
                             
-                            Button {
-                                withAnimation {
-                                    isOptionModalVisible = true
-                                    Global.shared.isFaded = true
-                                    x = 0
+                            Image("option-button")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x191919))
+                                .frame(width: 28, height: 28)
+                                .onTapGesture {
+                                    withAnimation {
+                                        isOptionModalVisible = true
+                                        Global.shared.isFaded = true
+                                        x = 0
+                                    }
                                 }
-                            } label: {
-                                Image("option-button")
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
-                            }
-                            .tint(.gray1)
                         }
                     } // HStack
                     .padding(.leading, 33)
@@ -105,6 +105,8 @@ struct CalendarDateView: View {
                                     )
                             }
                         } // HStack
+                        .padding(.top, 14)
+                        .padding(.bottom, 3)
                         
                         TabView(selection: $calendarVM.monthOffest) {
                             ForEach(-10 ... 100, id: \.self) { _ in

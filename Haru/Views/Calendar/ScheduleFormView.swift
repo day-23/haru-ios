@@ -256,7 +256,10 @@ struct ScheduleFormView: View {
                             .foregroundColor(scheduleFormVM.isSelectedRepeat ? .mainBlack : .gray2)
                             
                             if scheduleFormVM.isSelectedRepeat {
-                                Picker("", selection: $scheduleFormVM.repeatOption.animation()) {
+                                Picker(
+                                    "",
+                                    selection: $scheduleFormVM.repeatOption.animation()
+                                ) {
                                     ForEach(getRepeatOption(), id: \.self) {
                                         if scheduleFormVM.overMonth,
                                            $0.rawValue == "매달" ||
