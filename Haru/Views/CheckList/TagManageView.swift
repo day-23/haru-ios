@@ -24,15 +24,6 @@ struct TagManageView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.pretendard(size: 20, weight: .bold))
                         .foregroundColor(Color(0xF8F8FA))
-
-                    Image("confirm")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0xF8F8FA))
-                        .onTapGesture {
-                            withAnimation {
-                                isActive = false
-                            }
-                        }
                 }
                 .padding(.top, 28)
                 .padding(.horizontal, 24)
@@ -93,13 +84,12 @@ struct TagManageView: View {
                         .padding(.top, 18)
                         .padding(.leading, 44)
                         .padding(.trailing, 30)
-                        .padding(.bottom)
                     }
                 }
                 .frame(width: width, height: height * 0.86)
                 .background(Color(0xFDFDFD))
 
-                Spacer(minLength: 0)
+                Spacer(minLength: 26)
             }
         }
         .frame(width: width, height: height)

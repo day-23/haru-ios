@@ -76,7 +76,8 @@ struct CalendarOptionView: View {
                                     color: Color(calendarVM.categoryList[index].color),
                                     selectedIdx: getSelectedIdx(index: index),
                                     calendarVM: calendarVM,
-                                    mode: .edit
+                                    mode: .edit,
+                                    categoryId: calendarVM.categoryList[index].id
                                 )
                             } label: {
                                 Image("edit-pencil")

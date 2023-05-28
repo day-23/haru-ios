@@ -33,21 +33,6 @@ struct TimeTableMainView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                HaruHeader {
-                    Color.white
-                } item: {
-                    NavigationLink {
-                        // TODO: 검색 뷰 만들어지면 넣어주기
-                        Text("검색")
-                    } label: {
-                        Image("magnifyingglass")
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundColor(Color(0x191919))
-                            .frame(width: 28, height: 28)
-                    }
-                }
-
                 // 날짜 레이아웃
                 HStack(spacing: 0) {
                     Text("\(String(timeTableViewModel.currentYear))년")
@@ -61,13 +46,22 @@ struct TimeTableMainView: View {
                         .padding(.trailing, 6)
 
                     Button {
-                        isDateButtonClicked.toggle()
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            isDateButtonClicked.toggle()
+                        }
                     } label: {
                         Image("toggle-datepicker")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(Color(0x191919))
                             .frame(width: 28, height: 28)
+                            .rotationEffect(
+                                Angle(
+                                    degrees: isDateButtonClicked
+                                        ? 90
+                                        : 0
+                                )
+                            )
                     }
                     .popover(
                         isPresented: $isDateButtonClicked,
@@ -83,6 +77,18 @@ struct TimeTableMainView: View {
 
                     Spacer()
 
+                    NavigationLink {
+                        // TODO: 검색 뷰 만들어지면 넣어주기
+                        Text("검색")
+                    } label: {
+                        Image("magnifyingglass")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
+                    .padding(.trailing, 10)
+
                     Button {
                         timeTableViewModel.currentDate = .now
                     } label: {
@@ -93,7 +99,10 @@ struct TimeTableMainView: View {
                             .padding(.horizontal, 6)
                             .background(
                                 Circle()
-                                    .stroke(.gradation1, lineWidth: 2)
+                                    .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x15afff)],
+                                                           startPoint: .topLeading,
+                                                           endPoint: .bottomTrailing),
+                                            lineWidth: 2)
                             )
                             .padding(.trailing, 10)
                     }

@@ -17,9 +17,11 @@ struct TagView: View {
         Text(tag.content)
             .font(.pretendard(size: fontSize, weight: .bold))
             .foregroundColor(
-                isSelected || disabled
-                    ? .white
-                    : Color(0x191919)
+                isSelected
+                    ? Color(0xFDFDFD)
+                    : (disabled
+                        ? Color(0xACACAC)
+                        : Color(0x191919))
             )
             .bold()
             .padding(.vertical, 5)
@@ -28,18 +30,18 @@ struct TagView: View {
                 disabled
                     ? LinearGradient(colors: [Color(0xDBDBDB)], startPoint: .leading, endPoint: .leading)
                     : (isSelected
-                        ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .leading, endPoint: .trailing)
+                        ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
                         : LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing))
             )
             .cornerRadius(10)
             .overlay(content: {
-                if !isSelected {
+                if !isSelected, !disabled {
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(
-                            Gradient(
-                                colors: !disabled
-                                    ? [Color(0xD2D7FF), Color(0xAAD7FF)]
-                                    : [.clear]
+                            LinearGradient(
+                                colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
                             ),
                             lineWidth: 1
                         )

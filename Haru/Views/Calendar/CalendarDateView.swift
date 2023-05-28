@@ -21,21 +21,6 @@ struct CalendarDateView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                HaruHeader {
-                    Color.white
-                } item: {
-                    NavigationLink {
-                        // TODO: 검색 뷰 만들어지면 넣어주기
-                        Text("검색")
-                    } label: {
-                        Image("magnifyingglass")
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundColor(Color(0x191919))
-                            .frame(width: 28, height: 28)
-                    }
-                }
-                
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
                         HStack(spacing: 6) {
@@ -56,6 +41,17 @@ struct CalendarDateView: View {
                         Spacer()
                         
                         HStack(spacing: 10) {
+                            NavigationLink {
+                                // TODO: 검색 뷰 만들어지면 넣어주기
+                                Text("검색")
+                            } label: {
+                                Image("magnifyingglass")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .foregroundColor(Color(0x191919))
+                                    .frame(width: 28, height: 28)
+                            }
+                            
                             Button {
                                 calendarVM.monthOffest = 0
                             } label: {
@@ -66,7 +62,10 @@ struct CalendarDateView: View {
                                     .padding(.horizontal, 6)
                                     .background(
                                         Circle()
-                                            .stroke(.gradation1, lineWidth: 2)
+                                            .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x15afff)],
+                                                                   startPoint: .topLeading,
+                                                                   endPoint: .bottomTrailing),
+                                                    lineWidth: 2)
                                     )
                             }
                             .tint(Color.gradientStart1)

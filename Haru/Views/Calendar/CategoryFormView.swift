@@ -19,24 +19,11 @@ struct CategoryFormView: View {
         content == "" || selectedIdx == -1
     }
     
-    var colors = [
-        [Color(0x2E2E2E), Color(0x656565), Color(0x818181), Color(0x9D9D9D), Color(0xB9B9B9), Color(0xD5D5D5)],
-        
-        [Color(0xFF0959), Color(0xFF509C), Color(0xFF5AB6), Color(0xFE7DCD), Color(0xFFAAE5), Color(0xFFBDFB)],
-        
-        [Color(0xB237BB), Color(0xC93DEB), Color(0xB34CED), Color(0x9D5BE3), Color(0xBB93F8), Color(0xC6B2FF)],
-        
-        [Color(0x4C45FF), Color(0x2E57FF), Color(0x4D8DFF), Color(0x45BDFF), Color(0x6DDDFF), Color(0x65F4FF)],
-        
-        [Color(0xFE7E7E), Color(0xFF572E), Color(0xC22E2E), Color(0xA07753), Color(0xE3942E), Color(0xE8A753)],
-        
-        [Color(0xFF892E), Color(0xFFAB4C), Color(0xFFD166), Color(0xFFDE2E), Color(0xCFE855), Color(0xB9D32E)],
-        
-        [Color(0x105C08), Color(0x39972E), Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0)],
-    ]
+    var colors = Global.shared.colors
     
     var calendarVM: CalendarViewModel
     var mode: CategoryFormMode = .add
+    var categoryId: String?
 
     var body: some View {
         VStack(spacing: 20) {
@@ -82,16 +69,21 @@ struct CategoryFormView: View {
             
             if mode == .edit {
                 Button {
-                    print("삭제")
+                    if let categoryId {
+                        calendarVM.deleteCategory(categoryId: categoryId) {
+                            calendarVM.getCategoryList()
+                            dismissAction.callAsFunction()
+                        }
+                    }
                 } label: {
                     HStack(spacing: 10) {
                         Text("카테고리 삭제하기")
                             .font(.pretendard(size: 20, weight: .regular))
-                            .foregroundColor(Color(0xF71E58))
+                            .foregroundColor(Color(0xf71e58))
                         Image("trash")
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(Color(0xF71E58))
+                            .foregroundColor(Color(0xf71e58))
                             .frame(width: 28, height: 28)
                     }
                 }
@@ -120,8 +112,11 @@ struct CategoryFormView: View {
                         calendarVM.addCategory(content, color?.toHex()) {
                             dismissAction.callAsFunction()
                         }
-                    } else {
-                        print("카테고리 편집")
+                    } else if let categoryId {
+                        calendarVM.updateCategory(categoryId: categoryId, content: content, color: color?.toHex()) {
+                            calendarVM.getCategoryList()
+                            dismissAction.callAsFunction()
+                        }
                     }
                 } label: {
                     Image("confirm")

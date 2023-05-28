@@ -63,81 +63,82 @@ struct ScheduleFormView: View {
                 VStack(spacing: 15) {
                     // 일정 입력
                     Group {
-                        TextField("일정 입력", text: $scheduleFormVM.content)
-                            .font(Font.system(size: 24, weight: .medium))
-                            .padding(.horizontal, 30)
-                        Divider()
-                    }
-                    
-                    // 카테고리 선택
-                    Group {
                         HStack {
-                            if let selectIndex = scheduleFormVM.selectionCategory {
-                                Circle()
-                                    .fill(Color(scheduleFormVM.categoryList[selectIndex].color))
-                                    .padding(5)
-                                    .frame(width: 28, height: 28)
+                            TextField("일정 입력", text: $scheduleFormVM.content)
+                                .font(Font.system(size: 24, weight: .medium))
                                 
-                                Button {
-                                    showCategorySheet = true
-                                } label: {
-                                    Text("\(scheduleFormVM.categoryList[selectIndex].content)")
-                                        .font(.pretendard(size: 14, weight: .medium))
-                                }
-                                .popup(isPresented: $showCategorySheet) {
-                                    CategoryView(scheduleFormVM: scheduleFormVM, selectedIdx: $selectedIdx)
-                                        .background(Color.white)
-                                        .frame(height: 450)
-                                        .cornerRadius(20)
-                                        .padding(.horizontal, 30)
-                                        .shadow(radius: 2.0)
-                                        .onAppear {
-                                            selectedIdx = scheduleFormVM.selectionCategory
+                            Group {
+                                HStack {
+                                    if let selectIndex = scheduleFormVM.selectionCategory {
+                                        Button {
+                                            showCategorySheet = true
+                                        } label: {
+                                            Circle()
+                                                .fill(Color(scheduleFormVM.categoryList[selectIndex].color))
+                                                .padding(5)
+                                                .frame(width: 38, height: 38)
                                         }
-                                } customize: {
-                                    $0
-                                        .animation(.spring())
-                                        .closeOnTap(false)
-                                        .closeOnTapOutside(true)
-                                        .dismissCallback {
-                                            scheduleFormVM.selectionCategory = selectedIdx
+                                        .popup(isPresented: $showCategorySheet) {
+                                            CategoryView(
+                                                scheduleFormVM: scheduleFormVM,
+                                                selectedIdx: $selectedIdx,
+                                                showCategorySheet: $showCategorySheet
+                                            )
+                                            .background(Color.white)
+                                            .frame(height: 450)
+                                            .cornerRadius(20)
+                                            .padding(.horizontal, 30)
+                                            .shadow(radius: 2.0)
+                                            .onAppear {
+                                                selectedIdx = scheduleFormVM.selectionCategory
+                                            }
+                                        } customize: {
+                                            $0
+                                                .animation(.spring())
+                                                .closeOnTap(false)
+                                                .closeOnTapOutside(true)
+                                                .dismissCallback {
+                                                    scheduleFormVM.selectionCategory = selectedIdx
+                                                }
                                         }
-                                }
-                                .tint(Color.black)
-                            } else {
-                                Image("check-circle")
-                                    .renderingMode(.template)
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
-                                    .foregroundColor(.gray2)
-                                
-                                Button {
-                                    showCategorySheet = true
-                                } label: {
-                                    Text("카테고리 선택")
-                                        .font(.pretendard(size: 14, weight: .medium))
-                                }
-                                .popup(isPresented: $showCategorySheet) {
-                                    CategoryView(scheduleFormVM: scheduleFormVM, selectedIdx: $selectedIdx)
-                                        .background(Color.white)
-                                        .frame(height: 450)
-                                        .cornerRadius(20)
-                                        .padding(.horizontal, 30)
-                                        .shadow(radius: 2.0)
-                                } customize: {
-                                    $0
-                                        .animation(.spring())
-                                        .closeOnTap(false)
-                                        .closeOnTapOutside(true)
-                                        .dismissCallback {
-                                            scheduleFormVM.selectionCategory = selectedIdx
+                                        .tint(Color.black)
+                                    } else {
+                                        Button {
+                                            showCategorySheet = true
+                                        } label: {
+                                            Image("check-circle")
+                                                .renderingMode(.template)
+                                                .resizable()
+                                                .frame(width: 38, height: 38)
+                                                .foregroundColor(.gray2)
                                         }
+                                        .popup(isPresented: $showCategorySheet) {
+                                            CategoryView(
+                                                scheduleFormVM: scheduleFormVM,
+                                                selectedIdx: $selectedIdx,
+                                                showCategorySheet: $showCategorySheet
+                                            )
+                                            .background(Color.white)
+                                            .frame(height: 450)
+                                            .cornerRadius(20)
+                                            .padding(.horizontal, 30)
+                                            .shadow(radius: 2.0)
+                                        } customize: {
+                                            $0
+                                                .animation(.spring())
+                                                .closeOnTap(false)
+                                                .closeOnTapOutside(true)
+                                                .dismissCallback {
+                                                    scheduleFormVM.selectionCategory = selectedIdx
+                                                }
+                                        }
+                                        .tint(Color.gray2)
+                                    }
                                 }
-                                .tint(Color.gray2)
                             }
-                            Spacer()
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 30)
+                        
                         Divider()
                     }
                     
@@ -420,6 +421,9 @@ struct ScheduleFormView: View {
                 }
             }
         }
+        .onAppear {
+            print(scheduleFormVM.at, scheduleFormVM.oriSchedule?.at)
+        }
     }
     
     func getRepeatOption() -> [RepeatOption] {
@@ -450,7 +454,9 @@ struct ScheduleFormView: View {
         switch actionSheetOption {
         case .isRepeat:
             if scheduleFormVM.oriSchedule?.at == .front ||
-                scheduleFormVM.oriSchedule?.at == RepeatAt.none
+                scheduleFormVM.oriSchedule?.at == RepeatAt.none ||
+                scheduleFormVM.at == .front ||
+                scheduleFormVM.at == .none
             {
                 return ActionSheet(title: title,
                                    message: nil,
@@ -495,7 +501,11 @@ struct ScheduleFormView: View {
                 (scheduleFormVM.tmpIsSelectedRepeatEnd &&
                     scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd)
             {
-                if scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.oriSchedule?.at == RepeatAt.none {
+                if scheduleFormVM.oriSchedule?.at == .front
+                    || scheduleFormVM.oriSchedule?.at == RepeatAt.none
+                    || scheduleFormVM.at == .front
+                    || scheduleFormVM.at == .none
+                {
                     return ActionSheet(title: title,
                                        message: nil,
                                        buttons: [editAllButton, cancleButton])
@@ -507,7 +517,11 @@ struct ScheduleFormView: View {
             } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption.rawValue ||
                 scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
-                if scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.oriSchedule?.at == RepeatAt.none {
+                if scheduleFormVM.oriSchedule?.at == .front
+                    || scheduleFormVM.oriSchedule?.at == RepeatAt.none
+                    || scheduleFormVM.at == .front
+                    || scheduleFormVM.at == .none
+                {
                     return ActionSheet(title: title,
                                        message: nil,
                                        buttons: [editAllButton, cancleButton])
@@ -517,11 +531,13 @@ struct ScheduleFormView: View {
                                        buttons: [editAfterButton, editAllButton, cancleButton])
                 }
             } else {
-                if scheduleFormVM.oriSchedule?.at == .front {
+                if scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.at == .front {
                     return ActionSheet(title: title,
                                        message: nil,
                                        buttons: [editButton, editAllButton, cancleButton])
-                } else if scheduleFormVM.oriSchedule?.at == RepeatAt.none {
+                } else if scheduleFormVM.oriSchedule?.at == RepeatAt.none
+                    || scheduleFormVM.at == .none
+                {
                     return ActionSheet(title: title,
                                        message: nil,
                                        buttons: [editAllButton, cancleButton])

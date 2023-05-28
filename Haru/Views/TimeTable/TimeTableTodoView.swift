@@ -10,6 +10,12 @@ import SwiftUI
 struct TimeTableTodoView: View {
     // MARK: - Properties
 
+    let dateFormatter: DateFormatter = {
+        let formatter: DateFormatter = .init()
+        formatter.dateFormat = "yyyyMMdd"
+        return formatter
+    }()
+
     @StateObject var todoAddViewModel: TodoAddViewModel
     @StateObject var timeTableViewModel: TimeTableViewModel
 
@@ -32,7 +38,7 @@ struct TimeTableTodoView: View {
                     todoAddViewModel: todoAddViewModel
                 )
                 .background(
-                    index == Date.now.indexOfWeek()
+                    dateFormatter.string(from: .now) == dateFormatter.string(from: timeTableViewModel.thisWeek[index])
                         ? RadialGradient(
                             gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)]),
                             center: .center,

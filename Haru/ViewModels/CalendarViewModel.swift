@@ -450,6 +450,38 @@ final class CalendarViewModel: ObservableObject {
         }
     }
     
+    func updateCategory(
+        categoryId: String,
+        content: String,
+        color: String?,
+        completion: @escaping () -> Void
+    ) {
+        let category = Request.Category(content: content, color: color)
+        
+        categoryService.updateCategory(categoryId: categoryId, category: category) { result in
+            switch result {
+            case .success:
+                completion()
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    func deleteCategory(
+        categoryId: String,
+        completion: @escaping () -> Void
+    ) {
+        categoryService.deleteCategory(categoryId: categoryId) { result in
+            switch result {
+            case .success:
+                completion()
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
     // MARK: - 달력에 보여주기 위한 fitting 함수들
 
     /**
