@@ -93,7 +93,10 @@ struct TimeTableMainView: View {
                             .padding(.horizontal, 6)
                             .background(
                                 Circle()
-                                    .stroke(.gradation1, lineWidth: 2)
+                                    .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x15afff)],
+                                                           startPoint: .topLeading,
+                                                           endPoint: .bottomTrailing),
+                                            lineWidth: 2)
                             )
                             .padding(.trailing, 10)
                     }
