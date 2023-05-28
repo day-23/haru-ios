@@ -45,13 +45,13 @@ struct FeedView: View {
 
                 Image("ellipsis")
                     .renderingMode(.template)
-                    .foregroundColor(.gray1)
+                    .foregroundColor(Color(0xDBDBDB))
             }
             .padding(.horizontal, 20)
 
             FeedImage(imageList: postImageList, imageCount: post.images.count, templateMode: post.templateUrl != nil, content: post.content)
 
-            HStack(spacing: 22) {
+            HStack(spacing: 14) {
                 HStack(spacing: 10) {
                     Button {
                         postVM.likeThisPost(targetPostId: post.id)
@@ -75,8 +75,10 @@ struct FeedView: View {
                             isMine: isMine
                         )
                     } label: {
-                        Image(systemName: "ellipses.bubble")
-                            .foregroundColor(post.isCommented ? .gradientStart1 : .gray2)
+                        // TODO: post.isCommented인 경우 chat-bubble-fill : chat-bubble
+                        Image("chat-bubble-fill")
+                            .resizable()
+                            .frame(width: 28, height: 28)
                     }
 
                     if isMine {
@@ -87,7 +89,7 @@ struct FeedView: View {
 
                 Spacer()
 
-                if Global.shared.user?.id == post.user.id {
+                if isMine {
                     Image("option-button")
                         .renderingMode(.template)
                         .foregroundColor(.gray2)

@@ -19,10 +19,11 @@ struct FeedImage: View {
         ZStack {
             if !templateMode {
                 Text("\(postPageNum + 1)/\(imageCount)")
-                    .font(.pretendard(size: 12, weight: .bold))
+                    .font(.pretendard(size: 12, weight: .regular))
                     .foregroundColor(Color(0xFDFDFD))
-                    .padding(.all, 6)
-                    .background(Color.black.opacity(0.5))
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 12)
+                    .background(Color(0xFDFDFD).opacity(0.5))
                     .cornerRadius(15)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     .offset(x: -10, y: 10)
