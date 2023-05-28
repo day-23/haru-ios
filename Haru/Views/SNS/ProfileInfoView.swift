@@ -11,7 +11,7 @@ struct ProfileInfoView: View {
     @StateObject var userProfileVM: UserProfileViewModel
     
     var body: some View {
-        HStack(spacing: 20) {
+        HStack(alignment: .top, spacing: 20) {
             ProfileImgView(profileImage: userProfileVM.profileImage)
                 .frame(width: 62, height: 62)
             
@@ -42,23 +42,20 @@ struct ProfileInfoView: View {
                         )
                     } label: {
                         Text("프로필 편집")
-                            .foregroundColor(.mainBlack)
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .frame(width: 64, height: 16)
-                            .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 9)
-                                    .stroke(.gradation2, lineWidth: 1)
-                            )
+                            .foregroundColor(Color(0x646464))
+                            .font(.pretendard(size: 16, weight: .regular))
+                            .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                            .background(Color(0xF1F1F5))
+                            .cornerRadius(10)
                     }
+                    
                     Text("프로필 공유")
-                        .font(.pretendard(size: 14, weight: .bold))
-                        .frame(width: 64, height: 16)
-                        .padding(EdgeInsets(top: 5, leading: 11, bottom: 5, trailing: 11))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 9)
-                                .stroke(.gradation2, lineWidth: 1)
-                        )
+                        .foregroundColor(Color(0x646464))
+                        .font(.pretendard(size: 16, weight: .regular))
+                        .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                        .background(Color(0xF1F1F5))
+                        .cornerRadius(10)
+                    
                 } else {
                     if userProfileVM.user.friendStatus == 0 {
                         Button {
@@ -110,26 +107,35 @@ struct ProfileInfoView: View {
             .frame(height: 20)
         
         HStack {
-            Spacer()
-            VStack {
+            VStack(spacing: 4) {
                 Text("\(userProfileVM.user.postCount)")
                     .font(.pretendard(size: 20, weight: .bold))
                 Text("하루")
                     .font(.pretendard(size: 14, weight: .regular))
             }
+            .foregroundColor(Color(0x191919))
+            .padding(.leading, 100)
+            
             Spacer()
+            
             NavigationLink {
                 FriendView(userProfileVM: userProfileVM)
             } label: {
-                VStack {
+                VStack(spacing: 4) {
                     Text("\(userProfileVM.user.friendCount)")
                         .font(.pretendard(size: 20, weight: .bold))
-                    Text("친구")
-                        .font(.pretendard(size: 14, weight: .regular))
+                    HStack(alignment: .lastTextBaseline) {
+                        // TODO: 친구 신청이 있는 경우만 나오게 하기
+                        Circle()
+                            .frame(width: 6, height: 6)
+                            .foregroundColor(Color(0x1DAFFF))
+                        Text("친구")
+                            .font(.pretendard(size: 14, weight: .regular))
+                    }
                 }
             }
-            .foregroundColor(.mainBlack)
-            Spacer()
+            .foregroundColor(Color(0x191919))
+            .padding(.trailing, 100)
         }
     }
 }
