@@ -100,7 +100,7 @@ struct TodoAddView: View {
                                     viewModel.removeSubTodo(index: index)
                                 } label: {
                                     Image(systemName: "minus")
-                                        .foregroundStyle(Color(0xACACAC))
+                                        .foregroundStyle(Color(0x191919))
                                         .frame(width: 28, height: 28)
                                 }
                             }
@@ -458,13 +458,13 @@ struct TodoAddView: View {
                             }
                             .disabled(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty)
                             .confirmationDialog(
-                                viewModel.isSelectedRepeat
+                                viewModel.todo?.repeatOption != nil
                                     ? "수정사항을 저장할까요? 반복되는 할 일 입니다."
                                     : "수정사항을 저장할까요?",
                                 isPresented: $updateButtonTapped,
                                 titleVisibility: .visible
                             ) {
-                                if viewModel.isSelectedRepeat {
+                                if viewModel.todo?.repeatOption != nil {
                                     if viewModel.isPreviousRepeatStateEqual {
                                         Button("이 할 일만 수정") {
                                             // 반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
