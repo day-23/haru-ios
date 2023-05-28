@@ -33,7 +33,7 @@ struct TodoAddView: View {
                             } label: {
                                 Image("cancel")
                                     .renderingMode(.template)
-                                    .foregroundColor(.black)
+                                    .foregroundColor(Color(0x191919))
                             }
                             Spacer()
                             Button {
@@ -91,7 +91,7 @@ struct TodoAddView: View {
                                 Button {
                                     viewModel.removeSubTodo(index: index)
                                 } label: {
-                                    Image(systemName: "minus.circle.fill")
+                                    Image(systemName: "minus")
                                         .foregroundStyle(Color(0xACACAC))
                                         .frame(width: 28, height: 28)
                                 }
@@ -138,9 +138,14 @@ struct TodoAddView: View {
                                             }
                                     }
                                     
-                                    TextField("태그 추가", text: $viewModel.tag)
+                                    TextField("", text: $viewModel.tag)
+                                        .placeholder(when: viewModel.tag.isEmpty) {
+                                            Text("태그 추가")
+                                                .font(.pretendard(size: 14, weight: .regular))
+                                                .foregroundColor(Color(0xACACAC))
+                                        }
                                         .font(.pretendard(size: 14, weight: .regular))
-                                        .foregroundColor(viewModel.tagList.isEmpty ? Color(0xACACAC) : .black)
+                                        .foregroundColor(viewModel.tagList.isEmpty ? Color(0xACACAC) : Color(0x191919))
                                         .onChange(
                                             of: viewModel.tag,
                                             perform: viewModel.onChangeTag
@@ -157,7 +162,7 @@ struct TodoAddView: View {
                             Image(systemName: "tag")
                                 .frame(width: 28, height: 28)
                                 .padding(.trailing, 10)
-                                .foregroundColor(viewModel.tagList.isEmpty ? Color(0xACACAC) : .black)
+                                .foregroundColor(viewModel.tagList.isEmpty ? Color(0xACACAC) : Color(0x191919))
                         }
                         .padding(.horizontal, 20)
                         
@@ -181,7 +186,7 @@ struct TodoAddView: View {
                             Image("today-todo")
                                 .renderingMode(.template)
                                 .padding(.trailing, 10)
-                                .foregroundColor(viewModel.isTodayTodo ? Color(0x1DAFFF) : Color(0xACACAC))
+                                .foregroundColor(viewModel.isTodayTodo ? Color(0x191919) : Color(0xACACAC))
                         }
                         .padding(.horizontal, 20)
                         
@@ -404,9 +409,14 @@ struct TodoAddView: View {
                         }
                         .padding(.horizontal, 20)
                         
-                        TextField("메모를 작성해주세요.",
+                        TextField("",
                                   text: $viewModel.memo,
                                   axis: .vertical)
+                            .placeholder(when: viewModel.memo.isEmpty) {
+                                Text("메모를 작성해주세요.")
+                                    .font(.pretendard(size: 14, weight: .regular))
+                                    .foregroundColor(Color(0xACACAC))
+                            }
                             .font(.pretendard(size: 14, weight: .regular))
                             .padding(.leading, 45)
                             .padding(.horizontal, 20)
