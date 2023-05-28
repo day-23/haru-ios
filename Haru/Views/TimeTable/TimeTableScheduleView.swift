@@ -386,7 +386,7 @@ struct CellDropDelegate: DropDelegate {
 
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMddhhmm"
+        formatter.dateFormat = "yyyyMMddhh"
         return formatter
     }()
 
@@ -453,7 +453,9 @@ struct CellDropDelegate: DropDelegate {
         let endDate = date.advanced(by: TimeInterval(60 * diff))
 
         timeTableViewModel.removePreview()
-        if Self.dateFormatter.string(from: draggingSchedule.data.repeatStart) != Self.dateFormatter.string(from: date) {
+        if Self.dateFormatter.string(from: draggingSchedule.data.repeatStart) != Self.dateFormatter.string(from: date)
+            || draggingSchedule.data.repeatStart.minute / 5 != minuteIndex // 현재 상황에선 해당 줄은 00:04 <-> 00:00 은 같은 위치로 보이기 때문에 업데이트 하지 않음.
+        {
             timeTableViewModel.updateDraggingSchedule(
                 startDate: date,
                 endDate: endDate,
