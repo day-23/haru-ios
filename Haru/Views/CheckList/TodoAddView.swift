@@ -15,6 +15,8 @@ struct TodoAddView: View {
     @FocusState private var memoInFocus: Bool
     @State private var deleteButtonTapped = false
     @State private var updateButtonTapped = false
+    
+    @State private var isConfirmButtonActive: Bool = true
 
     init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
         self.viewModel = viewModel
@@ -36,8 +38,12 @@ struct TodoAddView: View {
                                     .renderingMode(.template)
                                     .foregroundColor(Color(0x191919))
                             }
+                            
                             Spacer()
+                            
                             Button {
+                                isConfirmButtonActive = false
+                                
                                 viewModel.addTodo { result in
                                     switch result {
                                     case .success:
@@ -47,13 +53,14 @@ struct TodoAddView: View {
                                     case let .failure(failure):
                                         print("[Debug] \(failure) \(#fileID) \(#function)")
                                     }
+                                    isConfirmButtonActive = true
                                 }
                             } label: {
                                 Image("confirm")
                                     .renderingMode(.template)
                                     .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x191919))
                             }
-                            .disabled(viewModel.isFieldEmpty)
+                            .disabled(viewModel.isFieldEmpty || !isConfirmButtonActive)
                         }
                         .padding(.horizontal, 33)
                         .padding(.bottom, 27)
