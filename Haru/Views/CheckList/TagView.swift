@@ -18,7 +18,7 @@ struct TagView: View {
             .font(.pretendard(size: fontSize, weight: .bold))
             .foregroundColor(
                 isSelected || disabled
-                    ? .white
+                    ? Color(0xFDFDFD)
                     : Color(0x191919)
             )
             .bold()
@@ -33,13 +33,11 @@ struct TagView: View {
             )
             .cornerRadius(10)
             .overlay(content: {
-                if !isSelected {
+                if !isSelected, !disabled {
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(
                             LinearGradient(
-                                colors: !isSelected
-                                    ? [Color(0xD2D7FF), Color(0xAAD7FF)]
-                                    : [.clear],
+                                colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
