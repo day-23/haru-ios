@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct TodoView: View {
-    @State private var disabled = false
     var checkListViewModel: CheckListViewModel
     var todo: Todo
     var backgroundColor: Color = .white
     var completeAction: () -> Void
+
+    // MARK: - API 호출시에 버튼을 비활성화 하는 변수들
+
+    @State private var isCompletionButtonActive = true
+    @State private var isToggleButtonActive = true
+    @State private var isFlagButtonActive = true
 
     private var tagString: String {
         if todo.tags.isEmpty {
@@ -62,7 +67,11 @@ struct TodoView: View {
         HStack(alignment: showExtraInfo ? .top : .center, spacing: 0) {
             if !todo.subTodos.isEmpty {
                 Button {
-                    checkListViewModel.updateFolded(todo: todo) { _ in }
+                    isToggleButtonActive = false
+
+                    checkListViewModel.updateFolded(todo: todo) { _ in
+                        isToggleButtonActive = true
+                    }
                 } label: {
                     Image("toggle")
                         .renderingMode(.template)
@@ -71,11 +80,12 @@ struct TodoView: View {
                         .foregroundColor(Color(0x646464, opacity: todo.completed ? 0.5 : 1))
                 }
                 .padding(.trailing, 6)
+                .disabled(!isToggleButtonActive)
             }
 
             CompleteButton(isClicked: todo.completed)
                 .onTapGesture {
-                    disabled = true
+                    isCompletionButtonActive = false
 
                     if (todo.repeatOption == nil && todo.repeatValue == nil)
                         || todo.completed
@@ -87,14 +97,11 @@ struct TodoView: View {
                             switch result {
                             case .success:
                                 completeAction()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    disabled = false
-                                }
                             case .failure(let failure):
                                 print("[Debug] 반복하지 않는 할 일 완료 실패 \(failure) \(#fileID) \(#function)")
-                                disabled = false
                             }
                         }
+                        isCompletionButtonActive = true
                         return
                     }
 
@@ -109,14 +116,11 @@ struct TodoView: View {
                                 switch result {
                                 case .success:
                                     completeAction()
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                        disabled = false
-                                    }
                                 case .failure(let failure):
                                     print("[Debug] 반복하는 할 일 마지막 반복 완료 실패, \(failure) \(#fileID) \(#function)")
-                                    disabled = false
                                 }
                             }
+                            isCompletionButtonActive = true
                             return
                         }
 
@@ -129,13 +133,10 @@ struct TodoView: View {
                             switch result {
                             case .success:
                                 completeAction()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    disabled = false
-                                }
                             case .failure(let failure):
                                 print("[Debug] 반복하는 할 일 완료 실패, \(failure) \(#fileID) \(#function)")
-                                disabled = false
                             }
+                            isCompletionButtonActive = true
                         }
                     } catch {
                         switch error {
@@ -146,12 +147,12 @@ struct TodoView: View {
                         default:
                             print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                         }
-                        disabled = false
+                        isCompletionButtonActive = true
                     }
                 }
                 .padding(.leading, todo.subTodos.isEmpty ? 6 : 0)
                 .padding(.trailing, 8)
-                .disabled(disabled)
+                .disabled(!isCompletionButtonActive)
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(todo.content)
@@ -217,8 +218,13 @@ struct TodoView: View {
             Spacer()
             StarButton(isClicked: todo.flag)
                 .onTapGesture {
-                    checkListViewModel.updateFlag(todo: todo) { _ in }
+                    isFlagButtonActive = false
+
+                    checkListViewModel.updateFlag(todo: todo) { _ in
+                        isFlagButtonActive = true
+                    }
                 }
+                .disabled(!isFlagButtonActive)
         }
         .frame(maxWidth: .infinity)
         .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
