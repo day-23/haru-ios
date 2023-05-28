@@ -106,9 +106,8 @@ struct RootView: View {
                                                             global.isFaded = false
                                                         }
                                                     }
-                                                }
+                                            }
                                         }
-                                    }
                                 }
                             }
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
