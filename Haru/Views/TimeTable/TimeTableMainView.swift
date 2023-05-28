@@ -46,13 +46,22 @@ struct TimeTableMainView: View {
                         .padding(.trailing, 6)
 
                     Button {
-                        isDateButtonClicked.toggle()
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            isDateButtonClicked.toggle()
+                        }
                     } label: {
                         Image("toggle-datepicker")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(Color(0x191919))
                             .frame(width: 28, height: 28)
+                            .rotationEffect(
+                                Angle(
+                                    degrees: isDateButtonClicked
+                                        ? 90
+                                        : 0
+                                )
+                            )
                     }
                     .popover(
                         isPresented: $isDateButtonClicked,
