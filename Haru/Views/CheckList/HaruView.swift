@@ -19,7 +19,7 @@ struct HaruView: View {
 
     let formatter: DateFormatter = {
         let formatter: DateFormatter = .init()
-        formatter.dateFormat = "M월 d일 EEE"
+        formatter.dateFormat = "MMMM dd\(Locale.current.language.languageCode?.identifier == "ko" ? "일" : "") EEEE"
         return formatter
     }()
 
