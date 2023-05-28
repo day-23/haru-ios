@@ -15,6 +15,9 @@ struct TodoAddView: View {
     @FocusState private var memoInFocus: Bool
     @State private var deleteButtonTapped = false
     @State private var updateButtonTapped = false
+    @State private var backButtonTapped = false
+    
+    @State private var isConfirmButtonActive: Bool = true
 
     init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
         self.viewModel = viewModel
@@ -36,8 +39,12 @@ struct TodoAddView: View {
                                     .renderingMode(.template)
                                     .foregroundColor(Color(0x191919))
                             }
+                            
                             Spacer()
+                            
                             Button {
+                                isConfirmButtonActive = false
+                                
                                 viewModel.addTodo { result in
                                     switch result {
                                     case .success:
@@ -47,13 +54,14 @@ struct TodoAddView: View {
                                     case let .failure(failure):
                                         print("[Debug] \(failure) \(#fileID) \(#function)")
                                     }
+                                    isConfirmButtonActive = true
                                 }
                             } label: {
                                 Image("confirm")
                                     .renderingMode(.template)
                                     .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x191919))
                             }
-                            .disabled(viewModel.isFieldEmpty)
+                            .disabled(viewModel.isFieldEmpty || !isConfirmButtonActive)
                         }
                         .padding(.horizontal, 33)
                         .padding(.bottom, 27)
@@ -93,7 +101,7 @@ struct TodoAddView: View {
                                     viewModel.removeSubTodo(index: index)
                                 } label: {
                                     Image(systemName: "minus")
-                                        .foregroundStyle(Color(0xACACAC))
+                                        .foregroundStyle(Color(0x191919))
                                         .frame(width: 28, height: 28)
                                 }
                             }
@@ -433,10 +441,23 @@ struct TodoAddView: View {
                 if !isModalVisible {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
-                            dismissAction.callAsFunction()
+                            if !viewModel.isPreviousStateEqual {
+                                backButtonTapped = true
+                            } else {
+                                dismissAction.callAsFunction()
+                            }
                         } label: {
                             Image("back-button")
                                 .frame(width: 28, height: 28)
+                        }
+                        .confirmationDialog(
+                            "현재 화면에서 나갈까요? 수정사항이 있습니다.",
+                            isPresented: $backButtonTapped,
+                            titleVisibility: .visible
+                        ) {
+                            Button("나가기", role: .destructive) {
+                                dismissAction.callAsFunction()
+                            }
                         }
                     }
                     
@@ -451,14 +472,16 @@ struct TodoAddView: View {
                             }
                             .disabled(viewModel.isPreviousStateEqual || viewModel.isFieldEmpty)
                             .confirmationDialog(
-                                viewModel.isSelectedRepeat
+                                viewModel.todo?.repeatOption != nil
                                     ? "수정사항을 저장할까요? 반복되는 할 일 입니다."
                                     : "수정사항을 저장할까요?",
                                 isPresented: $updateButtonTapped,
                                 titleVisibility: .visible
                             ) {
-                                if viewModel.isSelectedRepeat {
-                                    if viewModel.isPreviousRepeatStateEqual {
+                                if viewModel.todo?.repeatOption != nil {
+                                    if viewModel.isPreviousRepeatStateEqual
+                                        && viewModel.at != .none
+                                    {
                                         Button("이 할 일만 수정") {
                                             // 반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
                                             // 아래 옵션을 false로 변경한다.
@@ -481,6 +504,7 @@ struct TodoAddView: View {
                                         || (!viewModel.isPreviousEndDateEqual
                                             && !viewModel.isPreviousRepeatStateEqual))
                                         && viewModel.at != .front
+                                        && viewModel.at != .none
                                     {
                                         Button("이 할 일부터 수정") {
                                             viewModel.updateTodoWithRepeat(
@@ -544,22 +568,24 @@ struct TodoAddView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 20)
                 .confirmationDialog(
-                    viewModel.isSelectedRepeat
+                    viewModel.todo?.repeatOption != nil
                         ? "할 일을 삭제할까요? 반복되는 할 일 입니다."
                         : "할 일을 삭제할까요?",
                     isPresented: $deleteButtonTapped,
                     titleVisibility: .visible
                 ) {
-                    if viewModel.isSelectedRepeat {
-                        Button("이 할 일만 삭제", role: .destructive) {
-                            viewModel.deleteTodoWithRepeat(
-                                at: viewModel.at
-                            ) { result in
-                                switch result {
-                                case .success:
-                                    dismissAction.callAsFunction()
-                                case let .failure(failure):
-                                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                    if viewModel.todo?.repeatOption != nil {
+                        if viewModel.at != .none {
+                            Button("이 할 일만 삭제", role: .destructive) {
+                                viewModel.deleteTodoWithRepeat(
+                                    at: viewModel.at
+                                ) { result in
+                                    switch result {
+                                    case .success:
+                                        dismissAction.callAsFunction()
+                                    case let .failure(failure):
+                                        print("[Debug] \(failure) \(#fileID) \(#function)")
+                                    }
                                 }
                             }
                         }
@@ -627,9 +653,6 @@ struct TodoAddView: View {
         }
         .onDisappear {
             viewModel.clear()
-        }
-        .onChange(of: viewModel.at) { _ in
-            print(viewModel.at)
         }
     }
 }
