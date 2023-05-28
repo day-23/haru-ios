@@ -102,13 +102,6 @@ struct ProfileView: View {
                     } label: {
                         Text("둘러보기")
                     }
-                } thirdContent: {
-                    userProfileVM.isMe ?
-                        Text("내 기록")
-                        .foregroundColor(Color(0x1DAFFF))
-                        :
-                        Text("친구 기록")
-                        .foregroundColor(Color(0x1DAFFF))
                 }
             }
         }

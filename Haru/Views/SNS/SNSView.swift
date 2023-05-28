@@ -17,15 +17,48 @@ struct SNSView: View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 HaruHeader(toggleIsClicked: $toggleIsClicked) {
-                    NavigationLink {
-                        // TODO: 검색 뷰 만들어지면 넣어주기
-                        Text("검색")
-                    } label: {
-                        Image("magnifyingglass")
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundColor(Color(0x191919))
-                            .frame(width: 28, height: 28)
+                    HStack(spacing: 10) {
+                        NavigationLink {
+                            ProfileView(
+                                postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
+                                userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
+                            )
+                        } label: {
+                            Text("내 기록")
+                                .font(.pretendard(size: 16, weight: .bold))
+                                .foregroundColor(Color(0x191919))
+                                .padding(.vertical, 5)
+                                .padding(.horizontal, 10)
+                                .background(
+                                    //                                            ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                    LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
+                                )
+                                .cornerRadius(10)
+                                .overlay(content: {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 1
+                                        )
+
+                                })
+                                .padding(.vertical, 1)
+                        }
+
+                        NavigationLink {
+                            // TODO: 검색 뷰 만들어지면 넣어주기
+                            Text("검색")
+                        } label: {
+                            Image("magnifyingglass")
+                                .renderingMode(.template)
+                                .resizable()
+                                .foregroundColor(Color(0x191919))
+                                .frame(width: 28, height: 28)
+                        }
                     }
                 }
 
@@ -35,21 +68,14 @@ struct SNSView: View {
             if toggleIsClicked {
                 DropdownMenu {
                     Text("친구피드")
+                        .font(.pretendard(size: 16, weight: .bold))
                         .foregroundColor(Color(0x1DAFFF))
                 } secondContent: {
                     NavigationLink {
                         LookAroundView()
                     } label: {
                         Text("둘러보기")
-                    }
-                } thirdContent: {
-                    NavigationLink {
-                        ProfileView(
-                            postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
-                            userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown")
-                        )
-                    } label: {
-                        Text("내 기록")
+                            .font(.pretendard(size: 16, weight: .bold))
                     }
                 }
             }

@@ -7,38 +7,32 @@
 
 import SwiftUI
 
-struct DropdownMenu<F, S, T>: View where F: View, S: View, T: View {
+struct DropdownMenu<F, S>: View where F: View, S: View {
     let firstContent: () -> F
     let secondContent: () -> S
-    let thirdContent: () -> T
 
-    init(firstContent: @escaping () -> F, secondContent: @escaping () -> S, thirdContent: @escaping () -> T) {
+    init(firstContent: @escaping () -> F, secondContent: @escaping () -> S) {
         self.firstContent = firstContent
         self.secondContent = secondContent
-        self.thirdContent = thirdContent
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 6) {
             Group {
                 firstContent()
 
                 Divider()
 
                 secondContent()
-
-                Divider()
-
-                thirdContent()
             }
             .foregroundColor(Color(0x191919))
             .font(.pretendard(size: 14, weight: .regular))
         }
-        .frame(width: 94, height: 96)
-        .padding(8)
+        .frame(width: 100, height: 50)
+        .padding(.vertical, 8)
         .background(Color(0xFDFDFD))
         .cornerRadius(10)
-        .position(x: 60, y: 90)
+        .position(x: 60, y: 75)
         .transition(.opacity.animation(.easeIn))
         .shadow(radius: 10)
     }
