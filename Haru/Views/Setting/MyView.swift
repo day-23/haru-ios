@@ -151,9 +151,9 @@ struct MyView: View {
                                 .padding(.top, 28)
                                 .padding(.bottom, 20)
 
-                            // 하루와 함께한지 벌써
+                            // 하루와 함께한 지 벌써
                             VStack(spacing: 20) {
-                                Text("하루와 함께한지 벌써")
+                                Text("하루와 함께한 지 벌써")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .font(.pretendard(size: 14, weight: .bold))
                                     .foregroundColor(Color(0x191919))

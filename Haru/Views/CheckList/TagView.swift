@@ -28,7 +28,7 @@ struct TagView: View {
                 disabled
                     ? LinearGradient(colors: [Color(0xDBDBDB)], startPoint: .leading, endPoint: .leading)
                     : (isSelected
-                        ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .leading, endPoint: .trailing)
+                        ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
                         : LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing))
             )
             .cornerRadius(10)
@@ -36,10 +36,12 @@ struct TagView: View {
                 if !isSelected {
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(
-                            Gradient(
-                                colors: !disabled
+                            LinearGradient(
+                                colors: !isSelected
                                     ? [Color(0xD2D7FF), Color(0xAAD7FF)]
-                                    : [.clear]
+                                    : [.clear],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
                             ),
                             lineWidth: 1
                         )

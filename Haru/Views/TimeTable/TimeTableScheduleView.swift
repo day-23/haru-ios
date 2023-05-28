@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIPager
 
 struct TimeTableScheduleView: View {
     @StateObject var timeTableViewModel: TimeTableViewModel
@@ -36,8 +37,8 @@ struct TimeTableScheduleView: View {
     private let borderWidth = 1
 
     @State private var topViewHeight: CGFloat? = nil
-    @State private var index: Int = 0
-    @State private var prevIndex: Int = 0
+
+    @StateObject var page: Page = .withIndex(1)
 
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
@@ -52,103 +53,85 @@ struct TimeTableScheduleView: View {
     var body: some View {
         Group {
             // 날짜 및 하루종일, 여러 날짜에 걸쳐 나타나는 일정이 보이는 View
-            TabView(selection: $index) {
-                ForEach($timeTableViewModel.indices, id: \.self) { _ in
-                    VStack(spacing: 0) {
-                        LazyVGrid(columns: column, spacing: 30) {
-                            Text("")
+            Pager(page: page,
+                  data: timeTableViewModel.indices,
+                  id: \.self) { _ in
+                VStack(spacing: 0) {
+                    LazyVGrid(columns: column, spacing: 30) {
+                        Text("")
 
-                            ForEach(week.indices, id: \.self) { index in
-                                Text(week[index])
-                                    .font(.pretendard(size: 14, weight: .regular))
-                                    .foregroundColor(
-                                        index == 0
+                        ForEach(week.indices, id: \.self) { index in
+                            Text(week[index])
+                                .font(.pretendard(size: 14, weight: .regular))
+                                .foregroundColor(
+                                    index == 0
+                                        ? Color(0xf71e58)
+                                        : (index == 6
+                                            ? Color(0x1dafff)
+                                            : Color(0x646464)
+                                        )
+                                )
+                                .padding(.bottom, 3)
+                                .onTapGesture {
+                                    calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
+                                    calendarViewModel.getSelectedScheduleList()
+                                    withAnimation {
+                                        isPopupVisible = true
+                                        Global.shared.isFaded = true
+                                    }
+                                }
+                        }
+                    }
+
+                    Rectangle()
+                        .frame(height: 1)
+                        .padding(.leading, 28)
+                        .foregroundColor(Color(0xdbdbdb))
+
+                    LazyVGrid(columns: column, spacing: 30) {
+                        Text("")
+
+                        ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                            Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
+                                .font(.pretendard(size: 14, weight: .regular))
+                                .foregroundColor(
+                                    timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth
+                                        ? (index == 0
+                                            ? Color(0xfdbbcd)
+                                            : (index == 6
+                                                ? Color(0xbbe7ff)
+                                                : Color(0xebebeb)
+                                            )
+                                        )
+                                        : (index == 0
                                             ? Color(0xf71e58)
                                             : (index == 6
                                                 ? Color(0x1dafff)
                                                 : Color(0x646464)
                                             )
-//                                        timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth
-//                                            ? (index == 0
-//                                                ? Color(0xfdbbcd)
-//                                                : (index == 6
-//                                                    ? Color(0xbbe7ff)
-//                                                    : Color(0xebebeb)
-//                                                )
-//                                            )
-//                                            : (index == 0
-//                                                ? Color(0xf71e58)
-//                                                : (index == 6
-//                                                    ? Color(0x1dafff)
-//                                                    : Color(0x646464)
-//                                                )
-//                                            )
-                                    )
-                                    .padding(.bottom, 3)
-                                    .onTapGesture {
-                                        calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
-                                        calendarViewModel.getSelectedScheduleList()
-                                        withAnimation {
-                                            isPopupVisible = true
-                                            Global.shared.isFaded = true
-                                        }
+                                        )
+                                )
+                                .padding(.top, 8)
+                                .onTapGesture {
+                                    calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
+                                    calendarViewModel.getSelectedScheduleList()
+                                    withAnimation {
+                                        isPopupVisible = true
+                                        Global.shared.isFaded = true
                                     }
-                            }
-                        }
-                        .padding(.leading, -8)
-
-                        Rectangle()
-                            .frame(height: 1)
-                            .padding(.leading, 20)
-                            .foregroundColor(Color(0xdbdbdb))
-
-                        LazyVGrid(columns: column, spacing: 30) {
-                            Text("")
-
-                            ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                                Text(dayFormatter.string(from: timeTableViewModel.thisWeek[index]))
-                                    .font(.pretendard(size: 14, weight: .regular))
-                                    .foregroundColor(
-                                        timeTableViewModel.thisWeek[index].month != timeTableViewModel.currentMonth
-                                            ? (index == 0
-                                                ? Color(0xfdbbcd)
-                                                : (index == 6
-                                                    ? Color(0xbbe7ff)
-                                                    : Color(0xebebeb)
-                                                )
-                                            )
-                                            : (index == 0
-                                                ? Color(0xf71e58)
-                                                : (index == 6
-                                                    ? Color(0x1dafff)
-                                                    : Color(0x646464)
-                                                )
-                                            )
-                                    )
-                                    .padding(.top, 8)
-                                    .onTapGesture {
-                                        calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
-                                        calendarViewModel.getSelectedScheduleList()
-                                        withAnimation {
-                                            isPopupVisible = true
-                                            Global.shared.isFaded = true
-                                        }
-                                    }
-                            }
-                        }
-                        .padding(.leading, -8)
-
-                        if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
-                            TimeTableScheduleTopView(
-                                timeTableViewModel: _timeTableViewModel,
-                                calendarViewModel: _calendarViewModel,
-                                isPopupVisible: _isPopupVisible
-                            )
-                            .padding(.top, 2)
+                                }
                         }
                     }
+
+                    if timeTableViewModel.scheduleListWithoutTime.first(where: { !$0.isEmpty }) != nil {
+                        TimeTableScheduleTopView(
+                            timeTableViewModel: _timeTableViewModel,
+                            calendarViewModel: _calendarViewModel,
+                            isPopupVisible: _isPopupVisible
+                        )
+                        .padding(.top, 2)
+                    }
                 }
-                .padding(.bottom, 5)
                 .overlay {
                     GeometryReader { proxy in
                         Color.clear
@@ -160,30 +143,22 @@ struct TimeTableScheduleView: View {
                             }
                     }
                 }
-            }
-            .frame(height: topViewHeight)
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .onChange(of: index) { _ in
+            }.onPageChanged { index in
                 let weight = TimeInterval(60 * 60 * 24 * 7)
 
-                if prevIndex > index {
+                if index < 1 {
                     // 왼쪽으로 슬라이드
                     timeTableViewModel.currentDate = timeTableViewModel.currentDate
                         .addingTimeInterval(-weight)
-                    timeTableViewModel.indices.insert(
-                        timeTableViewModel.indices[0] - 1, at: 0
-                    )
-                    prevIndex = index
-                } else if prevIndex < index {
+                } else if index > 1 {
                     // 오른쪽으로 슬라이드
                     timeTableViewModel.currentDate = timeTableViewModel.currentDate
                         .addingTimeInterval(weight)
-                    timeTableViewModel.indices.append(
-                        timeTableViewModel.indices[timeTableViewModel.indices.count - 1] + 1
-                    )
-                    prevIndex = index
                 }
+                page.update(.new(index: 1))
             }
+            .frame(height: topViewHeight)
+            .padding(.bottom, 5)
 
             ScrollView(showsIndicators: false) {
                 LazyVGrid(
@@ -197,7 +172,7 @@ struct TimeTableScheduleView: View {
                                 Text("\(index / 8 + 1)")
                                     .font(.pretendard(size: 12, weight: .regular))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .offset(y: 6)
+                                    .offset(x: 6, y: 6)
                             }
                         } else {
                             Rectangle()
@@ -304,6 +279,7 @@ struct TimeTableScheduleView: View {
                 Spacer(minLength: 80)
             }
         }
+        .padding(.leading, -8)
     }
 }
 
@@ -402,9 +378,15 @@ struct CellDropDelegate: DropDelegate {
         _timeTableViewModel = timeTableViewModel
     }
 
-    private static var dayFormatter: DateFormatter = {
+    private static let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd"
+        return formatter
+    }()
+
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMddhh"
         return formatter
     }()
 
@@ -468,13 +450,21 @@ struct CellDropDelegate: DropDelegate {
         let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
             draggingSchedule.data.repeatStart
         )
+        let endDate = date.advanced(by: TimeInterval(60 * diff))
 
         timeTableViewModel.removePreview()
-        timeTableViewModel.updateDraggingSchedule(
-            startDate: date,
-            endDate: date.advanced(by: TimeInterval(60 * diff)),
-            at: draggingSchedule.at
-        )
-        return true
+        if Self.dateFormatter.string(from: draggingSchedule.data.repeatStart) != Self.dateFormatter.string(from: date)
+            || draggingSchedule.data.repeatStart.minute / 5 != minuteIndex // 현재 상황에선 해당 줄은 00:04 <-> 00:00 은 같은 위치로 보이기 때문에 업데이트 하지 않음.
+        {
+            timeTableViewModel.updateDraggingSchedule(
+                startDate: date,
+                endDate: endDate,
+                at: draggingSchedule.at
+            )
+            return true
+        } else {
+            timeTableViewModel.findUnion()
+        }
+        return false
     }
 }
