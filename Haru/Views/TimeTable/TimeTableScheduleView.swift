@@ -242,7 +242,8 @@ struct TimeTableScheduleView: View {
                                         let scheduleFormViewModel = ScheduleFormViewModel(
                                             schedule: schedule.data,
                                             categoryList: calendarViewModel.categoryList,
-                                            at: schedule.at
+                                            at: schedule.at,
+                                            from: .timeTable
                                         ) {
                                             timeTableViewModel.fetchScheduleList()
                                         }

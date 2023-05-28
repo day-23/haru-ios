@@ -46,7 +46,7 @@ struct MyView: View {
 
         let createdAt = user.createdAt
         let diff = createdAt.distance(to: date)
-        return Int(diff / (60 * 60 * 24))
+        return Int(diff / (60 * 60 * 24)) + 1
     }
 
     var body: some View {

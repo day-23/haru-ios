@@ -450,18 +450,28 @@ struct ScheduleFormView: View {
             
         switch actionSheetOption {
         case .isRepeat:
-            if scheduleFormVM.oriSchedule?.at == .front ||
-                scheduleFormVM.oriSchedule?.at == RepeatAt.none ||
-                scheduleFormVM.at == .front ||
-                scheduleFormVM.at == .none
+            if (scheduleFormVM.from == .calendar && scheduleFormVM.oriSchedule?.at == RepeatAt.none)
+                || (scheduleFormVM.from == .timeTable && scheduleFormVM.at == .none)
             {
                 return ActionSheet(title: title,
                                    message: nil,
                                    buttons: [deleteAllButton, cancleButton])
-            } else {
+            } else if (scheduleFormVM.from == .calendar && scheduleFormVM.oriSchedule?.at == .front)
+                || (scheduleFormVM.from == .timeTable && scheduleFormVM.at == .front)
+            {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [deleteButton, deleteAllButton, cancleButton])
+            } else if (scheduleFormVM.from == .calendar && scheduleFormVM.oriSchedule?.at == .middle)
+                || (scheduleFormVM.from == .timeTable && scheduleFormVM.at == .middle)
+            {
                 return ActionSheet(title: title,
                                    message: nil,
                                    buttons: [deleteButton, deleteAfterButton, deleteAllButton, cancleButton])
+            } else {
+                return ActionSheet(title: title,
+                                   message: nil,
+                                   buttons: [deleteButton, deleteAllButton, cancleButton])
             }
 
         case .isNotRepeat:
@@ -498,10 +508,10 @@ struct ScheduleFormView: View {
                 (scheduleFormVM.tmpIsSelectedRepeatEnd &&
                     scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd)
             {
-                if scheduleFormVM.oriSchedule?.at == .front
-                    || scheduleFormVM.oriSchedule?.at == RepeatAt.none
-                    || scheduleFormVM.at == .front
-                    || scheduleFormVM.at == .none
+                if (scheduleFormVM.from == .calendar
+                    && (scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.oriSchedule?.at == RepeatAt.none))
+                    || (scheduleFormVM.from == .timeTable
+                        && (scheduleFormVM.at == .front || scheduleFormVM.at == .none))
                 {
                     return ActionSheet(title: title,
                                        message: nil,
@@ -514,10 +524,10 @@ struct ScheduleFormView: View {
             } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption.rawValue ||
                 scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
-                if scheduleFormVM.oriSchedule?.at == .front
-                    || scheduleFormVM.oriSchedule?.at == RepeatAt.none
-                    || scheduleFormVM.at == .front
-                    || scheduleFormVM.at == .none
+                if (scheduleFormVM.from == .calendar
+                    && (scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.oriSchedule?.at == RepeatAt.none))
+                    || (scheduleFormVM.from == .timeTable
+                        && (scheduleFormVM.at == .front || scheduleFormVM.at == .none))
                 {
                     return ActionSheet(title: title,
                                        message: nil,
@@ -528,12 +538,14 @@ struct ScheduleFormView: View {
                                        buttons: [editAfterButton, editAllButton, cancleButton])
                 }
             } else {
-                if scheduleFormVM.oriSchedule?.at == .front || scheduleFormVM.at == .front {
+                if (scheduleFormVM.from == .calendar && scheduleFormVM.oriSchedule?.at == .front)
+                    || (scheduleFormVM.from == .timeTable && scheduleFormVM.at == .front)
+                {
                     return ActionSheet(title: title,
                                        message: nil,
                                        buttons: [editButton, editAllButton, cancleButton])
-                } else if scheduleFormVM.oriSchedule?.at == RepeatAt.none
-                    || scheduleFormVM.at == .none
+                } else if (scheduleFormVM.from == .calendar && scheduleFormVM.oriSchedule?.at == RepeatAt.none)
+                    || (scheduleFormVM.from == .timeTable && scheduleFormVM.at == .none)
                 {
                     return ActionSheet(title: title,
                                        message: nil,

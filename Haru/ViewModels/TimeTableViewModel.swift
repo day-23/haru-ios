@@ -679,6 +679,7 @@ final class TimeTableViewModel: ObservableObject {
         }
         scheduleList = scheduleList.filter { $0.id != draggingSchedule.id }
 
+        // TODO: - front == back 처리 필요
         if at == .none {
             scheduleService.updateSchedule(
                 scheduleId: draggingSchedule.data.id,

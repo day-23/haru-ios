@@ -9,6 +9,13 @@ import Foundation
 import SwiftUI
 
 final class ScheduleFormViewModel: ObservableObject {
+    enum From {
+        case calendar
+        case timeTable
+    }
+    
+    @State var from: From
+    
     // TODO: 반복 설정, 하루종일 설정
     @Published var setRepeatTime: Bool = false
     
@@ -333,6 +340,7 @@ final class ScheduleFormViewModel: ObservableObject {
         self.categoryList = categoryList
         self.successAction = successAction
         self.at = .none
+        self.from = .calendar
     }
     
     // edit 시 scheduleVM 생성자
@@ -340,10 +348,12 @@ final class ScheduleFormViewModel: ObservableObject {
         schedule: Schedule,
         categoryList: [Category],
         at: RepeatAt = .none,
+        from: From = .calendar,
         successAction: @escaping () -> Void
     ) {
         self.mode = .edit
         self.at = at
+        self.from = from
         
         self.scheduleId = schedule.id
         self.oriSchedule = schedule
@@ -365,8 +375,15 @@ final class ScheduleFormViewModel: ObservableObject {
         
         self.tmpRealRepeatEnd = schedule.realRepeatEnd ?? schedule.repeatEnd
         
-        self.prevRepeatEnd = schedule.prevRepeatEnd
-        self.nextRepeatStart = schedule.nextRepeatStart
+        if from == .calendar {
+            self.prevRepeatEnd = schedule.prevRepeatEnd
+            self.nextRepeatStart = schedule.nextRepeatStart
+        } else {
+            do {
+                self.prevRepeatEnd = try schedule.prevRepeatEndDate(curRepeatEnd: schedule.repeatStart)
+                self.nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
+            } catch {}
+        }
         
         self.content = schedule.content
         self.memo = schedule.memo
@@ -661,7 +678,9 @@ final class ScheduleFormViewModel: ObservableObject {
      * 반복 일정 하나만 편집하기
      */
     func updateTargetSchedule(isAfter: Bool = false) {
-        if oriSchedule?.at == .front || at == .front {
+        if (from == .calendar && oriSchedule?.at == .front)
+            || (from == .timeTable && at == .front)
+        {
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
             scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
@@ -672,8 +691,8 @@ final class ScheduleFormViewModel: ObservableObject {
                 }
             }
         } else if isAfter ||
-            oriSchedule?.at == .back ||
-            at == .back
+            (from == .calendar && oriSchedule?.at == .back) ||
+            (from == .timeTable && at == .back)
         {
             let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
             scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
@@ -684,8 +703,8 @@ final class ScheduleFormViewModel: ObservableObject {
                     print("[Debug] \(failure) \(#fileID) \(#function)")
                 }
             }
-        } else if oriSchedule?.at == .middle ||
-            at == .middle
+        } else if (from == .calendar && oriSchedule?.at == .middle) ||
+            (from == .timeTable && at == .middle)
         {
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: repeatStart)
             scheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
