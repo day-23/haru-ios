@@ -8,6 +8,12 @@
 import SwiftUI
 
 struct TimeTableTodoRow: View {
+    let dateFormatter: DateFormatter = {
+        let formatter: DateFormatter = .init()
+        formatter.dateFormat = "yyyyMMdd"
+        return formatter
+    }()
+
     private let week = ["일", "월", "화", "수", "목", "금", "토"]
 
     var index: Int
@@ -31,14 +37,14 @@ struct TimeTableTodoRow: View {
                     )
                     .padding(.bottom, 7)
 
-                if index == Date.now.indexOfWeek() {
+                if dateFormatter.string(from: date) == dateFormatter.string(from: .now) {
                     Text("\(date.day)")
                         .font(.pretendard(size: 14, weight: .bold))
                         .foregroundColor(Color(0x1dafff))
                         .background(
                             Circle()
                                 .stroke(.gradation1, lineWidth: 2)
-                                .padding(-2)
+                                .padding(-3)
                         )
                 } else {
                     Text("\(date.day)")
