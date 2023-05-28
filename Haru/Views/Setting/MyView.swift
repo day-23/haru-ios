@@ -118,6 +118,7 @@ struct MyView: View {
                                         Text("\(completed)")
                                             .font(.pretendard(size: 20, weight: .bold))
                                             .foregroundColor(Color(0x1dafff))
+                                            .animation(.none)
                                         Text("완료한 일")
                                             .font(.pretendard(size: 14, weight: .regular))
                                             .foregroundColor(Color(0x191919))
@@ -127,6 +128,7 @@ struct MyView: View {
                                         Text("\(totalItems)")
                                             .font(.pretendard(size: 20, weight: .bold))
                                             .foregroundColor(Color(0x191919))
+                                            .animation(.none)
                                         Text("할 일")
                                             .font(.pretendard(size: 14, weight: .regular))
                                             .foregroundColor(Color(0x191919))
@@ -142,6 +144,7 @@ struct MyView: View {
                                     Text("\(Int(completionRate * 100))%")
                                         .font(.pretendard(size: 30, weight: .bold))
                                         .foregroundColor(Color(0x1dafff))
+                                        .animation(.none)
                                 }
                             }
                             .padding(.leading, 34)

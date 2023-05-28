@@ -413,9 +413,6 @@ struct ScheduleFormView: View {
                 }
             }
         }
-        .onAppear {
-            print(scheduleFormVM.at, scheduleFormVM.oriSchedule?.at)
-        }
     }
     
     func getRepeatOption() -> [RepeatOption] {
