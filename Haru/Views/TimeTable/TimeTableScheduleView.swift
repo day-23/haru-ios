@@ -325,7 +325,7 @@ private extension TimeTableScheduleView {
         order: Int,
         frame: (width: CGFloat, height: CGFloat)
     ) -> (x: CGFloat, y: CGFloat)? {
-        guard let cellWidth = cellWidth else {
+        guard let cellWidth else {
             return nil
         }
 
@@ -352,7 +352,7 @@ private extension TimeTableScheduleView {
         weight: Int,
         duration: Int = 60
     ) -> (width: CGFloat, height: CGFloat)? {
-        guard let cellWidth = cellWidth else {
+        guard let cellWidth else {
             return nil
         }
 
@@ -426,11 +426,11 @@ struct CellDropDelegate: DropDelegate {
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
-        return DropProposal(operation: .move)
+        DropProposal(operation: .move)
     }
 
     func validateDrop(info: DropInfo) -> Bool {
-        return info.hasItemsConforming(to: [.text])
+        info.hasItemsConforming(to: [.text])
     }
 
     func performDrop(info: DropInfo) -> Bool {

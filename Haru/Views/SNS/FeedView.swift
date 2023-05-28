@@ -39,7 +39,7 @@ struct FeedView: View {
 
                 Text("1일 전")
                     .font(.pretendard(size: 10, weight: .regular))
-                    .foregroundColor(.gray2)
+                    .foregroundColor(Color(0x646464))
 
                 Spacer()
 

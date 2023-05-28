@@ -161,7 +161,7 @@ struct CheckListView: View {
                                 .padding(.leading, 10)
                             }
                         } offsetChanged: {
-                            self.changeOffset($0)
+                            changeOffset($0)
                         }
                     } else {
                         if let tag = viewModel.selectedTag {
@@ -181,7 +181,7 @@ struct CheckListView: View {
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    self.changeOffset($0)
+                                    changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.unclassified.rawValue {
                                 ListView(checkListViewModel: viewModel) {
@@ -199,7 +199,7 @@ struct CheckListView: View {
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    self.changeOffset($0)
+                                    changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.completed.rawValue {
                                 ListView(checkListViewModel: viewModel) {
@@ -218,7 +218,7 @@ struct CheckListView: View {
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    self.changeOffset($0)
+                                    changeOffset($0)
                                 }
                             } else {
                                 // Tag 클릭시
@@ -278,7 +278,7 @@ struct CheckListView: View {
                                     }
 
                                 } offsetChanged: {
-                                    self.changeOffset($0)
+                                    changeOffset($0)
                                 }
                             }
                         }
@@ -402,11 +402,11 @@ struct CheckListView: View {
 
         withAnimation(.easeInOut(duration: 0.25)) {
             if offset >= 0 {
-                self.viewIsShown = true
+                viewIsShown = true
             } else if prevOffset > offset {
-                self.viewIsShown = false
+                viewIsShown = false
             } else {
-                self.viewIsShown = true
+                viewIsShown = true
             }
             self.prevOffset = offset
         }

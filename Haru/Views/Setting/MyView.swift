@@ -11,6 +11,8 @@ struct MyView: View {
     private let todoService: TodoService = .init()
     @EnvironmentObject var global: Global
 
+    @StateObject var userProfileVM: UserProfileViewModel = .init(userId: Global.shared.user?.id ?? "unknown")
+
     @Binding var isLoggedIn: Bool
     @State private var now: Date = .now.startOfMonth()
     @State private var completed: Int = 0
@@ -63,8 +65,12 @@ struct MyView: View {
 
                 ScrollView {
                     VStack(spacing: 0) {
-                        Rectangle()
-                            .foregroundColor(.black)
+                        // --- 프로필 view
+                        ProfileInfoView(userProfileVM: userProfileVM)
+                            .onAppear {
+                                userProfileVM.fetchUserProfile()
+                            }
+                            .padding(.top, 20)
                         Spacer()
 
                         VStack(spacing: 0) {
