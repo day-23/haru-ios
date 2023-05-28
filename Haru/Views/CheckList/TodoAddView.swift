@@ -12,6 +12,7 @@ struct TodoAddView: View {
     @ObservedObject var viewModel: TodoAddViewModel
     @Binding var isModalVisible: Bool
     @FocusState private var tagInFocus: Bool
+    @FocusState private var memoInFocus: Bool
     @State private var deleteButtonTapped = false
     @State private var updateButtonTapped = false
 
@@ -420,6 +421,7 @@ struct TodoAddView: View {
                             .font(.pretendard(size: 14, weight: .regular))
                             .padding(.leading, 45)
                             .padding(.horizontal, 20)
+                            .focused($memoInFocus)
                         
                         Divider()
                     }
