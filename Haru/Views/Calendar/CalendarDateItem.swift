@@ -20,8 +20,8 @@ struct CalendarDateItem: View {
                 .frame(height: 7)
 
             Text("\(value.day)")
-                .font(.pretendard(size: 12, weight: .medium))
-                .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .gradientStart1 : Calendar.current.component(.weekday, from: value.date) == 1 ? .red : Calendar.current.component(.weekday, from: value.date) == 7 ? .gradientStart1 : .mainBlack)
+                .font(.pretendard(size: 14, weight: .regular))
+                .foregroundColor(CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? .gradientStart1 : Calendar.current.component(.weekday, from: value.date) == 1 ? .red : Calendar.current.component(.weekday, from: value.date) == 7 ? .gradientStart1 : Color(0x646464))
                 .background(
                     Circle()
                         .stroke(Color.gradation1, lineWidth: CalendarHelper.isSameDay(date1: value.date, date2: Date()) ? 2 : 0)

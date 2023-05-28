@@ -17,7 +17,7 @@ struct CalendarDateView: View {
     
     @State var width = UIScreen.main.bounds.width - 50
     @State var x = UIScreen.main.bounds.width
-
+    
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -90,10 +90,18 @@ struct CalendarDateView: View {
                     Group {
                         // Day View ...
                         HStack(spacing: 0) {
-                            ForEach(calendarVM.dayList, id: \.self) { day in
-                                Text(day)
+                            ForEach(calendarVM.dayList.indices, id: \.self) { index in
+                                Text(calendarVM.dayList[index])
                                     .font(.pretendard(size: 14, weight: .regular))
                                     .frame(maxWidth: .infinity)
+                                    .foregroundColor(
+                                        index == 0 ?
+                                            Color(0xF71E58) :
+                                            index == 6 ?
+                                            Color(0x1DAFFF)
+                                            :
+                                            Color(0x646464)
+                                    )
                             }
                         } // HStack
                         .padding(.top, 14)
