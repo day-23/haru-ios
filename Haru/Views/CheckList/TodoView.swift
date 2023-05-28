@@ -171,9 +171,9 @@ struct TodoView: View {
                             if formatter.string(from: .now) == formatter.string(from: todoDate)
                                 && todo.isAllDay
                             {
-                                Text("\(formatterWithTime.string(from: todoDate))\(todo.repeatOption == nil ? "까지" : "")")
+                                Text("\(formatterWithTime.string(from: todoDate))\(todo.repeatOption == nil ? " 까지" : "")")
                             } else {
-                                Text("\(formatter.string(from: todoDate))\(todo.repeatOption == nil ? "까지" : "")")
+                                Text("\(formatter.string(from: todoDate))\(todo.repeatOption == nil ? " 까지" : "")")
                             }
                         }
 
