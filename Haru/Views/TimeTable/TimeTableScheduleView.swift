@@ -55,7 +55,8 @@ struct TimeTableScheduleView: View {
             // 날짜 및 하루종일, 여러 날짜에 걸쳐 나타나는 일정이 보이는 View
             Pager(page: page,
                   data: timeTableViewModel.indices,
-                  id: \.self) { _ in
+                  id: \.self)
+            { _ in
                 VStack(spacing: 0) {
                     LazyVGrid(columns: column, spacing: 30) {
                         Text("")
@@ -252,9 +253,6 @@ struct TimeTableScheduleView: View {
                                             scheduleFormVM: scheduleFormViewModel,
                                             isSchModalVisible: .constant(false)
                                         )
-                                        .onAppear {
-                                            calendarViewModel.getCategoryList()
-                                        }
                                     } label: {
                                         ScheduleItemView(schedule: $schedule)
                                     }
@@ -282,6 +280,9 @@ struct TimeTableScheduleView: View {
 
                 Spacer(minLength: 80)
             }
+        }
+        .onAppear {
+            calendarViewModel.getCategoryList()
         }
         .padding(.leading, -8)
     }

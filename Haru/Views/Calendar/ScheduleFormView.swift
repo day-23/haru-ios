@@ -68,76 +68,76 @@ struct ScheduleFormView: View {
                                 .font(Font.system(size: 24, weight: .medium))
                                 
                             Group {
-                                HStack {
-                                    if let selectIndex = scheduleFormVM.selectionCategory {
-                                        Button {
-                                            showCategorySheet = true
-                                        } label: {
-                                            Circle()
-                                                .fill(Color(scheduleFormVM.categoryList[selectIndex].color))
-                                                .padding(5)
-                                                .frame(width: 38, height: 38)
-                                        }
-                                        .popup(isPresented: $showCategorySheet) {
-                                            CategoryView(
-                                                scheduleFormVM: scheduleFormVM,
-                                                selectedIdx: $selectedIdx,
-                                                showCategorySheet: $showCategorySheet
-                                            )
-                                            .background(Color.white)
-                                            .frame(height: 450)
-                                            .cornerRadius(20)
-                                            .padding(.horizontal, 30)
-                                            .shadow(radius: 2.0)
-                                            .onAppear {
-                                                selectedIdx = scheduleFormVM.selectionCategory
-                                            }
-                                        } customize: {
-                                            $0
-                                                .animation(.spring())
-                                                .closeOnTap(false)
-                                                .closeOnTapOutside(true)
-                                                .dismissCallback {
-                                                    scheduleFormVM.selectionCategory = selectedIdx
-                                                }
-                                        }
-                                        .tint(Color.black)
-                                    } else {
-                                        Button {
-                                            showCategorySheet = true
-                                        } label: {
-                                            Image("check-circle")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .frame(width: 38, height: 38)
-                                                .foregroundColor(.gray2)
-                                        }
-                                        .popup(isPresented: $showCategorySheet) {
-                                            CategoryView(
-                                                scheduleFormVM: scheduleFormVM,
-                                                selectedIdx: $selectedIdx,
-                                                showCategorySheet: $showCategorySheet
-                                            )
-                                            .background(Color.white)
-                                            .frame(height: 450)
-                                            .cornerRadius(20)
-                                            .padding(.horizontal, 30)
-                                            .shadow(radius: 2.0)
-                                        } customize: {
-                                            $0
-                                                .animation(.spring())
-                                                .closeOnTap(false)
-                                                .closeOnTapOutside(true)
-                                                .dismissCallback {
-                                                    scheduleFormVM.selectionCategory = selectedIdx
-                                                }
-                                        }
-                                        .tint(Color.gray2)
+                                if let selectIndex = scheduleFormVM.selectionCategory {
+                                    Button {
+                                        showCategorySheet = true
+                                    } label: {
+                                        Circle()
+                                            .fill(Color(scheduleFormVM.categoryList[selectIndex].color))
+                                            .padding(5)
+                                            .frame(width: 38, height: 38)
                                     }
+                                    .popup(isPresented: $showCategorySheet) {
+                                        CategoryView(
+                                            scheduleFormVM: scheduleFormVM,
+                                            selectedIdx: $selectedIdx,
+                                            showCategorySheet: $showCategorySheet
+                                        )
+                                        .background(Color.white)
+                                        .frame(height: 450)
+                                        .cornerRadius(20)
+                                        .padding(.horizontal, 30)
+                                        .shadow(radius: 2.0)
+                                        .onAppear {
+                                            selectedIdx = scheduleFormVM.selectionCategory
+                                        }
+                                    } customize: {
+                                        $0
+                                            .animation(.spring())
+                                            .closeOnTap(false)
+                                            .closeOnTapOutside(true)
+                                            .dismissCallback {
+                                                scheduleFormVM.selectionCategory = selectedIdx
+                                            }
+                                    }
+                                    .tint(Color.black)
+                                    
+                                } else {
+                                    Button {
+                                        showCategorySheet = true
+                                    } label: {
+                                        Image("check-circle")
+                                            .renderingMode(.template)
+                                            .resizable()
+                                            .frame(width: 38, height: 38)
+                                            .foregroundColor(.gray2)
+                                    }
+                                    .popup(isPresented: $showCategorySheet) {
+                                        CategoryView(
+                                            scheduleFormVM: scheduleFormVM,
+                                            selectedIdx: $selectedIdx,
+                                            showCategorySheet: $showCategorySheet
+                                        )
+                                        .background(Color.white)
+                                        .frame(height: 450)
+                                        .cornerRadius(20)
+                                        .padding(.horizontal, 30)
+                                        .shadow(radius: 2.0)
+                                    } customize: {
+                                        $0
+                                            .animation(.spring())
+                                            .closeOnTap(false)
+                                            .closeOnTapOutside(true)
+                                            .dismissCallback {
+                                                scheduleFormVM.selectionCategory = selectedIdx
+                                            }
+                                    }
+                                    .tint(Color.gray2)
                                 }
                             }
+                            .padding(.trailing, !isSchModalVisible ? -10 : 0)
                         }
-                        .padding(.horizontal, 30)
+                        .padding(.horizontal, 25)
                         
                         Divider()
                     }

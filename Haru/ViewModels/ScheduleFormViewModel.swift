@@ -43,7 +43,31 @@ final class ScheduleFormViewModel: ObservableObject {
     var nextRepeatStart: Date? // 다음 반복 일정의 시작일
     
     var buttonDisable: Bool {
-        isWarning || content == ""
+        isWarning || isFieldEmpty
+    }
+    
+    var isFieldEmpty: Bool {
+        if isSelectedRepeat {
+            switch repeatOption {
+            case .everyDay:
+                if repeatDay.isEmpty {
+                    return true
+                }
+            case .everyWeek, .everySecondWeek:
+                if repeatWeek.filter(\.isClicked).isEmpty {
+                    return true
+                }
+            case .everyMonth:
+                if repeatMonth.filter(\.isClicked).isEmpty {
+                    return true
+                }
+            case .everyYear:
+                if repeatYear.filter(\.isClicked).isEmpty {
+                    return true
+                }
+            }
+        }
+        return content.isEmpty
     }
     
     @Published var isWarning: Bool = false
@@ -64,6 +88,10 @@ final class ScheduleFormViewModel: ObservableObject {
                 isWarning = true
             } else {
                 isWarning = false
+            }
+            
+            if newValue > realRepeatEnd {
+                realRepeatEnd = newValue
             }
         }
     }
@@ -380,7 +408,7 @@ final class ScheduleFormViewModel: ObservableObject {
             self.nextRepeatStart = schedule.nextRepeatStart
         } else {
             do {
-                self.prevRepeatEnd = try schedule.prevRepeatEndDate(curRepeatEnd: schedule.repeatStart)
+                self.prevRepeatEnd = try schedule.prevRepeatEndDate(curRepeatEnd: schedule.repeatEnd)
                 self.nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
             } catch {}
         }
