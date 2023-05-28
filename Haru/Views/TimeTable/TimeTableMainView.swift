@@ -33,21 +33,6 @@ struct TimeTableMainView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                HaruHeader {
-                    Color.white
-                } item: {
-                    NavigationLink {
-                        // TODO: 검색 뷰 만들어지면 넣어주기
-                        Text("검색")
-                    } label: {
-                        Image("magnifyingglass")
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundColor(Color(0x191919))
-                            .frame(width: 28, height: 28)
-                    }
-                }
-
                 // 날짜 레이아웃
                 HStack(spacing: 0) {
                     Text("\(String(timeTableViewModel.currentYear))년")
@@ -82,6 +67,18 @@ struct TimeTableMainView: View {
                     }
 
                     Spacer()
+
+                    NavigationLink {
+                        // TODO: 검색 뷰 만들어지면 넣어주기
+                        Text("검색")
+                    } label: {
+                        Image("magnifyingglass")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
+                    .padding(.trailing, 10)
 
                     Button {
                         timeTableViewModel.currentDate = .now
