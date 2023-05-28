@@ -15,6 +15,7 @@ struct TodoAddView: View {
     @FocusState private var memoInFocus: Bool
     @State private var deleteButtonTapped = false
     @State private var updateButtonTapped = false
+    @State private var backButtonTapped = false
     
     @State private var isConfirmButtonActive: Bool = true
 
@@ -440,10 +441,23 @@ struct TodoAddView: View {
                 if !isModalVisible {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
-                            dismissAction.callAsFunction()
+                            if !viewModel.isPreviousStateEqual {
+                                backButtonTapped = true
+                            } else {
+                                dismissAction.callAsFunction()
+                            }
                         } label: {
                             Image("back-button")
                                 .frame(width: 28, height: 28)
+                        }
+                        .confirmationDialog(
+                            "현재 화면에서 나갈까요? 수정사항이 있습니다.",
+                            isPresented: $backButtonTapped,
+                            titleVisibility: .visible
+                        ) {
+                            Button("나가기", role: .destructive) {
+                                dismissAction.callAsFunction()
+                            }
                         }
                     }
                     
