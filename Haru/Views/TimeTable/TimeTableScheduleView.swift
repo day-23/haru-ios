@@ -378,9 +378,15 @@ struct CellDropDelegate: DropDelegate {
         _timeTableViewModel = timeTableViewModel
     }
 
-    private static var dayFormatter: DateFormatter = {
+    private static let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd"
+        return formatter
+    }()
+
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMddhhmm"
         return formatter
     }()
 
@@ -444,20 +450,19 @@ struct CellDropDelegate: DropDelegate {
         let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
             draggingSchedule.data.repeatStart
         )
+        let endDate = date.advanced(by: TimeInterval(60 * diff))
 
         timeTableViewModel.removePreview()
-        timeTableViewModel.updateDraggingSchedule(
-            startDate: date,
-            endDate: date.advanced(by: TimeInterval(60 * diff)),
-            at: draggingSchedule.at
-        )
-        return true
-    }
-}
-
-struct ViewRectKey: PreferenceKey {
-    static let defaultValue: CGSize = .zero
-    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
-        value = nextValue()
+        if Self.dateFormatter.string(from: draggingSchedule.data.repeatStart) != Self.dateFormatter.string(from: date) {
+            timeTableViewModel.updateDraggingSchedule(
+                startDate: date,
+                endDate: endDate,
+                at: draggingSchedule.at
+            )
+            return true
+        } else {
+            timeTableViewModel.findUnion()
+        }
+        return false
     }
 }
