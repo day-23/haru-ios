@@ -17,9 +17,11 @@ struct TagView: View {
         Text(tag.content)
             .font(.pretendard(size: fontSize, weight: .bold))
             .foregroundColor(
-                isSelected || disabled
+                isSelected
                     ? Color(0xFDFDFD)
-                    : Color(0x191919)
+                    : (disabled
+                        ? Color(0xACACAC)
+                        : Color(0x191919))
             )
             .bold()
             .padding(.vertical, 5)
