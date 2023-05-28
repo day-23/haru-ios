@@ -43,7 +43,7 @@ struct TimeTableTodoRow: View {
                         .foregroundColor(Color(0x1dafff))
                         .background(
                             Circle()
-                                .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x1BAFFF), Color(0x15AFFF)],
+                                .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x1bafff), Color(0x15afff)],
                                                        startPoint: .top,
                                                        endPoint: .bottom),
                                         lineWidth: 2)

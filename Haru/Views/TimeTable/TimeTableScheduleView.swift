@@ -251,6 +251,9 @@ struct TimeTableScheduleView: View {
                                             scheduleFormVM: scheduleFormViewModel,
                                             isSchModalVisible: .constant(false)
                                         )
+                                        .onAppear {
+                                            calendarViewModel.getCategoryList()
+                                        }
                                     } label: {
                                         ScheduleItemView(schedule: $schedule)
                                     }

@@ -332,6 +332,26 @@ final class TimeTableViewModel: ObservableObject {
                                         return
                                     }
                                     repeatSchedule.repeatEnd = repeatEnd
+                                    repeatSchedule.realRepeatEnd = schedule.repeatEnd
+
+                                    if at == .front {
+                                        do {
+                                            let temp = try schedule.nextRepeatStartDate(curRepeatStart: date)
+                                            if dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: temp)
+                                            {
+                                                at = .none
+                                            }
+                                        } catch {
+                                            switch error {
+                                            case RepeatError.invalid:
+                                                print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
+                                            case RepeatError.calculation:
+                                                print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
+                                            default:
+                                                print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
+                                            }
+                                        }
+                                    }
 
                                     var cell = ScheduleCell(
                                         id: UUID().uuidString,
@@ -603,7 +623,7 @@ final class TimeTableViewModel: ObservableObject {
                                             TodoCell(
                                                 id: UUID().uuidString,
                                                 data: modified,
-                                                at: .back
+                                                at: at == .front ? .none : .back
                                             )
                                         )
                                         break

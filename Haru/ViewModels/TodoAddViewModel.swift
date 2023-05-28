@@ -544,9 +544,9 @@ final class TodoAddViewModel: ObservableObject {
         // Case front: endDate 계산하여 넘겨주기, 만약 다음 날짜가 없다면? 그냥 업데이트로 진행
         // Case middle: endDate 계산하여 넘겨주기
         // Case back: preRepeatEnd 계산하여 넘겨주기
-
         if at == .front || at == .middle {
             do {
+                // front == back인 경우, 그냥 업데이트를 하는 것으로 처리한다.
                 guard let endDate = try todo.nextEndDate() else {
                     todoState.updateTodo(
                         todoId: todo.id,
