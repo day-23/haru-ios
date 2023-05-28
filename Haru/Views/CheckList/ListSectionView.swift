@@ -33,7 +33,7 @@ struct ListSectionView<Content>: View where Content: View {
                                 .onAppear {
                                     todoAddViewModel.applyTodoData(
                                         todo: todo,
-                                        at: .front
+                                        at: determineRepeatAt(todo: todo)
                                     )
                                 }
                         } label: {
@@ -92,5 +92,24 @@ struct ListSectionView<Content>: View where Content: View {
             }
             .background(itemBackgroundColor)
         }
+    }
+}
+
+extension ListSectionView {
+    func determineRepeatAt(todo: Todo) -> RepeatAt {
+        if todo.repeatOption == nil {
+            return .none
+        }
+
+        do {
+            guard let _ = try todo.nextEndDate() else {
+                return .none
+            }
+            return .front
+        } catch {
+            print("[Debug] 위치를 결정하는데 문제가 있습니다. \(error) \(#fileID) \(#function)")
+        }
+
+        return .none
     }
 }
