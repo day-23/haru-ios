@@ -332,7 +332,7 @@ private extension TimeTableScheduleView {
         let width = cellWidth * CGFloat(1.0 / Double(weight))
 
         var x = CGFloat(column) * cellWidth
-        x += CGFloat(fixed) + CGFloat(borderWidth * 8)
+        x += CGFloat(fixed) + CGFloat(borderWidth * 8) + 0.5
         x -= width == cellWidth ?
             width * 0.5 :
             width * Double(weight) - width * 0.5
@@ -342,7 +342,7 @@ private extension TimeTableScheduleView {
         }
 
         var y = CGFloat(row) * cellHeight
-        y += cellHeight * CGFloat(Double(minuteIndex) * minuteInterval / 60.0)
+        y += cellHeight * CGFloat(Double(minuteIndex) * minuteInterval / 60.0) + 1
         y += frame.height * 0.5 - cellHeight
 
         return (x: x, y: y)
@@ -356,8 +356,8 @@ private extension TimeTableScheduleView {
             return nil
         }
 
-        let width: CGFloat = cellWidth * CGFloat(1.0 / Double(weight))
-        let height: CGFloat = cellHeight * CGFloat(Double(duration) / 60.0)
+        let width: CGFloat = cellWidth * CGFloat(1.0 / Double(weight)) - 1
+        let height: CGFloat = cellHeight * CGFloat(Double(duration) / 60.0) - 1
 
         return (width: width, height: height)
     }
