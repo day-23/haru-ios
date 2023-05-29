@@ -97,12 +97,14 @@ struct ProfileView: View {
                         dismissAction.callAsFunction()
                     } label: {
                         Text("친구피드")
+                            .font(.pretendard(size: 16, weight: .bold))
                     }
                 } secondContent: {
                     NavigationLink {
                         LookAroundView()
                     } label: {
                         Text("둘러보기")
+                            .font(.pretendard(size: 16, weight: .bold))
                     }
                 }
             }

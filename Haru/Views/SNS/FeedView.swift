@@ -49,7 +49,14 @@ struct FeedView: View {
             }
             .padding(.horizontal, 20)
 
-            FeedImage(imageList: postImageList, imageCount: post.images.count, templateMode: post.templateUrl != nil, content: post.content)
+            FeedImage(
+                post: post,
+                imageList: postImageList,
+                imageCount: post.images.count,
+                templateMode: post.templateUrl != nil,
+                content: post.content,
+                isMine: isMine
+            )
 
             HStack(spacing: 14) {
                 HStack(spacing: 10) {

@@ -33,8 +33,6 @@ struct MediaListView: View {
                                             }
                                         Spacer()
                                     }
-                                } else {
-                                    Text("끝 \(postVM.page) \(postVM.mediaTotalPage[postVM.selectedHashTag.id] ?? 0)")
                                 }
                             }
                         } else {
@@ -50,7 +48,7 @@ struct MediaListView: View {
         .onAppear {
             postVM.option = postVM.targetId == nil ? .media : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media : .target_media_hashtag
             postVM.fetchTargetHashTags()
-            
+
             if postVM.mediaTotalPage[postVM.selectedHashTag.id] == nil {
                 postVM.loadMorePosts()
             }
