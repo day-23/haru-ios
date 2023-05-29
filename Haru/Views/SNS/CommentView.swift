@@ -196,7 +196,7 @@ struct CommentView: View, KeyboardReadable {
                                 Button {
                                     hiddeComment = true
                                 } label: {
-                                    Image("chat-bubble-fill")
+                                    Image("comment-bubble")
                                         .renderingMode(.template)
                                         .resizable()
                                         .frame(width: 28, height: 28)
