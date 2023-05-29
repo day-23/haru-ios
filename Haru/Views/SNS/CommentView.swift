@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CommentView: View {
+struct CommentView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismissAction
     let deviceSize = UIScreen.main.bounds.size
 
@@ -49,6 +49,7 @@ struct CommentView: View {
     }
 
     @State var isCommentCreate: Bool = false
+    @State var hiddeComment: Bool = false // 댓글을 가릴건지 안가릴건지 선택
 
     @State var textRect = CGRect()
 
@@ -58,6 +59,7 @@ struct CommentView: View {
     @State var pressing: Bool = false
 
     @FocusState var isFocused: Bool
+    @State var keyboardUp: Bool = false
 
     @State var delCommentModalVis: Bool = false
     @State var delCommentTarget: Post.Comment?
@@ -77,10 +79,88 @@ struct CommentView: View {
 
     var body: some View {
         ZStack {
-            Text("\(postPageNum + 1)/\(postImageList.count)")
-                .font(.pretendard(size: 14, weight: .bold))
-                .foregroundColor(Color(0xFDFDFD))
-                .offset(y: -250)
+            HStack(alignment: .center, spacing: 0) {
+                Group {
+                    Button {} label: {
+                        HStack(spacing: 5) {
+                            Image("touch-edit")
+                                .renderingMode(.template)
+                                .resizable()
+                                .foregroundColor(Color(0xFDFDFD))
+                                .frame(width: 28, height: 28)
+
+                            Text("편집하기")
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0xFDFDFD))
+                        }
+                    }
+                }
+
+                Spacer(minLength: 0)
+                    .frame(width: 34)
+
+                Group {
+                    HStack(spacing: 20) {
+                        Image("toggle")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .rotationEffect(Angle(degrees: -180))
+                            .onTapGesture {
+                                withAnimation {
+                                    postPageNum -= 1
+                                }
+                            }
+                            .disabled(postPageNum == 0)
+
+                        Text("\(postPageNum + 1)/\(postImageList.count)")
+                            .font(.pretendard(size: 12, weight: .regular))
+                            .foregroundColor(Color(0xFDFDFD))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .background(Color(0x646464))
+                            .cornerRadius(15)
+
+                        Image("toggle")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .onTapGesture {
+                                withAnimation {
+                                    postPageNum += 1
+                                }
+                            }
+                            .disabled(postPageNum == postImageList.count - 1)
+                    }
+                }
+
+                Spacer(minLength: 0)
+
+                Group {
+                    if hiddeComment {
+                        Button {
+                            hiddeComment = false
+                        } label: {
+                            Image("comment-disable")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x1CAFFF))
+                                .frame(width: 28, height: 28)
+                        }
+                    } else {
+                        Button {
+                            hiddeComment = true
+                        } label: {
+                            Image("chat-bubble-fill")
+                                .renderingMode(.template)
+                                .resizable()
+                                .frame(width: 28, height: 28)
+                                .foregroundColor(Color(0xFDFDFD))
+                        }
+                    }
+                }
+            }
+            .opacity(keyboardUp ? 0 : 1)
+            .padding(.horizontal, 20)
+            .offset(y: -250)
 
             mainContent(deviceSize: deviceSize)
                 .zIndex(3)
@@ -168,6 +248,9 @@ struct CommentView: View {
                 }
             }
         )
+        .onReceive(keyboardEventPublisher, perform: { value in
+            keyboardUp = value
+        })
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -189,8 +272,8 @@ struct CommentView: View {
             }
 
             ToolbarItem(placement: .principal) {
-                Text("코멘트 남기기")
-                    .font(.pretendard(size: 14, weight: .regular))
+                Text(isCommentCreate ? "코멘트 작성" : "코멘트")
+                    .font(.pretendard(size: 20, weight: .bold))
                     .foregroundColor(Color(0xFDFDFD))
             }
 
@@ -396,23 +479,25 @@ struct CommentView: View {
 
     @ViewBuilder
     func commentListView() -> some View {
-        ForEach(commentList[postPageNum]) { comment in
-            if !isCommentCreate || alreadyComment[postPageNum]?.0.id != comment.id {
-                Text("\(comment.content)")
-                    .font(.pretendard(size: 14, weight: .bold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color(0xFDFDFD))
-                    .cornerRadius(9)
-                    .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
-                    .foregroundColor(Color(0x191919))
-                    .zIndex(2)
-                    .onTapGesture {
-                        if isMine {
-                            delCommentTarget = comment
-                            delCommentModalVis = true
+        if !hiddeComment {
+            ForEach(commentList[postPageNum]) { comment in
+                if !isCommentCreate || alreadyComment[postPageNum]?.0.id != comment.id {
+                    Text("\(comment.content)")
+                        .font(.pretendard(size: 14, weight: .bold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color(0xFDFDFD))
+                        .cornerRadius(9)
+                        .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
+                        .foregroundColor(Color(0x191919))
+                        .zIndex(2)
+                        .onTapGesture {
+                            if isMine {
+                                delCommentTarget = comment
+                                delCommentModalVis = true
+                            }
                         }
-                    }
+                }
             }
         }
     }

@@ -141,6 +141,7 @@
 		6F54DF5929DD919C002FAD7F /* ProfileFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5829DD919C002FAD7F /* ProfileFormView.swift */; };
 		6F54DF5F29DDCA26002FAD7F /* PopupImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5E29DDCA26002FAD7F /* PopupImagePicker.swift */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
+		6F61A95B2A246C79002609D6 /* KeyboardReadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F61A95A2A246C79002609D6 /* KeyboardReadable.swift */; };
 		6F62F4922A0B62DB001BA364 /* PostOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4912A0B62DB001BA364 /* PostOption.swift */; };
 		6F62F4942A0BA14F001BA364 /* ImageAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4932A0BA14F001BA364 /* ImageAsset.swift */; };
 		6F62F4962A0BA212001BA364 /* ImagePickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */; };
@@ -314,6 +315,7 @@
 		6F54DF5829DD919C002FAD7F /* ProfileFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFormView.swift; sourceTree = "<group>"; };
 		6F54DF5E29DDCA26002FAD7F /* PopupImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupImagePicker.swift; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
+		6F61A95A2A246C79002609D6 /* KeyboardReadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardReadable.swift; sourceTree = "<group>"; };
 		6F62F4912A0B62DB001BA364 /* PostOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostOption.swift; sourceTree = "<group>"; };
 		6F62F4932A0BA14F001BA364 /* ImageAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAsset.swift; sourceTree = "<group>"; };
 		6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerViewModel.swift; sourceTree = "<group>"; };
@@ -557,6 +559,7 @@
 				1306679D29CEE1F200AACEE6 /* View.swift */,
 				6F1082CA2A0E55D300CB89DB /* String.swift */,
 				6F9AE8642A21F26D00BD5269 /* UIApplication.swift */,
+				6F61A95A2A246C79002609D6 /* KeyboardReadable.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -943,6 +946,7 @@
 				6F1F9A232A00E36600C4ABF4 /* DropdownMenu.swift in Sources */,
 				1306677429CEE19C00AACEE6 /* CheckListView.swift in Sources */,
 				130666FC29CEE0AC00AACEE6 /* Constants.swift in Sources */,
+				6F61A95B2A246C79002609D6 /* KeyboardReadable.swift in Sources */,
 				1306678229CEE1D300AACEE6 /* ScheduleFormViewModel.swift in Sources */,
 				13DE94BA2A16848700D43105 /* SplashView.swift in Sources */,
 			);
