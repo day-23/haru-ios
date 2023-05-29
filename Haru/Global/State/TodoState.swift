@@ -265,7 +265,8 @@ final class TodoState: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.updateTodo(todoId: todoId,
-                               todo: todo) { result in
+                               todo: todo)
+        { result in
             switch result {
             case .success:
                 completion(.success(true))
@@ -304,7 +305,8 @@ final class TodoState: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.updateFlag(todoId: todo.id,
-                               flag: !todo.flag) { result in
+                               flag: !todo.flag)
+        { result in
             switch result {
             case let .success(success):
                 completion(.success(success))
@@ -320,7 +322,8 @@ final class TodoState: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.updateFolded(todoId: todo.id,
-                                 folded: !todo.folded) { result in
+                                 folded: !todo.folded)
+        { result in
             switch result {
             case let .success(success):
                 completion(.success(success))
@@ -392,7 +395,8 @@ final class TodoState: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.completeSubTodo(subTodoId: subTodoId,
-                                    completed: completed) { result in
+                                    completed: completed)
+        { result in
             switch result {
             case .success:
                 completion(.success(true))
@@ -412,7 +416,7 @@ final class TodoState: ObservableObject {
         todoService.completeTodoWithRepeat(
             todo: todo,
             nextEndDate: nextEndDate,
-            at: .front
+            at: at
         ) { result in
             switch result {
             case let .success(success):
