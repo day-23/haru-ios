@@ -46,7 +46,7 @@ struct MyView: View {
 
         let createdAt = user.createdAt
         let diff = createdAt.distance(to: date)
-        return Int(diff / (60 * 60 * 24))
+        return Int(diff / (60 * 60 * 24)) + 1
     }
 
     var body: some View {
@@ -70,122 +70,125 @@ struct MyView: View {
                             .onAppear {
                                 userProfileVM.fetchUserProfile()
                             }
+
+                        Divider()
                             .padding(.top, 20)
-                        Spacer()
+                            .padding(.bottom, 20)
 
-                        VStack(spacing: 0) {
-                            // 오늘 나의 하루
-                            VStack(spacing: 20) {
-                                HStack(spacing: 0) {
-                                    Text(dateFormatter.string(from: now))
-                                        .font(.pretendard(size: 14, weight: .bold))
-                                        .foregroundColor(Color(0x191919))
-
-                                    Spacer()
-
-                                    HStack(spacing: 10) {
-                                        Button {
-                                            guard let prevMonth = Calendar.current.date(byAdding: .month, value: -1, to: now) else {
-                                                return
-                                            }
-                                            now = prevMonth
-                                        } label: {
-                                            Image("back-button")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .frame(width: 20, height: 20)
-                                                .foregroundColor(Color(0x191919))
-                                                .opacity(0.5)
-                                        }
-
-                                        Text("\(now.month)월")
-                                            .font(.pretendard(size: 14, weight: .regular))
-                                            .foregroundColor(Color(0x646464))
-
-                                        Button {
-                                            guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: now) else {
-                                                return
-                                            }
-                                            now = nextMonth
-                                        } label: {
-                                            Image("back-button")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .frame(width: 20, height: 20)
-                                                .foregroundColor(Color(0x191919))
-                                                .opacity(0.5)
-                                                .rotationEffect(Angle(degrees: 180))
-                                        }
-                                    }
-                                }
-
-                                HStack(spacing: 0) {
-                                    VStack(spacing: 4) {
-                                        Text("\(completed)")
-                                            .font(.pretendard(size: 20, weight: .bold))
-                                            .foregroundColor(Color(0x1dafff))
-                                        Text("완료한 일")
-                                            .font(.pretendard(size: 14, weight: .regular))
-                                            .foregroundColor(Color(0x191919))
-                                    }
-                                    Spacer()
-                                    VStack(spacing: 4) {
-                                        Text("\(totalItems)")
-                                            .font(.pretendard(size: 20, weight: .bold))
-                                            .foregroundColor(Color(0x191919))
-                                        Text("할 일")
-                                            .font(.pretendard(size: 14, weight: .regular))
-                                            .foregroundColor(Color(0x191919))
-                                    }
-                                }
-                                .padding(.leading, 74)
-                                .padding(.trailing, 81)
-
-                                CircularProgressView(
-                                    progress: completionRate
-                                )
-                                .overlay {
-                                    Text("\(Int(completionRate * 100))%")
-                                        .font(.pretendard(size: 30, weight: .bold))
-                                        .foregroundColor(Color(0x1dafff))
-                                }
-                            }
-                            .padding(.leading, 34)
-                            .padding(.trailing, 20)
-
-                            Divider()
-                                .padding(.top, 28)
-                                .padding(.bottom, 20)
-
-                            // 하루와 함께한 지 벌써
-                            VStack(spacing: 20) {
-                                Text("하루와 함께한 지 벌써")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                        // 오늘 나의 하루
+                        VStack(spacing: 20) {
+                            HStack(spacing: 0) {
+                                Text(dateFormatter.string(from: now))
                                     .font(.pretendard(size: 14, weight: .bold))
                                     .foregroundColor(Color(0x191919))
 
-                                HStack(spacing: 0) {
-                                    Text("\(fromCreatedAt)")
+                                Spacer()
+
+                                HStack(spacing: 10) {
+                                    Button {
+                                        guard let prevMonth = Calendar.current.date(byAdding: .month, value: -1, to: now) else {
+                                            return
+                                        }
+                                        now = prevMonth
+                                    } label: {
+                                        Image("back-button")
+                                            .renderingMode(.template)
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(Color(0x191919))
+                                            .opacity(0.5)
+                                    }
+
+                                    Text("\(now.month)월")
+                                        .font(.pretendard(size: 14, weight: .regular))
+                                        .foregroundColor(Color(0x646464))
+
+                                    Button {
+                                        guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: now) else {
+                                            return
+                                        }
+                                        now = nextMonth
+                                    } label: {
+                                        Image("back-button")
+                                            .renderingMode(.template)
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(Color(0x191919))
+                                            .opacity(0.5)
+                                            .rotationEffect(Angle(degrees: 180))
+                                    }
+                                }
+                            }
+
+                            HStack(spacing: 0) {
+                                VStack(spacing: 4) {
+                                    Text("\(completed)")
                                         .font(.pretendard(size: 20, weight: .bold))
                                         .foregroundColor(Color(0x1dafff))
-                                    Text("  일 째")
+                                        .animation(.none)
+                                    Text("완료한 일")
                                         .font(.pretendard(size: 14, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .padding(.bottom, 8)
-
-                                Image("haru-fighting")
-                                    .resizable()
-                                    .frame(width: 180, height: 125)
+                                Spacer()
+                                VStack(spacing: 4) {
+                                    Text("\(totalItems)")
+                                        .font(.pretendard(size: 20, weight: .bold))
+                                        .foregroundColor(Color(0x191919))
+                                        .animation(.none)
+                                    Text("할 일")
+                                        .font(.pretendard(size: 14, weight: .regular))
+                                        .foregroundColor(Color(0x191919))
+                                }
                             }
-                            .padding(.leading, 34)
-                            .padding(.trailing, 20)
+                            .padding(.leading, 74)
+                            .padding(.trailing, 81)
+
+                            CircularProgressView(
+                                progress: completionRate
+                            )
+                            .overlay {
+                                Text("\(Int(completionRate * 100))%")
+                                    .font(.pretendard(size: 30, weight: .bold))
+                                    .foregroundColor(Color(0x1dafff))
+                                    .animation(.none)
+                            }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 20)
-                        .padding(.bottom, 28)
+                        .padding(.leading, 34)
+                        .padding(.trailing, 20)
+
+                        Divider()
+                            .padding(.top, 28)
+                            .padding(.bottom, 20)
+
+                        // 하루와 함께한 지 벌써
+                        VStack(spacing: 20) {
+                            Text("하루와 함께한 지 벌써")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x191919))
+
+                            HStack(spacing: 0) {
+                                Text("\(fromCreatedAt)")
+                                    .font(.pretendard(size: 20, weight: .bold))
+                                    .foregroundColor(Color(0x1dafff))
+                                Text("  일 째")
+                                    .font(.pretendard(size: 14, weight: .regular))
+                                    .foregroundColor(Color(0x191919))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.bottom, 8)
+
+                            Image("haru-fighting")
+                                .resizable()
+                                .frame(width: 180, height: 125)
+                        }
+                        .padding(.leading, 34)
+                        .padding(.trailing, 20)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 20)
+                    .padding(.bottom, 28)
                 }
             }
         }
