@@ -11,6 +11,7 @@ struct TodoView: View {
     var checkListViewModel: CheckListViewModel
     var todo: Todo
     var backgroundColor: Color = .white
+    var at: RepeatAt = .front
     var completeAction: () -> Void
 
     // MARK: - API 호출시에 버튼을 비활성화 하는 변수들
@@ -126,9 +127,9 @@ struct TodoView: View {
 
                         // 반복이 끝나지 않음. (무한히 반복하는 할 일 or 반복 마감일 이전)
                         checkListViewModel.completeTodoWithRepeat(
-                            todoId: todo.id,
+                            todo: todo,
                             nextEndDate: nextEndDate,
-                            at: .front
+                            at: at
                         ) { result in
                             switch result {
                             case .success:

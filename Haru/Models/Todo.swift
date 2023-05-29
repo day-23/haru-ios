@@ -260,8 +260,14 @@ extension Todo {
         guard let repeatEnd else {
             return nextEndDate
         }
-        return nextEndDate.compare(repeatEnd) == .orderedAscending
-            || nextEndDate.compare(repeatEnd) == .orderedSame
+
+        let formatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyyMMdd"
+            return formatter
+        }()
+
+        return formatter.string(from: nextEndDate) <= formatter.string(from: repeatEnd)
             ? nextEndDate
             : nil
     }

@@ -479,8 +479,10 @@ struct TodoAddView: View {
                                 titleVisibility: .visible
                             ) {
                                 if viewModel.todo?.repeatOption != nil {
+                                    // 반복 옵션 미수정, front, middle
                                     if viewModel.isPreviousRepeatStateEqual
                                         && viewModel.at != .none
+                                        && viewModel.at != .back
                                     {
                                         Button("이 할 일만 수정") {
                                             // 반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
@@ -500,11 +502,9 @@ struct TodoAddView: View {
                                         }
                                     }
                                     
-                                    if (viewModel.isPreviousEndDateEqual
-                                        || (!viewModel.isPreviousEndDateEqual
-                                            && !viewModel.isPreviousRepeatStateEqual))
-                                        && viewModel.at != .front
-                                        && viewModel.at != .none
+                                    // middle
+                                    if viewModel.at == .middle
+                                        || viewModel.at == .back
                                     {
                                         Button("이 할 일부터 수정") {
                                             viewModel.updateTodoWithRepeat(
@@ -520,10 +520,7 @@ struct TodoAddView: View {
                                         }
                                     }
                                     
-                                    if viewModel.isPreviousEndDateEqual
-                                        || (!viewModel.isPreviousEndDateEqual
-                                            && !viewModel.isPreviousRepeatStateEqual)
-                                    {
+                                    if viewModel.at == .front {
                                         Button("모든 할 일 수정", role: .destructive) {
                                             viewModel.updateTodo { result in
                                                 switch result {
