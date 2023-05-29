@@ -55,8 +55,7 @@ struct TimeTableScheduleView: View {
             // 날짜 및 하루종일, 여러 날짜에 걸쳐 나타나는 일정이 보이는 View
             Pager(page: page,
                   data: timeTableViewModel.indices,
-                  id: \.self)
-            { _ in
+                  id: \.self) { _ in
                 VStack(spacing: 0) {
                     LazyVGrid(columns: column, spacing: 30) {
                         Text("")
@@ -444,7 +443,7 @@ struct CellDropDelegate: DropDelegate {
         let month = CellDropDelegate.thisWeek[dayIndex].month
         let day = CellDropDelegate.thisWeek[dayIndex].day
         let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
-        guard let date = Calendar.current.date(from: components) else {
+        guard var date = Calendar.current.date(from: components) else {
             return false
         }
 
@@ -455,7 +454,19 @@ struct CellDropDelegate: DropDelegate {
         let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
             draggingSchedule.data.repeatStart
         )
-        let endDate = date.advanced(by: TimeInterval(60 * diff))
+        var endDate = date.advanced(by: TimeInterval(60 * diff))
+
+        if date.day != endDate.day {
+            var temp = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            temp.hour = 23
+            temp.minute = 55
+
+            guard let alt = Calendar.current.date(from: temp) else {
+                return false
+            }
+            date = date.advanced(by: -TimeInterval(60 * endDate.diffToMinute(other: alt)))
+            endDate = alt
+        }
 
         timeTableViewModel.removePreview()
         if Self.dateFormatter.string(from: draggingSchedule.data.repeatStart) != Self.dateFormatter.string(from: date)

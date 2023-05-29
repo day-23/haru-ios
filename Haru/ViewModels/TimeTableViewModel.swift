@@ -213,6 +213,9 @@ final class TimeTableViewModel: ObservableObject {
             return
         }
 
+        let diff = draggingSchedule.data.repeatEnd.diffToMinute(other: draggingSchedule.data.repeatStart)
+        var endDate = date.advanced(by: TimeInterval(60 * diff))
+
         scheduleList.append(
             ScheduleCell(
                 id: "PREVIEW",
@@ -221,9 +224,21 @@ final class TimeTableViewModel: ObservableObject {
                 order: draggingSchedule.order
             )
         )
-        let diff = draggingSchedule.data.repeatEnd.diffToMinute(other: draggingSchedule.data.repeatStart)
+
+        var date = date
+        if date.day != endDate.day {
+            var temp = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            temp.hour = 23
+            temp.minute = 55
+
+            guard let alt = Calendar.current.date(from: temp) else {
+                return
+            }
+            date = date.advanced(by: -TimeInterval(60 * endDate.diffToMinute(other: alt)))
+            endDate = alt
+        }
         scheduleList[scheduleList.count - 1].data.repeatStart = date
-        scheduleList[scheduleList.count - 1].data.repeatEnd = date.advanced(by: TimeInterval(60 * diff))
+        scheduleList[scheduleList.count - 1].data.repeatEnd = endDate
         findUnion()
     }
 
