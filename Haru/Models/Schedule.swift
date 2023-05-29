@@ -103,7 +103,25 @@ extension Schedule {
         prevRepeatEnd: Date? = nil,
         nextRepeatStart: Date? = nil
     ) -> Schedule {
-        Schedule(
+        var tmpPrevRepeatEnd: Date?
+
+        if schedule.repeatOption != nil,
+           let repeatValue = schedule.repeatValue
+        {
+            if repeatValue.hasPrefix("T") {
+                tmpPrevRepeatEnd = prevRepeatEnd?.addingTimeInterval(
+                    TimeInterval(
+                        Double(
+                            repeatValue.split(separator: "T")[0]
+                        ) ?? 0
+                    )
+                )
+            } else {
+                tmpPrevRepeatEnd = schedule.repeatEnd
+            }
+        }
+
+        return Schedule(
             id: schedule.id,
             content: schedule.content,
             memo: schedule.memo,
@@ -117,7 +135,7 @@ extension Schedule {
             createdAt: schedule.createdAt,
             realRepeatStart: schedule.repeatStart,
             realRepeatEnd: schedule.repeatEnd,
-            prevRepeatEnd: prevRepeatEnd,
+            prevRepeatEnd: tmpPrevRepeatEnd,
             nextRepeatStart: nextRepeatStart
         )
     }

@@ -242,7 +242,8 @@ struct TimeTableScheduleView: View {
                                         let scheduleFormViewModel = ScheduleFormViewModel(
                                             schedule: schedule.data,
                                             categoryList: calendarViewModel.categoryList,
-                                            at: schedule.at
+                                            at: schedule.at,
+                                            from: .timeTable
                                         ) {
                                             timeTableViewModel.fetchScheduleList()
                                         }
@@ -251,9 +252,6 @@ struct TimeTableScheduleView: View {
                                             scheduleFormVM: scheduleFormViewModel,
                                             isSchModalVisible: .constant(false)
                                         )
-                                        .onAppear {
-                                            calendarViewModel.getCategoryList()
-                                        }
                                     } label: {
                                         ScheduleItemView(schedule: $schedule)
                                     }
@@ -281,6 +279,9 @@ struct TimeTableScheduleView: View {
 
                 Spacer(minLength: 80)
             }
+        }
+        .onAppear {
+            calendarViewModel.getCategoryList()
         }
         .padding(.leading, -8)
     }
@@ -332,7 +333,7 @@ private extension TimeTableScheduleView {
         let width = cellWidth * CGFloat(1.0 / Double(weight))
 
         var x = CGFloat(column) * cellWidth
-        x += CGFloat(fixed) + CGFloat(borderWidth * 8)
+        x += CGFloat(fixed) + CGFloat(borderWidth * 8) + 0.5
         x -= width == cellWidth ?
             width * 0.5 :
             width * Double(weight) - width * 0.5
@@ -342,7 +343,7 @@ private extension TimeTableScheduleView {
         }
 
         var y = CGFloat(row) * cellHeight
-        y += cellHeight * CGFloat(Double(minuteIndex) * minuteInterval / 60.0)
+        y += cellHeight * CGFloat(Double(minuteIndex) * minuteInterval / 60.0) + 1
         y += frame.height * 0.5 - cellHeight
 
         return (x: x, y: y)
@@ -356,8 +357,8 @@ private extension TimeTableScheduleView {
             return nil
         }
 
-        let width: CGFloat = cellWidth * CGFloat(1.0 / Double(weight))
-        let height: CGFloat = cellHeight * CGFloat(Double(duration) / 60.0)
+        let width: CGFloat = cellWidth * CGFloat(1.0 / Double(weight)) - 1
+        let height: CGFloat = cellHeight * CGFloat(Double(duration) / 60.0) - 1
 
         return (width: width, height: height)
     }
@@ -442,7 +443,7 @@ struct CellDropDelegate: DropDelegate {
         let month = CellDropDelegate.thisWeek[dayIndex].month
         let day = CellDropDelegate.thisWeek[dayIndex].day
         let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
-        guard let date = Calendar.current.date(from: components) else {
+        guard var date = Calendar.current.date(from: components) else {
             return false
         }
 
@@ -453,7 +454,19 @@ struct CellDropDelegate: DropDelegate {
         let diff = draggingSchedule.data.repeatEnd.diffToMinute(other:
             draggingSchedule.data.repeatStart
         )
-        let endDate = date.advanced(by: TimeInterval(60 * diff))
+        var endDate = date.advanced(by: TimeInterval(60 * diff))
+
+        if date.day != endDate.day {
+            var temp = Calendar.current.dateComponents([.year, .month, .day], from: date)
+            temp.hour = 23
+            temp.minute = 55
+
+            guard let alt = Calendar.current.date(from: temp) else {
+                return false
+            }
+            date = date.advanced(by: -TimeInterval(60 * endDate.diffToMinute(other: alt)))
+            endDate = alt
+        }
 
         timeTableViewModel.removePreview()
         if Self.dateFormatter.string(from: draggingSchedule.data.repeatStart) != Self.dateFormatter.string(from: date)
