@@ -16,6 +16,7 @@ struct CommentListView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 Divider()
+                    .foregroundColor(Color(0xdbdbdb))
                 HStack(alignment: .center, spacing: 0) {
                     Group {
                         HStack(spacing: 5) {
@@ -102,19 +103,29 @@ struct CommentListView: View {
 
                                 Text(comment.content)
                                     .font(.pretendard(size: 16, weight: .regular))
-                                    .foregroundColor(Color(0x646464))
+                                    .foregroundColor(
+                                        comment.isPublic ?
+                                            Color(0x646464) : Color(0xdbdbdb)
+                                    )
                             }
 
                             Spacer()
 
-                            Image("comment-bubble")
+                            Image(comment.isPublic ?
+                                "comment-bubble" : "comment-disable")
                                 .resizable()
+                                .renderingMode(.template)
                                 .frame(width: 28, height: 28)
                                 .padding(.trailing, 10)
+                                .foregroundColor(comment.isPublic ?
+                                    Color(0x1dafff) : Color(0xdbdbdb)
+                                )
 
                             Image("ellipsis")
                                 .resizable()
+                                .renderingMode(.template)
                                 .frame(width: 28, height: 28)
+                                .foregroundColor(Color(0x646464))
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
@@ -148,42 +159,103 @@ struct CommentListView: View {
     }
 }
 
-struct CommentListView_Previews: PreviewProvider {
-    static let imageID = UUID().uuidString
-    static var previews: some View {
-        CommentListView(
-            postImageIDList: [imageID],
-            postCommentList: [
-                imageID:
-                    [
-                        Post.Comment(
-                            id: UUID().uuidString,
-                            user: Post.User(id: UUID().uuidString, name: "테스터1"),
-                            content: "hi",
-                            x: 10,
-                            y: 10,
-                            createdAt: Date()
-                        ),
-
-                        Post.Comment(
-                            id: UUID().uuidString,
-                            user: Post.User(id: UUID().uuidString, name: "테스터2"),
-                            content: "bye",
-                            x: 10,
-                            y: 10,
-                            createdAt: Date()
-                        ),
-
-                        Post.Comment(
-                            id: UUID().uuidString,
-                            user: Post.User(id: UUID().uuidString, name: "테스터3"),
-                            content: "world",
-                            x: 10,
-                            y: 10,
-                            createdAt: Date()
-                        ),
-                    ],
-            ]
-        )
-    }
-}
+//struct CommentListView_Previews: PreviewProvider {
+//    static let imageID1 = UUID().uuidString
+//    static let imageID2 = UUID().uuidString
+//    static let imageID3 = UUID().uuidString
+//    static var previews: some View {
+//        CommentListView(
+//            postImageIDList: [imageID1, imageID2, imageID3],
+//            postCommentList: [
+//                imageID1:
+//                    [
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터1"),
+//                            content: "hi",
+//                            x: 10,
+//                            y: 10,
+//                            createdAt: Date()
+//                        ),
+//
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터2"),
+//                            content: "bye",
+//                            x: 10,
+//                            y: 10,
+//                            isPublic: false,
+//                            createdAt: Date()
+//                        ),
+//
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터3"),
+//                            content: "world",
+//                            x: 10,
+//                            y: 10,
+//                            createdAt: Date()
+//                        ),
+//                    ],
+//                imageID2:
+//                    [
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터11"),
+//                            content: "hi hi",
+//                            x: 10,
+//                            y: 10,
+//                            createdAt: Date()
+//                        ),
+//
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터22"),
+//                            content: "bye bye",
+//                            x: 10,
+//                            y: 10,
+//                            createdAt: Date()
+//                        ),
+//
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터33"),
+//                            content: "world!!!",
+//                            x: 10,
+//                            y: 10,
+//                            createdAt: Date()
+//                        ),
+//                    ],
+//                imageID3:
+//                    [
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터111"),
+//                            content: "hi hi hi",
+//                            x: 10,
+//                            y: 10,
+//                            createdAt: Date()
+//                        ),
+//
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터222"),
+//                            content: "bye, bye, bye",
+//                            x: 10,
+//                            y: 10,
+//                            createdAt: Date()
+//                        ),
+//
+//                        Post.Comment(
+//                            id: UUID().uuidString,
+//                            user: Post.User(id: UUID().uuidString, name: "테스터333"),
+//                            content: "world!!!!!",
+//                            x: 10,
+//                            y: 10,
+//                            createdAt: Date()
+//                        ),
+//                    ],
+//            ]
+//        )
+//    }
+//}

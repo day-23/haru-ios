@@ -80,7 +80,7 @@ final class CommentService {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
-        
+
         AF.request(
             CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
             method: .patch,
@@ -118,6 +118,58 @@ final class CommentService {
             switch response.result {
             case let .success(response):
                 completion(.success(response.success))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // MARK: - 댓글 리스트용 api
+
+    func fetchTargetImageComment(
+        userId: String,
+        postId: String,
+        imageId: String,
+        page: Int,
+        limit: Int = 20,
+        lastCreatedAt: Date? = nil,
+        completion: @escaping (Result<([Post.Comment], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post.Comment]
+            let pagination: Post.Pagination
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var parameters: Parameters {
+            if let lastCreatedAt {
+                return [
+                    "page": page,
+                    "limit": limit,
+                    "lastCreatedAt": Self.iSO8601Formatter.string(from: lastCreatedAt),
+                ]
+            } else {
+                return [
+                    "page": page,
+                    "limit": limit,
+                ]
+            }
+        }
+
+        AF.request(
+            CommentService.baseURL + userId + "\(postId)/\(imageId)/comments/all",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data, response.pagination)))
             case let .failure(error):
                 completion(.failure(error))
             }
