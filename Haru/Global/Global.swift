@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UserNotifications
 
 final class Global: ObservableObject {
     private init() {}
@@ -17,20 +18,52 @@ final class Global: ObservableObject {
 
     @Published var isTabViewActive: Bool = true
     @Published var isFaded: Bool = false
-    
+
     var colors = [
         [Color(0x2E2E2E), Color(0x656565), Color(0x818181), Color(0x9D9D9D), Color(0xB9B9B9), Color(0xD5D5D5)],
-        
+
         [Color(0xFF0959), Color(0xFF509C), Color(0xFF5AB6), Color(0xFE7DCD), Color(0xFFAAE5), Color(0xFFBDFB)],
-        
+
         [Color(0xB237BB), Color(0xC93DEB), Color(0xB34CED), Color(0x9D5BE3), Color(0xBB93F8), Color(0xC6B2FF)],
-        
+
         [Color(0x4C45FF), Color(0x2E57FF), Color(0x4D8DFF), Color(0x45BDFF), Color(0x6DDDFF), Color(0x65F4FF)],
-        
+
         [Color(0xFE7E7E), Color(0xFF572E), Color(0xC22E2E), Color(0xA07753), Color(0xE3942E), Color(0xE8A753)],
-        
+
         [Color(0xFF892E), Color(0xFFAB4C), Color(0xFFD166), Color(0xFFDE2E), Color(0xCFE855), Color(0xB9D32E)],
-        
+
         [Color(0x105C08), Color(0x39972E), Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0)],
     ]
+
+    static func scheduleNotification(
+        body: String,
+        year: Int,
+        month: Int,
+        day: Int,
+        hour: Int,
+        minute: Int,
+        identifier: String
+    ) {
+        let content = UNMutableNotificationContent()
+        content.title = "하루"
+        content.body = body
+        content.sound = UNNotificationSound.default
+
+        // 매일 hour, minute 시간에 맞게 반복
+        let dateComponents = DateComponents(year: year, month: month, day: day, hour: hour, minute: minute)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("[Debug] 알림 예약 실패: \(error.localizedDescription)")
+            } else {
+                // 알림 예약 성공
+            }
+        }
+    }
+
+    static func removeNotification(identifier: String) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
+    }
 }

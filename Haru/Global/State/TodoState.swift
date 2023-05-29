@@ -11,14 +11,141 @@ import SwiftUI
 final class TodoState: ObservableObject {
     private let todoService = TodoService()
 
-    @Published var todoListByTag: [Todo] = []
-    @Published var todoListByFlag: [Todo] = []
-    @Published var todoListByCompleted: [Todo] = []
-    @Published var todoListByFlagWithToday: [Todo] = []
-    @Published var todoListByTodayTodo: [Todo] = []
-    @Published var todoListByUntilToday: [Todo] = []
-    @Published var todoListWithAnyTag: [Todo] = []
-    @Published var todoListWithoutTag: [Todo] = []
+    @Published var todoListByTag: [Todo] = [] {
+        didSet {
+            todoListByTag.forEach {
+                if let alarm = $0.alarms.first {
+                    Global.removeNotification(identifier: alarm.id)
+                    Global.scheduleNotification(body: "\($0.content)",
+                                                year: alarm.time.year,
+                                                month: alarm.time.month,
+                                                day: alarm.time.day,
+                                                hour: alarm.time.hour,
+                                                minute: alarm.time.minute,
+                                                identifier: alarm.id)
+                }
+            }
+        }
+    }
+
+    @Published var todoListByFlag: [Todo] = [] {
+        didSet {
+            todoListByFlag.forEach {
+                if let alarm = $0.alarms.first {
+                    Global.removeNotification(identifier: alarm.id)
+                    Global.scheduleNotification(body: "\($0.content)",
+                                                year: alarm.time.year,
+                                                month: alarm.time.month,
+                                                day: alarm.time.day,
+                                                hour: alarm.time.hour,
+                                                minute: alarm.time.minute,
+                                                identifier: alarm.id)
+                }
+            }
+        }
+    }
+
+    @Published var todoListByCompleted: [Todo] = [] {
+        didSet {
+            todoListByCompleted.forEach {
+                if let alarm = $0.alarms.first {
+                    Global.removeNotification(identifier: alarm.id)
+                    Global.scheduleNotification(body: "\($0.content)",
+                                                year: alarm.time.year,
+                                                month: alarm.time.month,
+                                                day: alarm.time.day,
+                                                hour: alarm.time.hour,
+                                                minute: alarm.time.minute,
+                                                identifier: alarm.id)
+                }
+            }
+        }
+    }
+
+    @Published var todoListByFlagWithToday: [Todo] = [] {
+        didSet {
+            todoListByFlagWithToday.forEach {
+                if let alarm = $0.alarms.first {
+                    Global.removeNotification(identifier: alarm.id)
+                    Global.scheduleNotification(body: "\($0.content)",
+                                                year: alarm.time.year,
+                                                month: alarm.time.month,
+                                                day: alarm.time.day,
+                                                hour: alarm.time.hour,
+                                                minute: alarm.time.minute,
+                                                identifier: alarm.id)
+                }
+            }
+        }
+    }
+
+    @Published var todoListByTodayTodo: [Todo] = [] {
+        didSet {
+            todoListByTodayTodo.forEach {
+                if let alarm = $0.alarms.first {
+                    Global.removeNotification(identifier: alarm.id)
+                    Global.scheduleNotification(body: "\($0.content)",
+                                                year: alarm.time.year,
+                                                month: alarm.time.month,
+                                                day: alarm.time.day,
+                                                hour: alarm.time.hour,
+                                                minute: alarm.time.minute,
+                                                identifier: alarm.id)
+                }
+            }
+        }
+    }
+
+    @Published var todoListByUntilToday: [Todo] = [] {
+        didSet {
+            todoListByUntilToday.forEach {
+                if let alarm = $0.alarms.first {
+                    Global.removeNotification(identifier: alarm.id)
+                    Global.scheduleNotification(body: "\($0.content)",
+                                                year: alarm.time.year,
+                                                month: alarm.time.month,
+                                                day: alarm.time.day,
+                                                hour: alarm.time.hour,
+                                                minute: alarm.time.minute,
+                                                identifier: alarm.id)
+                }
+            }
+        }
+    }
+
+    @Published var todoListWithAnyTag: [Todo] = [] {
+        didSet {
+            todoListWithAnyTag.forEach {
+                if let alarm = $0.alarms.first {
+                    Global.removeNotification(identifier: alarm.id)
+                    Global.scheduleNotification(body: "\($0.content)",
+                                                year: alarm.time.year,
+                                                month: alarm.time.month,
+                                                day: alarm.time.day,
+                                                hour: alarm.time.hour,
+                                                minute: alarm.time.minute,
+                                                identifier: alarm.id)
+                }
+            }
+        }
+    }
+
+    @Published var todoListWithoutTag: [Todo] = [] {
+        didSet {
+            todoListWithoutTag.forEach {
+                if let alarm = $0.alarms.first {
+                    Global.removeNotification(identifier: alarm.id)
+                    Global.scheduleNotification(body: "\($0.content)",
+                                                year: alarm.time.year,
+                                                month: alarm.time.month,
+                                                day: alarm.time.day,
+                                                hour: alarm.time.hour,
+                                                minute: alarm.time.minute,
+                                                identifier: alarm.id)
+                }
+            }
+        }
+    }
 
     // MARK: - Create
 
