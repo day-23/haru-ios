@@ -14,7 +14,7 @@ final class CommentViewModel: ObservableObject {
     var postImageIDList: [Post.Image.ID] // 게시물의 이미지
     @Published var imagePageNum: Int
     
-    var imageCommentList: [Post.Image.ID: [Post.Comment]]
+    @Published var imageCommentList: [Post.Image.ID: [Post.Comment]]
     var imageCommentUserProfileList: [PostImage.ID: [PostImage?]]
     
     var page: Int {
@@ -30,6 +30,8 @@ final class CommentViewModel: ObservableObject {
     var lastCreatedAt: Date? {
         imageCommentList[postImageIDList[imagePageNum]]?.first?.createdAt
     }
+    
+    var commentTotalCount: [Post.Image.ID: Int] = [:]
     
     private let commentService: CommentService
     
@@ -76,12 +78,11 @@ final class CommentViewModel: ObservableObject {
     // 프로필 이미지 캐싱
     func fetchProfileImage(imageId: String, imageUrlList: [String?]) {
         DispatchQueue.global().async {
-            imageUrlList.forEach { urlString in
+            imageUrlList.enumerated().forEach { idx, urlString in
                 if let urlString {
                     if let uiImage = ImageCache.shared.object(forKey: urlString as NSString) { // 캐싱된게 있는 경우
                         DispatchQueue.main.async {
-                            self.imageCommentUserProfileList[imageId] =
-                                (self.imageCommentUserProfileList[imageId] ?? []) + [PostImage(url: urlString, uiImage: uiImage)]
+                            self.imageCommentUserProfileList[imageId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
                         }
                     } else { // 캐싱이 아직 안된 경우
                         guard
@@ -95,13 +96,8 @@ final class CommentViewModel: ObservableObject {
                         
                         ImageCache.shared.setObject(uiImage, forKey: urlString as NSString)
                         DispatchQueue.main.async {
-                            self.imageCommentUserProfileList[imageId] =
-                                (self.imageCommentUserProfileList[imageId] ?? []) + [PostImage(url: urlString, uiImage: uiImage)]
+                            self.imageCommentUserProfileList[imageId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
                         }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.imageCommentUserProfileList[imageId] = (self.imageCommentUserProfileList[imageId] ?? []) + [nil]
                     }
                 }
             }
@@ -127,6 +123,8 @@ final class CommentViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 // 댓글을 단 사용자들의 프로필 이미지 캐싱
+                self.imageCommentUserProfileList[imageId] = (self.imageCommentUserProfileList[imageId] ?? []) + Array(repeating: nil, count: success.0.count)
+                
                 self.fetchProfileImage(
                     imageId: imageId,
                     imageUrlList: success.0.map { comment in
@@ -140,7 +138,27 @@ final class CommentViewModel: ObservableObject {
                 
                 if self.commentTotalPage[imageId] == nil {
                     self.commentTotalPage[imageId] = pageInfo.totalPages
+                    self.commentTotalCount[imageId] = pageInfo.totalItems
                 }
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    func updateCommentPublic(
+        userId: String,
+        commentId: String,
+        isPublic: Bool,
+        imageId: String,
+        idx: Int
+    ) {
+        let request = Request.Comment(isPublic: isPublic)
+        
+        commentService.updateComment(targetUserId: userId, targetCommentId: commentId, comment: request) { result in
+            switch result {
+            case .success:
+                self.imageCommentList[imageId]?[idx].isPublic = isPublic
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }

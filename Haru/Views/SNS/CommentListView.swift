@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct CommentListView: View {
+    @Environment(\.dismiss) var dismissAction
+
     @StateObject var commentVM: CommentViewModel
+
+    @State private var commentAlert: Bool = false
 
     var body: some View {
         ScrollView {
@@ -70,7 +74,7 @@ struct CommentListView: View {
                         HStack(spacing: 10) {
                             Image("chat-bubble-fill")
 
-                            Text("\(commentVM.commentTotalPage[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0)")
+                            Text("\(commentVM.commentTotalCount[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0)")
                                 .font(.pretendard(size: 14, weight: .bold))
                                 .foregroundColor(Color(0x646464))
                         }
@@ -110,21 +114,44 @@ struct CommentListView: View {
 
                             Spacer()
 
-                            Image(comment.isPublic ?
-                                "comment-bubble" : "comment-disable")
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 28, height: 28)
-                                .padding(.trailing, 10)
-                                .foregroundColor(comment.isPublic ?
-                                    Color(0x1dafff) : Color(0xdbdbdb)
+                            Button {
+                                commentVM.updateCommentPublic(
+                                    userId: comment.user.id,
+                                    commentId: comment.id,
+                                    isPublic: !comment.isPublic,
+                                    imageId: commentVM.postImageIDList[commentVM.imagePageNum],
+                                    idx: idx
                                 )
+                            } label: {
+                                Image(comment.isPublic ?
+                                    "comment-bubble" : "comment-disable")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .frame(width: 28, height: 28)
+                                    .padding(.trailing, 10)
+                                    .foregroundColor(comment.isPublic ?
+                                        Color(0x1dafff) : Color(0xdbdbdb)
+                                    )
+                            }
 
-                            Image("ellipsis")
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 28, height: 28)
-                                .foregroundColor(Color(0x646464))
+                            Button {
+                                commentAlert = true
+                            } label: {
+                                Image("ellipsis")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .frame(width: 28, height: 28)
+                                    .foregroundColor(Color(0x646464))
+                            }
+                            .confirmationDialog("", isPresented: $commentAlert) {
+                                Button("이 코멘트 삭제하기", role: .destructive) {
+                                    print("코멘트 삭제")
+                                }
+
+                                Button("이 코멘트 신고하기") {
+                                    print("코멘트 신고하기")
+                                }
+                            }
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
@@ -154,41 +181,21 @@ struct CommentListView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
-                    print("뒤로 가기")
+                    dismissAction.callAsFunction()
                 } label: {
                     Image("back-button")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 28, height: 28)
-                        .foregroundColor(Color(0xfdfdfd))
+                        .foregroundColor(Color(0x191919))
                 }
             }
 
             ToolbarItem(placement: .principal) {
                 Text("코멘트 리스트")
                     .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(Color(0xfdfdfd))
+                    .foregroundColor(Color(0x191919))
             }
         }
     }
 }
-
-// struct CommentListView_Previews: PreviewProvider {
-//    static let commentVM = CommentViewModel(
-//        userId: Global.shared.user?.id ?? "unknown",
-//        postImageIDList: ["41bdbb4f-14fb-4d3d-87a0-2112df7a8f3c"],
-//        postId: "62ce2645-7d4b-47ec-94a1-2fb41f2edfd9",
-//        imagePageNum: 0
-//    )
-//    static var previews: some View {
-//        CommentListView(
-//            commentVM: commentVM
-//        )
-//        .onAppear {
-//            if commentVM.commentTotalPage["41bdbb4f-14fb-4d3d-87a0-2112df7a8f3c"] == nil {
-//                print("hi")
-//                commentVM.loadMoreComments()
-//            }
-//        }
-//    }
-// }
