@@ -83,7 +83,7 @@ struct CommentView: View, KeyboardReadable {
 
     var body: some View {
         ZStack {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .center, spacing: 0) {
                     Group {
                         Button {
@@ -125,58 +125,6 @@ struct CommentView: View, KeyboardReadable {
                             )
                         }
                         .disabled(isCommentCreate)
-                    }
-
-                    Spacer(minLength: 0)
-
-                    if isCommentCreate, alreadyComment[postPageNum] != nil {
-                        Button {
-                            isCommentCreate = false
-                            content = ""
-                        } label: {
-                            HStack(spacing: 5) {
-                                Image("comment-reset")
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
-
-                                Text("초기화")
-                                    .font(.pretendard(size: 14, weight: .bold))
-                                    .foregroundColor(Color(0xFDFDFD))
-                            }
-                        }
-                    } else {
-                        Group {
-                            HStack(spacing: 20) {
-                                Image("toggle")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .rotationEffect(Angle(degrees: -180))
-                                    .onTapGesture {
-                                        withAnimation {
-                                            postPageNum -= 1
-                                        }
-                                    }
-                                    .disabled(postPageNum == 0)
-
-                                Text("\(postPageNum + 1)/\(postImageList.count)")
-                                    .font(.pretendard(size: 12, weight: .regular))
-                                    .foregroundColor(Color(0xFDFDFD))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 6)
-                                    .background(Color(0x646464))
-                                    .cornerRadius(15)
-
-                                Image("toggle")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            postPageNum += 1
-                                        }
-                                    }
-                                    .disabled(postPageNum == postImageList.count - 1)
-                            }
-                        }
                     }
 
                     Spacer(minLength: 0)
@@ -228,6 +176,59 @@ struct CommentView: View, KeyboardReadable {
                         }
                     }
                 }
+                .overlay {
+                    if isCommentCreate, alreadyComment[postPageNum] != nil {
+                        Group {
+                            Button {
+                                isCommentCreate = false
+                                content = ""
+                            } label: {
+                                HStack(spacing: 5) {
+                                    Image("comment-reset")
+                                        .resizable()
+                                        .frame(width: 28, height: 28)
+
+                                    Text("초기화")
+                                        .font(.pretendard(size: 14, weight: .bold))
+                                        .foregroundColor(Color(0xFDFDFD))
+                                }
+                            }
+                        }
+                    } else {
+                        Group {
+                            HStack(spacing: 20) {
+                                Image("toggle")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .rotationEffect(Angle(degrees: -180))
+                                    .onTapGesture {
+                                        withAnimation {
+                                            postPageNum -= 1
+                                        }
+                                    }
+                                    .disabled(postPageNum == 0)
+
+                                Text("\(postPageNum + 1)/\(postImageList.count)")
+                                    .font(.pretendard(size: 12, weight: .regular))
+                                    .foregroundColor(Color(0xFDFDFD))
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 6)
+                                    .background(Color(0x646464))
+                                    .cornerRadius(15)
+
+                                Image("toggle")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .onTapGesture {
+                                        withAnimation {
+                                            postPageNum += 1
+                                        }
+                                    }
+                                    .disabled(postPageNum == postImageList.count - 1)
+                            }
+                        }
+                    }
+                }
 
                 if keyboardUp {
                     Text(content == "" ? "댓글을 입력해주세요" : content)
@@ -240,7 +241,7 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
             .padding(.horizontal, 20)
-            .offset(y: -250)
+            .offset(y: -230)
 
             mainContent(deviceSize: deviceSize)
                 .zIndex(3)
@@ -460,7 +461,6 @@ struct CommentView: View, KeyboardReadable {
                 if overDelete {
                     if alreadyComment[postPageNum] != nil {
                         // 삭제 api 연동
-                        print(content)
                     }
 
                     isCommentCreate = false
@@ -565,6 +565,7 @@ struct CommentView: View, KeyboardReadable {
             width: deviceSize.width,
             height: deviceSize.width
         )
+//        .confirmationDialog("", isPresented: , actions: <#T##() -> View#>)
     }
 
     @ViewBuilder
