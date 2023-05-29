@@ -28,6 +28,9 @@ struct Post: Identifiable, Codable {
         let id: String
         var name: String
         var profileImage: String? // 프로필 이미지 url 문자열
+        var isAllowFeedLike: Int
+        var isAllowFeedComment: Int
+        var friendStatus: Int
     }
     
     struct Image: Identifiable, Codable {
@@ -39,8 +42,14 @@ struct Post: Identifiable, Codable {
     }
     
     struct Comment: Identifiable, Codable {
+        struct User: Identifiable, Codable {
+            let id: String
+            var name: String
+            var profileImage: String? // 프로필 이미지 url 문자열
+        }
+        
         let id: String
-        var user: Post.User
+        var user: Comment.User
         var content: String
         var x: Double
         var y: Double
@@ -53,7 +62,7 @@ struct Post: Identifiable, Codable {
         
         init(
             id: String,
-            user: Post.User,
+            user: Comment.User,
             content: String,
             x: Double,
             y: Double,
@@ -82,7 +91,7 @@ struct Post: Identifiable, Codable {
             updatedAt = (try? container.decode(Date.self, forKey: .updatedAt)) ?? nil
             
             isPublic = (try? container.decode(Bool.self, forKey: .isPublic)) ?? true
-            user = (try? container.decode(Post.User.self, forKey: .user)) ?? Post.User(id: Global.shared.user?.id ?? "unknown", name: Global.shared.user?.user.name ?? "unknown")
+            user = (try? container.decode(Comment.User.self, forKey: .user)) ?? Comment.User(id: Global.shared.user?.id ?? "unknown", name: Global.shared.user?.user.name ?? "unknown")
         }
     }
     

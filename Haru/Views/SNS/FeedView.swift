@@ -66,6 +66,12 @@ struct FeedView: View {
                         Image(systemName: post.isLiked ? "heart.fill" : "heart")
                             .foregroundColor(.red)
                     }
+                    .disabled(
+                        !(isMine ||
+                            post.user.isAllowFeedLike == 2 ||
+                            (post.user.isAllowFeedLike == 1 &&
+                                post.user.friendStatus == 2))
+                    )
 
                     if isMine {
                         Text("\(post.likedCount)")
