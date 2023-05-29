@@ -36,7 +36,6 @@ final class Global: ObservableObject {
     ]
 
     static func scheduleNotification(
-        title: String,
         body: String,
         year: Int,
         month: Int,
@@ -46,22 +45,25 @@ final class Global: ObservableObject {
         identifier: String
     ) {
         let content = UNMutableNotificationContent()
-        content.title = title
+        content.title = "하루"
         content.body = body
         content.sound = UNNotificationSound.default
 
         // 매일 hour, minute 시간에 맞게 반복
         let dateComponents = DateComponents(year: year, month: month, day: day, hour: hour, minute: minute)
-//        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
 
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("[Debug] 알림 예약 실패: \(error.localizedDescription)")
             } else {
-                print("[Debug] 알림 예약 성공")
+                // 알림 예약 성공
             }
         }
+    }
+
+    static func removeNotification(identifier: String) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
     }
 }

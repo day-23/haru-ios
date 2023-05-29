@@ -18,7 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if granted {
                 print("[Debug] 알림 권한 획득")
-                Global.scheduleNotification(title: "테스트", body: "테스트", year: 2023, month: 5, day: 29, hour: 17, minute: 35, identifier: "haru-test")
             } else {
                 print("[Debug] 알림 권한 거부")
             }
