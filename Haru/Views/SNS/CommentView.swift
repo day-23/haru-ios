@@ -26,6 +26,9 @@ struct CommentView: View, KeyboardReadable {
 
     @State var postPageNum: Int = 0
 
+    // 내가 이미 작성한 댓글이 있으면
+    // alreadyComment[postPageNum] = (Post.Comment, Int)
+    // 없으면 nil
     var alreadyComment: [(Post.Comment, Int)?] {
         var result: [(Post.Comment, Int)?] = Array(repeating: nil, count: postImageList.count)
         for (pageNum, image) in postImageList.enumerated() {
@@ -48,7 +51,7 @@ struct CommentView: View, KeyboardReadable {
         return result
     }
 
-    @State var isCommentCreate: Bool = false
+    @State var isCommentCreate: Bool = false // 댓글을 작성 중인가 (편집 시에도 true)
     @State var hiddeComment: Bool = false // 댓글을 가릴건지 안가릴건지 선택
 
     @State var textRect = CGRect()
@@ -79,86 +82,137 @@ struct CommentView: View, KeyboardReadable {
 
     var body: some View {
         ZStack {
-            HStack(alignment: .center, spacing: 0) {
-                Group {
-                    Button {} label: {
-                        HStack(spacing: 5) {
-                            Image("touch-edit")
-                                .renderingMode(.template)
-                                .resizable()
-                                .foregroundColor(Color(0xFDFDFD))
-                                .frame(width: 28, height: 28)
-
-                            Text("편집하기")
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(Color(0xFDFDFD))
-                        }
-                    }
-                }
-
-                Spacer(minLength: 0)
-                    .frame(width: 34)
-
-                Group {
-                    HStack(spacing: 20) {
-                        Image("toggle")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .rotationEffect(Angle(degrees: -180))
-                            .onTapGesture {
-                                withAnimation {
-                                    postPageNum -= 1
-                                }
-                            }
-                            .disabled(postPageNum == 0)
-
-                        Text("\(postPageNum + 1)/\(postImageList.count)")
-                            .font(.pretendard(size: 12, weight: .regular))
-                            .foregroundColor(Color(0xFDFDFD))
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 6)
-                            .background(Color(0x646464))
-                            .cornerRadius(15)
-
-                        Image("toggle")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .onTapGesture {
-                                withAnimation {
-                                    postPageNum += 1
-                                }
-                            }
-                            .disabled(postPageNum == postImageList.count - 1)
-                    }
-                }
-
-                Spacer(minLength: 0)
-
-                Group {
-                    if hiddeComment {
+            VStack(alignment: .leading) {
+                HStack(alignment: .center, spacing: 0) {
+                    Group {
                         Button {
-                            hiddeComment = false
+                            if let comment = alreadyComment[postPageNum] { // 기존 댓글이 있는 경우
+                                x = CGFloat(comment.0.x)
+                                y = CGFloat(comment.0.y)
+                                startingX = CGFloat(comment.0.x)
+                                startingY = CGFloat(comment.0.y)
+                                content = comment.0.content
+                            } else {
+                                x = deviceSize.width / 2
+                                y = deviceSize.width / 2
+                                startingX = deviceSize.width / 2
+                                startingY = deviceSize.width / 2
+                            }
+                            isCommentCreate = true
+                            isFocused = true
                         } label: {
-                            Image("comment-disable")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(Color(0x1CAFFF))
-                                .frame(width: 28, height: 28)
+                            HStack(spacing: 5) {
+                                Image("touch-edit")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
+
+                                Text(
+                                    isCommentCreate ?
+                                        alreadyComment[postPageNum] == nil
+                                        ? "작성중" : "편집중"
+                                        : alreadyComment[postPageNum] == nil
+                                        ? "작성하기" : "편집하기"
+                                )
+                                .font(.pretendard(size: 14, weight: .bold))
+                            }
+                            .foregroundColor(
+                                isCommentCreate ?
+                                    Color(0x1DAFFF) : Color(0xFDFDFD)
+                            )
+                        }
+                        .disabled(isCommentCreate)
+                    }
+
+                    Spacer(minLength: 0)
+
+                    if isCommentCreate, alreadyComment[postPageNum] != nil {
+                        Button {
+                            isCommentCreate = false
+                            content = ""
+                        } label: {
+                            HStack(spacing: 5) {
+                                Image("comment-reset")
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
+
+                                Text("초기화")
+                                    .font(.pretendard(size: 14, weight: .bold))
+                                    .foregroundColor(Color(0xFDFDFD))
+                            }
                         }
                     } else {
-                        Button {
-                            hiddeComment = true
-                        } label: {
-                            Image("chat-bubble-fill")
-                                .renderingMode(.template)
-                                .resizable()
-                                .frame(width: 28, height: 28)
-                                .foregroundColor(Color(0xFDFDFD))
+                        Group {
+                            HStack(spacing: 20) {
+                                Image("toggle")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .rotationEffect(Angle(degrees: -180))
+                                    .onTapGesture {
+                                        withAnimation {
+                                            postPageNum -= 1
+                                        }
+                                    }
+                                    .disabled(postPageNum == 0)
+
+                                Text("\(postPageNum + 1)/\(postImageList.count)")
+                                    .font(.pretendard(size: 12, weight: .regular))
+                                    .foregroundColor(Color(0xFDFDFD))
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 6)
+                                    .background(Color(0x646464))
+                                    .cornerRadius(15)
+
+                                Image("toggle")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .onTapGesture {
+                                        withAnimation {
+                                            postPageNum += 1
+                                        }
+                                    }
+                                    .disabled(postPageNum == postImageList.count - 1)
+                            }
+                        }
+                    }
+
+                    Spacer(minLength: 0)
+
+                    Group {
+                        if hiddeComment {
+                            Button {
+                                hiddeComment = false
+                            } label: {
+                                Image("comment-disable")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0x1CAFFF))
+                                    .frame(width: 28, height: 28)
+                            }
+                        } else {
+                            Button {
+                                hiddeComment = true
+                            } label: {
+                                Image("chat-bubble-fill")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
+                                    .foregroundColor(Color(0xFDFDFD))
+                            }
                         }
                     }
                 }
+
+                if keyboardUp {
+                    Text(content == "" ? "댓글을 입력해주세요" : content)
+                        .lineLimit(4)
+                        .font(.pretendard(size: 14, weight: .bold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color(0xFDFDFD))
+                        .cornerRadius(9)
+                }
             }
-            .opacity(keyboardUp ? 0 : 1)
             .padding(.horizontal, 20)
             .offset(y: -250)
 
@@ -241,6 +295,7 @@ struct CommentView: View, KeyboardReadable {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(0x191919))
         .edgesIgnoringSafeArea(.top)
+        .ignoresSafeArea(.keyboard)
         .simultaneousGesture(
             TapGesture().onEnded {
                 if isFocused {
@@ -249,7 +304,9 @@ struct CommentView: View, KeyboardReadable {
             }
         )
         .onReceive(keyboardEventPublisher, perform: { value in
-            keyboardUp = value
+            withAnimation {
+                keyboardUp = value
+            }
         })
         .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
@@ -263,10 +320,10 @@ struct CommentView: View, KeyboardReadable {
                         dismissAction.callAsFunction()
                     }
                 } label: {
-                    Image("cancel")
+                    Image("back-button")
                         .resizable()
                         .renderingMode(.template)
-                        .frame(width: 24, height: 24)
+                        .frame(width: 28, height: 28)
                         .foregroundColor(Color(0xFDFDFD))
                 }
             }
@@ -414,11 +471,19 @@ struct CommentView: View, KeyboardReadable {
                             .frame(width: overDelete ? 90 : 80, height: overDelete ? 90 : 80)
                             .foregroundColor(overDelete ? Color(0xF71E58) : .gray2)
 
-                        Image("cancel")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 38, height: 38)
-                            .foregroundColor(.white)
+                        if alreadyComment[postPageNum] == nil {
+                            Image("cancel")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 38, height: 38)
+                                .foregroundColor(.white)
+                        } else {
+                            Image("trash")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 38, height: 38)
+                                .foregroundColor(.white)
+                        }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                     .offset(y: 80 + 30)
@@ -431,7 +496,7 @@ struct CommentView: View, KeyboardReadable {
                 }
 
                 // 기존에 댓글을 작성했는지 처음 작성인지 판별
-                if let comment = alreadyComment[postPageNum] {
+                if let comment = alreadyComment[postPageNum] { // 기존 댓글이 있는 경우
                     x = CGFloat(comment.0.x)
                     y = CGFloat(comment.0.y)
                     startingX = CGFloat(comment.0.x)
@@ -483,7 +548,7 @@ struct CommentView: View, KeyboardReadable {
             ForEach(commentList[postPageNum]) { comment in
                 if !isCommentCreate || alreadyComment[postPageNum]?.0.id != comment.id {
                     Text("\(comment.content)")
-                        .font(.pretendard(size: 14, weight: .bold))
+                        .font(.pretendard(size: 14, weight: .regular))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(Color(0xFDFDFD))
