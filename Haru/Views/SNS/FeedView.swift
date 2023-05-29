@@ -77,6 +77,7 @@ struct FeedView: View {
                     NavigationLink {
                         CommentView(
                             postId: post.id,
+                            userId: post.user.id,
                             postImageList: post.images,
                             imageList: postImageList,
                             isMine: isMine

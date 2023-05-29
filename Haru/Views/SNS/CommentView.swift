@@ -12,6 +12,7 @@ struct CommentView: View, KeyboardReadable {
     let deviceSize = UIScreen.main.bounds.size
 
     var postId: String
+    var userId: String // 게시물을 작성한 사용자 id
     @State var postImageList: [Post.Image]
     var imageList: [PostImage?]
     var commentList: [[Post.Comment]] { // [pageNum][commentIdx]
@@ -205,7 +206,18 @@ struct CommentView: View, KeyboardReadable {
                             }
 
                             if isMine {
-                                NavigationLink {} label: {
+                                NavigationLink {
+                                    CommentListView(
+                                        commentVM: CommentViewModel(
+                                            userId: userId,
+                                            postImageIDList: postImageList.map { image in
+                                                image.id
+                                            },
+                                            postId: postId,
+                                            imagePageNum: postPageNum
+                                        )
+                                    )
+                                } label: {
                                     Image("option-button")
                                         .resizable()
                                         .renderingMode(.template)

@@ -161,7 +161,7 @@ final class CommentService {
         }
 
         AF.request(
-            CommentService.baseURL + userId + "\(postId)/\(imageId)/comments/all",
+            CommentService.baseURL + userId + "/\(postId)/\(imageId)/comments/all",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,

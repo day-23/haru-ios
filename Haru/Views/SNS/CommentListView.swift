@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct CommentListView: View {
-    var postImageIDList: [Post.Image.ID]
-    var postCommentList: [Post.Image.ID: [Post.Comment]]
-    @State var postPageNum: Int = 0
+    @StateObject var commentVM: CommentViewModel
 
     var body: some View {
         ScrollView {
@@ -41,12 +39,12 @@ struct CommentListView: View {
                                 .rotationEffect(Angle(degrees: -180))
                                 .onTapGesture {
                                     withAnimation {
-                                        postPageNum -= 1
+                                        commentVM.imagePageNum -= 1
                                     }
                                 }
-                                .disabled(postPageNum == 0)
+                                .disabled(commentVM.imagePageNum == 0)
 
-                            Text("\(postPageNum + 1)/\(postCommentList.count)")
+                            Text("\(commentVM.imagePageNum + 1)/\(commentVM.postImageIDList.count)")
                                 .font(.pretendard(size: 12, weight: .regular))
                                 .foregroundColor(Color(0xfdfdfd))
                                 .padding(.horizontal, 14)
@@ -59,10 +57,10 @@ struct CommentListView: View {
                                 .frame(width: 20, height: 20)
                                 .onTapGesture {
                                     withAnimation {
-                                        postPageNum += 1
+                                        commentVM.imagePageNum += 1
                                     }
                                 }
-                                .disabled(postPageNum == postCommentList.count - 1)
+                                .disabled(commentVM.imagePageNum == commentVM.postImageIDList.count - 1)
                         }
                     }
 
@@ -72,7 +70,7 @@ struct CommentListView: View {
                         HStack(spacing: 10) {
                             Image("chat-bubble-fill")
 
-                            Text("\(postCommentList[postImageIDList[postPageNum]]?.count ?? 0)")
+                            Text("\(commentVM.commentTotalPage[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0)")
                                 .font(.pretendard(size: 14, weight: .bold))
                                 .foregroundColor(Color(0x646464))
                         }
@@ -82,11 +80,12 @@ struct CommentListView: View {
                 .padding(.horizontal, 20)
                 .padding(.trailing, 15)
 
-                if let commentList = postCommentList[postImageIDList[postPageNum]] {
-                    ForEach(commentList, id: \.id) { comment in
+                if let commentList = commentVM.imageCommentList[commentVM.postImageIDList[commentVM.imagePageNum]] {
+                    ForEach(commentList.indices, id: \.self) { idx in
+                        let comment = commentList[idx]
                         HStack(spacing: 0) {
-                            Circle()
-                                .foregroundColor(Color(0x191919))
+                            ProfileImgView(
+                                profileImage: commentVM.imageCommentUserProfileList[commentVM.postImageIDList[commentVM.imagePageNum]]?[idx])
                                 .frame(width: 40, height: 40)
                                 .padding(.trailing, 14)
 
@@ -130,11 +129,26 @@ struct CommentListView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
                     }
+
+                    if !commentList.isEmpty, commentVM.page <= commentVM.commentTotalPage[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0 {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                                .onAppear {
+                                    print("더 불러오기")
+                                    commentVM.loadMoreComments()
+                                }
+                            Spacer()
+                        }
+                    }
                 } else {
                     Text("작성된 댓글이 아직 없습니다.")
                         .padding(.top, 20)
                 }
             }
+        }
+        .onAppear {
+            commentVM.loadMoreComments()
         }
         .navigationBarBackButtonHidden()
         .toolbar {
@@ -159,103 +173,22 @@ struct CommentListView: View {
     }
 }
 
-//struct CommentListView_Previews: PreviewProvider {
-//    static let imageID1 = UUID().uuidString
-//    static let imageID2 = UUID().uuidString
-//    static let imageID3 = UUID().uuidString
+// struct CommentListView_Previews: PreviewProvider {
+//    static let commentVM = CommentViewModel(
+//        userId: Global.shared.user?.id ?? "unknown",
+//        postImageIDList: ["41bdbb4f-14fb-4d3d-87a0-2112df7a8f3c"],
+//        postId: "62ce2645-7d4b-47ec-94a1-2fb41f2edfd9",
+//        imagePageNum: 0
+//    )
 //    static var previews: some View {
 //        CommentListView(
-//            postImageIDList: [imageID1, imageID2, imageID3],
-//            postCommentList: [
-//                imageID1:
-//                    [
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터1"),
-//                            content: "hi",
-//                            x: 10,
-//                            y: 10,
-//                            createdAt: Date()
-//                        ),
-//
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터2"),
-//                            content: "bye",
-//                            x: 10,
-//                            y: 10,
-//                            isPublic: false,
-//                            createdAt: Date()
-//                        ),
-//
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터3"),
-//                            content: "world",
-//                            x: 10,
-//                            y: 10,
-//                            createdAt: Date()
-//                        ),
-//                    ],
-//                imageID2:
-//                    [
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터11"),
-//                            content: "hi hi",
-//                            x: 10,
-//                            y: 10,
-//                            createdAt: Date()
-//                        ),
-//
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터22"),
-//                            content: "bye bye",
-//                            x: 10,
-//                            y: 10,
-//                            createdAt: Date()
-//                        ),
-//
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터33"),
-//                            content: "world!!!",
-//                            x: 10,
-//                            y: 10,
-//                            createdAt: Date()
-//                        ),
-//                    ],
-//                imageID3:
-//                    [
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터111"),
-//                            content: "hi hi hi",
-//                            x: 10,
-//                            y: 10,
-//                            createdAt: Date()
-//                        ),
-//
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터222"),
-//                            content: "bye, bye, bye",
-//                            x: 10,
-//                            y: 10,
-//                            createdAt: Date()
-//                        ),
-//
-//                        Post.Comment(
-//                            id: UUID().uuidString,
-//                            user: Post.User(id: UUID().uuidString, name: "테스터333"),
-//                            content: "world!!!!!",
-//                            x: 10,
-//                            y: 10,
-//                            createdAt: Date()
-//                        ),
-//                    ],
-//            ]
+//            commentVM: commentVM
 //        )
+//        .onAppear {
+//            if commentVM.commentTotalPage["41bdbb4f-14fb-4d3d-87a0-2112df7a8f3c"] == nil {
+//                print("hi")
+//                commentVM.loadMoreComments()
+//            }
+//        }
 //    }
-//}
+// }

@@ -46,6 +46,7 @@ struct FeedImage: View {
                             if !templateMode {
                                 CommentView(
                                     postId: post.id,
+                                    userId: post.user.id,
                                     postImageList: post.images,
                                     imageList: imageList,
                                     postPageNum: postPageNum,
