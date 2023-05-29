@@ -82,6 +82,30 @@ struct TagService {
         }
     }
 
+    func fetchTodoCountByTag(
+        tagId: String,
+        completion: @escaping (Result<Int, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: Int
+        }
+
+        AF.request(
+            Self.baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/\(tagId)/todoCnt",
+            method: .get
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(data):
+                completion(.success(data.data))
+            case let .failure(error):
+                completion(.failure(error))
+                print("[Debug] \(error) \(#fileID) \(#function)")
+            }
+        }
+    }
+
     // MARK: - UPDATE API
 
     func updateTag(
