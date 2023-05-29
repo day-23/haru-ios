@@ -98,9 +98,24 @@ struct FeedView: View {
                 Spacer()
 
                 if isMine {
-                    Image("option-button")
-                        .renderingMode(.template)
-                        .foregroundColor(.gray2)
+                    NavigationLink {
+                        CommentListView(
+                            commentVM: CommentViewModel(
+                                userId: post.user.id,
+                                postImageIDList: post.images.map { image in
+                                    image.id
+                                },
+                                postId: post.id,
+                                imagePageNum: 0
+                            )
+                        )
+                    } label: {
+                        Image("option-button")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(.gray2)
+                    }
                 }
             }
             .padding(.horizontal, 20)

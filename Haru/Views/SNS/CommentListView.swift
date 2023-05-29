@@ -145,7 +145,11 @@ struct CommentListView: View {
                             }
                             .confirmationDialog("", isPresented: $commentAlert) {
                                 Button("이 코멘트 삭제하기", role: .destructive) {
-                                    print("코멘트 삭제")
+                                    commentVM.deleteComment(
+                                        userId: comment.user.id,
+                                        commentId: comment.id,
+                                        imageId: commentVM.postImageIDList[commentVM.imagePageNum]
+                                    )
                                 }
 
                                 Button("이 코멘트 신고하기") {

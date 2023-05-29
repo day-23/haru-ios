@@ -15,7 +15,7 @@ final class CommentViewModel: ObservableObject {
     @Published var imagePageNum: Int
     
     @Published var imageCommentList: [Post.Image.ID: [Post.Comment]]
-    var imageCommentUserProfileList: [PostImage.ID: [PostImage?]]
+    @Published var imageCommentUserProfileList: [PostImage.ID: [PostImage?]]
     
     var page: Int {
         guard let commentList = imageCommentList[postImageIDList[imagePageNum]] else {
@@ -31,7 +31,7 @@ final class CommentViewModel: ObservableObject {
         imageCommentList[postImageIDList[imagePageNum]]?.first?.createdAt
     }
     
-    var commentTotalCount: [Post.Image.ID: Int] = [:]
+    @Published var commentTotalCount: [Post.Image.ID: Int] = [:]
     
     private let commentService: CommentService
     
@@ -162,6 +162,40 @@ final class CommentViewModel: ObservableObject {
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
+        }
+    }
+    
+    func deleteComment(
+        userId: String,
+        commentId: String,
+        imageId: String
+    ) {
+        commentService.deleteComment(targetUserId: userId, targetCommentId: commentId) { result in
+            switch result {
+            case .success:
+                let tmpPage = self.page
+                self.clear()
+                for _ in 0 ..< tmpPage {
+                    self.loadMoreComments()
+                }
+                
+                if self.commentTotalCount[imageId] != nil {
+                    self.commentTotalCount[imageId]! -= 1
+                }
+                
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    func clear() {
+        imageCommentList = postImageIDList.reduce(into: [String: [Post.Comment]]()) { dictionary, element in
+            dictionary[element] = []
+        }
+        
+        imageCommentUserProfileList = postImageIDList.reduce(into: [String: [PostImage?]]()) { dictionary, element in
+            dictionary[element] = []
         }
     }
 }
