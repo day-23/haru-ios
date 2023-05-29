@@ -86,20 +86,22 @@ struct CommentView: View, KeyboardReadable {
                 HStack(alignment: .center, spacing: 0) {
                     Group {
                         Button {
-                            if let comment = alreadyComment[postPageNum] { // 기존 댓글이 있는 경우
-                                x = CGFloat(comment.0.x)
-                                y = CGFloat(comment.0.y)
-                                startingX = CGFloat(comment.0.x)
-                                startingY = CGFloat(comment.0.y)
-                                content = comment.0.content
-                            } else {
-                                x = deviceSize.width / 2
-                                y = deviceSize.width / 2
-                                startingX = deviceSize.width / 2
-                                startingY = deviceSize.width / 2
+                            if !isMine {
+                                if let comment = alreadyComment[postPageNum] { // 기존 댓글이 있는 경우
+                                    x = CGFloat(comment.0.x)
+                                    y = CGFloat(comment.0.y)
+                                    startingX = CGFloat(comment.0.x)
+                                    startingY = CGFloat(comment.0.y)
+                                    content = comment.0.content
+                                } else {
+                                    x = deviceSize.width / 2
+                                    y = deviceSize.width / 2
+                                    startingX = deviceSize.width / 2
+                                    startingY = deviceSize.width / 2
+                                }
+                                isCommentCreate = true
+                                isFocused = true
                             }
-                            isCommentCreate = true
-                            isFocused = true
                         } label: {
                             HStack(spacing: 5) {
                                 Image("touch-edit")
@@ -109,9 +111,9 @@ struct CommentView: View, KeyboardReadable {
 
                                 Text(
                                     isCommentCreate ?
-                                        alreadyComment[postPageNum] == nil
+                                        !isMine && alreadyComment[postPageNum] == nil
                                         ? "작성중" : "편집중"
-                                        : alreadyComment[postPageNum] == nil
+                                        : !isMine && alreadyComment[postPageNum] == nil
                                         ? "작성하기" : "편집하기"
                                 )
                                 .font(.pretendard(size: 14, weight: .bold))
@@ -179,25 +181,37 @@ struct CommentView: View, KeyboardReadable {
                     Spacer(minLength: 0)
 
                     Group {
-                        if hiddeComment {
-                            Button {
-                                hiddeComment = false
-                            } label: {
-                                Image("comment-disable")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .foregroundColor(Color(0x1CAFFF))
-                                    .frame(width: 28, height: 28)
+                        HStack(spacing: 10) {
+                            if hiddeComment {
+                                Button {
+                                    hiddeComment = false
+                                } label: {
+                                    Image("comment-disable")
+                                        .resizable()
+                                        .renderingMode(.template)
+                                        .foregroundColor(Color(0x1CAFFF))
+                                        .frame(width: 28, height: 28)
+                                }
+                            } else {
+                                Button {
+                                    hiddeComment = true
+                                } label: {
+                                    Image("chat-bubble-fill")
+                                        .renderingMode(.template)
+                                        .resizable()
+                                        .frame(width: 28, height: 28)
+                                        .foregroundColor(Color(0xFDFDFD))
+                                }
                             }
-                        } else {
-                            Button {
-                                hiddeComment = true
-                            } label: {
-                                Image("chat-bubble-fill")
-                                    .renderingMode(.template)
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
-                                    .foregroundColor(Color(0xFDFDFD))
+
+                            if isMine {
+                                NavigationLink {} label: {
+                                    Image("option-button")
+                                        .resizable()
+                                        .renderingMode(.template)
+                                        .frame(width: 28, height: 28)
+                                        .foregroundColor(Color(0xFDFDFD))
+                                }
                             }
                         }
                     }
@@ -329,7 +343,9 @@ struct CommentView: View, KeyboardReadable {
             }
 
             ToolbarItem(placement: .principal) {
-                Text(isCommentCreate ? "코멘트 작성" : "코멘트")
+                Text(isCommentCreate ?
+                    alreadyComment[postPageNum] == nil ? "코멘트 작성" : "코멘트 편집"
+                    : "코멘트")
                     .font(.pretendard(size: 20, weight: .bold))
                     .foregroundColor(Color(0xFDFDFD))
             }
@@ -385,14 +401,6 @@ struct CommentView: View, KeyboardReadable {
                             .frame(width: 24, height: 24)
                             .foregroundColor(Color(0xFDFDFD))
                     }
-                } else {
-                    Button {} label: {
-                        Image("option-button")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(Color(0xFDFDFD))
-                    }
                 }
             }
         }
@@ -438,6 +446,11 @@ struct CommentView: View, KeyboardReadable {
             }
             .onEnded { value in
                 if overDelete {
+                    if alreadyComment[postPageNum] != nil {
+                        // 삭제 api 연동
+                        print(content)
+                    }
+
                     isCommentCreate = false
                     content = ""
                     overDelete = false
