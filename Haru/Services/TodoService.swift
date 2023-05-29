@@ -839,13 +839,22 @@ struct TodoService {
     }
 
     func completeTodoWithRepeat(
-        todoId: String,
+        todo: Todo,
         nextEndDate endDate: Date,
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         if at == .none {
-            print("[Debug] at의 값이 none입니다. \(#fileID) \(#function)")
+            completeTodo(todoId: todo.id,
+                         completed: !todo.completed) { result in
+                switch result {
+                case .success:
+                    completion(.success(true))
+                case let .failure(error):
+                    print("[Debug] \(error) \(#fileID) \(#function)")
+                    completion(.failure(error))
+                }
+            }
             return
         }
 
@@ -857,13 +866,13 @@ struct TodoService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        if at == .middle {
-            params["completedDate"] = Self.formatter.string(from: .now)
+        if let endDate = todo.endDate, at == .middle {
+            params["completedDate"] = Self.formatter.string(from: endDate)
         }
 
         AF.request(
             Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)/repeat/\(at.rawValue)",
+                "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todo.id)/repeat/\(at.rawValue)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,

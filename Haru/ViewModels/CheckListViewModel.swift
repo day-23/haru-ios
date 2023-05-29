@@ -246,15 +246,15 @@ final class CheckListViewModel: ObservableObject {
     }
 
     func completeTodoWithRepeat(
-        todoId: String,
+        todo: Todo,
         nextEndDate: Date,
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoState.completeTodoWithRepeat(
-            todoId: todoId,
+            todo: todo,
             nextEndDate: nextEndDate,
-            at: .front
+            at: at
         ) { result in
             switch result {
             case let .success(success):

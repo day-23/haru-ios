@@ -102,8 +102,6 @@ struct CalendarDayDetailView: View {
                                         todo: calendarVM.todoList[row][index],
                                         at: calendarVM.todoList[row][index].at
                                     )
-                                    
-                                    print(calendarVM.todoList[row][index].at)
                                 }
                             } label: {
                                 HStack(spacing: 20) {
