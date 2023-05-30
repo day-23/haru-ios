@@ -412,7 +412,7 @@ final class TodoState: ObservableObject {
         todoService.completeTodoWithRepeat(
             todo: todo,
             nextEndDate: nextEndDate,
-            at: .front
+            at: at
         ) { result in
             switch result {
             case let .success(success):
