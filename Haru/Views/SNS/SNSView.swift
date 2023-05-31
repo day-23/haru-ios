@@ -105,6 +105,9 @@ struct SNSView: View {
                 .padding(.bottom, 10)
             }
         }
+        .onAppear {
+            toggleIsClicked = false
+        }
     }
 
     @ViewBuilder

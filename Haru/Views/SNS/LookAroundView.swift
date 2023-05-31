@@ -22,6 +22,7 @@ struct LookAroundView: View {
             if toggleIsClicked {
                 DropdownMenu {
                     Button {
+//                        toggleIsClicked = false
                         dismissAction.callAsFunction()
                     } label: {
                         Text("친구피드")

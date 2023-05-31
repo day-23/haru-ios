@@ -20,7 +20,21 @@ struct MediaListView: View {
                         if mediaList.count > 0 {
                             LazyVGrid(columns: columns, spacing: 3) {
                                 ForEach(mediaList.indices, id: \.self) { idx in
-                                    MediaView(uiImage: postVM.mediaImageList[mediaList[idx].id]?.first??.uiImage)
+                                    NavigationLink {
+                                        CommentView(
+                                            postId: mediaList[idx].id,
+                                            userId: mediaList[idx].user.id,
+                                            postImageList: mediaList[idx].images,
+                                            imageList: postVM.mediaImageList[mediaList[idx].id] ?? [],
+                                            postPageNum: 0,
+                                            hiddeComment: true,
+                                            isMine: mediaList[idx].user.id == Global.shared.user?.id
+                                        )
+
+                                    } label: {
+                                        MediaView(uiImage: postVM.mediaImageList[mediaList[idx].id]?.first??.uiImage)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
 
                                 if !mediaList.isEmpty, postVM.page <= postVM.mediaTotalPage[postVM.selectedHashTag.id] ?? 0 {
