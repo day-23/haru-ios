@@ -60,10 +60,8 @@ struct Todo: Identifiable, Codable {
         self.deletedAt = deletedAt
         self.realRepeatStart = realRepeatStart
 
-        Task {
-            if let alarm = alarms.first {
-                await AlarmHelper.createNotification(identifier: id, body: content, date: alarm.time)
-            }
+        if let alarm = alarms.first {
+            AlarmHelper.createNotification(identifier: id, body: content, date: alarm.time)
         }
     }
 
@@ -93,10 +91,8 @@ struct Todo: Identifiable, Codable {
         let id = self.id
         let content = self.content
         let alarms = self.alarms
-        Task {
-            if let alarm = alarms.first {
-                await AlarmHelper.createNotification(identifier: id, body: content, date: alarm.time)
-            }
+        if let alarm = alarms.first {
+            AlarmHelper.createNotification(identifier: id, body: content, date: alarm.time)
         }
     }
 }

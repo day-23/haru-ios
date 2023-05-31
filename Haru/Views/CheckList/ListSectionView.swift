@@ -50,8 +50,8 @@ struct ListSectionView<Content>: View where Content: View {
                                 withAnimation {
                                     todoList[index].completed.toggle()
                                 }
-                            }
-                            .foregroundColor(.black)
+                            } updateAction: {}
+                                .foregroundColor(.black)
                         }
 
                         if !todo.folded {

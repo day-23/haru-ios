@@ -78,15 +78,13 @@ final class AlarmHelper {
         let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
         let request = UNNotificationRequest(identifier: "\(identifier)-\(date)", content: content, trigger: trigger)
-        Task {
-            UNUserNotificationCenter.current().add(request) { error in
-                if let error = error {
-                    print("[Debug] 알림 예약 실패: \(error.localizedDescription)")
-                    return
-                }
-
-                print("[Debug] \"\(body)\" \(date) 등록 완료 id: \(identifier)-\(date)")
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("[Debug] 알림 예약 실패: \(error.localizedDescription)")
+                return
             }
+
+            print("[Debug] \"\(body)\" \(date) 등록 완료 id: \(identifier)-\(date)")
         }
     }
 
