@@ -26,10 +26,11 @@ struct ProfileView: View {
             VStack(spacing: 0) {
                 if myProfile {
                     HaruHeaderView()
+                        .padding(.bottom, 16)
                 }
                 
                 Spacer()
-                    .frame(height: 30)
+                    .frame(height: 14)
                 
                 ProfileInfoView(userProfileVM: userProfileVM)
                 
