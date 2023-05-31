@@ -519,7 +519,7 @@ struct ScheduleFormView: View {
                 } else {
                     return ActionSheet(title: title,
                                        message: nil,
-                                       buttons: [editAfterButton, editAllButton, cancleButton])
+                                       buttons: [editAfterButton, cancleButton])
                 }
             } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption.rawValue ||
                 scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
@@ -553,7 +553,7 @@ struct ScheduleFormView: View {
                 } else {
                     return ActionSheet(title: title,
                                        message: nil,
-                                       buttons: [editButton, editAfterButton, editAllButton, cancleButton])
+                                       buttons: [editButton, editAfterButton, cancleButton])
                 }
             }
             

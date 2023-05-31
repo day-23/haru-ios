@@ -55,7 +55,7 @@ final class Global: ObservableObject {
 
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
+            if let error {
                 print("[Debug] 알림 예약 실패: \(error.localizedDescription)")
             } else {
                 // 알림 예약 성공

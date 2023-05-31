@@ -112,6 +112,9 @@ struct CalendarDayDetailView: View {
                                 ) {
                                     calendarVM.getRefreshProductivityList()
                                     calendarVM.getCurMonthSchList(calendarVM.dateList)
+                                } updateAction: {
+                                    calendarVM.getRefreshProductivityList()
+                                    calendarVM.getCurMonthSchList(calendarVM.dateList)
                                 }
                                 .padding(.leading, -25)
                             }
