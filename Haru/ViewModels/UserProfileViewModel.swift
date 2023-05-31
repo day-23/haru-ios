@@ -26,6 +26,30 @@ final class UserProfileViewModel: ObservableObject {
     private let profileService: ProfileService = .init()
     private let friendService: FriendService = .init()
 
+    var option: FriendOption = .friendList
+
+    var page: Int {
+        switch option {
+        case .friendList:
+            return Int(ceil(Double(friendList.count) / 20.0)) + 1
+        case .requestFriendList:
+            return Int(ceil(Double(requestFriendList.count) / 20.0)) + 1
+        }
+    }
+
+    var friendListTotalPage: Int = -1
+    var reqFriListTotalPage: Int = -1
+
+    var lastCreatedAt: Date? {
+//        switch option {
+//        case .friendList:
+//            return friendList
+//        case .requestFriendList:
+//            <#code#>
+//        }
+        nil
+    }
+
     init(userId: String) {
         self.user = User(
             id: userId,
@@ -127,50 +151,7 @@ final class UserProfileViewModel: ObservableObject {
 
     // MARK: - 친구를 위한 함수
 
-//    func fetchFollower(currentPage: Int) {
-//        followService.fetchFollower(userId: user.id, page: currentPage) { result in
-//            switch result {
-//            case .success(let success):
-//                self.followerList = success.0
-//            case .failure(let failure):
-//                print("[Debug] \(failure) \(#fileID) \(#function)")
-//            }
-//        }
-//    }
-//
-//    func fetchFollowing(currentPage: Int) {
-//        followService.fetchFollowing(userId: user.id, page: currentPage) { result in
-//            switch result {
-//            case .success(let success):
-//                self.followingList = success.0
-//            case .failure(let failure):
-//                print("[Debug] \(failure) \(#fileID) \(#function)")
-//            }
-//        }
-//    }
-
-    /**
-     * 나의 계정에서 userProfileVM의 user에게 팔로우를 신청
-     */
-//    func addFollowing(followId: String, completion: @escaping () -> Void) {
-//        followService.addFollowing(followId: followId) { result in
-//            switch result {
-//            case .success:
-//                self.user.isFollowing = true
-//                if self.isMe {
-//                    self.user.followingCount += 1
-//                } else {
-//                    self.user.followerCount += 1
-//                }
-//                completion()
-//            case .failure(let failure):
-//                print("[Debug] \(failure) \(#fileID) \(#function)")
-//            }
-//        }
-//    }
-//
-
-    // TODO: 페이지네이션 적용하기
+    // userId: 해당 사용자의 친구목록을 불러옴
     func fetchFriend(userId: String, page: Int) {
         friendService.fetchFriend(userId: userId, page: page) { result in
             switch result {
@@ -183,7 +164,7 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
-    // TODO: 페이지네이션 적용하기
+    // userId: 해당 사용자의 친구신청 목록을 불러옴
     func fetchRequestFriend(userId: String, page: Int) {
         friendService.fetchRequestFriend(userId: userId, page: page) { result in
             switch result {
@@ -195,11 +176,12 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
+    // acceptorId: 친구신청을 하고 싶은 사용자의 아이디
     func requestFriend(
-        followId: String,
+        acceptorId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.requestFriend(followId: followId) { result in
+        friendService.requestFriend(acceptorId: acceptorId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -209,11 +191,12 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
+    // requesterId: 친구신청을 보낸 사용자의 아이디
     func acceptRequestFriend(
-        requestId: String,
+        requesterId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.acceptRequestFriend(requestId: requestId) { result in
+        friendService.acceptRequestFriend(requesterId: requesterId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -237,8 +220,9 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
-    func deleteFreined(followingId: String, completion: @escaping () -> Void) {
-        friendService.deleteFriend(followingId: followingId) { result in
+    // friendId: 삭제할 친구의 id
+    func deleteFreined(friendId: String, completion: @escaping () -> Void) {
+        friendService.deleteFriend(friendId: friendId) { result in
             switch result {
             case .success:
                 completion()
