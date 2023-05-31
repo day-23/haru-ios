@@ -5,6 +5,7 @@
 //  Created by 최정민 on 2023/03/25.
 //
 
+import BackgroundTasks
 import KakaoSDKAuth
 import KakaoSDKCommon
 import SwiftUI
@@ -15,6 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "day23.haru.regular-alarm", using: nil) { task in
+            self.scheduledNotificationAPI(task: task as! BGAppRefreshTask)
+        }
+
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if granted {
                 print("[Debug] 알림 권한 획득")
@@ -31,14 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
-        let identifier = notification.request.identifier
-        if identifier == AlarmHelper.Regular.morning.rawValue {
-            AlarmHelper.regularNotification(regular: .morning)
-            return []
-        } else if identifier == AlarmHelper.Regular.evening.rawValue {
-            AlarmHelper.regularNotification(regular: .evening)
-            return []
-        }
         return [.banner, .list, .badge, .sound]
     }
 
@@ -46,11 +43,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
     ) async {}
+
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        scheduleAppRefresh()
+    }
+
+    func scheduledNotificationAPI(task: BGAppRefreshTask) {
+        // 다음 동작 수행, 반복시 필요
+        scheduleAppRefresh()
+
+        task.expirationHandler = {
+            task.setTaskCompleted(success: false)
+        }
+
+        // 가벼운 백그라운드 작업 작성
+        AlarmHelper.scheduleRegularNotification(regular: .morning)
+        AlarmHelper.scheduleRegularNotification(regular: .evening)
+
+        // setTaskCompleted는 무조건 호출되어야 함.
+        task.setTaskCompleted(success: true)
+    }
+
+    func scheduleAppRefresh() {
+        let request = BGAppRefreshTaskRequest(identifier: "day23.haru.regular-alarm")
+
+        do {
+            try BGTaskScheduler.shared.submit(request)
+            // Set a breakpoint in the code that executes after a successful call to submit(_:).
+        } catch {
+            print("\(Date()): Could not schedule app refresh: \(error)")
+        }
+    }
 }
 
 @main
 struct HaruApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject var global: Global = .shared
 
     init() {
@@ -70,9 +99,17 @@ struct HaruApp: App {
                         _ = AuthController.handleOpenUrl(url: url)
                     }
                 }
-                .onAppear {
-                    AlarmHelper.scheduleRegularNotification(regular: .morning)
-                    AlarmHelper.scheduleRegularNotification(regular: .evening)
+                .onChange(of: scenePhase) { phase in
+                    switch phase {
+                    case .active:
+                        break
+                    case .inactive:
+                        break
+                    case .background:
+                        appDelegate.scheduleAppRefresh()
+                    @unknown default:
+                        break
+                    }
                 }
         }
     }
