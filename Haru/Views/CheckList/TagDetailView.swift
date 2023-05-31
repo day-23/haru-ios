@@ -121,7 +121,7 @@ struct TagDetailView: View {
                         ]
                     ) { response in
                         switch response {
-                        case .success(let success):
+                        case .success:
                             dismissAction.callAsFunction()
                         case .failure(let error):
                             print("[Debug] \(error) \(#fileID) \(#function)")
@@ -140,7 +140,7 @@ struct TagDetailView: View {
                 switch result {
                 case .success(let data):
                     count = data
-                case .failure(let error):
+                case .failure:
                     break
                 }
             }

@@ -15,17 +15,17 @@ final class AlarmHelper {
     }
 
     private init() {}
-    static let todoService: TodoService = .init()
+    private static let todoService: TodoService = .init()
     static let current: AlarmHelper = .init()
 
-    static func scheduleRegularNotification(
+    static func createRegularNotification(
         regular: Regular
     ) {
         todoService.fetchTodoListByTodayTodoAndUntilToday { result in
             switch result {
             case .success(let data):
                 var res = 0
-                res += data.flaggedTodos.filter { $0.todayTodo }.count
+                res += data.flaggedTodos.count
                 res += data.todayTodos.count
                 res += data.endDateTodos.filter { todo in
                     guard let endDate = todo.endDate else {
@@ -37,7 +37,7 @@ final class AlarmHelper {
                 let content = UNMutableNotificationContent()
                 content.title = "하루"
                 content.body = regular == .morning ? "오늘 할 일이 \(res)개 있습니다." : "오늘 남은 할 일이 \(res)개 있습니다."
-                content.sound = UNNotificationSound.default
+                content.sound = .default
 
                 let now = Date()
                 var dateComponents = DateComponents()
@@ -45,7 +45,7 @@ final class AlarmHelper {
                 dateComponents.hour = now.hour
                 dateComponents.minute = now.minute
                 dateComponents.second = now.addingTimeInterval(regular == .morning ? 5 : 10).second
-                let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+                let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
                 let request = UNNotificationRequest(identifier: regular.rawValue, content: content, trigger: trigger)
                 UNUserNotificationCenter.current().add(request) { error in
                     if let error = error {
@@ -61,12 +61,45 @@ final class AlarmHelper {
         }
     }
 
-    static func removeNotification(identifier: String) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
+    static func createNotification(
+        identifier: String,
+        body: String,
+        date: Date
+    ) {
+        if date <= .now {
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = "하루"
+        content.body = body
+        content.sound = .default
+
+        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+        let request = UNNotificationRequest(identifier: "\(identifier)-\(date)", content: content, trigger: trigger)
+        Task {
+            UNUserNotificationCenter.current().add(request) { error in
+                if let error = error {
+                    print("[Debug] 알림 예약 실패: \(error.localizedDescription)")
+                    return
+                }
+
+                print("[Debug] \"\(body)\" \(date) 등록 완료 id: \(identifier)-\(date)")
+            }
+        }
     }
 
-    static func hasNotification(identifier: String) async -> Bool {
+    static func removeNotification(identifier: String) async {
         let notifications = await UNUserNotificationCenter.current().pendingNotificationRequests()
-        return !notifications.filter { $0.identifier.hasPrefix(identifier) }.isEmpty
+
+        var removed: [String] = []
+        for notification in notifications {
+            if notification.identifier.hasPrefix(identifier) {
+                removed.append(notification.identifier)
+            }
+        }
+
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: removed)
     }
 }

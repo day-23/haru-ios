@@ -89,7 +89,7 @@ extension Schedule {
     }
 }
 
-extension Schedule: Productivity, Equatable {
+extension Schedule: Event, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
         lhs.id == rhs.id && lhs.repeatStart == rhs.repeatStart
     }

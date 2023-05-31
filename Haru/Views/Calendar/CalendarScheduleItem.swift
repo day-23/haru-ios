@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CalendarScheduleItem: View {
-    @Binding var productivityList: [(Int, Productivity?)]
+    @Binding var productivityList: [(Int, Event?)]
     var cellWidth: CGFloat
     var month: Int
 

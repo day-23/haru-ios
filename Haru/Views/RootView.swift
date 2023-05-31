@@ -114,8 +114,8 @@ struct RootView: View {
                         }
                     }
                     .onAppear {
-                        AlarmHelper.scheduleRegularNotification(regular: .morning)
-                        AlarmHelper.scheduleRegularNotification(regular: .evening)
+                        AlarmHelper.createRegularNotification(regular: .morning)
+                        AlarmHelper.createRegularNotification(regular: .evening)
                         UIDatePicker.appearance().minuteInterval = 5
                     }
                     .environmentObject(todoState)
