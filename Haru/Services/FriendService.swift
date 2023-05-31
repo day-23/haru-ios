@@ -11,14 +11,38 @@ import Foundation
 final class FriendService {
     private static let baseURL = Constants.baseURL + "friends/"
     
+    private static let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        return formatter
+    }()
+
+    private static let iSO8601Formatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    private static let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(FriendService.formatter)
+        return decoder
+    }()
+
+    private static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+        return encoder
+    }()
+    
     func fetchFriend(
         userId: String,
         page: Int,
-        completion: @escaping (Result<([User], Post.Pagination), Error>) -> Void
+        completion: @escaping (Result<([FriendUser], Post.Pagination), Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
-            let data: [User]
+            let data: [FriendUser]
             let pagination: Post.Pagination
         }
         
@@ -36,7 +60,7 @@ final class FriendService {
             parameters: parameters,
             encoding: URLEncoding.default,
             headers: headers
-        ).responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
                 completion(.success((response.data, response.pagination)))
@@ -49,11 +73,11 @@ final class FriendService {
     func fetchRequestFriend(
         userId: String,
         page: Int,
-        completion: @escaping (Result<([User], Post.Pagination), Error>) -> Void
+        completion: @escaping (Result<([FriendUser], Post.Pagination), Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
-            let data: [User]
+            let data: [FriendUser]
             let pagination: Post.Pagination
         }
         
@@ -71,7 +95,7 @@ final class FriendService {
             parameters: parameters,
             encoding: URLEncoding.default,
             headers: headers
-        ).responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
                 completion(.success((response.data, response.pagination)))

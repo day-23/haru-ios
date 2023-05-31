@@ -20,11 +20,11 @@ final class UserProfileViewModel: ObservableObject {
         user.friendStatus == 2 || isMe || user.isPublicAccount
     }
 
-    @Published var friendList: [User] = [] // 현재 보고 있는 사용자의 친구 목록
-    @Published var requestFriendList: [User] = [] // 현재 보고 있는 사용자의 친구 신청 목록
+    @Published var friendList: [FriendUser] = [] // 현재 보고 있는 사용자의 친구 목록
+    @Published var requestFriendList: [FriendUser] = [] // 현재 보고 있는 사용자의 친구 신청 목록
 
-    @Published var friProfileImageList: [User.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
-    @Published var reqFriProImageList: [User.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
+    @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
+    @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
 
     var friendCount: Int {
         user.friendCount
@@ -74,6 +74,11 @@ final class UserProfileViewModel: ObservableObject {
 
     // MARK: - 페이지네이션
 
+    func initLoad() {
+        fetchFriend(userId: userId, page: page)
+//        fetchRequestFriend(userId: userId, page: page)
+    }
+
     func loadMoreFriendList() {
         switch option {
         case .friendList:
@@ -121,9 +126,7 @@ final class UserProfileViewModel: ObservableObject {
     ) {
         DispatchQueue.global().async {
             if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
-                DispatchQueue.main.async {
-                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
-                }
+                completion(PostImage(url: profileUrl, uiImage: uiImage))
             } else {
                 guard
                     let encodeUrl = profileUrl.encodeUrl(),
@@ -216,7 +219,7 @@ final class UserProfileViewModel: ObservableObject {
             case .success(let success):
                 success.0.forEach { user in
                     self.friProfileImageList[user.id] = nil
-                    if let profileUrl = user.profileImage {
+                    if let profileUrl = user.profileImageUrl {
                         self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
                             DispatchQueue.main.async {
                                 self.friProfileImageList[user.id] = profileImage
@@ -225,7 +228,7 @@ final class UserProfileViewModel: ObservableObject {
                     }
                 }
 
-                self.friendList = success.0
+                self.friendList.append(contentsOf: success.0)
                 let pageInfo = success.1
                 if self.friendListTotalPage == -1 {
                     self.friendListTotalPage = pageInfo.totalPages
@@ -245,7 +248,7 @@ final class UserProfileViewModel: ObservableObject {
             case .success(let success):
                 success.0.forEach { user in
                     self.reqFriProImageList[user.id] = nil
-                    if let profileUrl = user.profileImage {
+                    if let profileUrl = user.profileImageUrl {
                         self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
                             DispatchQueue.main.async {
                                 self.reqFriProImageList[user.id] = profileImage
