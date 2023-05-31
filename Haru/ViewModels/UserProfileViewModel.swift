@@ -9,9 +9,9 @@ import Foundation
 import SwiftUI
 
 final class UserProfileViewModel: ObservableObject {
-    @Published var user: User
-    @Published var profileImage: PostImage?
-    var userId: String
+    @Published var user: User // 현재 보고 있는 사용자
+    @Published var profileImage: PostImage? // 현재 보고 있는 사용자의 프로필 이미지
+    var userId: String // 현재 보고 있는 사용자의 id
     var isMe: Bool {
         user.id == Global.shared.user?.id
     }
@@ -20,8 +20,17 @@ final class UserProfileViewModel: ObservableObject {
         user.friendStatus == 2 || isMe || user.isPublicAccount
     }
 
-    @Published var friendList: [User] = []
-    @Published var requestFriendList: [User] = [] // 사용자한테 친구 신청한 사람 (아직 수락하진 않은 상태)
+    @Published var friendList: [User] = [] // 현재 보고 있는 사용자의 친구 목록
+    @Published var requestFriendList: [User] = [] // 현재 보고 있는 사용자의 친구 신청 목록
+
+    @Published var friProfileImageList: [User.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
+    @Published var reqFriProImageList: [User.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
+
+    var friendCount: Int {
+        user.friendCount
+    }
+
+    var reqFriendCount: Int = 0 // 현재 보고 있는 사용자의 친구 요청 수
 
     private let profileService: ProfileService = .init()
     private let friendService: FriendService = .init()
@@ -63,9 +72,53 @@ final class UserProfileViewModel: ObservableObject {
         self.userId = userId
     }
 
+    // MARK: - 페이지네이션
+
+    func loadMoreFriendList() {
+        switch option {
+        case .friendList:
+            if friendListTotalPage != -1 {
+                if page > friendListTotalPage {
+                    print("[Error] 더 이상 불러올 친구 목록이 없습니다")
+                    print("\(#function) \(#fileID)")
+                    return
+                }
+            }
+
+            fetchFriend(userId: userId, page: page)
+
+        case .requestFriendList:
+            if reqFriListTotalPage != -1 {
+                if page > reqFriListTotalPage {
+                    print("[Error] 더 이상 불러올 친구신청 목록이 없습니다")
+                    print("\(#function) \(#fileID)")
+                    return
+                }
+            }
+
+            fetchRequestFriend(userId: userId, page: page)
+        }
+    }
+
+    func refreshFriendList() {
+        clear(option: option)
+    }
+
+    func clear(option: FriendOption) {
+        switch option {
+        case .friendList:
+            friendList.removeAll()
+        case .requestFriendList:
+            requestFriendList.removeAll()
+        }
+    }
+
     // MARK: - 이미지 캐싱
 
-    func fetchProfileImage(profileUrl: String) {
+    func fetchProfileImage(
+        profileUrl: String,
+        completion: @escaping (PostImage) -> Void
+    ) {
         DispatchQueue.global().async {
             if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
                 DispatchQueue.main.async {
@@ -83,9 +136,7 @@ final class UserProfileViewModel: ObservableObject {
                 }
 
                 ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
-                DispatchQueue.main.async {
-                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
-                }
+                completion(PostImage(url: profileUrl, uiImage: uiImage))
             }
         }
     }
@@ -98,9 +149,12 @@ final class UserProfileViewModel: ObservableObject {
             case .success(let success):
                 // 이미지 캐시
                 if let profileUrl = success.profileImage {
-                    self.fetchProfileImage(profileUrl: profileUrl)
+                    self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                        DispatchQueue.main.async {
+                            self.profileImage = profileImage
+                        }
+                    }
                 }
-
                 self.userId = success.id
                 self.user = success
             case .failure(let failure):
@@ -121,7 +175,11 @@ final class UserProfileViewModel: ObservableObject {
                 case .success(let success):
                     // 이미지 캐시
                     if let profileUrl = success.profileImage {
-                        self.fetchProfileImage(profileUrl: profileUrl)
+                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                            DispatchQueue.main.async {
+                                self.profileImage = profileImage
+                            }
+                        }
                     }
 
                     self.user = success
@@ -156,7 +214,23 @@ final class UserProfileViewModel: ObservableObject {
         friendService.fetchFriend(userId: userId, page: page) { result in
             switch result {
             case .success(let success):
+                success.0.forEach { user in
+                    self.friProfileImageList[user.id] = nil
+                    if let profileUrl = user.profileImage {
+                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                            DispatchQueue.main.async {
+                                self.friProfileImageList[user.id] = profileImage
+                            }
+                        }
+                    }
+                }
+
                 self.friendList = success.0
+                let pageInfo = success.1
+                if self.friendListTotalPage == -1 {
+                    self.friendListTotalPage = pageInfo.totalPages
+                }
+
             // TODO: 친구 프로필 이미지 캐싱하기
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -169,7 +243,23 @@ final class UserProfileViewModel: ObservableObject {
         friendService.fetchRequestFriend(userId: userId, page: page) { result in
             switch result {
             case .success(let success):
+                success.0.forEach { user in
+                    self.reqFriProImageList[user.id] = nil
+                    if let profileUrl = user.profileImage {
+                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                            DispatchQueue.main.async {
+                                self.reqFriProImageList[user.id] = profileImage
+                            }
+                        }
+                    }
+                }
+
                 self.requestFriendList = success.0
+                let pageInfo = success.1
+                self.reqFriendCount = pageInfo.totalItems
+                if self.reqFriListTotalPage == -1 {
+                    self.reqFriListTotalPage = pageInfo.totalPages
+                }
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
