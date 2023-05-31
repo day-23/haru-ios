@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct FeedImage: View {
+    var commentVM: CommentViewModel
+
     var post: Post
     var imageList: [PostImage?]
     var imageCount: Int
@@ -52,9 +54,10 @@ struct FeedImage: View {
                                     postPageNum: postPageNum,
                                     isMine: isMine
                                 )
-                            } else {
-                                Text("댓글 리스트")
                             }
+//                            else {
+//                                CommentListView(commentVM: commentVM)
+//                            }
                         } label: {
                             Image(uiImage: uiImage)
                                 .renderingMode(.original)

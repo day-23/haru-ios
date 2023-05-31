@@ -20,7 +20,16 @@ struct FeedView: View {
     }
     
     var body: some View {
-        ZStack {
+        let commentVM = CommentViewModel(
+            userId: post.user.id,
+            postImageIDList: post.images.map { image in
+                image.id
+            },
+            postId: post.id,
+            imagePageNum: 0
+        )
+        
+        return ZStack {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     NavigationLink {
@@ -59,6 +68,7 @@ struct FeedView: View {
                 .padding(.horizontal, 20)
                 
                 FeedImage(
+                    commentVM: commentVM,
                     post: post,
                     imageList: postImageList,
                     imageCount: post.images.count,
@@ -116,14 +126,7 @@ struct FeedView: View {
                     if isMine {
                         NavigationLink {
                             CommentListView(
-                                commentVM: CommentViewModel(
-                                    userId: post.user.id,
-                                    postImageIDList: post.images.map { image in
-                                        image.id
-                                    },
-                                    postId: post.id,
-                                    imagePageNum: 0
-                                )
+                                commentVM: commentVM
                             )
                         } label: {
                             Image("option-button")

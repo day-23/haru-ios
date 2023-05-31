@@ -12,6 +12,7 @@ final class CommentViewModel: ObservableObject {
     var userId: String // 게시물 작성자 id
     var postId: String // 게시물 id
     var postImageIDList: [Post.Image.ID] // 게시물의 이미지
+    var templateURL: String? //
     @Published var imagePageNum: Int
     
     @Published var imageCommentList: [Post.Image.ID: [Post.Comment]]
@@ -39,11 +40,13 @@ final class CommentViewModel: ObservableObject {
         userId: String,
         postImageIDList: [Post.Image.ID],
         postId: String,
+        templateURL: String? = nil,
         imagePageNum: Int
     ) {
         self.userId = userId
         self.postImageIDList = postImageIDList
         self.postId = postId
+        self.templateURL = templateURL
         self.imagePageNum = imagePageNum
         
         self.imageCommentList = postImageIDList.reduce(into: [String: [Post.Comment]]()) { dictionary, element in
