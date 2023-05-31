@@ -34,36 +34,4 @@ final class Global: ObservableObject {
 
         [Color(0x105C08), Color(0x39972E), Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0)],
     ]
-
-    static func scheduleNotification(
-        body: String,
-        year: Int,
-        month: Int,
-        day: Int,
-        hour: Int,
-        minute: Int,
-        identifier: String
-    ) {
-        let content = UNMutableNotificationContent()
-        content.title = "하루"
-        content.body = body
-        content.sound = UNNotificationSound.default
-
-        // 매일 hour, minute 시간에 맞게 반복
-        let dateComponents = DateComponents(year: year, month: month, day: day, hour: hour, minute: minute)
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("[Debug] 알림 예약 실패: \(error.localizedDescription)")
-            } else {
-                // 알림 예약 성공
-            }
-        }
-    }
-
-    static func removeNotification(identifier: String) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
-    }
 }
