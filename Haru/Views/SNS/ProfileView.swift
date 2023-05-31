@@ -17,6 +17,8 @@ struct ProfileView: View {
     @StateObject var postVM: PostViewModel
     @StateObject var userProfileVM: UserProfileViewModel
     
+    @State var postOptModalVis: (Bool, Post?) = (false, nil)
+    
     var myProfile: Bool = false
     
     var body: some View {
@@ -72,7 +74,7 @@ struct ProfileView: View {
                     }
                     
                     if isFeedSelected {
-                        FeedListView(postVM: postVM)
+                        FeedListView(postVM: postVM, postOptModalVis: $postOptModalVis)
                     } else {
                         MediaListView(postVM: postVM)
                     }
@@ -89,6 +91,60 @@ struct ProfileView: View {
                         Spacer()
                     }
                 }
+            }
+            
+            if postOptModalVis.0 {
+                Color.black.opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            postOptModalVis.0 = false
+                        }
+                    }
+
+                Modal(isActive: $postOptModalVis.0, ratio: 0.1) {
+                    VStack(spacing: 20) {
+                        if postOptModalVis.1?.user.id == Global.shared.user?.id {
+                            Button {} label: {
+                                Text("이 게시글 수정하기")
+                                    .foregroundColor(Color(0x646464))
+                                    .font(.pretendard(size: 20, weight: .regular))
+                            }
+                        } else {
+                            Button {} label: {
+                                Text("이 게시글 숨기기")
+                                    .foregroundColor(Color(0x646464))
+                                    .font(.pretendard(size: 20, weight: .regular))
+                            }
+                        }
+                        Divider()
+                        if postOptModalVis.1?.user.id == Global.shared.user?.id {
+                            Button {} label: {
+                                HStack {
+                                    Text("게시글 삭제하기")
+                                        .foregroundColor(Color(0xF71E58))
+                                        .font(.pretendard(size: 20, weight: .regular))
+                                    
+                                    Image("trash")
+                                        .resizable()
+                                        .renderingMode(.template)
+                                        .foregroundColor(Color(0xF71E58))
+                                        .frame(width: 28, height: 28)
+                                }
+                            }
+                        } else {
+                            Button {} label: {
+                                Text("이 게시글 신고하기")
+                                    .foregroundColor(Color(0xF71E58))
+                                    .font(.pretendard(size: 20, weight: .regular))
+                            }
+                        }
+                    }
+                    .padding(.top, 40)
+                }
+                .transition(.modal)
+                .zIndex(2)
             }
             
             if toggleIsClicked {

@@ -10,6 +10,8 @@ import SwiftUI
 struct ProfileInfoView: View {
     @StateObject var userProfileVM: UserProfileViewModel
     
+    @State var postOptModalVis: Bool = false
+    
     var body: some View {
         HStack(alignment: .top, spacing: 20) {
             ProfileImgView(profileImage: userProfileVM.profileImage)
