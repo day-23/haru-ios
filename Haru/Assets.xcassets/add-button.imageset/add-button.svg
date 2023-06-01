@@ -8,11 +8,11 @@
   <g id="그룹_18815" data-name="그룹 18815" transform="translate(-11926 -1082)">
     <circle id="타원_58" data-name="타원 58" cx="28" cy="28" r="28" transform="translate(11926 1082)" fill="url(#linear-gradient)"/>
     <g id="그룹_18646" data-name="그룹 18646" transform="translate(-55 13)">
-      <g id="그룹_18645" data-name="그룹 18645" transform="translate(11539 -2048)">
-        <rect id="사각형_23863" data-name="사각형 23863" width="2" height="14" transform="translate(469 3138)" fill="#fff"/>
-        <rect id="사각형_23864" data-name="사각형 23864" width="2" height="14" transform="translate(477 3144) rotate(90)" fill="#fff"/>
-      </g>
       <path id="패스_7693" data-name="패스 7693" d="M0,0H20V20H0Z" transform="translate(11999 1087)" fill="none" opacity="0.5"/>
     </g>
+  </g>
+  <g id="그룹_21307" data-name="그룹 21307" transform="translate(-104 -646)">
+    <rect id="사각형_25719" data-name="사각형 25719" width="2" height="20" rx="1" transform="translate(131 664)" fill="#fdfdfd"/>
+    <rect id="사각형_25720" data-name="사각형 25720" width="2" height="20" rx="1" transform="translate(142 673) rotate(90)" fill="#fdfdfd"/>
   </g>
 </svg>

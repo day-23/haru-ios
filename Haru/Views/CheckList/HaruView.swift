@@ -19,7 +19,7 @@ struct HaruView: View {
 
     let formatter: DateFormatter = {
         let formatter: DateFormatter = .init()
-        formatter.dateFormat = "MMMM dd\(Locale.current.language.languageCode?.identifier == "ko" ? "일" : "") EEEE"
+        formatter.dateFormat = "MMMM d\(Locale.current.language.languageCode?.identifier == "ko" ? "일" : "") EEEE"
         return formatter
     }()
 
@@ -42,13 +42,20 @@ struct HaruView: View {
                 ) {
                     todoState.updateOrderHaru()
                 } header: {
-                    TagView(
-                        tag: Tag(
-                            id: DefaultTag.important.rawValue,
-                            content: DefaultTag.important.rawValue
-                        ),
-                        isSelected: true
-                    )
+                    HStack(spacing: 0) {
+                        TagView(
+                            tag: Tag(
+                                id: DefaultTag.important.rawValue,
+                                content: DefaultTag.important.rawValue
+                            ),
+                            isSelected: true
+                        )
+
+                        Spacer()
+
+                        StarButton(isClicked: true)
+                            .padding(.trailing, 10)
+                    }
                     .padding(.leading, 10)
                 }
 
