@@ -40,10 +40,8 @@ final class AlarmHelper {
 
                 let now = Date()
                 var dateComponents = DateComponents()
-                // TODO: 아침, 저녁으로 정해줘야 함.
-                dateComponents.hour = now.hour
-                dateComponents.minute = now.minute
-                dateComponents.second = now.addingTimeInterval(regular == .morning ? 5 : 10).second
+                dateComponents.hour = regular == .morning ? 7 : 21
+                dateComponents.minute = 0
                 let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
                 let request = UNNotificationRequest(identifier: regular.rawValue, content: content, trigger: trigger)
                 UNUserNotificationCenter.current().add(request) { error in
