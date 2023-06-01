@@ -155,7 +155,7 @@ private struct TagOptionItem: View {
                     isSelected: tag.isSelected
                 )
             } label: {
-                Image("ellipsis")
+                Image("edit-button")
                     .renderingMode(.template)
                     .foregroundColor(Color(0x646464))
                     .frame(width: 28, height: 28)
