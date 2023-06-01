@@ -111,7 +111,7 @@ struct TimeTableScheduleView: View {
                                             )
                                         )
                                 )
-                                .padding(.top, 8)
+                                .padding(.top, 6)
                                 .onTapGesture {
                                     calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
                                     calendarViewModel.getSelectedScheduleList()
