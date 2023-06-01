@@ -19,11 +19,8 @@ struct AccountView: View {
             .padding(.bottom, 29)
 
             ZStack {
-                LinearGradient(
-                    colors: [Color(0xd2d7ff), Color(0xaad7ff), Color(0xd2d7ff)],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ).opacity(0.5)
+                Image("background-gradation")
+                    .resizable()
 
                 VStack(alignment: .leading, spacing: 5) {
                     Text("연동된 이메일")

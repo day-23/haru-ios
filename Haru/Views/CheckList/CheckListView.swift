@@ -26,7 +26,7 @@ struct CheckListView: View {
 
         return ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                HaruHeader(isIconColorWhite: false) {
+                HaruHeader(isIconGradation: true) {
                     Color.white
                         .edgesIgnoringSafeArea(.all)
                 } item: {

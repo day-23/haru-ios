@@ -94,7 +94,7 @@ struct TagManageView: View {
         }
         .frame(width: width, height: height)
         .background(
-            RadialGradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)], center: .center, startRadius: 0, endRadius: 350)
+            Image("background-manage")
         )
         .cornerRadius(10, corners: [.topLeft, .bottomLeft])
         .offset(offset)
