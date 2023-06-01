@@ -24,14 +24,27 @@ struct PostFormView: View {
 
     var body: some View {
         VStack {
-            TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
-                .lineLimit(nil)
-                .frame(height: 400, alignment: .top)
-                .background(Color(0xfdfdfd))
-                .focused($isFocused)
-                .onTapGesture {
-                    isFocused = true
+            if postAddMode == .writing {
+                TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
+                    .lineLimit(nil)
+                    .frame(height: 400, alignment: .top)
+                    .background(Color(0xfdfdfd))
+                    .focused($isFocused)
+                    .onTapGesture {
+                        isFocused = true
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 24)
+            } else {
+                if postFormVM.imageList.count != 0 {
+                    Image(uiImage: postFormVM.imageList[0])
+                        .resizable()
+                        .frame(
+                            width: UIScreen.main.bounds.size.width,
+                            height: UIScreen.main.bounds.size.width
+                        )
                 }
+            }
             Spacer()
         }
         .popupImagePicker(show: $openPhoto, mode: .multiple, always: true) { assets in
@@ -55,8 +68,6 @@ struct PostFormView: View {
                 }
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 24)
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
