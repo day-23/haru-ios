@@ -97,7 +97,7 @@ extension Schedule: Productivity, Equatable {
 
 extension Schedule {
     static func createRepeatSchedule(
-        schedule: Schedule,
+        schedule: Schedule, // 원본 스케줄
         repeatStart: Date,
         repeatEnd: Date,
         prevRepeatEnd: Date? = nil,

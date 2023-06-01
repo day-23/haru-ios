@@ -564,10 +564,6 @@ final class ScheduleFormViewModel: ObservableObject {
                 alarms: selectedAlarm
             )
         } else { // 반복이 아닌 일정 수정 혹은 반복 일정 중 "모든 일정 수정" 시
-            if let realRepeatStart {
-                reqRepStart = realRepeatStart > reqRepStart ? realRepeatStart : reqRepStart
-            }
-            
             return Request.Schedule(
                 content: content,
                 memo: memo,
@@ -602,8 +598,6 @@ final class ScheduleFormViewModel: ObservableObject {
         dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
         dateComponents.hour = repeatEnd.hour
         dateComponents.minute = repeatEnd.minute
-        
-        print(repeatStart)
         
         return Request.RepeatSchedule(
             content: content,

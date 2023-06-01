@@ -742,7 +742,7 @@ final class CalendarViewModel: ObservableObject {
         case "매주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
         case "격주":
-            return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
+            return repeatEverySecondWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매달":
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매년":
@@ -842,12 +842,12 @@ final class CalendarViewModel: ObservableObject {
             }
         }
         
-        if weekTerm == 2, startDate.month != schedule.repeatStart.month || startDate.day != schedule.repeatStart.day {
-            let diff = CalendarHelper.getDiffWeeks(date1: schedule.repeatStart, date2: startDate)
-            if diff % 2 == 0 {
-                startDate = startDate.addingTimeInterval(TimeInterval(day * 7))
-            }
-        }
+//        if weekTerm == 2, startDate.month != schedule.repeatStart.month || startDate.day != schedule.repeatStart.day {
+//            let diff = CalendarHelper.getDiffWeeks(date1: schedule.repeatStart, date2: startDate)
+//            if diff % 2 == 0 {
+//                startDate = startDate.addingTimeInterval(TimeInterval(day * 7))
+//            }
+//        }
         
         // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
         for _ in 0 ... 5 {
@@ -946,6 +946,70 @@ final class CalendarViewModel: ObservableObject {
             }
             if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
                 startDate = nextStartDate
+            }
+        }
+        
+        return result
+    }
+    
+    func repeatEverySecondWeek(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
+        var result = [Schedule]()
+        
+        guard let repeatValue = schedule.repeatValue else {
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        let day = 60 * 60 * 24
+        
+        dateComponents = calendar.dateComponents([.year, .month, .day], from: schedule.repeatStart)
+        dateComponents.hour = schedule.repeatEnd.hour
+        dateComponents.minute = schedule.repeatEnd.minute
+        dateComponents.second = schedule.repeatEnd.second
+        
+        var curRepStartDate: Date = schedule.repeatStart
+        guard var curRepEndDate = calendar.date(from: dateComponents) else {
+            return result
+        }
+        
+        var prevRepeatEnd = Date()
+        var nextRepeatStart = Date()
+        
+        var resultSchedule = schedule
+        
+        while curRepStartDate <= endDate {
+            do {
+                prevRepeatEnd = try resultSchedule.prevRepeatEndDate(curRepeatEnd: curRepEndDate)
+            } catch {
+                print("[Debug] prevRepeatEndDate에 이상이 있습니다. \(#function) \(#file)")
+            }
+            
+            do {
+                nextRepeatStart = try resultSchedule.nextRepeatStartDate(curRepeatStart: curRepStartDate)
+            } catch {
+                print("[Debug] nextRepeatStartDate에 이상이 있습니다. \(#function) \(#file)")
+            }
+            
+            result.append(
+                Schedule.createRepeatSchedule(
+                    schedule: resultSchedule,
+                    repeatStart: curRepStartDate,
+                    repeatEnd: curRepEndDate,
+                    prevRepeatEnd: prevRepeatEnd,
+                    nextRepeatStart: nextRepeatStart
+                )
+            )
+            
+            curRepStartDate = nextRepeatStart
+            
+            do {
+                curRepEndDate = try resultSchedule.nextRepeatStartDate(curRepeatStart: curRepEndDate)
+            } catch {
+                print("[Debug] nextRepeatStartDate에 이상이 있습니다. \(#function) \(#file)")
             }
         }
         
