@@ -64,8 +64,21 @@ struct RootView: View {
                                     )
                                 } else if selection == .calendar {
                                     // MARK: - Calendar View
-
-                                    CalendarMainView()
+                                    let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
+                                    let todoAddViewModel: TodoAddViewModel = .init(todoState: todoState) { id in
+                                        checkListViewModel.selectedTag = nil
+                                        checkListViewModel.justAddedTodoId = id
+                                        checkListViewModel.fetchTags()
+                                        checkListViewModel.fetchTodoList()
+                                    } updateAction: { id in
+                                        checkListViewModel.justAddedTodoId = id
+                                        checkListViewModel.fetchTodoList()
+                                        checkListViewModel.fetchTags()
+                                    }
+                                    
+                                    CalendarMainView(
+                                        addViewModel: todoAddViewModel
+                                    )
                                 } else if selection == .timetable {
                                     // MARK: - TimeTable View
 

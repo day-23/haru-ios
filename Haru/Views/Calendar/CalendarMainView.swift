@@ -9,14 +9,12 @@ import SwiftUI
 
 struct CalendarMainView: View {
     @StateObject var calendarVM: CalendarViewModel = .init()
+    @StateObject var addViewModel: TodoAddViewModel
 
     var body: some View {
-        CalendarDateView(calendarVM: calendarVM)
-    }
-}
-
-struct CalendarMain_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarMainView()
+        CalendarDateView(
+            calendarVM: calendarVM,
+            addViewModel: addViewModel
+        )
     }
 }
