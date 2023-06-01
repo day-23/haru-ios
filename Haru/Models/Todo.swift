@@ -61,7 +61,13 @@ struct Todo: Identifiable, Codable {
         self.realRepeatStart = realRepeatStart
 
         if let alarm = alarms.first {
-            AlarmHelper.createNotification(identifier: id, body: content, date: alarm.time)
+            Task {
+                await AlarmHelper.createNotification(
+                    identifier: id,
+                    body: content,
+                    date: alarm.time
+                )
+            }
         }
     }
 
@@ -92,7 +98,13 @@ struct Todo: Identifiable, Codable {
         let content = self.content
         let alarms = self.alarms
         if let alarm = alarms.first {
-            AlarmHelper.createNotification(identifier: id, body: content, date: alarm.time)
+            Task {
+                await AlarmHelper.createNotification(
+                    identifier: id,
+                    body: content,
+                    date: alarm.time
+                )
+            }
         }
     }
 }

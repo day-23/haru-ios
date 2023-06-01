@@ -16,7 +16,6 @@ final class AlarmHelper {
 
     private init() {}
     private static let todoService: TodoService = .init()
-    static let current: AlarmHelper = .init()
 
     static func createRegularNotification(
         regular: Regular
@@ -65,10 +64,11 @@ final class AlarmHelper {
         identifier: String,
         body: String,
         date: Date
-    ) {
+    ) async {
         if date <= .now {
             return
         }
+        await removeNotification(identifier: identifier)
 
         let content = UNMutableNotificationContent()
         content.title = "하루"
@@ -88,7 +88,7 @@ final class AlarmHelper {
         }
     }
 
-    static func removeNotification(identifier: String) async {
+    private static func removeNotification(identifier: String) async {
         let notifications = await UNUserNotificationCenter.current().pendingNotificationRequests()
 
         var removed: [String] = []
