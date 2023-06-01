@@ -53,8 +53,8 @@ struct AccountView: View {
                 Spacer()
                 Spacer()
 
-                Button {
-                    // TODO: 삭제 API 호출
+                NavigationLink {
+                    WithdrawalView()
                 } label: {
                     VStack(spacing: 8) {
                         Text("계정 삭제하기")
