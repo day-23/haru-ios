@@ -14,11 +14,13 @@ struct HaruHeader<
     var toggleOn: Bool
 
     @Binding var toggleIsClicked: Bool
+    var isIconColorWhite: Bool
     @ViewBuilder var background: () -> HeaderBackground // 배경화면으로 보여질 화면을 추가한다.
     @ViewBuilder var item: () -> HeaderItem // 헤더 오른쪽에 들어갈 아이템을 정의한다.
 
     init(
         toggleIsClicked: Binding<Bool>? = nil,
+        isIconColorWhite: Bool = true,
         @ViewBuilder background: @escaping () -> HeaderBackground = {
             LinearGradient(
                 colors: [
@@ -31,11 +33,13 @@ struct HaruHeader<
             )
             .opacity(0.5)
         },
+
         @ViewBuilder item: @escaping () -> HeaderItem
     ) {
         _toggleIsClicked = toggleIsClicked ?? .constant(false)
         self.background = background
         self.item = item
+        self.isIconColorWhite = isIconColorWhite
 
         if toggleIsClicked == nil {
             toggleOn = false
@@ -51,9 +55,13 @@ struct HaruHeader<
 
             VStack(spacing: 0) {
                 HStack {
-                    Image("logo")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
+                    if isIconColorWhite {
+                        Image("logo")
+                            .renderingMode(.template)
+                            .foregroundColor(Color(0xFDFDFD))
+                    } else {
+                        Image("logo")
+                    }
 
                     if toggleOn {
                         Button {

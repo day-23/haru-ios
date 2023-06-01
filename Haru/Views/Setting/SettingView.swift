@@ -33,7 +33,7 @@ struct SettingView: View {
                     ScreenView()
                 }
 
-                SettingRow(iconName: "alarm", content: "알림") {
+                SettingRow(iconName: "alarm-setting", content: "알림") {
                     // TODO: 알림으로 연결
                 }
 
