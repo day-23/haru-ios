@@ -1452,10 +1452,12 @@ final class CalendarViewModel: ObservableObject {
     func repeatEveryWeek(firstDate: Date, lastDate: Date, todo: Todo, weekTerm: Int) -> [Todo] {
         var result = [Todo]()
         
-        guard let todoEndDate = todo.endDate else {
+        guard var todoEndDate = todo.endDate else {
             print("[Error] 반복 Todo는 endDate가 반드시 필요합니다. \(#fileID) \(#function)")
             return result
         }
+        
+        let realRepeatStart = todoEndDate
         
         guard let todoRepeatValue = todo.repeatValue else {
             print("[Error] 반복 Todo는 repeatValue가 반드시 필요합니다. \(#fileID) \(#function)")
@@ -1478,33 +1480,53 @@ final class CalendarViewModel: ObservableObject {
         
         let repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
         
-        // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
-        for _ in 0 ... 5 {
-            for idx in repeatValue.indices {
-                if repeatValue[(idx + offset) % 7] == 1 {
-                    guard let curEndDate = CalendarHelper.getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: calendar.startOfDay(for: startDate)) else {
-                        print("[Error] getClosestIdxDate 함수 에러 \(#fileID) \(#function)")
-                        continue
+        if weekTerm == 1 {
+            // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
+            for _ in 0 ... 5 {
+                for idx in repeatValue.indices {
+                    if repeatValue[(idx + offset) % 7] == 1 {
+                        guard let curEndDate = CalendarHelper.getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: calendar.startOfDay(for: startDate)) else {
+                            print("[Error] getClosestIdxDate 함수 에러 \(#fileID) \(#function)")
+                            continue
+                        }
+                        
+                        if curEndDate > endDate {
+                            break
+                        }
+                        
+                        dateComponents = calendar.dateComponents([.year, .month, .day], from: curEndDate)
+                        dateComponents.hour = todoEndDate.hour
+                        dateComponents.minute = todoEndDate.minute
+                        dateComponents.second = todoEndDate.second
+                        guard let curEndDate = calendar.date(from: dateComponents) else {
+                            print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
+                            continue
+                        }
+                        
+                        result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
                     }
-                    
-                    if curEndDate > endDate {
-                        break
-                    }
-                    
-                    dateComponents = calendar.dateComponents([.year, .month, .day], from: curEndDate)
-                    dateComponents.hour = todoEndDate.hour
-                    dateComponents.minute = todoEndDate.minute
-                    dateComponents.second = todoEndDate.second
-                    guard let curEndDate = calendar.date(from: dateComponents) else {
-                        print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
-                        continue
-                    }
-                    
-                    result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
+                }
+                if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
+                    startDate = nextStartDate
                 }
             }
-            if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
-                startDate = nextStartDate
+        } else {
+            var todo = todo
+            result.append(Todo.createRepeatTodo(todo: todo, endDate: todoEndDate, realRepeatStart: realRepeatStart))
+            while todoEndDate <= endDate {
+                do {
+                    guard let nextEndDate = try todo.nextEndDate() else {
+                        return result
+                    }
+                    
+                    todo.endDate = nextEndDate
+                    todoEndDate = nextEndDate
+                    
+                } catch {
+                    print("[Debug] nextEndDate 함수가 잘 못되었습니다. \(#function) \(#file)")
+                }
+                
+                result.append(Todo.createRepeatTodo(todo: todo, endDate: todoEndDate, realRepeatStart: realRepeatStart))
             }
         }
         

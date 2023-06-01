@@ -477,7 +477,8 @@ extension Todo {
 extension Todo {
     static func createRepeatTodo(
         todo: Todo,
-        endDate: Date
+        endDate: Date,
+        realRepeatStart: Date? = nil
     ) -> Todo {
         Todo(
             id: todo.id,
@@ -497,7 +498,7 @@ extension Todo {
             tags: todo.tags,
             alarms: todo.alarms,
             createdAt: todo.createdAt,
-            realRepeatStart: todo.endDate
+            realRepeatStart: realRepeatStart ?? todo.endDate
         )
     }
 }
