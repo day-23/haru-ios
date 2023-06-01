@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingView: View {
     @Environment(\.dismiss) var dismissAction
     @Binding var isLoggedIn: Bool
+    @State private var isLogoutButtonClicked: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -61,18 +62,30 @@ struct SettingView: View {
 
                 Divider()
 
-                HStack(spacing: 0) {
-                    Button {
-                        KeychainService.logout()
-                        isLoggedIn = false
-                    } label: {
-                        Text("로그아웃")
-                            .font(.pretendard(size: 14, weight: .regular))
-                            .foregroundColor(Color(0x646464))
-                    }
-                }.padding(.leading, 34)
+                if let user = Global.shared.user {
+                    HStack(spacing: 0) {
+                        Button {
+                            isLogoutButtonClicked = true
+                        } label: {
+                            Text("로그아웃")
+                                .font(.pretendard(size: 14, weight: .regular))
+                                .foregroundColor(Color(0x646464))
+                        }
+                        .confirmationDialog(
+                            "\(user.user.name) 계정에서 로그아웃 할까요?",
+                            isPresented: $isLogoutButtonClicked,
+                            titleVisibility: .visible
+                        ) {
+                            Button("로그아웃", role: .destructive) {
+                                KeychainService.logout()
+                                isLoggedIn = false
+                            }
+                        }
 
-                Divider()
+                    }.padding(.leading, 34)
+
+                    Divider()
+                }
             }
             .padding(.bottom, 64)
         }
