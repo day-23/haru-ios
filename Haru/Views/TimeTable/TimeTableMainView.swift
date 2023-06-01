@@ -18,7 +18,6 @@ struct TimeTableMainView: View {
     @State private var isScheduleView: Bool = true
 
     @State private var isModalVisible: Bool = false
-    @State private var isPopupVisible: Bool = false
 
     @State private var isDateButtonClicked: Bool = false
 
@@ -31,7 +30,11 @@ struct TimeTableMainView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
+        let isPopupVisible: Binding<Bool> = .init {
+            Global.shared.isFaded
+        } set: { Global.shared.isFaded = $0 }
+
+        return ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
                 // 날짜 레이아웃
                 HStack(spacing: 0) {
@@ -125,7 +128,7 @@ struct TimeTableMainView: View {
                     TimeTableScheduleView(
                         timeTableViewModel: _timeTableViewModel,
                         calendarViewModel: _calendarViewModel,
-                        isPopupVisible: $isPopupVisible
+                        isPopupVisible: isPopupVisible
                     )
                     .padding(.trailing, 20)
                 } else {
@@ -134,6 +137,8 @@ struct TimeTableMainView: View {
                         timeTableViewModel: _timeTableViewModel
                     )
                 }
+
+                Spacer()
             }
 
             if isModalVisible {
@@ -171,14 +176,13 @@ struct TimeTableMainView: View {
                 .transition(.modal)
                 .zIndex(2)
             } else {
-                if isPopupVisible {
+                if isPopupVisible.wrappedValue {
                     ZStack {
                         Color.black.opacity(0.4)
                             .edgesIgnoringSafeArea(.all)
                             .zIndex(1)
                             .onTapGesture {
-                                isPopupVisible = false
-                                Global.shared.isFaded = false
+                                isPopupVisible.wrappedValue = false
                             }
 
                         CalendarDayView(calendarViewModel: calendarViewModel)

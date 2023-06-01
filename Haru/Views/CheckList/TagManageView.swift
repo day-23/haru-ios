@@ -95,6 +95,7 @@ struct TagManageView: View {
         .frame(width: width, height: height)
         .background(
             Image("background-manage")
+                .resizable()
         )
         .cornerRadius(10, corners: [.topLeft, .bottomLeft])
         .offset(offset)

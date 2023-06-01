@@ -75,10 +75,7 @@ struct TimeTableScheduleView: View {
                                 .onTapGesture {
                                     calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
                                     calendarViewModel.getSelectedScheduleList()
-                                    withAnimation {
-                                        isPopupVisible = true
-                                        Global.shared.isFaded = true
-                                    }
+                                    isPopupVisible = true
                                 }
                         }
                     }
@@ -115,10 +112,7 @@ struct TimeTableScheduleView: View {
                                 .onTapGesture {
                                     calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
                                     calendarViewModel.getSelectedScheduleList()
-                                    withAnimation {
-                                        isPopupVisible = true
-                                        Global.shared.isFaded = true
-                                    }
+                                    isPopupVisible = true
                                 }
                         }
                     }
