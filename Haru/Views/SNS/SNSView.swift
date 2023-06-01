@@ -15,6 +15,10 @@ struct SNSView: View {
 
     @State var postOptModalVis: (Bool, Post?) = (false, nil)
 
+    @State var showDrowButton: Bool = false
+    @State var showWriteButton: Bool = false
+    @State var showAddButton: Bool = true
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
@@ -93,21 +97,63 @@ struct SNSView: View {
             }
 
             if !postOptModalVis.0 {
-                NavigationLink(
-                    destination: PostFormView(rootIsActive: $isActive),
-                    isActive: $isActive
-                ) {
-                    Image("sns-add-button")
-                        .shadow(radius: 10, x: 5, y: 0)
+                VStack {
+                    if showDrowButton {
+                        NavigationLink(
+                            destination: PostFormView(rootIsActive: $isActive),
+                            isActive: $isActive
+                        ) {
+                            Image("sns-write-button")
+                                .shadow(radius: 10, x: 5, y: 0)
+                        }
+                    }
+
+                    if showWriteButton {
+                        NavigationLink(
+                            destination: PostFormView(rootIsActive: $isActive),
+                            isActive: $isActive
+                        ) {
+                            Image("sns-write-button")
+                                .shadow(radius: 10, x: 5, y: 0)
+                        }
+                    }
+
+                    if showAddButton {
+                        Button {
+                            withAnimation {
+                                showAddMenu()
+                            }
+                        } label: {
+                            Image("sns-add-button")
+                                .shadow(radius: 10, x: 5, y: 0)
+                        }
+                    }
                 }
                 .zIndex(5)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 10)
             }
         }
+        .onTapGesture {
+            withAnimation {
+                hideAddMenu()
+            }
+        }
         .onAppear {
             toggleIsClicked = false
         }
+    }
+
+    func showAddMenu() {
+        showAddButton = false
+        showWriteButton = true
+        showDrowButton = true
+    }
+
+    func hideAddMenu() {
+        showDrowButton = false
+        showWriteButton = false
+        showAddButton = true
     }
 
     @ViewBuilder
