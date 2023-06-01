@@ -655,8 +655,8 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatWeek(todo: Todo? = nil) {
         if let todo {
-            if todo.repeatOption != RepeatOption.everyWeek.rawValue ||
-                todo.repeatOption != RepeatOption.everyWeek.rawValue
+            if todo.repeatOption != RepeatOption.everyWeek.rawValue &&
+                todo.repeatOption != RepeatOption.everySecondWeek.rawValue
             {
                 return
             }
