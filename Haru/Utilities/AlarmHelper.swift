@@ -23,10 +23,10 @@ final class AlarmHelper {
         todoService.fetchTodoListByTodayTodoAndUntilToday { result in
             switch result {
             case .success(let data):
-                var res = 0
-                res += data.flaggedTodos.count
-                res += data.todayTodos.count
-                res += data.endDateTodos.filter { todo in
+                var count = 0
+                count += data.flaggedTodos.count
+                count += data.todayTodos.count
+                count += data.endDateTodos.filter { todo in
                     guard let endDate = todo.endDate else {
                         return false
                     }
@@ -35,7 +35,11 @@ final class AlarmHelper {
 
                 let content = UNMutableNotificationContent()
                 content.title = "하루"
-                content.body = regular == .morning ? "오늘 할 일이 \(res)개 있습니다." : "오늘 남은 할 일이 \(res)개 있습니다."
+                if count > 0 {
+                    content.body = regular == .morning ? "오늘 할 일이 \(count)개 있습니다." : "오늘 남은 할 일이 \(count)개 있습니다."
+                } else {
+                    content.body = regular == .morning ? "오늘 해야할 일이 있나요?" : "오늘 할 일을 모두 마쳤나요?"
+                }
                 content.sound = .default
 
                 let now = Date()
@@ -50,7 +54,7 @@ final class AlarmHelper {
                         return
                     }
 
-                    print("[Debug] \(regular) \(res) 알림 등록 완료")
+                    print("[Debug] \(regular) \(count) 알림 등록 완료")
                 }
             case .failure:
                 break
