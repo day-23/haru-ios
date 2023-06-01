@@ -157,6 +157,11 @@ struct CalendarDateView: View {
                 self.calendarVM.getCategoryList()
                 self.calendarVM.getCurDateList(self.calendarVM.monthOffest, self.calendarVM.startOnSunday)
             }
+            .onTapGesture {
+                withAnimation {
+                    self.hideAddMenu()
+                }
+            }
 
             // 추가 버튼
             if !self.isDayModalVisible, !self.isOptionModalVisible {
@@ -313,10 +318,8 @@ struct CalendarDateView: View {
                     .zIndex(2)
             }
         } // ZStack
-        .onTapGesture {
-            withAnimation {
-                self.hideAddMenu()
-            }
+        .onAppear {
+            UIApplication.shared.addTapGestureRecognizer()
         }
         .onChange(of: self.isSchModalVisible) { _ in
             if !self.isSchModalVisible {

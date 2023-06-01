@@ -786,11 +786,20 @@ final class CalendarViewModel: ObservableObject {
         var prevRepeatEnd: Date? = startDate
         var nextRepeatStart: Date? = startDate
         for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
+            // dateComponents에는 달력에 보여질 일정 끝나는 일과 시간
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
             dateComponents.second = schedule.repeatEnd.second
-
+            
+            var prevDateComp = dateComponents
+            prevDateComp.day! -= 1
+            if let prevRepEnd = calendar.date(from: prevDateComp) {
+                prevRepeatEnd = prevRepEnd
+            } else {
+                print("[Debug] 날짜 계산에 이상이 있습니다. \(#function) \(#file)")
+            }
+            
             var nextDateComp = dateComponents
             nextDateComp.day! += 1
             nextDateComp.hour = schedule.repeatStart.hour
@@ -798,6 +807,8 @@ final class CalendarViewModel: ObservableObject {
             nextDateComp.second = schedule.repeatStart.second
             if let nextRepStart = calendar.date(from: nextDateComp) {
                 nextRepeatStart = nextRepStart
+            } else {
+                print("[Debug] 날짜 계산에 이상이 있습니다. \(#function) \(#file)")
             }
             
             result.append(
@@ -809,8 +820,6 @@ final class CalendarViewModel: ObservableObject {
                     nextRepeatStart: nextRepeatStart
                 )
             )
-            
-            prevRepeatEnd = calendar.date(from: dateComponents)
         }
         return result
     }

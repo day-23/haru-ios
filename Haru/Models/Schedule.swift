@@ -103,13 +103,13 @@ extension Schedule {
         prevRepeatEnd: Date? = nil,
         nextRepeatStart: Date? = nil
     ) -> Schedule {
-        var tmpPrevRepeatEnd: Date?
+        var realPrevRepeatEnd: Date?
 
         if schedule.repeatOption != nil,
            let repeatValue = schedule.repeatValue
         {
             if repeatValue.hasPrefix("T") {
-                tmpPrevRepeatEnd = prevRepeatEnd?.addingTimeInterval(
+                realPrevRepeatEnd = prevRepeatEnd?.addingTimeInterval(
                     TimeInterval(
                         Double(
                             repeatValue.split(separator: "T")[0]
@@ -117,7 +117,7 @@ extension Schedule {
                     )
                 )
             } else {
-                tmpPrevRepeatEnd = schedule.repeatEnd
+                realPrevRepeatEnd = prevRepeatEnd
             }
         }
 
@@ -135,7 +135,7 @@ extension Schedule {
             createdAt: schedule.createdAt,
             realRepeatStart: schedule.repeatStart,
             realRepeatEnd: schedule.repeatEnd,
-            prevRepeatEnd: tmpPrevRepeatEnd,
+            prevRepeatEnd: realPrevRepeatEnd,
             nextRepeatStart: nextRepeatStart
         )
     }
