@@ -846,8 +846,7 @@ struct TodoService {
     ) {
         if at == .none {
             completeTodo(todoId: todo.id,
-                         completed: !todo.completed)
-            { result in
+                         completed: !todo.completed) { result in
                 switch result {
                 case .success:
                     completion(.success(true))
@@ -903,6 +902,9 @@ struct TodoService {
         ).response { response in
             switch response.result {
             case .success:
+                Task {
+                    await AlarmHelper.removeNotification(identifier: todoId)
+                }
                 completion(.success(true))
             case let .failure(error):
                 completion(.failure(error))
@@ -948,6 +950,9 @@ struct TodoService {
         ).response { response in
             switch response.result {
             case .success:
+                Task {
+                    await AlarmHelper.removeNotification(identifier: todoId)
+                }
                 completion(.success(true))
             case let .failure(error):
                 completion(.failure(error))

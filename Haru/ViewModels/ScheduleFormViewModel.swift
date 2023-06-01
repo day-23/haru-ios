@@ -742,7 +742,7 @@ final class ScheduleFormViewModel: ObservableObject {
      * 일정 삭제하기
      */
     func deleteSchedule() {
-        scheduleService.deleteSchedule(scheduleId: scheduleId) { result in
+        scheduleService.deleteSchedule(scheduleId: scheduleId ?? "unknown") { result in
             switch result {
             case .success:
                 self.successAction()
@@ -758,7 +758,7 @@ final class ScheduleFormViewModel: ObservableObject {
     func deleteTargetSchedule(isAfter: Bool = false) {
         // front 호출
         if oriSchedule?.at == .front || at == .front {
-            scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId, repeatStart: nextRepeatStart ?? repeatStart) { result in
+            scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId ?? "unknown", repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -770,7 +770,7 @@ final class ScheduleFormViewModel: ObservableObject {
             oriSchedule?.at == .back ||
             at == .back
         {
-            scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
+            scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId ?? "unknown", repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -781,7 +781,7 @@ final class ScheduleFormViewModel: ObservableObject {
         } else if oriSchedule?.at == .middle ||
             at == .middle
         {
-            scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId, removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
+            scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId ?? "unknown", removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -790,7 +790,7 @@ final class ScheduleFormViewModel: ObservableObject {
                 }
             }
         } else {
-            scheduleService.deleteSchedule(scheduleId: scheduleId) { result in
+            scheduleService.deleteSchedule(scheduleId: scheduleId ?? "unknown") { result in
                 switch result {
                 case .success:
                     self.successAction()

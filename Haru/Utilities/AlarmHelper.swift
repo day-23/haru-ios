@@ -88,7 +88,7 @@ final class AlarmHelper {
         }
     }
 
-    private static func removeNotification(identifier: String) async {
+    static func removeNotification(identifier: String) async {
         let notifications = await UNUserNotificationCenter.current().pendingNotificationRequests()
 
         var removed: [String] = []
