@@ -78,6 +78,7 @@ struct SettingView: View {
                         ) {
                             Button("로그아웃", role: .destructive) {
                                 KeychainService.logout()
+                                AlarmHelper.removeAllNotification()
                                 isLoggedIn = false
                             }
                         }

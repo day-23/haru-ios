@@ -42,7 +42,6 @@ final class AlarmHelper {
                 }
                 content.sound = .default
 
-                let now = Date()
                 var dateComponents = DateComponents()
                 dateComponents.hour = regular == .morning ? 7 : 21
                 dateComponents.minute = 0
@@ -101,5 +100,10 @@ final class AlarmHelper {
         }
 
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: removed)
+    }
+
+    static func removeAllNotification() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 }
