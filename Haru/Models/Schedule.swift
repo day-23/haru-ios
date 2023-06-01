@@ -276,3 +276,58 @@ extension Schedule {
         return prevRepeatEnd
     }
 }
+
+extension Schedule {
+    func nextSucRepeatStartDate(curRepeatStart: Date) throws -> Date {
+        guard let repeatOption
+        else {
+            throw RepeatError.invalid
+        }
+
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        let day = 60 * 60 * 24
+
+        var pivotDate = curRepeatStart
+
+        switch repeatOption {
+        case RepeatOption.everyDay.rawValue:
+            throw RepeatError.invalid
+
+        case RepeatOption.everyWeek.rawValue:
+            let result = pivotDate.addingTimeInterval(TimeInterval(day * 7))
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: result)
+            dateComponents.hour = self.repeatStart.hour
+            dateComponents.minute = self.repeatStart.minute
+            dateComponents.second = self.repeatStart.second
+
+            guard let repeatStart = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(id)에 문제가 있습니다. \(#fileID) \(#function)")
+                throw RepeatError.calculation
+            }
+
+            return repeatStart
+
+        case RepeatOption.everySecondWeek.rawValue:
+            let result = pivotDate.addingTimeInterval(TimeInterval(day * 7 * 2))
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: result)
+            dateComponents.hour = self.repeatStart.hour
+            dateComponents.minute = self.repeatStart.minute
+            dateComponents.second = self.repeatStart.second
+
+            guard let repeatStart = calendar.date(from: dateComponents) else {
+                print("[Error] scheduleId: \(id)에 문제가 있습니다. \(#fileID) \(#function)")
+                throw RepeatError.calculation
+            }
+
+            return repeatStart
+        case RepeatOption.everyMonth.rawValue:
+            return CalendarHelper.nextMonthDate(curDate: pivotDate)
+
+        case RepeatOption.everyYear.rawValue:
+            return CalendarHelper.nextYearDate(curDate: pivotDate)
+        default:
+            throw RepeatError.invalid
+        }
+    }
+}
