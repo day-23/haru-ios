@@ -9,9 +9,9 @@ import Foundation
 import SwiftUI
 
 final class UserProfileViewModel: ObservableObject {
-    @Published var user: User
-    @Published var profileImage: PostImage?
-    var userId: String
+    @Published var user: User // 현재 보고 있는 사용자
+    @Published var profileImage: PostImage? // 현재 보고 있는 사용자의 프로필 이미지
+    var userId: String // 현재 보고 있는 사용자의 id
     var isMe: Bool {
         user.id == Global.shared.user?.id
     }
@@ -20,11 +20,44 @@ final class UserProfileViewModel: ObservableObject {
         user.friendStatus == 2 || isMe || user.isPublicAccount
     }
 
-    @Published var friendList: [User] = []
-    @Published var requestFriendList: [User] = [] // 사용자한테 친구 신청한 사람 (아직 수락하진 않은 상태)
+    @Published var friendList: [FriendUser] = [] // 현재 보고 있는 사용자의 친구 목록
+    @Published var requestFriendList: [FriendUser] = [] // 현재 보고 있는 사용자의 친구 신청 목록
+
+    @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
+    @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
+
+    var friendCount: Int {
+        user.friendCount
+    }
+
+    var reqFriendCount: Int = 0 // 현재 보고 있는 사용자의 친구 요청 수
 
     private let profileService: ProfileService = .init()
     private let friendService: FriendService = .init()
+
+    var option: FriendOption = .friendList
+
+    var page: Int {
+        switch option {
+        case .friendList:
+            return Int(ceil(Double(friendList.count) / 20.0)) + 1
+        case .requestFriendList:
+            return Int(ceil(Double(requestFriendList.count) / 20.0)) + 1
+        }
+    }
+
+    var friendListTotalPage: Int = -1
+    var reqFriListTotalPage: Int = -1
+
+    var lastCreatedAt: Date? {
+//        switch option {
+//        case .friendList:
+//            return friendList
+//        case .requestFriendList:
+//            <#code#>
+//        }
+        nil
+    }
 
     init(userId: String) {
         self.user = User(
@@ -39,14 +72,61 @@ final class UserProfileViewModel: ObservableObject {
         self.userId = userId
     }
 
+    // MARK: - 페이지네이션
+
+    func initLoad() {
+        fetchFriend(userId: userId, page: page)
+//        fetchRequestFriend(userId: userId, page: page)
+    }
+
+    func loadMoreFriendList() {
+        switch option {
+        case .friendList:
+            if friendListTotalPage != -1 {
+                if page > friendListTotalPage {
+                    print("[Error] 더 이상 불러올 친구 목록이 없습니다")
+                    print("\(#function) \(#fileID)")
+                    return
+                }
+            }
+
+            fetchFriend(userId: userId, page: page)
+
+        case .requestFriendList:
+            if reqFriListTotalPage != -1 {
+                if page > reqFriListTotalPage {
+                    print("[Error] 더 이상 불러올 친구신청 목록이 없습니다")
+                    print("\(#function) \(#fileID)")
+                    return
+                }
+            }
+
+            fetchRequestFriend(userId: userId, page: page)
+        }
+    }
+
+    func refreshFriendList() {
+        clear(option: option)
+    }
+
+    func clear(option: FriendOption) {
+        switch option {
+        case .friendList:
+            friendList.removeAll()
+        case .requestFriendList:
+            requestFriendList.removeAll()
+        }
+    }
+
     // MARK: - 이미지 캐싱
 
-    func fetchProfileImage(profileUrl: String) {
+    func fetchProfileImage(
+        profileUrl: String,
+        completion: @escaping (PostImage) -> Void
+    ) {
         DispatchQueue.global().async {
             if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
-                DispatchQueue.main.async {
-                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
-                }
+                completion(PostImage(url: profileUrl, uiImage: uiImage))
             } else {
                 guard
                     let encodeUrl = profileUrl.encodeUrl(),
@@ -59,9 +139,7 @@ final class UserProfileViewModel: ObservableObject {
                 }
 
                 ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
-                DispatchQueue.main.async {
-                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
-                }
+                completion(PostImage(url: profileUrl, uiImage: uiImage))
             }
         }
     }
@@ -74,9 +152,12 @@ final class UserProfileViewModel: ObservableObject {
             case .success(let success):
                 // 이미지 캐시
                 if let profileUrl = success.profileImage {
-                    self.fetchProfileImage(profileUrl: profileUrl)
+                    self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                        DispatchQueue.main.async {
+                            self.profileImage = profileImage
+                        }
+                    }
                 }
-
                 self.userId = success.id
                 self.user = success
             case .failure(let failure):
@@ -97,7 +178,11 @@ final class UserProfileViewModel: ObservableObject {
                 case .success(let success):
                     // 이미지 캐시
                     if let profileUrl = success.profileImage {
-                        self.fetchProfileImage(profileUrl: profileUrl)
+                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                            DispatchQueue.main.async {
+                                self.profileImage = profileImage
+                            }
+                        }
                     }
 
                     self.user = success
@@ -127,55 +212,28 @@ final class UserProfileViewModel: ObservableObject {
 
     // MARK: - 친구를 위한 함수
 
-//    func fetchFollower(currentPage: Int) {
-//        followService.fetchFollower(userId: user.id, page: currentPage) { result in
-//            switch result {
-//            case .success(let success):
-//                self.followerList = success.0
-//            case .failure(let failure):
-//                print("[Debug] \(failure) \(#fileID) \(#function)")
-//            }
-//        }
-//    }
-//
-//    func fetchFollowing(currentPage: Int) {
-//        followService.fetchFollowing(userId: user.id, page: currentPage) { result in
-//            switch result {
-//            case .success(let success):
-//                self.followingList = success.0
-//            case .failure(let failure):
-//                print("[Debug] \(failure) \(#fileID) \(#function)")
-//            }
-//        }
-//    }
-
-    /**
-     * 나의 계정에서 userProfileVM의 user에게 팔로우를 신청
-     */
-//    func addFollowing(followId: String, completion: @escaping () -> Void) {
-//        followService.addFollowing(followId: followId) { result in
-//            switch result {
-//            case .success:
-//                self.user.isFollowing = true
-//                if self.isMe {
-//                    self.user.followingCount += 1
-//                } else {
-//                    self.user.followerCount += 1
-//                }
-//                completion()
-//            case .failure(let failure):
-//                print("[Debug] \(failure) \(#fileID) \(#function)")
-//            }
-//        }
-//    }
-//
-
-    // TODO: 페이지네이션 적용하기
+    // userId: 해당 사용자의 친구목록을 불러옴
     func fetchFriend(userId: String, page: Int) {
         friendService.fetchFriend(userId: userId, page: page) { result in
             switch result {
             case .success(let success):
-                self.friendList = success.0
+                success.0.forEach { user in
+                    self.friProfileImageList[user.id] = nil
+                    if let profileUrl = user.profileImageUrl {
+                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                            DispatchQueue.main.async {
+                                self.friProfileImageList[user.id] = profileImage
+                            }
+                        }
+                    }
+                }
+
+                self.friendList.append(contentsOf: success.0)
+                let pageInfo = success.1
+                if self.friendListTotalPage == -1 {
+                    self.friendListTotalPage = pageInfo.totalPages
+                }
+
             // TODO: 친구 프로필 이미지 캐싱하기
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -183,23 +241,40 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
-    // TODO: 페이지네이션 적용하기
+    // userId: 해당 사용자의 친구신청 목록을 불러옴
     func fetchRequestFriend(userId: String, page: Int) {
         friendService.fetchRequestFriend(userId: userId, page: page) { result in
             switch result {
             case .success(let success):
+                success.0.forEach { user in
+                    self.reqFriProImageList[user.id] = nil
+                    if let profileUrl = user.profileImageUrl {
+                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                            DispatchQueue.main.async {
+                                self.reqFriProImageList[user.id] = profileImage
+                            }
+                        }
+                    }
+                }
+
                 self.requestFriendList = success.0
+                let pageInfo = success.1
+                self.reqFriendCount = pageInfo.totalItems
+                if self.reqFriListTotalPage == -1 {
+                    self.reqFriListTotalPage = pageInfo.totalPages
+                }
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
         }
     }
 
+    // acceptorId: 친구신청을 하고 싶은 사용자의 아이디
     func requestFriend(
-        followId: String,
+        acceptorId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.requestFriend(followId: followId) { result in
+        friendService.requestFriend(acceptorId: acceptorId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -209,11 +284,12 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
+    // requesterId: 친구신청을 보낸 사용자의 아이디
     func acceptRequestFriend(
-        requestId: String,
+        requesterId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.acceptRequestFriend(requestId: requestId) { result in
+        friendService.acceptRequestFriend(requesterId: requesterId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -237,8 +313,9 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
-    func deleteFreined(followingId: String, completion: @escaping () -> Void) {
-        friendService.deleteFriend(followingId: followingId) { result in
+    // friendId: 삭제할 친구의 id
+    func deleteFreined(friendId: String, completion: @escaping () -> Void) {
+        friendService.deleteFriend(friendId: friendId) { result in
             switch result {
             case .success:
                 completion()

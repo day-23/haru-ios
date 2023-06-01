@@ -11,14 +11,38 @@ import Foundation
 final class FriendService {
     private static let baseURL = Constants.baseURL + "friends/"
     
+    private static let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.dateFormat
+        return formatter
+    }()
+
+    private static let iSO8601Formatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    private static let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(FriendService.formatter)
+        return decoder
+    }()
+
+    private static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
+        return encoder
+    }()
+    
     func fetchFriend(
         userId: String,
         page: Int,
-        completion: @escaping (Result<([User], Post.Pagination), Error>) -> Void
+        completion: @escaping (Result<([FriendUser], Post.Pagination), Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
-            let data: [User]
+            let data: [FriendUser]
             let pagination: Post.Pagination
         }
         
@@ -31,12 +55,12 @@ final class FriendService {
         ]
         
         AF.request(
-            Constants.baseURL + "follows" + (Global.shared.user?.id ?? "unknown") + "/\(userId)/following",
+            FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(userId)",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
             headers: headers
-        ).responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
                 completion(.success((response.data, response.pagination)))
@@ -49,11 +73,11 @@ final class FriendService {
     func fetchRequestFriend(
         userId: String,
         page: Int,
-        completion: @escaping (Result<([User], Post.Pagination), Error>) -> Void
+        completion: @escaping (Result<([FriendUser], Post.Pagination), Error>) -> Void
     ) {
         struct Response: Codable {
             let success: Bool
-            let data: [User]
+            let data: [FriendUser]
             let pagination: Post.Pagination
         }
         
@@ -66,12 +90,12 @@ final class FriendService {
         ]
         
         AF.request(
-            FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/request",
+            FriendService.baseURL + "\(userId)" + "/request",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
             headers: headers
-        ).responseDecodable(of: Response.self, decoder: JSONDecoder()) { response in
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
                 completion(.success((response.data, response.pagination)))
@@ -82,7 +106,7 @@ final class FriendService {
     }
     
     func requestFriend(
-        followId: String,
+        acceptorId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
@@ -90,11 +114,11 @@ final class FriendService {
         ]
         
         let parameters: Parameters = [
-            "followId": followId,
+            "acceptorId": acceptorId,
         ]
         
         AF.request(
-            Constants.baseURL + "follows" + (Global.shared.user?.id ?? "unknown") + "/follow",
+            FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/request",
             method: .post,
             parameters: parameters,
             encoding: URLEncoding.default,
@@ -110,9 +134,9 @@ final class FriendService {
         }
     }
     
-    // requestId => 친구 신청 요청을 보낸 사용자
+    // requesterId => 친구 신청 요청을 보낸 사용자
     func acceptRequestFriend(
-        requestId: String,
+        requesterId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
@@ -120,7 +144,7 @@ final class FriendService {
         ]
         
         let parameters: Parameters = [
-            "requestId": requestId,
+            "requesterId": requesterId,
         ]
         
         AF.request(
@@ -169,7 +193,7 @@ final class FriendService {
     }
     
     func deleteFriend(
-        followingId: String,
+        friendId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         let headers: HTTPHeaders = [
@@ -177,11 +201,40 @@ final class FriendService {
         ]
         
         let parameters: Parameters = [
-            "followingId": followingId,
+            "friendId": friendId,
         ]
         
         AF.request(
-            Constants.baseURL + "follows" + (Global.shared.user?.id ?? "unknown") + "/following",
+            FriendService.baseURL + (Global.shared.user?.id ?? "unknown"),
+            method: .delete,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        )
+        .response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func blockFriend(
+        blockUserId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        let parameters: Parameters = [
+            "blockUserId": blockUserId,
+        ]
+        
+        AF.request(
+            FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/block",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,

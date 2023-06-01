@@ -40,7 +40,8 @@ struct ListSectionView<Content>: View where Content: View {
                             TodoView(
                                 checkListViewModel: checkListViewModel,
                                 todo: todo,
-                                backgroundColor: itemBackgroundColor
+                                backgroundColor: itemBackgroundColor,
+                                at: determineRepeatAt(todo: todo)
                             ) {
                                 guard let index = todoList.firstIndex(where: { $0.id == todo.id }) else {
                                     return
@@ -49,8 +50,8 @@ struct ListSectionView<Content>: View where Content: View {
                                 withAnimation {
                                     todoList[index].completed.toggle()
                                 }
-                            }
-                            .foregroundColor(.black)
+                            } updateAction: {}
+                                .foregroundColor(.black)
                         }
 
                         if !todo.folded {

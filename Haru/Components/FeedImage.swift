@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct FeedImage: View {
+    var commentVM: CommentViewModel
+
+    var post: Post
     var imageList: [PostImage?]
     var imageCount: Int
     var templateMode: Bool
     var content: String?
+    var isMine: Bool
     @State var postPageNum: Int = 0
 
     var body: some View {
@@ -19,10 +23,11 @@ struct FeedImage: View {
         ZStack {
             if !templateMode {
                 Text("\(postPageNum + 1)/\(imageCount)")
-                    .font(.pretendard(size: 12, weight: .bold))
+                    .font(.pretendard(size: 12, weight: .regular))
                     .foregroundColor(Color(0xFDFDFD))
-                    .padding(.all, 6)
-                    .background(Color.black.opacity(0.5))
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 12)
+                    .background(Color(0xFDFDFD).opacity(0.5))
                     .cornerRadius(15)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     .offset(x: -10, y: 10)
@@ -39,15 +44,38 @@ struct FeedImage: View {
             TabView(selection: $postPageNum) {
                 ForEach(imageList.indices, id: \.self) { idx in
                     if let uiImage = imageList[idx]?.uiImage {
-                        Image(uiImage: uiImage)
-                            .renderingMode(.original)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(
-                                width: UIScreen.main.bounds.width,
-                                height: UIScreen.main.bounds.height
-                            )
-                            .clipped()
+                        NavigationLink {
+                            if !templateMode {
+                                CommentView(
+                                    postId: post.id,
+                                    userId: post.user.id,
+                                    postImageList: post.images,
+                                    imageList: imageList,
+                                    postPageNum: postPageNum,
+                                    isMine: isMine
+                                )
+                            }
+//                            else {
+//                                CommentListView(commentVM: commentVM)
+//                            }
+                        } label: {
+                            Image(uiImage: uiImage)
+                                .renderingMode(.original)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(
+                                    width: UIScreen.main.bounds.width,
+                                    height: UIScreen.main.bounds.height
+                                )
+                                .clipped()
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(
+                            !(isMine ||
+                                post.user.isAllowFeedComment == 2 ||
+                                (post.user.isAllowFeedComment == 1 &&
+                                    post.user.friendStatus == 2))
+                        )
                     } else {
                         ProgressView()
                     }
@@ -60,9 +88,3 @@ struct FeedImage: View {
         .frame(width: deviceSize.width, height: deviceSize.width, alignment: .center)
     }
 }
-
-// struct FeedImage_Previews: PreviewProvider {
-//    static var previews: some View {
-//        FeedImage(imageUrl: URL(string: "https://cdn.hankooki.com/news/photo/202301/46144_62027_1673489105.jpg")!)
-//    }
-// }

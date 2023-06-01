@@ -307,26 +307,7 @@ final class ScheduleFormViewModel: ObservableObject {
     @Published var selectionCategory: Int? // 선택한 카테고리의 인덱스 번호
     
     var selectedAlarm: [Date] {
-        var result = [Date]()
-        if isSelectedAlarm {
-            for i in selectIdxList.indices {
-                if selectIdxList[i] {
-                    switch i {
-                    case 0:
-                        result.append(repeatStart)
-                    case 1:
-                        result.append(Calendar.current.date(byAdding: .minute, value: -10, to: repeatStart) ?? repeatStart)
-                    case 2:
-                        result.append(Calendar.current.date(byAdding: .hour, value: -1, to: repeatStart) ?? repeatStart)
-                    case 3:
-                        result.append(Calendar.current.date(byAdding: .day, value: -1, to: repeatStart) ?? repeatStart)
-                    default:
-                        continue
-                    }
-                }
-            }
-        }
-        return result
+        return isSelectedAlarm ? [.now] : []
     }
     
     // MARK: - DI
@@ -761,7 +742,7 @@ final class ScheduleFormViewModel: ObservableObject {
      * 일정 삭제하기
      */
     func deleteSchedule() {
-        scheduleService.deleteSchedule(scheduleId: scheduleId) { result in
+        scheduleService.deleteSchedule(scheduleId: scheduleId ?? "unknown") { result in
             switch result {
             case .success:
                 self.successAction()
@@ -777,7 +758,7 @@ final class ScheduleFormViewModel: ObservableObject {
     func deleteTargetSchedule(isAfter: Bool = false) {
         // front 호출
         if oriSchedule?.at == .front || at == .front {
-            scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId, repeatStart: nextRepeatStart ?? repeatStart) { result in
+            scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId ?? "unknown", repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -789,7 +770,7 @@ final class ScheduleFormViewModel: ObservableObject {
             oriSchedule?.at == .back ||
             at == .back
         {
-            scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId, repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
+            scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId ?? "unknown", repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -800,7 +781,7 @@ final class ScheduleFormViewModel: ObservableObject {
         } else if oriSchedule?.at == .middle ||
             at == .middle
         {
-            scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId, removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
+            scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId ?? "unknown", removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -809,7 +790,7 @@ final class ScheduleFormViewModel: ObservableObject {
                 }
             }
         } else {
-            scheduleService.deleteSchedule(scheduleId: scheduleId) { result in
+            scheduleService.deleteSchedule(scheduleId: scheduleId ?? "unknown") { result in
                 switch result {
                 case .success:
                     self.successAction()

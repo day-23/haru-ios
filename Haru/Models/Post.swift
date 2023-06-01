@@ -28,6 +28,9 @@ struct Post: Identifiable, Codable {
         let id: String
         var name: String
         var profileImage: String? // 프로필 이미지 url 문자열
+        var isAllowFeedLike: Int
+        var isAllowFeedComment: Int
+        var friendStatus: Int
     }
     
     struct Image: Identifiable, Codable {
@@ -39,18 +42,34 @@ struct Post: Identifiable, Codable {
     }
     
     struct Comment: Identifiable, Codable {
+        struct User: Identifiable, Codable {
+            let id: String
+            var name: String
+            var profileImage: String? // 프로필 이미지 url 문자열
+        }
+        
         let id: String
-        var user: Post.User
+        var user: Comment.User
         var content: String
         var x: Double
         var y: Double
+        var isPublic: Bool
         
         //  MARK: - Dates
         
         let createdAt: Date
         var updatedAt: Date?
         
-        init(id: String, user: Post.User, content: String, x: Double, y: Double, createdAt: Date, updatedAt: Date? = nil) {
+        init(
+            id: String,
+            user: Comment.User,
+            content: String,
+            x: Double,
+            y: Double,
+            isPublic: Bool = true,
+            createdAt: Date,
+            updatedAt: Date? = nil
+        ) {
             self.id = id
             self.user = user
             self.content = content
@@ -58,6 +77,8 @@ struct Post: Identifiable, Codable {
             self.y = y
             self.createdAt = createdAt
             self.updatedAt = updatedAt
+            
+            self.isPublic = isPublic
         }
         
         init(from decoder: Decoder) throws {
@@ -69,7 +90,8 @@ struct Post: Identifiable, Codable {
             createdAt = try container.decode(Date.self, forKey: .createdAt)
             updatedAt = (try? container.decode(Date.self, forKey: .updatedAt)) ?? nil
             
-            user = (try? container.decode(Post.User.self, forKey: .user)) ?? Post.User(id: Global.shared.user?.id ?? "unknown", name: Global.shared.user?.user.name ?? "unknown")
+            isPublic = (try? container.decode(Bool.self, forKey: .isPublic)) ?? true
+            user = (try? container.decode(Comment.User.self, forKey: .user)) ?? Comment.User(id: Global.shared.user?.id ?? "unknown", name: Global.shared.user?.user.name ?? "unknown")
         }
     }
     

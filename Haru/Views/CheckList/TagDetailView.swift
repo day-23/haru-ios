@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TagDetailView: View {
     @Environment(\.dismiss) var dismissAction
+    private let tagService: TagService = .init()
 
     private let tagId: String
     private let originalContent: String
@@ -19,6 +20,7 @@ struct TagDetailView: View {
     @State private var content: String
     @State private var onAlarm: Bool
     @State private var isSelected: Bool
+    @State private var count: Int = 0
 
     private var noChanges: Bool {
         return (originalContent == content
@@ -55,21 +57,6 @@ struct TagDetailView: View {
 
             Divider()
 
-            Toggle(isOn: $onAlarm.animation()) {
-                HStack {
-                    Text("할 일 알림")
-                        .font(.pretendard(size: 14, weight: .regular))
-                        .foregroundColor(Color(0x191919))
-
-                    Spacer()
-                }
-            }
-            .toggleStyle(CustomToggleStyle())
-            .padding(.leading, 34)
-            .padding(.trailing, 20)
-
-            Divider()
-
             HStack(spacing: 0) {
                 Text("연관된 할 일")
                     .font(.pretendard(size: 14, weight: .regular))
@@ -77,7 +64,7 @@ struct TagDetailView: View {
 
                 Spacer()
 
-                Text("00개")
+                Text("\(count)개")
                     .font(.pretendard(size: 16, weight: .regular))
                     .foregroundColor(Color(0x191919))
             }
@@ -134,7 +121,7 @@ struct TagDetailView: View {
                         ]
                     ) { response in
                         switch response {
-                        case .success(let success):
+                        case .success:
                             dismissAction.callAsFunction()
                         case .failure(let error):
                             print("[Debug] \(error) \(#fileID) \(#function)")
@@ -146,6 +133,16 @@ struct TagDetailView: View {
                         .foregroundColor(noChanges ? Color(0xacacac) : Color(0x191919))
                 }
                 .disabled(noChanges)
+            }
+        }
+        .onAppear {
+            tagService.fetchTodoCountByTag(tagId: tagId) { result in
+                switch result {
+                case .success(let data):
+                    count = data
+                case .failure:
+                    break
+                }
             }
         }
     }

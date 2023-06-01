@@ -20,7 +20,9 @@ struct CalendarDayView: View {
     @State var prevPageIndex: Int = 15
 
     var body: some View {
-        Pager(page: page, data: data.indices, id: \.self) { index in
+        let checkListVM: CheckListViewModel = .init(todoState: StateObject(wrappedValue: todoState))
+
+        return Pager(page: page, data: data.indices, id: \.self) { index in
             CalendarDayDetailView(
                 calendarVM: calendarViewModel,
                 todoAddViewModel: TodoAddViewModel(todoState: todoState, addAction: { todoId in
@@ -29,6 +31,7 @@ struct CalendarDayView: View {
                 }, deleteAction: { todoId in
                     calendarViewModel.getRefreshProductivityList()
                 }),
+                checkListVM: checkListVM,
                 row: index
             )
             .frame(width: 330, height: 480)

@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 final class CalendarViewModel: ObservableObject {
-    var productivityList: [[Int: [Productivity]]] = [[:]] // 원소 개수 == dateList의 개수
-    @Published var viewProductivityList = [[[(Int, Productivity?)]]]() // 뷰에 보여주기 위한 일정 리스트
+    var productivityList: [[Int: [Event]]] = [[:]] // 원소 개수 == dateList의 개수
+    @Published var viewProductivityList = [[[(Int, Event?)]]]() // 뷰에 보여주기 위한 일정 리스트
     
     // MARK: - DetailView에 보여질 데이터들
 
@@ -46,9 +46,11 @@ final class CalendarViewModel: ObservableObject {
     @Published var categoryList: [Category] = []
     
     @Published var allCategoryOff: Bool = false // 카테고리 달력에서 안보이게 하기
+    
     @Published var allTodoOff: Bool = false // 할일 달력에서 안보이게 하기
     @Published var nonCompTodoOff: Bool = false // 미완료 할일 달력에서 안보이게 하기
     @Published var compTodoOff: Bool = false // 완료 할일 달력에서 안보이게 하기
+    
     var allOff: Bool {
         allCategoryOff && allTodoOff
     }
@@ -85,8 +87,8 @@ final class CalendarViewModel: ObservableObject {
     // MARK: 달력에 해당하는 월에 맞는 스케줄 + 할일 표시해주기 위한 함수
 
     func getCurMonthSchList(_ dateList: [DateValue]) {
-        productivityList = [[Int: [Productivity]]](repeating: [:], count: dateList.count)
-        viewProductivityList = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: maxOrder), count: CalendarHelper.numberOfWeeksInMonth(dateList.count))
+        productivityList = [[Int: [Event]]](repeating: [:], count: dateList.count)
+        viewProductivityList = [[[(Int, Event?)]]](repeating: [[(Int, Event?)]](repeating: [], count: maxOrder), count: CalendarHelper.numberOfWeeksInMonth(dateList.count))
         
         guard let firstDate = dateList.first?.date, let startDate = Calendar.current.date(byAdding: .day, value: -1, to: firstDate) else { return }
         guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
@@ -491,7 +493,7 @@ final class CalendarViewModel: ObservableObject {
         dateList: [DateValue],
         scheduleList: [Schedule],
         todoList: [Todo]
-    ) -> ([[Int: [Productivity]]], [[[(Int, Productivity?)]]]) {
+    ) -> ([[Int: [Event]]], [[[(Int, Event?)]]]) {
         // 주차 개수
         let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
 
@@ -499,9 +501,9 @@ final class CalendarViewModel: ObservableObject {
         let prodCnt = maxOrder
 
         // 최종 결과
-        var result = [[Int: [Productivity]]](repeating: [:], count: dateList.count) // 날짜별
+        var result = [[Int: [Event]]](repeating: [:], count: dateList.count) // 날짜별
 
-        var result_ = [[[(Int, Productivity?)]]](repeating: [[(Int, Productivity?)]](repeating: [], count: prodCnt), count: numberOfWeeks) // 달력에 보여질 결과물
+        var result_ = [[[(Int, Event?)]]](repeating: [[(Int, Event?)]](repeating: [], count: prodCnt), count: numberOfWeeks) // 달력에 보여질 결과물
 
         if !allCategoryOff {
             fittingScheduleList(dateList, scheduleList, prodCnt, result: &result)
@@ -618,7 +620,7 @@ final class CalendarViewModel: ObservableObject {
         _ dateList: [DateValue],
         _ scheduleList: [Schedule],
         _ prodCnt: Int,
-        result: inout [[Int: [Productivity]]]
+        result: inout [[Int: [Event]]]
     ) {
         let numberOfWeeks = CalendarHelper.numberOfWeeksInMonth(dateList.count)
 
@@ -683,7 +685,7 @@ final class CalendarViewModel: ObservableObject {
         _ dateList: [DateValue],
         _ todoList: [Todo],
         _ prodCnt: Int,
-        result: inout [[Int: [Productivity]]]
+        result: inout [[Int: [Event]]]
     ) {
         let todoList = todoList.filter {
             $0.endDate != nil &&

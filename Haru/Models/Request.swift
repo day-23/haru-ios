@@ -120,11 +120,17 @@ struct Request: Codable {
     }
 
     struct Comment: Codable {
-        var content: String
+        var content: String?
         var x: Double?
         var y: Double?
+        var isPublic: Bool?
 
-        init(content: String, x: Double? = nil, y: Double? = nil) {
+        init(
+            content: String? = nil,
+            x: Double? = nil,
+            y: Double? = nil,
+            isPublic: Bool? = nil
+        ) {
             self.content = content
             if let x {
                 self.x = x / UIScreen.main.bounds.size.width * 100
@@ -136,6 +142,7 @@ struct Request: Codable {
             } else {
                 self.y = nil
             }
+            self.isPublic = isPublic
         }
     }
 }

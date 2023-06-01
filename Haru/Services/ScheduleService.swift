@@ -175,23 +175,14 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.dateFormat
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(formatter)
-
         AF.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(scheduleId ?? "unknown")",
             method: .patch,
             parameters: schedule,
-            encoder: JSONParameterEncoder(encoder: encoder),
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
             headers: headers
         )
-        .responseDecodable(of: Response.self, decoder: decoder) { response in
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -297,13 +288,16 @@ final class ScheduleService {
     /**
      * 일정 삭제하기 (모든 일정 삭제, 일반 삭제)
      */
-    func deleteSchedule(scheduleId: String?, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    func deleteSchedule(scheduleId: String, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         AF.request(
-            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")",
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)",
             method: .delete
         ).response { response in
             switch response.result {
             case .success:
+                Task {
+                    await AlarmHelper.removeNotification(identifier: scheduleId)
+                }
                 completion(.success(true))
             case let .failure(error):
                 completion(.failure(error))
@@ -314,7 +308,7 @@ final class ScheduleService {
     /**
      * 일정 삭제하기 (이 일정만 삭제)
      */
-    func deleteRepeatFrontSchedule(scheduleId: String?, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    func deleteRepeatFrontSchedule(scheduleId: String, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -324,7 +318,7 @@ final class ScheduleService {
         ]
 
         AF.request(
-            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/front",
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/front",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
@@ -332,6 +326,9 @@ final class ScheduleService {
         ).response { response in
             switch response.result {
             case .success:
+                Task {
+                    await AlarmHelper.removeNotification(identifier: scheduleId)
+                }
                 completion(.success(true))
             case let .failure(error):
                 completion(.failure(error))
@@ -339,7 +336,7 @@ final class ScheduleService {
         }
     }
 
-    func deleteRepeatMiddleSchedule(scheduleId: String?, removedDate: Date, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    func deleteRepeatMiddleSchedule(scheduleId: String, removedDate: Date, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -350,7 +347,7 @@ final class ScheduleService {
         ]
 
         AF.request(
-            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/middle",
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/middle",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
@@ -358,6 +355,9 @@ final class ScheduleService {
         ).response { response in
             switch response.result {
             case .success:
+                Task {
+                    await AlarmHelper.removeNotification(identifier: scheduleId)
+                }
                 completion(.success(true))
             case let .failure(error):
                 completion(.failure(error))
@@ -365,7 +365,7 @@ final class ScheduleService {
         }
     }
 
-    func deleteRepeatBackSchedule(scheduleId: String?, repeatEnd: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    func deleteRepeatBackSchedule(scheduleId: String, repeatEnd: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -375,7 +375,7 @@ final class ScheduleService {
         ]
 
         AF.request(
-            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/back",
+            ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/back",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
@@ -383,6 +383,9 @@ final class ScheduleService {
         ).response { response in
             switch response.result {
             case .success:
+                Task {
+                    await AlarmHelper.removeNotification(identifier: scheduleId)
+                }
                 completion(.success(true))
             case let .failure(error):
                 completion(.failure(error))
