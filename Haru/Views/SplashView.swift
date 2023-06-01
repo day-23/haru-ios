@@ -13,7 +13,7 @@ struct SplashView: View {
 
     var body: some View {
         ZStack {
-            Image("background-main")
+            Image("background-main-splash")
                 .resizable()
                 .edgesIgnoringSafeArea(.all)
 
@@ -26,10 +26,20 @@ struct SplashView: View {
                     .foregroundColor(Color(0xffffff))
                     .padding(.top, 55)
 
-                Spacer()
-            }
-            .overlay {
+                Text("하나씩 이루어가는 습관,")
+                    .font(.pretendard(size: 16, weight: .medium))
+                    .foregroundColor(.white)
+                    .padding(.top, 51)
+
+                Text("지금 하루와 함께하자!")
+                    .font(.pretendard(size: 16, weight: .medium))
+                    .foregroundColor(.white)
+                    .padding(.top, 13)
+
                 Image("character-main")
+                    .padding(.top, 100)
+
+                Spacer()
             }
         }
         .onAppear {
@@ -38,5 +48,11 @@ struct SplashView: View {
                 self.isLoggedIn = isLoggedIn
             }
         }
+    }
+}
+
+struct SplashView_Previews: PreviewProvider {
+    static var previews: some View {
+        SplashView(isLoggedIn: .constant(false))
     }
 }

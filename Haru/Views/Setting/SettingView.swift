@@ -30,9 +30,9 @@ struct SettingView: View {
                     PrivacyView()
                 }
 
-                SettingRow(iconName: "screen", content: "화면") {
-                    ScreenView()
-                }
+//                SettingRow(iconName: "screen", content: "화면") {
+//                    ScreenView()
+//                }
 
                 SettingRow(iconName: "alarm-setting", content: "알림") {
                     // TODO: 알림으로 연결
@@ -42,9 +42,9 @@ struct SettingView: View {
                     InformationView()
                 }
 
-                SettingRow(iconName: "invite-friend", content: "친구 초대") {
-                    // TODO: 친구 초대로 연결
-                }
+//                SettingRow(iconName: "invite-friend", content: "친구 초대") {
+//                    // TODO: 친구 초대로 연결
+//                }
             }
             .padding(.top, 20)
             .padding(.horizontal, 20)

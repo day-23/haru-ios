@@ -34,16 +34,17 @@ struct LoginView: View {
                         .font(.pretendard(size: 16, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.top, 13)
-
-                    Text("1초만에 간편 로그인!")
-                        .font(.pretendard(size: 16, weight: .bold))
-                        .foregroundColor(Color(0x1dafff))
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 20)
-                        .background(Color(0xfdfdfd))
-                        .cornerRadius(10)
-                        .padding(.top, 71)
+                    
+                
+                    Image("login-text-box")
+                        .padding(.top, 51)
                         .padding(.leading, 128)
+                        .overlay {
+                            Text("1초만에 간편 로그인!")
+                                .font(.pretendard(size: 16, weight: .bold))
+                                .foregroundColor(Color(0x1dafff))
+                                .offset(x: 65, y: 10)
+                        }
 
                     VStack(spacing: 18) {
                         // 카카오 로그인 이미지 품질 저하로 PSD 파일 변환 필요할 듯
@@ -89,7 +90,6 @@ struct LoginView: View {
                                 isLoggedIn = true
                             }
                     }
-                    .padding(.top, 33)
 
                     Spacer()
                 }
