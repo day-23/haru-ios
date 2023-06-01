@@ -175,23 +175,14 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.dateFormat
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(formatter)
-
         AF.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(scheduleId ?? "unknown")",
             method: .patch,
             parameters: schedule,
-            encoder: JSONParameterEncoder(encoder: encoder),
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
             headers: headers
         )
-        .responseDecodable(of: Response.self, decoder: decoder) { response in
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
