@@ -307,26 +307,7 @@ final class ScheduleFormViewModel: ObservableObject {
     @Published var selectionCategory: Int? // 선택한 카테고리의 인덱스 번호
     
     var selectedAlarm: [Date] {
-        var result = [Date]()
-        if isSelectedAlarm {
-            for i in selectIdxList.indices {
-                if selectIdxList[i] {
-                    switch i {
-                    case 0:
-                        result.append(repeatStart)
-                    case 1:
-                        result.append(Calendar.current.date(byAdding: .minute, value: -10, to: repeatStart) ?? repeatStart)
-                    case 2:
-                        result.append(Calendar.current.date(byAdding: .hour, value: -1, to: repeatStart) ?? repeatStart)
-                    case 3:
-                        result.append(Calendar.current.date(byAdding: .day, value: -1, to: repeatStart) ?? repeatStart)
-                    default:
-                        continue
-                    }
-                }
-            }
-        }
-        return result
+        return isSelectedAlarm ? [.now] : []
     }
     
     // MARK: - DI
