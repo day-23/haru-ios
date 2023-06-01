@@ -107,13 +107,36 @@ struct Todo: Identifiable, Codable {
             }
         }
     }
+
+    enum CodingKeys: CodingKey {
+        case id
+        case content
+        case memo
+        case todayTodo
+        case flag
+        case endDate
+        case isAllDay
+        case repeatOption
+        case repeatValue
+        case repeatEnd
+        case todoOrder
+        case completed
+        case folded
+        case subTodos
+        case tags
+        case alarms
+        case createdAt
+        case updatedAt
+        case deletedAt
+        case realRepeatStart
+    }
 }
 
 // MARK: - Extensions
 
 extension Todo {
     var at: RepeatAt {
-        if repeatOption == nil || repeatValue == nil {
+        if self.repeatOption == nil || self.repeatValue == nil {
             return .none
         }
 
@@ -133,11 +156,11 @@ extension Todo {
         }
 
         if nextEndDate == nil {
-            if realRepeatStart == endDate {
+            if self.realRepeatStart == self.endDate {
                 return .none
             }
             return .back
-        } else if realRepeatStart == endDate {
+        } else if self.realRepeatStart == self.endDate {
             return .front
         } else {
             return .middle

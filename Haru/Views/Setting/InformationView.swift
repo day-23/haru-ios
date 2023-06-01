@@ -54,11 +54,7 @@ struct InformationRow<Destination: View>: View {
 
                 Spacer()
 
-                Image("back-button")
-                    .renderingMode(.template)
-                    .foregroundColor(Color(0x646464))
-                    .opacity(0.5)
-                    .rotationEffect(Angle(degrees: 180))
+                Image("detail-button")
                     .frame(width: 28, height: 28)
             }
         }

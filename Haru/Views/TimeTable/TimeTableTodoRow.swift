@@ -38,17 +38,16 @@ struct TimeTableTodoRow: View {
                     .padding(.bottom, 7)
 
                 if dateFormatter.string(from: date) == dateFormatter.string(from: .now) {
-                    Text("\(date.day)")
-                        .font(.pretendard(size: 14, weight: .bold))
-                        .foregroundColor(Color(0x1dafff))
-                        .background(
-                            Circle()
-                                .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x1bafff), Color(0x15afff)],
-                                                       startPoint: .top,
-                                                       endPoint: .bottom),
-                                        lineWidth: 2)
-                                .padding(-3)
-                        )
+                    Circle()
+                        .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x1bafff), Color(0x15afff)],
+                                               startPoint: .top,
+                                               endPoint: .bottom),
+                                lineWidth: 2)
+                        .overlay(content: {
+                            Text("\(date.day)")
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x1dafff))
+                        })
                 } else {
                     Text("\(date.day)")
                         .frame(maxWidth: .infinity, alignment: .center)

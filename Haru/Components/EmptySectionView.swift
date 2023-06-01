@@ -14,7 +14,7 @@ struct EmptySectionView: View {
         Text(content)
             .frame(maxWidth: .infinity, alignment: .leading)
             .font(.pretendard(size: 14, weight: .regular))
-            .foregroundColor(Color(0x000000, opacity: 0.5))
-            .padding(.vertical, 14)
+            .foregroundColor(Color(0x646464))
+            .padding(.vertical, 10)
     }
 }

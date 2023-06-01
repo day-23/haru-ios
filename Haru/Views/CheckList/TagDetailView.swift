@@ -22,6 +22,8 @@ struct TagDetailView: View {
     @State private var isSelected: Bool
     @State private var count: Int = 0
 
+    @State private var backButtonTapped: Bool = false
+
     private var noChanges: Bool {
         return (originalContent == content
             && originalOnAlarm == onAlarm
@@ -104,10 +106,23 @@ struct TagDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
-                    dismissAction.callAsFunction()
+                    if noChanges {
+                        dismissAction.callAsFunction()
+                    } else {
+                        backButtonTapped = true
+                    }
                 } label: {
                     Image("back-button")
                         .frame(width: 28, height: 28)
+                }
+                .confirmationDialog(
+                    "현재 화면에서 나갈까요? 수정사항이 있습니다.",
+                    isPresented: $backButtonTapped,
+                    titleVisibility: .visible
+                ) {
+                    Button("나가기", role: .destructive) {
+                        dismissAction.callAsFunction()
+                    }
                 }
             }
 

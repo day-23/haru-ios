@@ -120,9 +120,7 @@ struct RootView: View {
                                                 Color.black.opacity(0.4)
                                                     .edgesIgnoringSafeArea(.all)
                                                     .onTapGesture {
-                                                        withAnimation {
-                                                            global.isFaded = false
-                                                        }
+                                                        global.isFaded = false
                                                     }
                                             }
                                         }

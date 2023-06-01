@@ -20,15 +20,6 @@ struct TagListView: View {
                         action(Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
                     }
 
-                // 미분류 태그
-                TagView(
-                    tag: Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue),
-                    isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue
-                )
-                .onTapGesture {
-                    action(Tag(id: DefaultTag.unclassified.rawValue, content: DefaultTag.unclassified.rawValue))
-                }
-
                 // 완료 태그
                 TagView(
                     tag: Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue),

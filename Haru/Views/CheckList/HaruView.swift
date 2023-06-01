@@ -19,18 +19,15 @@ struct HaruView: View {
 
     let formatter: DateFormatter = {
         let formatter: DateFormatter = .init()
-        formatter.dateFormat = "MMMM dd\(Locale.current.language.languageCode?.identifier == "ko" ? "일" : "") EEEE"
+        formatter.dateFormat = "MMMM d\(Locale.current.language.languageCode?.identifier == "ko" ? "일" : "") EEEE"
         return formatter
     }()
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            LinearGradient(
-                colors: [Color(0xD2D7FF), Color(0xAAD7FF), Color(0xD2D7FF)],
-                startPoint: .bottomLeading,
-                endPoint: .topTrailing
-            ).ignoresSafeArea()
-                .opacity(0.5)
+            Image("background-haru")
+                .resizable()
+                .edgesIgnoringSafeArea(.all)
 
             ListView(checkListViewModel: viewModel) {
                 ListSectionView(
@@ -42,13 +39,20 @@ struct HaruView: View {
                 ) {
                     todoState.updateOrderHaru()
                 } header: {
-                    TagView(
-                        tag: Tag(
-                            id: DefaultTag.important.rawValue,
-                            content: DefaultTag.important.rawValue
-                        ),
-                        isSelected: true
-                    )
+                    HStack(spacing: 0) {
+                        TagView(
+                            tag: Tag(
+                                id: DefaultTag.important.rawValue,
+                                content: DefaultTag.important.rawValue
+                            ),
+                            isSelected: true
+                        )
+
+                        Spacer()
+
+                        StarButton(isClicked: true)
+                            .padding(.trailing, 10)
+                    }
                     .padding(.leading, 10)
                 }
 
@@ -166,16 +170,31 @@ struct HaruView: View {
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                HStack {
-                    Image("back-button")
-                        .frame(width: 28, height: 28)
+                Image("back-button")
+                    .frame(width: 28, height: 28)
+                    .padding(.leading, 5)
+                    .onTapGesture {
+                        dismissAction.callAsFunction()
+                    }
+            }
 
-                    Text(formatter.string(from: .now))
-                        .font(.system(size: 20, weight: .bold))
+            ToolbarItem(placement: .principal) {
+                Text(formatter.string(from: .now))
+                    .font(.system(size: 20, weight: .bold))
+            }
+
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink {
+                    // TODO: 검색 뷰 만들어지면 넣어주기
+                    Text("검색")
+                } label: {
+                    Image("magnifyingglass")
+                        .renderingMode(.template)
+                        .resizable()
+                        .foregroundColor(Color(0x191919))
+                        .frame(width: 28, height: 28)
                 }
-                .onTapGesture {
-                    dismissAction.callAsFunction()
-                }
+                .padding(.trailing, 5)
             }
         }
         .toolbarBackground(Color(0xD9EAFD))

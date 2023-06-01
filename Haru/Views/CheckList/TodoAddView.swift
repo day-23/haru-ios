@@ -648,6 +648,11 @@ struct TodoAddView: View {
                 }
             }
         }
+        .onChange(of: tagInFocus, perform: { value in
+            if !value {
+                viewModel.onSubmitTag()
+            }
+        })
         .onDisappear {
             viewModel.clear()
         }
