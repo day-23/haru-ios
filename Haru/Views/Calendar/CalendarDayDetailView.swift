@@ -54,10 +54,11 @@ struct CalendarDayDetailView: View {
                         .padding(.horizontal, 20)
                         
                         ForEach(calendarVM.scheduleList[row].indices, id: \.self) { index in
+                            let schedule = calendarVM.scheduleList[row][index]
                             NavigationLink {
                                 ScheduleFormView(
                                     scheduleFormVM: ScheduleFormViewModel(
-                                        schedule: calendarVM.scheduleList[row][index],
+                                        schedule: schedule,
                                         categoryList: calendarVM.categoryList
                                     ) {
                                         calendarVM.getCurMonthSchList(calendarVM.dateList)
@@ -68,18 +69,27 @@ struct CalendarDayDetailView: View {
                             } label: {
                                 HStack(spacing: 20) {
                                     Circle()
-                                        .fill(Color(calendarVM.scheduleList[row][index].category?.color))
+                                        .fill(Color(schedule.category?.color))
                                         .frame(width: 14, height: 14)
                                     VStack(alignment: .leading) {
-                                        Text("\(calendarVM.scheduleList[row][index].content)")
-                                            .font(.pretendard(size: 14, weight: .bold))
-                                        Text(calendarVM.scheduleList[row][index].isAllDay ? "하루 종일" : "\(calendarVM.scheduleList[row][index].repeatStart.getDateFormatString("a hh:mm")) - \(calendarVM.scheduleList[row][index].repeatEnd.getDateFormatString("a hh:mm"))")
-                                            .font(.pretendard(size: 10, weight: .regular))
+                                        Text("\(schedule.content)")
+                                            .font(.pretendard(size: 16, weight: .bold))
+                                        Text(schedule.isAllDay ? "하루 종일" :
+                                            CalendarHelper.isSameDay(
+                                                date1: schedule.repeatStart,
+                                                date2: schedule.repeatEnd
+                                            ) ?
+                                            "\(schedule.repeatStart.getDateFormatString("a hh:mm")) - \(schedule.repeatEnd.getDateFormatString("a hh:mm"))"
+                                            :
+                                            "\(schedule.repeatStart.getDateFormatString("M월 d일 a hh:mm")) - \(schedule.repeatEnd.getDateFormatString("M월 d일 a hh:mm"))"
+                                        )
+                                        .font(.pretendard(size: 12, weight: .regular))
                                     }
                                 }
                                 .padding(.horizontal, 20)
                             }
-                            .tint(.mainBlack)
+                            .disabled(schedule.category == Global.shared.holidayCategory)
+                            .foregroundColor(Color(0x191919))
                         }
                         
                         Divider()

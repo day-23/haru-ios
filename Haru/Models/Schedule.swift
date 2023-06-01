@@ -331,3 +331,19 @@ extension Schedule {
         }
     }
 }
+
+extension Schedule {
+    static func holidayToSchedule(holiday: Holiday) -> Schedule {
+        Schedule(
+            id: String(holiday.id),
+            content: holiday.content,
+            memo: "",
+            isAllDay: true,
+            repeatStart: holiday.repeatStart,
+            repeatEnd: holiday.repeatEnd,
+            category: Global.shared.holidayCategory,
+            alarms: [],
+            createdAt: holiday.repeatStart
+        )
+    }
+}

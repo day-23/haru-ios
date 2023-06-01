@@ -43,6 +43,18 @@ final class CalendarViewModel: ObservableObject {
     var startIndex: Int = 0
     var lastIndex: Int = 0
     
+    // MARK: - 카테고리
+
+    @Published var isUnknownCategorySelected: Bool = true
+    @Published var isHolidayCategorySelected: Bool = true
+    
+    var unknownCategory = Category(
+        id: UUID().uuidString,
+        content: "미분류",
+        isSelected: true
+    )
+    var holidayCategory = Global.shared.holidayCategory
+    
     @Published var categoryList: [Category] = []
     
     @Published var allCategoryOff: Bool = false // 카테고리 달력에서 안보이게 하기
@@ -97,7 +109,6 @@ final class CalendarViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 var beforeRepeat = success
-                // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
                 var repeatScheduleList = [Schedule]()
                 var repeatTodoList = [Todo]()
                 var idx = 0
@@ -192,7 +203,9 @@ final class CalendarViewModel: ObservableObject {
         categoryService.fetchCategoryList { result in
             switch result {
             case .success(let success):
-                self.categoryList = success
+                self.unknownCategory.isSelected = self.isUnknownCategorySelected
+                self.holidayCategory.isSelected = self.isHolidayCategorySelected
+                self.categoryList = [self.unknownCategory] + success + [self.holidayCategory]
             case .failure(let failure):
                 print("[Debug] \(failure)")
             }
@@ -635,17 +648,21 @@ final class CalendarViewModel: ObservableObject {
 
         for schedule in scheduleList {
             // 카테고리 필터링
-            if schedule.category == nil || schedule.category!.isSelected {
-                for (week, dates) in splitDateList.enumerated() {
-                    // 구간 필터링
-                    if schedule.repeatEnd < dates[0] {
-                        break
-                    }
-                    if schedule.repeatStart >= dates[1] {
-                        continue
-                    }
-                    weeksOfScheduleList[week].append(schedule)
+            if schedule.category == nil, !isUnknownCategorySelected { continue }
+            if schedule.category == Global.shared.holidayCategory, !isHolidayCategorySelected { continue }
+            if let category = schedule.category, !category.isSelected {
+                continue
+            }
+            
+            for (week, dates) in splitDateList.enumerated() {
+                // 구간 필터링
+                if schedule.repeatEnd < dates[0] {
+                    break
                 }
+                if schedule.repeatStart >= dates[1] {
+                    continue
+                }
+                weeksOfScheduleList[week].append(schedule)
             }
         }
 
