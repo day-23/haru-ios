@@ -26,7 +26,7 @@ final class UserProfileViewModel: ObservableObject {
     @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
     @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
 
-    var friendCount: Int
+    var friendCount: Int = 0
 
     var reqFriendCount: Int = 0 // 현재 보고 있는 사용자의 친구 요청 수
 
@@ -47,7 +47,7 @@ final class UserProfileViewModel: ObservableObject {
     var friendListTotalPage: Int = -1
     var reqFriListTotalPage: Int = -1
 
-    init(userId: String, friendCount: Int? = nil) {
+    init(userId: String) {
         user = User(
             id: userId,
             name: "",
@@ -58,7 +58,6 @@ final class UserProfileViewModel: ObservableObject {
             isPublicAccount: false
         )
         self.userId = userId
-        self.friendCount = friendCount ?? 0
     }
 
     // MARK: - 페이지네이션
@@ -307,13 +306,27 @@ final class UserProfileViewModel: ObservableObject {
     }
 
     // friendId: 삭제할 친구의 id
-    func deleteFreined(friendId: String, completion: @escaping () -> Void) {
+    func deleteFriend(friendId: String, completion: @escaping () -> Void) {
         friendService.deleteFriend(friendId: friendId) { result in
             switch result {
             case .success:
                 completion()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func blockedFriend(
+        blockUserId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        friendService.blockFriend(blockUserId: blockUserId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let failure):
+                completion(.failure(failure))
             }
         }
     }

@@ -19,6 +19,8 @@ struct ProfileView: View {
     
     @State var postOptModalVis: (Bool, Post?) = (false, nil)
     
+    @State var blockFriend: Bool = false
+    
     var myProfile: Bool = false
     
     var body: some View {
@@ -181,9 +183,27 @@ struct ProfileView: View {
                 if !userProfileVM.isMe {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
-                            print("친구 차단")
+                            blockFriend = true
                         } label: {
                             Image("ellipsis")
+                        }
+                        .confirmationDialog(
+                            "\(userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
+                            isPresented: $blockFriend
+                        ) {
+                            Button("차단하기", role: .destructive) {
+                                userProfileVM.blockedFriend(blockUserId: userProfileVM.user.id) { result in
+                                    switch result {
+                                    case .success(let success):
+                                        if !success {
+                                            print("Toast Message로 알려주기")
+                                        }
+                                        userProfileVM.fetchUserProfile()
+                                    case .failure(let failure):
+                                        print("\(failure) \(#file) \(#function)")
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -191,8 +211,6 @@ struct ProfileView: View {
         }
         .onAppear {
             userProfileVM.fetchUserProfile()
-//            userProfileVM.fetchFollower(currentPage: 1)
-//            userProfileVM.fetchFollowing(currentPage: 1)
         }
     }
     

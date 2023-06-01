@@ -12,6 +12,9 @@ struct ProfileInfoView: View {
     
     @State var postOptModalVis: Bool = false
     
+    @State var deleteFriend: Bool = false
+    @State var cancelFriend: Bool = false
+    
     var body: some View {
         HStack(alignment: .top, spacing: 20) {
             ProfileImgView(profileImage: userProfileVM.profileImage)
@@ -61,8 +64,18 @@ struct ProfileInfoView: View {
                 } else {
                     if userProfileVM.user.friendStatus == 0 {
                         Button {
-                            // TODO: 친구 신청
-                            print("친구 신청")
+                            userProfileVM.requestFriend(acceptorId: userProfileVM.user.id) { result in
+                                switch result {
+                                case .success(let success):
+                                    if !success {
+                                        print("Toast 메시지로 탈퇴한 사용자라고 알려주기")
+                                    } else {
+                                        userProfileVM.fetchUserProfile()
+                                    }
+                                case .failure(let failure):
+                                    print("[Debug] \(failure) \(#function) \(#file)")
+                                }
+                            }
                         } label: {
                             Text("친구 신청")
                                 .foregroundColor(.white)
@@ -74,10 +87,7 @@ struct ProfileInfoView: View {
                                 .cornerRadius(10)
                         }
                     } else if userProfileVM.user.friendStatus == 1 {
-                        Button {
-                            // TODO: 신청 취소
-                            print("신청 취소")
-                        } label: {
+                        Button {} label: {
                             Text("신청 취소")
                                 .foregroundColor(Color(0x646464))
                                 .font(.pretendard(size: 16, weight: .regular))
@@ -88,16 +98,26 @@ struct ProfileInfoView: View {
                         }
                     } else {
                         Button {
-                            // TODO: 친구 삭제
-                            print("친구 삭제")
+                            deleteFriend = true
                         } label: {
                             Text("내 친구")
-                                .foregroundColor(Color(0x646464))
                                 .font(.pretendard(size: 16, weight: .regular))
+                                .foregroundColor(Color(0x646464))
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(Color(0xF1F1F5))
                                 .cornerRadius(10)
+                        }
+                        .confirmationDialog(
+                            "\(userProfileVM.user.name)님을 친구 목록에서 삭제할까요?",
+                            isPresented: $deleteFriend,
+                            titleVisibility: .visible
+                        ) {
+                            Button("삭제하기", role: .destructive) {
+                                userProfileVM.deleteFriend(friendId: userProfileVM.user.id) {
+                                    userProfileVM.fetchUserProfile()
+                                }
+                            }
                         }
                     }
                 }
