@@ -10,6 +10,7 @@ import SwiftUI
 struct CalendarDayDetailView: View {
     @StateObject var calendarVM: CalendarViewModel
     @StateObject var todoAddViewModel: TodoAddViewModel
+    @StateObject var checkListVM: CheckListViewModel
     var row: Int
     
     @State private var content: String = ""
@@ -104,26 +105,18 @@ struct CalendarDayDetailView: View {
                                     )
                                 }
                             } label: {
-                                HStack(spacing: 20) {
-                                    Image("check-circle")
-                                        .resizable()
-                                        .frame(width: 24, height: 24)
-                                    VStack(alignment: .leading) {
-                                        Text("\(calendarVM.todoList[row][index].content)")
-                                            .font(.pretendard(size: 14, weight: .bold))
-                                        HStack(spacing: 8) {
-                                            ForEach(calendarVM.todoList[row][index].tags.prefix(5)) { tag in
-                                                Text("\(tag.content)")
-                                                    .font(.pretendard(size: 10, weight: .regular))
-                                            }
-                                        }
-                                    }
-                                    .frame(height: 28, alignment: .leading)
-                                    Spacer()
-                                    Image(calendarVM.todoList[row][index].flag ? "star-check" : "star")
-                                        .frame(width: 14, height: 14)
+                                TodoView(
+                                    checkListViewModel: checkListVM,
+                                    todo: calendarVM.todoList[row][index],
+                                    at: calendarVM.todoList[row][index].at
+                                ) {
+                                    calendarVM.getRefreshProductivityList()
+                                    calendarVM.getCurMonthSchList(calendarVM.dateList)
+                                } updateAction: {
+                                    calendarVM.getRefreshProductivityList()
+                                    calendarVM.getCurMonthSchList(calendarVM.dateList)
                                 }
-                                .padding(.horizontal, 20)
+                                .padding(.leading, -25)
                             }
                             .tint(.mainBlack)
                         }

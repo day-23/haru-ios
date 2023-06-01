@@ -142,6 +142,9 @@
 		6F54DF5929DD919C002FAD7F /* ProfileFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5829DD919C002FAD7F /* ProfileFormView.swift */; };
 		6F54DF5F29DDCA26002FAD7F /* PopupImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF5E29DDCA26002FAD7F /* PopupImagePicker.swift */; };
 		6F566C8329CEEE73000F0555 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F566C8229CEEE73000F0555 /* Font.swift */; };
+		6F61A95B2A246C79002609D6 /* KeyboardReadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F61A95A2A246C79002609D6 /* KeyboardReadable.swift */; };
+		6F61A95D2A248181002609D6 /* CommentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F61A95C2A248181002609D6 /* CommentListView.swift */; };
+		6F61A95F2A24935A002609D6 /* CommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F61A95E2A24935A002609D6 /* CommentViewModel.swift */; };
 		6F62F4922A0B62DB001BA364 /* PostOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4912A0B62DB001BA364 /* PostOption.swift */; };
 		6F62F4942A0BA14F001BA364 /* ImageAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4932A0BA14F001BA364 /* ImageAsset.swift */; };
 		6F62F4962A0BA212001BA364 /* ImagePickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */; };
@@ -155,6 +158,9 @@
 		6F8D8C462A0281E500A32988 /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C452A0281E500A32988 /* PostService.swift */; };
 		6F8D8C482A02B80300A32988 /* PostFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C472A02B80300A32988 /* PostFormView.swift */; };
 		6F9AE8652A21F26D00BD5269 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9AE8642A21F26D00BD5269 /* UIApplication.swift */; };
+		6F9C740A2A276E5F00C04788 /* FriendOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9C74092A276E5F00C04788 /* FriendOption.swift */; };
+		6F9C740C2A27803900C04788 /* FriendUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9C740B2A27803900C04788 /* FriendUser.swift */; };
+		6F9C740E2A28716E00C04788 /* PostAddMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9C740D2A28716E00C04788 /* PostAddMode.swift */; };
 		6FA3AFEE2A08CD4A00FD7F9D /* UserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */; };
 		6FB144FD2A0A87D9006EA177 /* FriendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB144FC2A0A87D9006EA177 /* FriendService.swift */; };
 		6FBB613B2A0D49FD001A6DA3 /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBB613A2A0D49FD001A6DA3 /* CommentView.swift */; };
@@ -316,6 +322,9 @@
 		6F54DF5829DD919C002FAD7F /* ProfileFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFormView.swift; sourceTree = "<group>"; };
 		6F54DF5E29DDCA26002FAD7F /* PopupImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupImagePicker.swift; sourceTree = "<group>"; };
 		6F566C8229CEEE73000F0555 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
+		6F61A95A2A246C79002609D6 /* KeyboardReadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardReadable.swift; sourceTree = "<group>"; };
+		6F61A95C2A248181002609D6 /* CommentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentListView.swift; sourceTree = "<group>"; };
+		6F61A95E2A24935A002609D6 /* CommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewModel.swift; sourceTree = "<group>"; };
 		6F62F4912A0B62DB001BA364 /* PostOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostOption.swift; sourceTree = "<group>"; };
 		6F62F4932A0BA14F001BA364 /* ImageAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAsset.swift; sourceTree = "<group>"; };
 		6F62F4952A0BA212001BA364 /* ImagePickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerViewModel.swift; sourceTree = "<group>"; };
@@ -329,6 +338,9 @@
 		6F8D8C452A0281E500A32988 /* PostService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
 		6F8D8C472A02B80300A32988 /* PostFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFormView.swift; sourceTree = "<group>"; };
 		6F9AE8642A21F26D00BD5269 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
+		6F9C74092A276E5F00C04788 /* FriendOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendOption.swift; sourceTree = "<group>"; };
+		6F9C740B2A27803900C04788 /* FriendUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendUser.swift; sourceTree = "<group>"; };
+		6F9C740D2A28716E00C04788 /* PostAddMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostAddMode.swift; sourceTree = "<group>"; };
 		6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewModel.swift; sourceTree = "<group>"; };
 		6FB144FC2A0A87D9006EA177 /* FriendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendService.swift; sourceTree = "<group>"; };
 		6FBB613A2A0D49FD001A6DA3 /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
@@ -468,6 +480,7 @@
 				AE5085B82A16B44200A373BC /* Auth.swift */,
 				6F360A122A13AA4C00D64BB6 /* HashTag.swift */,
 				13B424862A1E8C1900E68F88 /* Me.swift */,
+				6F9C740B2A27803900C04788 /* FriendUser.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -519,6 +532,7 @@
 				6F62F49B2A0C3DAD001BA364 /* PostFormViewModel.swift */,
 				AE5085B42A16B07F00A373BC /* AuthViewModel.swift */,
 				6F0B0F782A0EABC00003F313 /* CommentFormViewModel.swift */,
+				6F61A95E2A24935A002609D6 /* CommentViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -559,6 +573,7 @@
 				1306679D29CEE1F200AACEE6 /* View.swift */,
 				6F1082CA2A0E55D300CB89DB /* String.swift */,
 				6F9AE8642A21F26D00BD5269 /* UIApplication.swift */,
+				6F61A95A2A246C79002609D6 /* KeyboardReadable.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -588,6 +603,8 @@
 				6F62F4972A0BAFA9001BA364 /* ImagePickerMode.swift */,
 				139F99622A0BA12500BD56C7 /* RepeatAt.swift */,
 				139224292A210AE3002894B2 /* Tab.swift */,
+				6F9C74092A276E5F00C04788 /* FriendOption.swift */,
+				6F9C740D2A28716E00C04788 /* PostAddMode.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";
@@ -697,6 +714,7 @@
 				6F62F4992A0C3C34001BA364 /* PostFormPreView.swift */,
 				6FBB613A2A0D49FD001A6DA3 /* CommentView.swift */,
 				6FCD09B42A1E532D003F7AB8 /* ProfileView.swift */,
+				6F61A95C2A248181002609D6 /* CommentListView.swift */,
 			);
 			path = SNS;
 			sourceTree = "<group>";
@@ -816,6 +834,8 @@
 				6F360A172A15ECCB00D64BB6 /* HashTagView.swift in Sources */,
 				134F5FEE29DD356C0072704B /* ScheduleItemView.swift in Sources */,
 				1306672329CEE15A00AACEE6 /* TimeTableMainView.swift in Sources */,
+				6F61A95F2A24935A002609D6 /* CommentViewModel.swift in Sources */,
+				6F61A95D2A248181002609D6 /* CommentListView.swift in Sources */,
 				6F1F9A2B2A014A0F00C4ABF4 /* FriendView.swift in Sources */,
 				6F50BC342A0233A700AB7350 /* HaruHeader.swift in Sources */,
 				13DE94BD2A16854500D43105 /* LoginView.swift in Sources */,
@@ -840,6 +860,7 @@
 				6F1082C72A0E43FF00CB89DB /* PostImage.swift in Sources */,
 				130666CC29CEDF4A00AACEE6 /* HaruApp.swift in Sources */,
 				1306671F29CEE14000AACEE6 /* CategoryService.swift in Sources */,
+				6F9C740E2A28716E00C04788 /* PostAddMode.swift in Sources */,
 				1306671E29CEE14000AACEE6 /* CalendarService.swift in Sources */,
 				6F62F4962A0BA212001BA364 /* ImagePickerViewModel.swift in Sources */,
 				1306679229CEE1E300AACEE6 /* CompleteButton.swift in Sources */,
@@ -868,6 +889,7 @@
 				1306677529CEE19C00AACEE6 /* ListSectionView.swift in Sources */,
 				13E294C22A272FDB00279F4D /* AlarmHelper.swift in Sources */,
 				6F54DF4B29DC813D002FAD7F /* MediaView.swift in Sources */,
+				6F9C740C2A27803900C04788 /* FriendUser.swift in Sources */,
 				1306670D29CEE13200AACEE6 /* Day.swift in Sources */,
 				1306679429CEE1E300AACEE6 /* EmptySectionView.swift in Sources */,
 				139F99632A0BA12500BD56C7 /* RepeatAt.swift in Sources */,
@@ -947,7 +969,9 @@
 				6F1F9A232A00E36600C4ABF4 /* DropdownMenu.swift in Sources */,
 				1306677429CEE19C00AACEE6 /* CheckListView.swift in Sources */,
 				130666FC29CEE0AC00AACEE6 /* Constants.swift in Sources */,
+				6F61A95B2A246C79002609D6 /* KeyboardReadable.swift in Sources */,
 				1306678229CEE1D300AACEE6 /* ScheduleFormViewModel.swift in Sources */,
+				6F9C740A2A276E5F00C04788 /* FriendOption.swift in Sources */,
 				13DE94BA2A16848700D43105 /* SplashView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

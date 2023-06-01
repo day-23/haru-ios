@@ -10,36 +10,87 @@ import SwiftUI
 struct LookAroundView: View {
     @Environment(\.dismiss) var dismissAction
 
-    @State var text: String = ""
+    @State var toggleIsClicked: Bool = false
 
     var body: some View {
-        MediaListView(postVM: PostViewModel(option: .media))
-            .customNavigationBar {
-                Button {
-                    dismissAction.callAsFunction()
+        ZStack(alignment: .bottomTrailing) {
+            VStack(alignment: .leading, spacing: 0) {
+                HaruHeaderView()
+                MediaListView(postVM: PostViewModel(option: .media))
+            }
+
+            if toggleIsClicked {
+                DropdownMenu {
+                    Button {
+//                        toggleIsClicked = false
+                        dismissAction.callAsFunction()
+                    } label: {
+                        Text("친구피드")
+                            .font(.pretendard(size: 16, weight: .bold))
+                    }
+                } secondContent: {
+                    Text("둘러보기")
+                        .font(.pretendard(size: 16, weight: .bold))
+                        .foregroundColor(Color(0x1DAFFF))
+                }
+            }
+        }
+        .navigationBarBackButtonHidden()
+    }
+
+    @ViewBuilder
+    func HaruHeaderView() -> some View {
+        HaruHeader(toggleIsClicked: $toggleIsClicked) {
+            HStack(spacing: 10) {
+                NavigationLink {
+                    ProfileView(
+                        postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
+                        userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown"),
+                        myProfile: true
+                    )
                 } label: {
-                    Image("back-button")
+                    Text("내 기록")
+                        .font(.pretendard(size: 16, weight: .bold))
+                        .foregroundColor(Color(0x191919))
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 10)
+                        .background(
+                            //                                            ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                            LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .cornerRadius(10)
+                        .overlay(content: {
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1
+                                )
+
+                        })
+                        .padding(.vertical, 1)
+                }
+
+                NavigationLink {
+                    // TODO: 검색 뷰 만들어지면 넣어주기
+                    Text("검색")
+                } label: {
+                    Image("magnifyingglass")
+                        .renderingMode(.template)
+                        .resizable()
+                        .foregroundColor(Color(0x191919))
                         .frame(width: 28, height: 28)
                 }
-            } rightView: {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .renderingMode(.template)
-                        .foregroundColor(.gray2)
-                    TextField("검색어를 입력하세요", text: $text)
-                        .foregroundColor(Color(0x646464))
-                }
-                .frame(width: 312, height: 30)
-                .padding(.vertical, 4)
-                .padding(.horizontal, 10)
-                .background(Color(0xf1f1f5))
-                .cornerRadius(8)
             }
+        }
     }
 }
 
-struct LookAroundView_Previews: PreviewProvider {
-    static var previews: some View {
-        LookAroundView()
-    }
-}
+// struct LookAroundView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        LookAroundView()
+//    }
+// }

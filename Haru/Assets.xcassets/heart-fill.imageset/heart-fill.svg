@@ -1,0 +1,14 @@
+<svg id="구성_요소_30_20" data-name="구성 요소 30 – 20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="1" y1="1" x2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#53acf8"/>
+      <stop offset="1" stop-color="#a0a9f9"/>
+    </linearGradient>
+  </defs>
+  <rect id="사각형_25078" data-name="사각형 25078" width="28" height="28" fill="none" opacity="0.5"/>
+  <g id="그룹_20665" data-name="그룹 20665" transform="translate(-38.224 -508)">
+    <g id="그룹_18710" data-name="그룹 18710" transform="translate(42.224 513)">
+      <path id="패스_7719" data-name="패스 7719" d="M10,19C6.137,15.024,1.8,11.755.647,8.867-2.452,1.126,6.4-2.576,10,1.994c3.6-4.57,12.452-.868,9.353,6.873C18.2,11.755,13.784,15.106,10,19Z" transform="translate(0 0)" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+</svg>

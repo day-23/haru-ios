@@ -621,8 +621,8 @@ struct TodoService {
         todoListByCompleted: [Todo]
     ) {
         var todoIds: [String] = []
-        todoIds = todoListByFlag.map { $0.id } + todoListWithAnyTag.map { $0.id } +
-            todoListWithoutTag.map { $0.id } + todoListByCompleted.map { $0.id }
+        todoIds = todoListByFlag.map(\.id) + todoListWithAnyTag.map(\.id) +
+            todoListWithoutTag.map(\.id) + todoListByCompleted.map(\.id)
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -655,9 +655,9 @@ struct TodoService {
         todoListByUntilToday: [Todo]
     ) {
         var todoIds: [String] = []
-        todoIds = todoListByFlagWithToday.map { $0.id } +
-            todoListByTodayTodo.map { $0.id } +
-            todoListByUntilToday.map { $0.id }
+        todoIds = todoListByFlagWithToday.map(\.id) +
+            todoListByTodayTodo.map(\.id) +
+            todoListByUntilToday.map(\.id)
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -687,7 +687,7 @@ struct TodoService {
     func updateOrderFlag(
         todoListByFlag: [Todo]
     ) {
-        let todoIds: [String] = todoListByFlag.map { $0.id }
+        let todoIds: [String] = todoListByFlag.map(\.id)
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -717,7 +717,7 @@ struct TodoService {
     func updateOrderWithoutTag(
         todoListWithoutTag: [Todo]
     ) {
-        let todoIds: [String] = todoListWithoutTag.map { $0.id }
+        let todoIds: [String] = todoListWithoutTag.map(\.id)
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -748,7 +748,7 @@ struct TodoService {
         tagId: String,
         todoListByTag: [Todo]
     ) {
-        let todoIds: [String] = todoListByTag.map { $0.id }
+        let todoIds: [String] = todoListByTag.map(\.id)
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
@@ -846,7 +846,8 @@ struct TodoService {
     ) {
         if at == .none {
             completeTodo(todoId: todo.id,
-                         completed: !todo.completed) { result in
+                         completed: !todo.completed)
+            { result in
                 switch result {
                 case .success:
                     completion(.success(true))
@@ -869,6 +870,8 @@ struct TodoService {
         if let endDate = todo.endDate, at == .middle {
             params["completedDate"] = Self.formatter.string(from: endDate)
         }
+
+        print(params)
 
         AF.request(
             Self.baseURL +

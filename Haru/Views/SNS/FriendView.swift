@@ -20,33 +20,36 @@ struct FriendView: View {
     @State var cancelFollowingModalVis: Bool = false // 팔로윙을 취소하는 모달창
     @State var addFollowModalVis: Bool = false // 팔로우 신청을 하는 모달창
     
-    @State var targetUser: User?
+    @State var targetUser: FriendUser?
     
     var body: some View {
         ZStack {
             VStack(spacing: 15) {
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
-                        Text("친구 목록")
+                        Text("친구 목록 \(userProfileVM.friendCount)")
                             .frame(width: 175, height: 20)
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .foregroundColor(friendTab ? .gradientStart1 : .mainBlack)
+                            .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(friendTab ? Color(0x1DAFFF) : Color(0xACACAC))
                             .onTapGesture {
+                                userProfileVM.option = .friendList
                                 withAnimation {
                                     friendTab = true
                                 }
                             }
                         
-                        Text("친구 신청")
+                        Text("친구 신청 \(userProfileVM.reqFriendCount)")
                             .frame(width: 175, height: 20)
-                            .font(.pretendard(size: 14, weight: .bold))
-                            .foregroundColor(friendTab ? .mainBlack : .gradientStart1)
+                            .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(friendTab ? Color(0xACACAC) : Color(0x1DAFFF))
                             .onTapGesture {
+                                userProfileVM.option = .requestFriendList
                                 withAnimation {
                                     friendTab = false
                                 }
                             }
                     }
+                    .padding(.bottom, 10)
                     
                     ZStack(alignment: .leading) {
                         Rectangle()
@@ -61,12 +64,14 @@ struct FriendView: View {
                 }
                 
                 HStack {
-                    Image(systemName: "magnifyingglass")
+                    Image("magnifyingglass")
+                        .resizable()
                         .renderingMode(.template)
-                        .foregroundColor(.gray2)
-                        .fontWeight(.bold)
+                        .frame(width: 28, height: 28)
+                        .foregroundColor(Color(0xACACAC))
                     TextField("검색어를 입력하세요", text: $searchWord)
-                        .foregroundColor(.gray2)
+                        .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(Color(0xACACAC))
                 }
                 .padding(.all, 10)
                 .background(Color(0xF1F1F5))
@@ -75,7 +80,8 @@ struct FriendView: View {
                 
                 ScrollView {
                     LazyVStack(spacing: 30) {
-                        ForEach(friendTab ? userProfileVM.friendList : userProfileVM.requestFriendList, id: \.self) { user in
+                        ForEach(friendTab ? userProfileVM.friendList.indices : userProfileVM.requestFriendList.indices, id: \.self) { index in
+                            let user = friendTab ? userProfileVM.friendList[index] : userProfileVM.requestFriendList[index]
                             HStack {
                                 NavigationLink {
                                     ProfileView(
@@ -84,14 +90,27 @@ struct FriendView: View {
                                     )
                                 } label: {
                                     HStack(spacing: 16) {
-                                        if let profileImage = user.profileImage {
-                                            ProfileImgView(imageUrl: URL(string: profileImage))
-                                                .frame(width: 30, height: 30)
-                                        } else {
-                                            Image("default-profile-image")
-                                                .resizable()
-                                                .clipShape(Circle())
-                                                .frame(width: 30, height: 30)
+                                        switch userProfileVM.option {
+                                        case .friendList:
+                                            if let profileImage = userProfileVM.friProfileImageList[user.id] {
+                                                ProfileImgView(profileImage: profileImage)
+                                                    .frame(width: 30, height: 30)
+                                            } else {
+                                                Image("default-profile-image")
+                                                    .resizable()
+                                                    .clipShape(Circle())
+                                                    .frame(width: 30, height: 30)
+                                            }
+                                        case .requestFriendList:
+                                            if let profileImage = userProfileVM.reqFriProImageList[user.id] {
+                                                ProfileImgView(profileImage: profileImage)
+                                                    .frame(width: 30, height: 30)
+                                            } else {
+                                                Image("default-profile-image")
+                                                    .resizable()
+                                                    .clipShape(Circle())
+                                                    .frame(width: 30, height: 30)
+                                            }
                                         }
                                         
                                         Text(user.name)
@@ -111,6 +130,7 @@ struct FriendView: View {
                                         } label: {
                                             Text("삭제")
                                                 .font(.pretendard(size: 16, weight: .regular))
+                                                .foregroundColor(Color(0x646464))
                                                 .padding(.horizontal, 12)
                                                 .padding(.vertical, 6)
                                                 .background(Color(0xF1F1F5))
@@ -160,9 +180,44 @@ struct FriendView: View {
                             }
                             .padding(.horizontal, 20)
                         }
+                        switch userProfileVM.option {
+                        case .friendList:
+                            if !userProfileVM.friendList.isEmpty,
+                               userProfileVM.page <= userProfileVM.friendListTotalPage
+                            {
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .onAppear {
+                                            print("더 불러오기")
+                                            userProfileVM.loadMoreFriendList()
+                                        }
+                                    Spacer()
+                                }
+                            }
+                        case .requestFriendList:
+                            if !userProfileVM.requestFriendList.isEmpty,
+                               userProfileVM.page <= userProfileVM.reqFriListTotalPage
+                            {
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .onAppear {
+                                            print("더 불러오기")
+                                            userProfileVM.loadMoreFriendList()
+                                        }
+                                    Spacer()
+                                }
+                            }
+                        }
                     }
                 } // Scroll
+                .onAppear {
+                    print("init")
+                    userProfileVM.initLoad()
+                }
             } // VStack
+            .padding(.top, 20)
         } // ZStack
         .navigationBarBackButtonHidden()
         .toolbar {
@@ -176,16 +231,10 @@ struct FriendView: View {
                 }
             }
             
-            ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink {
-                    Text("검색창")
-                } label: {
-                    Image("magnifyingglass")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 28, height: 28)
-                        .foregroundColor(Color(0x191919))
-                }
+            ToolbarItem(placement: .principal) {
+                Text("친구")
+                    .font(.pretendard(size: 20, weight: .bold))
+                    .foregroundColor(Color(0x191919))
             }
         }
 

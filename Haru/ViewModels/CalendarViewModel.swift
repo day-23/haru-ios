@@ -46,9 +46,11 @@ final class CalendarViewModel: ObservableObject {
     @Published var categoryList: [Category] = []
     
     @Published var allCategoryOff: Bool = false // 카테고리 달력에서 안보이게 하기
+    
     @Published var allTodoOff: Bool = false // 할일 달력에서 안보이게 하기
     @Published var nonCompTodoOff: Bool = false // 미완료 할일 달력에서 안보이게 하기
     @Published var compTodoOff: Bool = false // 완료 할일 달력에서 안보이게 하기
+    
     var allOff: Bool {
         allCategoryOff && allTodoOff
     }

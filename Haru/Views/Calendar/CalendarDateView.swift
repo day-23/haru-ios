@@ -9,11 +9,17 @@ import SwiftUI
 
 struct CalendarDateView: View {
     @State private var isSchModalVisible: Bool = false
+    @State private var isTodoModalVisible: Bool = false
     @State private var isDayModalVisible: Bool = false
     
     @State private var isOptionModalVisible: Bool = false
+    
+    @State var showAddButton: Bool = true
+    @State var showSchButton: Bool = false
+    @State var showTodoButton: Bool = false
 
     @StateObject var calendarVM: CalendarViewModel
+    @StateObject var addViewModel: TodoAddViewModel
     
     @State var width = UIScreen.main.bounds.width - 50
     @State var x = UIScreen.main.bounds.width
@@ -24,11 +30,11 @@ struct CalendarDateView: View {
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
                         HStack(spacing: 6) {
-                            Text("\(CalendarHelper.extraDate(calendarVM.monthOffest)[0])년")
+                            Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[0])년")
                                 .font(.pretendard(size: 28, weight: .bold))
                                 .padding(.trailing, 4)
                             
-                            Text("\(CalendarHelper.extraDate(calendarVM.monthOffest)[1])월")
+                            Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[1])월")
                                 .font(.pretendard(size: 28, weight: .bold))
                             
                             Image("toggle-datepicker")
@@ -53,7 +59,7 @@ struct CalendarDateView: View {
                             }
                             
                             Button {
-                                calendarVM.monthOffest = 0
+                                self.calendarVM.monthOffest = 0
                             } label: {
                                 Text("\(Date().day)")
                                     .font(.pretendard(size: 12, weight: .bold))
@@ -77,9 +83,9 @@ struct CalendarDateView: View {
                                 .frame(width: 28, height: 28)
                                 .onTapGesture {
                                     withAnimation {
-                                        isOptionModalVisible = true
+                                        self.isOptionModalVisible = true
                                         Global.shared.isFaded = true
-                                        x = 0
+                                        self.x = 0
                                     }
                                 }
                         }
@@ -90,15 +96,15 @@ struct CalendarDateView: View {
                     Group {
                         // Day View ...
                         HStack(spacing: 0) {
-                            ForEach(calendarVM.dayList.indices, id: \.self) { index in
-                                Text(calendarVM.dayList[index])
+                            ForEach(self.calendarVM.dayList.indices, id: \.self) { index in
+                                Text(self.calendarVM.dayList[index])
                                     .font(.pretendard(size: 14, weight: .regular))
                                     .frame(maxWidth: .infinity)
                                     .foregroundColor(
                                         index == 0 ?
-                                            Color(0xF71E58) :
+                                            Color(0xf71e58) :
                                             index == 6 ?
-                                            Color(0x1DAFFF)
+                                            Color(0x1dafff)
                                             :
                                             Color(0x646464)
                                     )
@@ -107,33 +113,33 @@ struct CalendarDateView: View {
                         .padding(.top, 14)
                         .padding(.bottom, 3)
                         
-                        TabView(selection: $calendarVM.monthOffest) {
+                        TabView(selection: self.$calendarVM.monthOffest) {
                             ForEach(-10 ... 100, id: \.self) { _ in
                                 GeometryReader { proxy in
                                     
                                     let longPress = LongPressGesture(minimumDuration: 0.3)
                                         .onEnded { longPress in
-                                            calendarVM.firstSelected = true
+                                            self.calendarVM.firstSelected = true
                                         }
                                     
                                     let drag = DragGesture()
                                         .onChanged { value in
-                                            calendarVM.addSelectedItems(
+                                            self.calendarVM.addSelectedItems(
                                                 from: value,
                                                 proxy.size.width / 7,
-                                                proxy.size.height / CGFloat(calendarVM.numberOfWeeks)
+                                                proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks)
                                             )
                                         }
                                         .onEnded { value in
-                                            isSchModalVisible = true
+                                            self.isSchModalVisible = true
                                         }
                                     
                                     let combined = longPress.sequenced(before: drag)
                                     
                                     CalendarWeekView(
-                                        calendarVM: calendarVM,
-                                        isDayModalVisible: $isDayModalVisible,
-                                        cellHeight: proxy.size.height / CGFloat(calendarVM.numberOfWeeks),
+                                        calendarVM: self.calendarVM,
+                                        isDayModalVisible: self.$isDayModalVisible,
+                                        cellHeight: proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks),
                                         cellWidth: proxy.size.width / 7
                                     )
                                     .gesture(combined)
@@ -147,26 +153,61 @@ struct CalendarDateView: View {
                 } // VStack
             }
             .onAppear {
-                calendarVM.dayList = CalendarHelper.getDays(calendarVM.startOnSunday)
-                calendarVM.getCategoryList()
-                calendarVM.getCurDateList(calendarVM.monthOffest, calendarVM.startOnSunday)
+                self.calendarVM.dayList = CalendarHelper.getDays(self.calendarVM.startOnSunday)
+                self.calendarVM.getCategoryList()
+                self.calendarVM.getCurDateList(self.calendarVM.monthOffest, self.calendarVM.startOnSunday)
             }
 
-            // 일정 추가 버튼
-            if !isDayModalVisible, !isOptionModalVisible {
+            // 추가 버튼
+            if !self.isDayModalVisible, !self.isOptionModalVisible {
                 VStack {
                     Spacer()
                     HStack {
                         Spacer()
-                        Button {
-                            calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
-                            isSchModalVisible = true
-                        } label: {
-                            Image("add-button")
-                                .resizable()
-                                .frame(width: 56, height: 56)
-                                .clipShape(Circle())
-                                .shadow(radius: 10, x: 5, y: 0)
+                        if self.showTodoButton {
+                            Button {
+                                self.isTodoModalVisible = true
+                                self.addViewModel.mode = .add
+                            } label: {
+                                Image("schedule-button")
+                                    .resizable()
+                                    .frame(width: 56, height: 56)
+                                    .clipShape(Circle())
+                                    .shadow(radius: 10, x: 5, y: 0)
+                            }
+                        }
+                    }
+                    HStack {
+                        Spacer()
+                        
+                        if self.showSchButton {
+                            Button {
+                                self.calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
+                                self.isSchModalVisible = true
+                            } label: {
+                                Image("schedule-button")
+                                    .resizable()
+                                    .frame(width: 56, height: 56)
+                                    .clipShape(Circle())
+                                    .shadow(radius: 10, x: 5, y: 0)
+                            }
+                        }
+                    }
+                    HStack {
+                        Spacer()
+                        
+                        if self.showAddButton {
+                            Button {
+                                withAnimation {
+                                    self.showAddMenu()
+                                }
+                            } label: {
+                                Image("add-button")
+                                    .resizable()
+                                    .frame(width: 56, height: 56)
+                                    .clipShape(Circle())
+                                    .shadow(radius: 10, x: 5, y: 0)
+                            }
                         }
                     }
                 }
@@ -176,100 +217,137 @@ struct CalendarDateView: View {
             }
             
             // 일정 추가를 위한 모달창
-            if isSchModalVisible {
-                Color.black.opacity(0.4)
+            if self.isSchModalVisible {
+                Color.black.opacity(0.5)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
-                        isSchModalVisible = false
+                        self.isSchModalVisible = false
                     }
 
-                Modal(isActive: $isSchModalVisible, ratio: 0.9) {
+                Modal(isActive: self.$isSchModalVisible, ratio: 0.9) {
                     ScheduleFormView(
                         scheduleFormVM: ScheduleFormViewModel(
-                            selectionSet: calendarVM.selectionSet,
-                            categoryList: calendarVM.categoryList
+                            selectionSet: self.calendarVM.selectionSet,
+                            categoryList: self.calendarVM.categoryList
                         ) {
-                            calendarVM.getCurMonthSchList(calendarVM.dateList)
-                            calendarVM.getRefreshProductivityList()
+                            self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                            self.calendarVM.getRefreshProductivityList()
                         },
-                        isSchModalVisible: $isSchModalVisible
+                        isSchModalVisible: self.$isSchModalVisible
                     )
                 }
+                .transition(.modal)
+                .zIndex(2)
+            }
+            
+            // 할일 추가를 위한 모달창
+            if self.isTodoModalVisible {
+                Color.black.opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        self.isTodoModalVisible = false
+                    }
+
+                Modal(isActive: self.$isTodoModalVisible, ratio: 0.9) {
+                    TodoAddView(
+                        viewModel: self.addViewModel,
+                        isModalVisible: self.$isTodoModalVisible
+                    )
+                }
+                .transition(.modal)
                 .zIndex(2)
             }
 
             // 선택된 날(하루)을 위한 모달창
-            if isDayModalVisible {
+            if self.isDayModalVisible {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
                         withAnimation {
-                            isDayModalVisible = false
+                            self.isDayModalVisible = false
                             Global.shared.isFaded = false
                         }
                     }
                 
-                CalendarDayView(calendarViewModel: calendarVM)
+                CalendarDayView(calendarViewModel: self.calendarVM)
                     .zIndex(2)
             }
             
             // 설정을 위한 슬라이드 메뉴
             Group {
-                if isOptionModalVisible {
+                if self.isOptionModalVisible {
                     Color.black.opacity(0.4)
                         .edgesIgnoringSafeArea(.all)
                         .zIndex(1)
                         .onTapGesture {
                             withAnimation {
-                                x = UIScreen.main.bounds.width
-                                isOptionModalVisible = false
+                                self.x = UIScreen.main.bounds.width
+                                self.isOptionModalVisible = false
                                 Global.shared.isFaded = false
                             }
                         }
                 }
-                SlideOptionView(calendarVM: calendarVM)
-                    .shadow(color: .black.opacity(x != 0 ? 0.1 : 0), radius: 5)
-                    .offset(x: x)
+                SlideOptionView(calendarVM: self.calendarVM)
+                    .shadow(color: .black.opacity(self.x != 0 ? 0.1 : 0), radius: 5)
+                    .offset(x: self.x)
                     .gesture(DragGesture().onChanged { value in
                         withAnimation {
                             if value.translation.width > 0 {
-                                x = value.translation.width
+                                self.x = value.translation.width
                             }
                         }
                     }.onEnded { value in
                         withAnimation {
-                            if x > width / 3 {
-                                x = UIScreen.main.bounds.width
-                                isOptionModalVisible = false
+                            if self.x > self.width / 3 {
+                                self.x = UIScreen.main.bounds.width
+                                self.isOptionModalVisible = false
                                 Global.shared.isFaded = false
                             } else {
-                                x = 0
+                                self.x = 0
                             }
                         }
                     })
                     .zIndex(2)
             }
         } // ZStack
-        .onChange(of: isSchModalVisible) { _ in
-            if !isSchModalVisible {
-                calendarVM.selectionSet.removeAll()
+        .onTapGesture {
+            withAnimation {
+                self.hideAddMenu()
             }
         }
-        .onChange(of: calendarVM.startOnSunday) { newValue in
-            calendarVM.setStartOnSunday(newValue)
+        .onChange(of: self.isSchModalVisible) { _ in
+            if !self.isSchModalVisible {
+                self.calendarVM.selectionSet.removeAll()
+            }
         }
-        .onChange(of: isOptionModalVisible) { newValue in
+        .onChange(of: self.calendarVM.startOnSunday) { newValue in
+            self.calendarVM.setStartOnSunday(newValue)
+        }
+        .onChange(of: self.isOptionModalVisible) { newValue in
             if newValue == false {
-                calendarVM.setAllCategoryList()
+                self.calendarVM.setAllCategoryList()
             }
         }
+    }
+    
+    func showAddMenu() {
+        self.showAddButton = false
+        self.showSchButton = true
+        self.showTodoButton = true
+    }
+    
+    func hideAddMenu() {
+        self.showTodoButton = false
+        self.showSchButton = false
+        self.showAddButton = true
     }
 }
 
-struct CalendarDateView_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarDateView(calendarVM: CalendarViewModel())
-    }
-}
+// struct CalendarDateView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CalendarDateView(calendarVM: CalendarViewModel())
+//    }
+// }
