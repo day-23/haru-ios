@@ -159,6 +159,7 @@
 		6F9AE8652A21F26D00BD5269 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9AE8642A21F26D00BD5269 /* UIApplication.swift */; };
 		6F9C740A2A276E5F00C04788 /* FriendOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9C74092A276E5F00C04788 /* FriendOption.swift */; };
 		6F9C740C2A27803900C04788 /* FriendUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9C740B2A27803900C04788 /* FriendUser.swift */; };
+		6F9C740E2A28716E00C04788 /* PostAddMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9C740D2A28716E00C04788 /* PostAddMode.swift */; };
 		6FA3AFEE2A08CD4A00FD7F9D /* UserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */; };
 		6FB144FD2A0A87D9006EA177 /* FriendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB144FC2A0A87D9006EA177 /* FriendService.swift */; };
 		6FBB613B2A0D49FD001A6DA3 /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBB613A2A0D49FD001A6DA3 /* CommentView.swift */; };
@@ -337,6 +338,7 @@
 		6F9AE8642A21F26D00BD5269 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		6F9C74092A276E5F00C04788 /* FriendOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendOption.swift; sourceTree = "<group>"; };
 		6F9C740B2A27803900C04788 /* FriendUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendUser.swift; sourceTree = "<group>"; };
+		6F9C740D2A28716E00C04788 /* PostAddMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostAddMode.swift; sourceTree = "<group>"; };
 		6FA3AFED2A08CD4A00FD7F9D /* UserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewModel.swift; sourceTree = "<group>"; };
 		6FB144FC2A0A87D9006EA177 /* FriendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendService.swift; sourceTree = "<group>"; };
 		6FBB613A2A0D49FD001A6DA3 /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
@@ -599,6 +601,7 @@
 				139F99622A0BA12500BD56C7 /* RepeatAt.swift */,
 				139224292A210AE3002894B2 /* Tab.swift */,
 				6F9C74092A276E5F00C04788 /* FriendOption.swift */,
+				6F9C740D2A28716E00C04788 /* PostAddMode.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";
@@ -854,6 +857,7 @@
 				6F1082C72A0E43FF00CB89DB /* PostImage.swift in Sources */,
 				130666CC29CEDF4A00AACEE6 /* HaruApp.swift in Sources */,
 				1306671F29CEE14000AACEE6 /* CategoryService.swift in Sources */,
+				6F9C740E2A28716E00C04788 /* PostAddMode.swift in Sources */,
 				1306671E29CEE14000AACEE6 /* CalendarService.swift in Sources */,
 				6F62F4962A0BA212001BA364 /* ImagePickerViewModel.swift in Sources */,
 				1306679229CEE1E300AACEE6 /* CompleteButton.swift in Sources */,

@@ -11,7 +11,8 @@ struct SNSView: View {
     @State var toggleIsClicked: Bool = false
 
     // For pop up to root
-    @State var isActive: Bool = false
+    @State var isActiveForDrawing: Bool = false
+    @State var isActiveForWriting: Bool = false
 
     @State var postOptModalVis: (Bool, Post?) = (false, nil)
 
@@ -100,18 +101,26 @@ struct SNSView: View {
                 VStack {
                     if showDrowButton {
                         NavigationLink(
-                            destination: PostFormView(rootIsActive: $isActive),
-                            isActive: $isActive
+                            destination: PostFormView(
+                                openPhoto: true,
+                                rootIsActive: $isActiveForDrawing,
+                                postAddMode: .drawing
+                            ),
+                            isActive: $isActiveForDrawing
                         ) {
-                            Image("sns-write-button")
+                            Image("sns-add-button")
                                 .shadow(radius: 10, x: 5, y: 0)
                         }
                     }
 
                     if showWriteButton {
                         NavigationLink(
-                            destination: PostFormView(rootIsActive: $isActive),
-                            isActive: $isActive
+                            destination: PostFormView(
+                                openPhoto: false,
+                                rootIsActive: $isActiveForWriting,
+                                postAddMode: .writing
+                            ),
+                            isActive: $isActiveForWriting
                         ) {
                             Image("sns-write-button")
                                 .shadow(radius: 10, x: 5, y: 0)
