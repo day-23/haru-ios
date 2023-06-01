@@ -565,7 +565,7 @@ final class ScheduleFormViewModel: ObservableObject {
             )
         } else { // 반복이 아닌 일정 수정 혹은 반복 일정 중 "모든 일정 수정" 시
             if let realRepeatStart {
-                reqRepStart = realRepeatStart > reqRepStart ? reqRepStart : realRepeatStart
+                reqRepStart = realRepeatStart > reqRepStart ? realRepeatStart : reqRepStart
             }
             
             return Request.Schedule(
@@ -602,6 +602,8 @@ final class ScheduleFormViewModel: ObservableObject {
         dateComponents = calendar.dateComponents([.year, .month, .day], from: realRepeatEnd)
         dateComponents.hour = repeatEnd.hour
         dateComponents.minute = repeatEnd.minute
+        
+        print(repeatStart)
         
         return Request.RepeatSchedule(
             content: content,
@@ -734,7 +736,7 @@ final class ScheduleFormViewModel: ObservableObject {
         } else if (from == .calendar && oriSchedule?.at == .middle) ||
             (from == .timeTable && at == .middle)
         {
-            let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: repeatStart)
+            let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: tmpRepeatStart)
             scheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
