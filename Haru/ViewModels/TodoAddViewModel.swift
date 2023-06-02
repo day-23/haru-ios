@@ -311,7 +311,7 @@ final class TodoAddViewModel: ObservableObject {
         }
 
         guard let prevStateRepeatOption = todo.repeatOption,
-              repeatOption.rawValue == prevStateRepeatOption
+              repeatOption == prevStateRepeatOption
         else {
             return false
         }
@@ -447,7 +447,7 @@ final class TodoAddViewModel: ObservableObject {
             alarms: selectedAlarm,
             repeatOption: (!isSelectedEndDate || !isSelectedRepeat)
                 ? nil
-                : repeatOption.rawValue,
+                : repeatOption,
             repeatValue: (!isSelectedEndDate || !isSelectedRepeat)
                 ? nil
                 : repeatValue,
@@ -655,8 +655,8 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatWeek(todo: Todo? = nil) {
         if let todo {
-            if todo.repeatOption != RepeatOption.everyWeek.rawValue &&
-                todo.repeatOption != RepeatOption.everySecondWeek.rawValue
+            if todo.repeatOption != .everyWeek,
+               todo.repeatOption != .everySecondWeek
             {
                 return
             }
@@ -681,7 +681,7 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatMonth(todo: Todo? = nil) {
         if let todo {
-            if todo.repeatOption != RepeatOption.everyMonth.rawValue {
+            if todo.repeatOption != .everyMonth {
                 return
             }
 
@@ -705,7 +705,7 @@ final class TodoAddViewModel: ObservableObject {
 
     func initRepeatYear(todo: Todo? = nil) {
         if let todo {
-            if todo.repeatOption != RepeatOption.everyYear.rawValue {
+            if todo.repeatOption != .everyYear {
                 return
             }
 
@@ -760,13 +760,13 @@ final class TodoAddViewModel: ObservableObject {
         isSelectedAlarm = !todo.alarms.isEmpty
 
         repeatOption = .everyDay
-        if let option = RepeatOption.allCases.first(where: { $0.rawValue == todo.repeatOption }) {
+        if let option = RepeatOption.allCases.first(where: { $0 == todo.repeatOption }) {
             repeatOption = option
         }
         isSelectedRepeat = todo.repeatOption != nil
         repeatEnd = todo.repeatEnd ?? .init()
         isSelectedRepeatEnd = todo.repeatEnd != nil
-        repeatDay = isSelectedRepeat && todo.repeatOption == RepeatOption.everyDay.rawValue
+        repeatDay = isSelectedRepeat && todo.repeatOption == .everyDay
             ? (todo.repeatValue ?? "1")
             : "1"
         initRepeatWeek(todo: todo)

@@ -18,7 +18,7 @@ struct Todo: Identifiable, Codable {
     var flag: Bool
     var endDate: Date?
     var isAllDay: Bool
-    var repeatOption: String?
+    var repeatOption: RepeatOption?
     var repeatValue: String?
     var repeatEnd: Date?
     var todoOrder: Int?
@@ -38,7 +38,7 @@ struct Todo: Identifiable, Codable {
 
     var realRepeatStart: Date?
 
-    init(id: String, content: String, memo: String, todayTodo: Bool, flag: Bool, endDate: Date? = nil, isAllDay: Bool, repeatOption: String? = nil, repeatValue: String? = nil, repeatEnd: Date? = nil, todoOrder: Int? = nil, completed: Bool, folded: Bool, subTodos: [SubTodo], tags: [Tag], alarms: [Alarm], createdAt: Date, updatedAt: Date? = nil, deletedAt: Date? = nil, realRepeatStart: Date? = nil) {
+    init(id: String, content: String, memo: String, todayTodo: Bool, flag: Bool, endDate: Date? = nil, isAllDay: Bool, repeatOption: RepeatOption? = nil, repeatValue: String? = nil, repeatEnd: Date? = nil, todoOrder: Int? = nil, completed: Bool, folded: Bool, subTodos: [SubTodo], tags: [Tag], alarms: [Alarm], createdAt: Date, updatedAt: Date? = nil, deletedAt: Date? = nil, realRepeatStart: Date? = nil) {
         self.id = id
         self.content = content
         self.memo = memo
@@ -80,7 +80,21 @@ struct Todo: Identifiable, Codable {
         self.flag = try container.decode(Bool.self, forKey: .flag)
         self.endDate = try container.decodeIfPresent(Date.self, forKey: .endDate)
         self.isAllDay = try container.decode(Bool.self, forKey: .isAllDay)
-        self.repeatOption = try container.decodeIfPresent(String.self, forKey: .repeatOption)
+        let rawRepeatOption = try container.decodeIfPresent(String.self, forKey: .repeatOption)
+        switch rawRepeatOption {
+        case RepeatOption.everyDay.rawValue:
+            self.repeatOption = .everyDay
+        case RepeatOption.everyWeek.rawValue:
+            self.repeatOption = .everyWeek
+        case RepeatOption.everySecondWeek.rawValue:
+            self.repeatOption = .everySecondWeek
+        case RepeatOption.everyMonth.rawValue:
+            self.repeatOption = .everyMonth
+        case RepeatOption.everyYear.rawValue:
+            self.repeatOption = .everyYear
+        default:
+            self.repeatOption = nil
+        }
         self.repeatValue = try container.decodeIfPresent(String.self, forKey: .repeatValue)
         self.repeatEnd = try container.decodeIfPresent(Date.self, forKey: .repeatEnd)
         self.todoOrder = try container.decodeIfPresent(Int.self, forKey: .todoOrder)
@@ -191,12 +205,12 @@ extension Todo {
         var nextEndDate = endDate
 
         switch repeatOption {
-        case RepeatOption.everyDay.rawValue:
+        case .everyDay:
             guard let interval = Int(repeatValue) else { throw RepeatError.invalid }
             nextEndDate = nextEndDate.addingTimeInterval(
                 TimeInterval(dayInSeconds * interval)
             )
-        case RepeatOption.everyWeek.rawValue:
+        case .everyWeek:
             let pattern = repeatValue.map { $0 == "1" ? true : false }
 
             // pattern 인덱스가 0~6인데, 아래의 반환값은 1~7이므로 다음 날을 가르키게 됨
@@ -213,7 +227,7 @@ extension Todo {
                     throw RepeatError.invalid
                 }
             }
-        case RepeatOption.everySecondWeek.rawValue:
+        case .everySecondWeek:
             let pattern = repeatValue.map { $0 == "1" ? true : false }
             if pattern.filter({ $0 }).isEmpty {
                 throw RepeatError.invalid
@@ -243,7 +257,7 @@ extension Todo {
                     nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(dayInSeconds * 7))
                 }
             }
-        case RepeatOption.everyMonth.rawValue:
+        case .everyMonth:
             guard let range = calendar.range(of: .day, in: .month, for: endDate)
             else {
                 throw RepeatError.calculation
@@ -284,7 +298,7 @@ extension Todo {
                     throw RepeatError.invalid
                 }
             }
-        case RepeatOption.everyYear.rawValue:
+        case .everyYear:
             let pattern = repeatValue.map { $0 == "1" ? true : false }
             if pattern.filter({ $0 }).isEmpty {
                 throw RepeatError.invalid
@@ -381,12 +395,12 @@ extension Todo {
         var prevEndDate = endDate
 
         switch repeatOption {
-        case RepeatOption.everyDay.rawValue:
+        case .everyDay:
             guard let interval = Int(repeatValue) else { throw RepeatError.invalid }
             prevEndDate = prevEndDate.addingTimeInterval(
                 -TimeInterval(dayInSeconds * interval)
             )
-        case RepeatOption.everyWeek.rawValue:
+        case .everyWeek:
             let pattern = repeatValue.map { $0 == "1" ? true : false }
             if pattern.filter({ $0 }).isEmpty {
                 throw RepeatError.invalid
@@ -413,7 +427,7 @@ extension Todo {
                     throw RepeatError.invalid
                 }
             }
-        case RepeatOption.everySecondWeek.rawValue:
+        case .everySecondWeek:
             let pattern = repeatValue.map { $0 == "1" ? true : false }
 
             // pattern 인덱스가 0~6인데, 아래의 반환값은 1~7이므로 다음 날을 가르키게 됨
@@ -448,7 +462,7 @@ extension Todo {
                     prevEndDate = prevEndDate.addingTimeInterval(-TimeInterval(dayInSeconds * 7))
                 }
             }
-        case RepeatOption.everyMonth.rawValue:
+        case .everyMonth:
             guard let range = calendar.range(of: .day, in: .month, for: endDate)
             else {
                 throw RepeatError.calculation
@@ -490,7 +504,7 @@ extension Todo {
                     throw RepeatError.invalid
                 }
             }
-        case RepeatOption.everyYear.rawValue:
+        case .everyYear:
             let pattern = repeatValue.map { $0 == "1" ? true : false }
             if pattern.filter({ $0 }).isEmpty {
                 throw RepeatError.invalid
@@ -570,7 +584,8 @@ extension Todo {
 extension Todo {
     static func createRepeatTodo(
         todo: Todo,
-        endDate: Date
+        endDate: Date,
+        realRepeatStart: Date? = nil
     ) -> Todo {
         Todo(
             id: todo.id,
@@ -590,7 +605,7 @@ extension Todo {
             tags: todo.tags,
             alarms: todo.alarms,
             createdAt: todo.createdAt,
-            realRepeatStart: todo.endDate
+            realRepeatStart: realRepeatStart ?? todo.endDate
         )
     }
 }

@@ -17,7 +17,7 @@ struct Schedule: Identifiable, Codable {
     var repeatStart: Date
     var repeatEnd: Date
 
-    var repeatOption: String?
+    var repeatOption: RepeatOption?
     var repeatValue: String?
 
     var category: Category?
@@ -37,7 +37,7 @@ struct Schedule: Identifiable, Codable {
     var prevRepeatEnd: Date?
     var nextRepeatStart: Date?
 
-    init(id: String, content: String, memo: String, isAllDay: Bool, repeatStart: Date, repeatEnd: Date, repeatOption: String? = nil, repeatValue: String? = nil, category: Category? = nil, alarms: [Alarm], createdAt: Date?, updatedAt: Date? = nil, realRepeatStart: Date? = nil, realRepeatEnd: Date? = nil, prevRepeatEnd: Date? = nil, nextRepeatStart: Date? = nil) {
+    init(id: String, content: String, memo: String, isAllDay: Bool, repeatStart: Date, repeatEnd: Date, repeatOption: RepeatOption? = nil, repeatValue: String? = nil, category: Category? = nil, alarms: [Alarm], createdAt: Date?, updatedAt: Date? = nil, realRepeatStart: Date? = nil, realRepeatEnd: Date? = nil, prevRepeatEnd: Date? = nil, nextRepeatStart: Date? = nil) {
         self.id = id
         self.content = content
         self.memo = memo
@@ -64,7 +64,21 @@ struct Schedule: Identifiable, Codable {
         self.isAllDay = try container.decode(Bool.self, forKey: .isAllDay)
         self.repeatStart = try container.decode(Date.self, forKey: .repeatStart)
         self.repeatEnd = try container.decode(Date.self, forKey: .repeatEnd)
-        self.repeatOption = try container.decodeIfPresent(String.self, forKey: .repeatOption)
+        let rawRepeatOption = try container.decodeIfPresent(String.self, forKey: .repeatOption)
+        switch rawRepeatOption {
+        case RepeatOption.everyDay.rawValue:
+            self.repeatOption = .everyDay
+        case RepeatOption.everyWeek.rawValue:
+            self.repeatOption = .everyWeek
+        case RepeatOption.everySecondWeek.rawValue:
+            self.repeatOption = .everySecondWeek
+        case RepeatOption.everyMonth.rawValue:
+            self.repeatOption = .everyMonth
+        case RepeatOption.everyYear.rawValue:
+            self.repeatOption = .everyYear
+        default:
+            self.repeatOption = nil
+        }
         self.repeatValue = try container.decodeIfPresent(String.self, forKey: .repeatValue)
         self.category = try container.decodeIfPresent(Category.self, forKey: .category)
         self.alarms = try container.decode([Alarm].self, forKey: .alarms)
@@ -145,13 +159,13 @@ extension Schedule {
             let day = 60 * 60 * 24
 
             switch repeatOption {
-            case "매주":
+            case .everyWeek:
                 nextRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(day * 7))
-            case "격주":
+            case .everySecondWeek:
                 nextRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(day * 7 * 2))
-            case "매달":
+            case .everyMonth:
                 nextRepeatEnd = CalendarHelper.nextMonthDate(curDate: repeatEnd)
-            case "매년":
+            case .everyYear:
                 nextRepeatEnd = CalendarHelper.nextYearDate(curDate: repeatEnd)
             default:
                 return .none
@@ -191,19 +205,19 @@ extension Schedule: Event, Equatable {
 
 extension Schedule {
     static func createRepeatSchedule(
-        schedule: Schedule,
+        schedule: Schedule, // 원본 스케줄
         repeatStart: Date,
         repeatEnd: Date,
         prevRepeatEnd: Date? = nil,
         nextRepeatStart: Date? = nil
     ) -> Schedule {
-        var tmpPrevRepeatEnd: Date?
+        var realPrevRepeatEnd: Date?
 
         if schedule.repeatOption != nil,
            let repeatValue = schedule.repeatValue
         {
             if repeatValue.hasPrefix("T") {
-                tmpPrevRepeatEnd = prevRepeatEnd?.addingTimeInterval(
+                realPrevRepeatEnd = prevRepeatEnd?.addingTimeInterval(
                     TimeInterval(
                         Double(
                             repeatValue.split(separator: "T")[0]
@@ -211,7 +225,7 @@ extension Schedule {
                     )
                 )
             } else {
-                tmpPrevRepeatEnd = schedule.repeatEnd
+                realPrevRepeatEnd = prevRepeatEnd
             }
         }
 
@@ -229,7 +243,7 @@ extension Schedule {
             createdAt: schedule.createdAt,
             realRepeatStart: schedule.repeatStart,
             realRepeatEnd: schedule.repeatEnd,
-            prevRepeatEnd: tmpPrevRepeatEnd,
+            prevRepeatEnd: realPrevRepeatEnd,
             nextRepeatStart: nextRepeatStart
         )
     }
@@ -252,17 +266,17 @@ extension Schedule {
         var nextRepeatStart: Date = curRepeatStart.addingTimeInterval(TimeInterval(day))
 
         switch repeatOption {
-        case RepeatOption.everyDay.rawValue:
+        case .everyDay:
             break
 
-        case RepeatOption.everyWeek.rawValue:
+        case .everyWeek:
             var index = (calendar.component(.weekday, from: curRepeatStart)) % 7
             while pattern[index] == false {
                 nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
                 index = (index + 1) % 7
             }
 
-        case RepeatOption.everySecondWeek.rawValue:
+        case .everySecondWeek:
             var index = (calendar.component(.weekday, from: curRepeatStart)) % 7
             if index == 0 {
                 nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day * 7))
@@ -276,16 +290,16 @@ extension Schedule {
                 }
             }
 
-        case RepeatOption.everyMonth.rawValue:
+        case .everyMonth:
             var index = nextRepeatStart.day - 1
             while pattern[index] == false {
                 nextRepeatStart = nextRepeatStart.addingTimeInterval(TimeInterval(day))
                 index = nextRepeatStart.day - 1
             }
 
-        case RepeatOption.everyYear.rawValue:
-            var index = curRepeatStart.month % 12
+        case .everyYear:
             nextRepeatStart = CalendarHelper.nextMonthDate(curDate: curRepeatStart)
+            var index = nextRepeatStart.month - 1
             while pattern[index] == false {
                 nextRepeatStart = CalendarHelper.nextMonthDate(curDate: nextRepeatStart)
                 index = nextRepeatStart.month - 1
@@ -314,10 +328,10 @@ extension Schedule {
         var prevRepeatEnd: Date = curRepeatEnd.addingTimeInterval(TimeInterval(-day))
 
         switch repeatOption {
-        case RepeatOption.everyDay.rawValue:
+        case .everyDay:
             break
 
-        case RepeatOption.everyWeek.rawValue:
+        case .everyWeek:
             var index = (calendar.component(.weekday, from: curRepeatEnd) - 2)
             index = index < 0 ? 6 : index
             while pattern[index] == false {
@@ -329,7 +343,7 @@ extension Schedule {
                 }
             }
 
-        case RepeatOption.everySecondWeek.rawValue:
+        case .everySecondWeek:
             var index = (calendar.component(.weekday, from: curRepeatEnd) - 2)
             index = index < 0 ? 6 : index
             if index == 0 {
@@ -348,14 +362,14 @@ extension Schedule {
                 }
             }
 
-        case RepeatOption.everyMonth.rawValue:
+        case .everyMonth:
             var index = prevRepeatEnd.day - 1
             while pattern[index] == false {
                 prevRepeatEnd = prevRepeatEnd.addingTimeInterval(TimeInterval(-day))
                 index = prevRepeatEnd.day - 1
             }
 
-        case RepeatOption.everyYear.rawValue:
+        case .everyYear:
             prevRepeatEnd = CalendarHelper.prevMonthDate(curDate: curRepeatEnd)
             var index = prevRepeatEnd.month - 1
             while pattern[index] == false {
@@ -385,10 +399,10 @@ extension Schedule {
         var pivotDate = curRepeatStart
 
         switch repeatOption {
-        case RepeatOption.everyDay.rawValue:
+        case .everyDay:
             throw RepeatError.invalid
 
-        case RepeatOption.everyWeek.rawValue:
+        case .everyWeek:
             let result = pivotDate.addingTimeInterval(TimeInterval(day * 7))
             dateComponents = calendar.dateComponents([.year, .month, .day], from: result)
             dateComponents.hour = self.repeatStart.hour
@@ -402,7 +416,7 @@ extension Schedule {
 
             return repeatStart
 
-        case RepeatOption.everySecondWeek.rawValue:
+        case .everySecondWeek:
             let result = pivotDate.addingTimeInterval(TimeInterval(day * 7 * 2))
             dateComponents = calendar.dateComponents([.year, .month, .day], from: result)
             dateComponents.hour = self.repeatStart.hour
@@ -415,13 +429,29 @@ extension Schedule {
             }
 
             return repeatStart
-        case RepeatOption.everyMonth.rawValue:
+        case .everyMonth:
             return CalendarHelper.nextMonthDate(curDate: pivotDate)
 
-        case RepeatOption.everyYear.rawValue:
+        case .everyYear:
             return CalendarHelper.nextYearDate(curDate: pivotDate)
         default:
             throw RepeatError.invalid
         }
+    }
+}
+
+extension Schedule {
+    static func holidayToSchedule(holiday: Holiday) -> Schedule {
+        Schedule(
+            id: String(holiday.id),
+            content: holiday.content,
+            memo: "",
+            isAllDay: true,
+            repeatStart: holiday.repeatStart,
+            repeatEnd: holiday.repeatEnd,
+            category: Global.shared.holidayCategory,
+            alarms: [],
+            createdAt: holiday.repeatStart
+        )
     }
 }

@@ -104,9 +104,8 @@ struct CalendarDateView: View {
                                         index == 0 ?
                                             Color(0xf71e58) :
                                             index == 6 ?
-                                            Color(0x1dafff)
-                                            :
-                                            Color(0x646464)
+                                            Color(0x1dafff) :
+                                            Color(0xacacac)
                                     )
                             }
                         } // HStack
@@ -156,6 +155,11 @@ struct CalendarDateView: View {
                 self.calendarVM.dayList = CalendarHelper.getDays(self.calendarVM.startOnSunday)
                 self.calendarVM.getCategoryList()
                 self.calendarVM.getCurDateList(self.calendarVM.monthOffest, self.calendarVM.startOnSunday)
+            }
+            .onTapGesture {
+                withAnimation {
+                    self.hideAddMenu()
+                }
             }
 
             // 추가 버튼
@@ -313,10 +317,8 @@ struct CalendarDateView: View {
                     .zIndex(2)
             }
         } // ZStack
-        .onTapGesture {
-            withAnimation {
-                self.hideAddMenu()
-            }
+        .onAppear {
+            UIApplication.shared.addTapGestureRecognizer()
         }
         .onChange(of: self.isSchModalVisible) { _ in
             if !self.isSchModalVisible {

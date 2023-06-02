@@ -14,6 +14,7 @@ struct FeedImage: View {
     var imageList: [PostImage?]
     var imageCount: Int
     var templateMode: Bool
+    var contentColor: String? // 템플릿 게시물인 경우 black인지 white인지 받아줘야함
     var content: String?
     var isMine: Bool
     @State var postPageNum: Int = 0
@@ -35,9 +36,10 @@ struct FeedImage: View {
             } else if let content {
                 Text(content)
                     .lineLimit(nil)
-                    .font(.pretendard(size: 14, weight: .regular))
+                    .font(.pretendard(size: 24, weight: .bold))
+                    .foregroundColor(Color(contentColor))
                     .padding(.all, 20)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .zIndex(2)
             }
 

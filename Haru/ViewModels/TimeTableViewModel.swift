@@ -246,6 +246,152 @@ final class TimeTableViewModel: ObservableObject {
         scheduleList = scheduleList.filter { $0.id != "PREVIEW" }
     }
 
+    func isContinuousSchedule(_ schedule: Schedule) -> Bool {
+        if let repeatValue = schedule.repeatValue,
+           schedule.repeatOption != nil
+        {
+            return repeatValue.hasPrefix("T")
+        }
+        return schedule.repeatStart.day != schedule.repeatEnd.day
+    }
+
+    func generateRecurringSchedule(_ schedule: Schedule) -> [ScheduleCell] {
+        guard let repeatOption = schedule.repeatOption,
+              let repeatValue = schedule.repeatValue,
+              let first = thisWeek.first,
+              let last = thisWeek.last?.addingTimeInterval(60 * 60 * 24 - 1)
+        else {
+            return []
+        }
+
+        var at: RepeatAt = .front
+        var schedule: Schedule = schedule
+        var schedules: [ScheduleCell] = []
+
+        let repeatEnd = schedule.repeatEnd
+        schedule.realRepeatEnd = repeatEnd
+        do {
+            if isContinuousSchedule(schedule) {
+                guard let interval = Double(repeatValue.suffix(repeatValue.count - 1)) else {
+                    return []
+                }
+
+                schedule.repeatEnd = schedule.repeatStart.addingTimeInterval(TimeInterval(floatLiteral: interval))
+                while schedule.repeatStart < first && schedule.repeatEnd < first {
+                    schedule.repeatStart = try schedule.nextSucRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                    schedule.repeatEnd = schedule.repeatStart.addingTimeInterval(TimeInterval(floatLiteral: interval))
+                    at = .middle
+                }
+
+                if repeatOption == .everyMonth,
+                   schedule.repeatStart.month != schedule.repeatEnd.month
+                {
+                    var components: DateComponents = Calendar.current.dateComponents([.year, .month], from: schedule.repeatStart)
+                    guard let range = Calendar.current.range(of: .day, in: .month, for: schedule.repeatStart) else {
+                        return []
+                    }
+
+                    let upperBound = range.upperBound - 1
+                    components.day = upperBound
+                    components.hour = 23
+                    components.minute = 55
+
+                    guard let newer = Calendar.current.date(from: components) else {
+                        return []
+                    }
+                    schedule.repeatEnd = newer
+                }
+
+                while schedule.repeatStart <= last,
+                      schedule.repeatStart > first || schedule.repeatEnd > first
+                {
+                    schedules.append(
+                        ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1, at: at)
+                    )
+
+                    guard var start = schedule.repeatStart.indexOfWeek(),
+                          var end = schedule.repeatEnd.indexOfWeek()
+                    else {
+                        return []
+                    }
+
+                    if schedule.repeatStart < first {
+                        start = 0
+                    }
+                    if schedule.repeatEnd > last {
+                        end = 6
+                    }
+
+                    schedules[schedules.count - 1].weight = end - start + 1
+
+                    at = .middle
+                    schedule.repeatStart = try schedule.nextSucRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                    schedule.repeatEnd = schedule.repeatStart.addingTimeInterval(TimeInterval(floatLiteral: interval))
+                    let nextRepeatStart = try schedule.nextSucRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                    if schedule.repeatStart.isEqual(other: repeatEnd)
+                        || schedule.repeatEnd > nextRepeatStart
+                    {
+                        at = .back
+                    }
+
+                    if repeatOption == .everyMonth,
+                       schedule.repeatStart.month != schedule.repeatEnd.month
+                    {
+                        var components: DateComponents = Calendar.current.dateComponents([.year, .month], from: schedule.repeatStart)
+                        guard let range = Calendar.current.range(of: .day, in: .month, for: schedule.repeatStart) else {
+                            return []
+                        }
+
+                        let upperBound = range.upperBound - 1
+                        components.day = upperBound
+                        components.hour = 23
+                        components.minute = 55
+
+                        guard let newer = Calendar.current.date(from: components) else {
+                            return []
+                        }
+                        schedule.repeatEnd = newer
+                    }
+                }
+            } else {
+                while schedule.repeatStart < first {
+                    at = .middle
+                    schedule.repeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                }
+
+                while schedule.repeatStart <= last,
+                      schedule.repeatStart <= schedule.repeatEnd
+                {
+                    schedule.repeatEnd = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
+
+                    schedules.append(
+                        ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1, at: at)
+                    )
+
+                    at = .middle
+                    schedule.repeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                    let nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                    if schedule.repeatStart.isEqual(other: repeatEnd)
+                        || schedule.repeatEnd > nextRepeatStart
+                    {
+                        at = .back
+                    }
+                }
+            }
+        } catch {
+            switch error {
+            case RepeatError.invalid:
+                print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
+            case RepeatError.calculation:
+                print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
+            default:
+                print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
+            }
+        }
+
+        return schedules
+    }
+
     // MARK: - Read
 
     func fetchScheduleList() {
@@ -260,308 +406,68 @@ final class TimeTableViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success(let scheduleList):
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyyMMdd"
-
                 self.scheduleList = []
                 self.scheduleListWithoutTime = Array(repeating: [], count: 7)
                 for schedule in scheduleList {
-                    var data = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
-
-                    // Schedule이 하루 종일이거나, 반복 일정이 아니면서 시작 날짜와 끝 날짜가 다를 경우.
-                    if schedule.repeatOption == nil,
-                       schedule.isAllDay
-                       || dateFormatter.string(from: schedule.repeatStart) != dateFormatter.string(from: schedule.repeatEnd)
-                    {
-                        if var start = schedule.repeatStart.indexOfWeek(),
-                           var end = schedule.repeatEnd.indexOfWeek()
-                        {
-                            if schedule.repeatStart.year < self.currentYear {
-                                start = 0
-                            } else if schedule.repeatStart.year == self.currentYear,
-                                      schedule.repeatStart.weekOfYear() < self.currentWeek
-                            {
-                                start = 0
-                            }
-
-                            if schedule.repeatEnd.year == self.currentYear,
-                               schedule.repeatEnd.weekOfYear() > self.currentWeek
-                            {
-                                end = 6
-                            } else if schedule.repeatEnd.year > self.currentYear {
-                                end = 6
-                            }
-
-                            data.weight = end - start + 1
-                            self.scheduleListWithoutTime[start].append(data)
-                        }
-                        continue
-                    }
-
-                    // Schedule이 반복 일정일 경우
-                    if let repeatOption = schedule.repeatOption {
-                        if let first = self.thisWeek.first,
-                           let last = self.thisWeek.last,
-                           let repeatValue = schedule.repeatValue
-                        {
-                            var date = schedule.repeatStart
-                            if !repeatValue.hasPrefix("T") {
-                                // 단일 날짜 일정
-                                var at: RepeatAt = .front
-
-                                // 만약, date가 이번 주의 첫날보다 이전에서 시작한다면 저번 주의 마지막 날로 변경.
-                                if dateFormatter.string(from: date) < dateFormatter.string(from: first) {
-                                    let dateComponents = DateComponents(
-                                        year: first.year,
-                                        month: first.month,
-                                        day: first.day,
-                                        hour: date.hour,
-                                        minute: date.minute
-                                    )
-
-                                    guard let next = Calendar.current.date(from: dateComponents)
-                                    else {
-                                        return
-                                    }
-
-                                    date = next.addingTimeInterval(-TimeInterval(60 * 60 * 24))
-                                    at = .middle
-                                }
-
-                                while dateFormatter.string(from: date) <= dateFormatter.string(from: last),
-                                      dateFormatter.string(from: date) <= dateFormatter.string(from: schedule.repeatEnd)
-                                {
-                                    var repeatSchedule = schedule
-                                    repeatSchedule.repeatStart = date
-
-                                    let dateComponents = DateComponents(
-                                        year: date.year,
-                                        month: date.month,
-                                        day: date.day,
-                                        hour: schedule.repeatEnd.hour,
-                                        minute: schedule.repeatEnd.minute
-                                    )
-
-                                    guard let repeatEnd = Calendar.current.date(from: dateComponents)
-                                    else {
-                                        return
-                                    }
-                                    repeatSchedule.repeatEnd = repeatEnd
-                                    repeatSchedule.realRepeatEnd = schedule.repeatEnd
-
-                                    if at == .front {
-                                        do {
-                                            let temp = try schedule.nextRepeatStartDate(curRepeatStart: date)
-                                            if dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: temp)
-                                            {
-                                                at = .none
-                                            }
-                                        } catch {
-                                            switch error {
-                                            case RepeatError.invalid:
-                                                print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
-                                            case RepeatError.calculation:
-                                                print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
-                                            default:
-                                                print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
-                                            }
+                    let isContinuous = self.isContinuousSchedule(schedule)
+                    if schedule.isAllDay || isContinuous {
+                        if isContinuous {
+                            if schedule.repeatOption != nil {
+                                let schedules = self.generateRecurringSchedule(schedule)
+                                for recurringSchedule in schedules {
+                                    if var start = recurringSchedule.data.repeatStart.indexOfWeek(),
+                                       let first = self.thisWeek.first
+                                    {
+                                        if recurringSchedule.data.repeatStart < first {
+                                            start = 0
                                         }
-                                    }
-
-                                    var cell = ScheduleCell(
-                                        id: UUID().uuidString,
-                                        data: repeatSchedule,
-                                        weight: 1,
-                                        order: 1,
-                                        at: at
-                                    )
-
-                                    if repeatSchedule.isAllDay {
-                                        if var start = repeatSchedule.repeatStart.indexOfWeek(),
-                                           var end = repeatSchedule.repeatEnd.indexOfWeek()
-                                        {
-                                            if repeatSchedule.repeatStart.year < self.currentYear {
-                                                start = 0
-                                            } else if repeatSchedule.repeatStart.year == self.currentYear,
-                                                      repeatSchedule.repeatStart.weekOfYear() < self.currentWeek
-                                            {
-                                                start = 0
-                                            }
-
-                                            if repeatSchedule.repeatEnd.year == self.currentYear,
-                                               repeatSchedule.repeatEnd.weekOfYear() > self.currentWeek
-                                            {
-                                                end = 6
-                                            } else if repeatSchedule.repeatEnd.year > self.currentYear {
-                                                end = 6
-                                            }
-
-                                            cell.weight = end - start + 1
-                                            self.scheduleListWithoutTime[start].append(cell)
-                                        }
-                                    } else {
-                                        self.scheduleList.append(cell)
-                                    }
-
-                                    do {
-                                        date = try schedule.nextRepeatStartDate(curRepeatStart: date)
-                                        let next = try schedule.nextRepeatStartDate(curRepeatStart: date)
-                                        at = .middle
-                                        if dateFormatter.string(from: schedule.repeatEnd) == dateFormatter.string(from: date)
-                                            || dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: next)
-                                        {
-                                            at = .back
-                                        }
-                                    } catch {
-                                        switch error {
-                                        case RepeatError.invalid:
-                                            print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
-                                        case RepeatError.calculation:
-                                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
-                                        default:
-                                            print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
-                                        }
+                                        self.scheduleListWithoutTime[start].append(recurringSchedule)
                                     }
                                 }
                             } else {
-                                var at: RepeatAt = .front
-                                // 2일 연속 일정
-                                switch repeatOption {
-                                case RepeatOption.everyWeek.rawValue:
-                                    while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
-                                        at = .middle
-                                        date = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7))
-
-                                        let next = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7))
-                                        if dateFormatter.string(from: schedule.repeatEnd) == dateFormatter.string(from: date)
-                                            || dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: next)
-                                        {
-                                            at = .back
-                                        }
-                                    }
-                                case RepeatOption.everySecondWeek.rawValue:
-                                    while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
-                                        at = .middle
-                                        date = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7 * 2))
-
-                                        let next = date.addingTimeInterval(TimeInterval(60 * 60 * 24 * 7 * 2))
-                                        if dateFormatter.string(from: schedule.repeatEnd) == dateFormatter.string(from: date)
-                                            || dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: next)
-                                        {
-                                            at = .back
-                                        }
-                                    }
-                                case RepeatOption.everyMonth.rawValue:
-                                    let day = date.day
-                                    while dateFormatter.string(from: date) < dateFormatter.string(from: first) {
-                                        if let next = Calendar.current.date(byAdding: .month, value: 1, to: date) {
-                                            at = .middle
-                                            date = next
-
-                                            if let nextForCheck = Calendar.current.date(byAdding: .month, value: 1, to: date) {
-                                                if dateFormatter.string(from: schedule.repeatEnd) == dateFormatter.string(from: date)
-                                                    || dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: nextForCheck)
-                                                {
-                                                    at = .back
-                                                }
-                                            } else {
-                                                return
-                                            }
-                                        } else {
-                                            return
-                                        }
-
-                                        guard let range = Calendar.current.range(of: .day, in: .month, for: date) else {
-                                            return
-                                        }
-
-                                        var upperBound = range.upperBound - 1
-                                        // 아래에서 이번 주를 넘어가는 일정은 어차피 이후에 처리가 되기 때문에 outer while loop의 조건을
-                                        // 확인하지 않아도 된다.
-                                        while day > upperBound {
-                                            if let next = Calendar.current.date(byAdding: .month, value: 1, to: date) {
-                                                date = next
-                                                guard let range = Calendar.current.range(of: .day, in: .month, for: date) else {
-                                                    return
-                                                }
-
-                                                upperBound = range.upperBound - 1
-                                            } else {
-                                                return
-                                            }
-                                        }
-
-                                        let components = DateComponents(
-                                            year: date.year,
-                                            month: date.month,
-                                            day: day,
-                                            hour: date.hour,
-                                            minute: date.minute
-                                        )
-
-                                        guard let modified = Calendar.current.date(from: components) else {
-                                            continue
-                                        }
-                                        date = modified
-                                    }
-                                case RepeatOption.everyYear.rawValue:
-                                    // TODO: 연속되는 일정 매년 반복 처리 필요 CalendarHelper.nextYearDate
-                                    // 현재 연속되는 일정의 경우에는 처리가 되어있지 않다.
-                                    break
-                                default:
-                                    // RepeatOption이 잘못된 경우로 해당 일정은 무시하고 다음 일정으로 넘어가서 계산한다.
-                                    continue
-                                }
-
-                                // 만약 반복일 계산 결과가 이번 주의 마지막을 넘어선다면 다음으로 넘어간다.
-                                if dateFormatter.string(from: last) < dateFormatter.string(from: date) {
-                                    continue
-                                }
-
-                                // interval을 이용 repeatEnd를 계산한다.
-                                guard let interval = Double(
-                                    repeatValue[
-                                        repeatValue.index(repeatValue.startIndex, offsetBy: 1)...
-                                    ]
-                                )
-                                else {
-                                    continue
-                                }
-
-                                let repeatEnd = date.addingTimeInterval(
-                                    TimeInterval(floatLiteral: interval)
-                                )
-
-                                if var start = date.indexOfWeek(),
-                                   var end = repeatEnd.indexOfWeek()
+                                if var start = schedule.repeatStart.indexOfWeek(),
+                                   var end = schedule.repeatEnd.indexOfWeek(),
+                                   let first = self.thisWeek.first,
+                                   let last = self.thisWeek.last?.addingTimeInterval(TimeInterval(60 * 60 * 24 - 1))
                                 {
-                                    if date.year < self.currentYear {
-                                        start = 0
-                                    } else if date.year == self.currentYear,
-                                              date.weekOfYear() < self.currentWeek
-                                    {
+                                    var newer = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
+
+                                    if schedule.repeatStart < first {
                                         start = 0
                                     }
-
-                                    if repeatEnd.year == self.currentYear,
-                                       repeatEnd.weekOfYear() > self.currentWeek
-                                    {
-                                        end = 6
-                                    } else if repeatEnd.year > self.currentYear {
+                                    if schedule.repeatEnd > last {
                                         end = 6
                                     }
 
-                                    data.at = at
-                                    data.weight = end - start + 1
-                                    self.scheduleListWithoutTime[start].append(data)
+                                    newer.weight = end - start + 1
+                                    self.scheduleListWithoutTime[start].append(newer)
+                                }
+                            }
+                        } else {
+                            if schedule.repeatOption != nil {
+                                let schedules = self.generateRecurringSchedule(schedule)
+                                for recurringSchedule in schedules {
+                                    if let start = recurringSchedule.data.repeatStart.indexOfWeek() {
+                                        self.scheduleListWithoutTime[start].append(recurringSchedule)
+                                    }
+                                }
+                            } else {
+                                if let start = schedule.repeatStart.indexOfWeek() {
+                                    let newer = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
+                                    self.scheduleListWithoutTime[start].append(newer)
                                 }
                             }
                         }
-                        continue
+                    } else {
+                        if schedule.repeatOption != nil {
+                            let schedules = self.generateRecurringSchedule(schedule)
+                            self.scheduleList.append(contentsOf: schedules)
+                        } else {
+                            self.scheduleList.append(
+                                ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
+                            )
+                        }
                     }
-
-                    // 위의 모든 경우가 아닌 경우
-                    self.scheduleList.append(data)
                 }
                 self.findUnion()
                 self.processScheduleListWithoutTime()
@@ -584,9 +490,6 @@ final class TimeTableViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success(let todoList):
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyyMMdd"
-
                 self.todoListByDate = Array(repeating: [], count: 7)
                 for todo in todoList {
                     guard var endDate = todo.endDate else {
@@ -598,11 +501,11 @@ final class TimeTableViewModel: ObservableObject {
 
                     if todo.repeatOption != nil {
                         if let first = self.thisWeek.first,
-                           let last = self.thisWeek.last
+                           let last = self.thisWeek.last?.addingTimeInterval(TimeInterval(60 * 60 * 24 - 1))
                         {
                             var at: RepeatAt = .front
                             var modified = todo
-                            while dateFormatter.string(from: endDate) < dateFormatter.string(from: first) {
+                            while endDate < first {
                                 do {
                                     guard let next = try modified.nextEndDate() else {
                                         // 반복이 끝난 할 일
@@ -626,7 +529,7 @@ final class TimeTableViewModel: ObservableObject {
                             }
 
                             // 데이터 추가
-                            while dateFormatter.string(from: endDate) <= dateFormatter.string(from: last) {
+                            while endDate <= last {
                                 guard let index = endDate.indexOfWeek() else {
                                     continue
                                 }
@@ -694,7 +597,6 @@ final class TimeTableViewModel: ObservableObject {
         }
         scheduleList = scheduleList.filter { $0.id != draggingSchedule.id }
 
-        // TODO: - front == back 처리 필요
         if at == .none {
             scheduleService.updateSchedule(
                 scheduleId: draggingSchedule.data.id,

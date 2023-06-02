@@ -26,9 +26,7 @@ final class UserProfileViewModel: ObservableObject {
     @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
     @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
 
-    var friendCount: Int {
-        user.friendCount
-    }
+    var friendCount: Int = 0
 
     var reqFriendCount: Int = 0 // 현재 보고 있는 사용자의 친구 요청 수
 
@@ -49,18 +47,8 @@ final class UserProfileViewModel: ObservableObject {
     var friendListTotalPage: Int = -1
     var reqFriListTotalPage: Int = -1
 
-    var lastCreatedAt: Date? {
-//        switch option {
-//        case .friendList:
-//            return friendList
-//        case .requestFriendList:
-//            <#code#>
-//        }
-        nil
-    }
-
     init(userId: String) {
-        self.user = User(
+        user = User(
             id: userId,
             name: "",
             introduction: "",
@@ -76,7 +64,7 @@ final class UserProfileViewModel: ObservableObject {
 
     func initLoad() {
         fetchFriend(userId: userId, page: page)
-//        fetchRequestFriend(userId: userId, page: page)
+        fetchRequestFriend(userId: userId, page: page)
     }
 
     func loadMoreFriendList() {
@@ -106,16 +94,16 @@ final class UserProfileViewModel: ObservableObject {
     }
 
     func refreshFriendList() {
-        clear(option: option)
+        clear()
+        initLoad()
     }
 
-    func clear(option: FriendOption) {
-        switch option {
-        case .friendList:
-            friendList.removeAll()
-        case .requestFriendList:
-            requestFriendList.removeAll()
-        }
+    func clear() {
+        friendList.removeAll()
+        friProfileImageList.removeAll()
+
+        requestFriendList.removeAll()
+        reqFriProImageList.removeAll()
     }
 
     // MARK: - 이미지 캐싱
@@ -230,6 +218,7 @@ final class UserProfileViewModel: ObservableObject {
 
                 self.friendList.append(contentsOf: success.0)
                 let pageInfo = success.1
+                self.friendCount = pageInfo.totalItems
                 if self.friendListTotalPage == -1 {
                     self.friendListTotalPage = pageInfo.totalPages
                 }
@@ -257,7 +246,7 @@ final class UserProfileViewModel: ObservableObject {
                     }
                 }
 
-                self.requestFriendList = success.0
+                self.requestFriendList.append(contentsOf: success.0)
                 let pageInfo = success.1
                 self.reqFriendCount = pageInfo.totalItems
                 if self.reqFriListTotalPage == -1 {
@@ -314,13 +303,27 @@ final class UserProfileViewModel: ObservableObject {
     }
 
     // friendId: 삭제할 친구의 id
-    func deleteFreined(friendId: String, completion: @escaping () -> Void) {
+    func deleteFriend(friendId: String, completion: @escaping () -> Void) {
         friendService.deleteFriend(friendId: friendId) { result in
             switch result {
             case .success:
                 completion()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func blockedFriend(
+        blockUserId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        friendService.blockFriend(blockUserId: blockUserId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let failure):
+                completion(.failure(failure))
             }
         }
     }

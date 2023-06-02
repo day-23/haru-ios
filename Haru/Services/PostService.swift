@@ -350,11 +350,139 @@ final class PostService {
             }
     }
 
-    func createPostWithTemplate() {}
+    func createPostWithTemplate(
+        templateId: String,
+        templateTextColor: String,
+        content: String,
+        tagList: [Tag],
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "templateId": templateId,
+            "templateTextColor": templateTextColor,
+            "content": content,
+            "hashTags": tagList.map { tag in
+                tag.content
+            },
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deletePost(
+        postId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)",
+            method: .delete,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func hidePost(
+        postId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/hide",
+            method: .post,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func reportPost(
+        postId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/report",
+            method: .post,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 
     // MARK: - 게시물 부수적인 기능
 
-    func fetchPopularHashTags() {}
+    // 서버에 있는 기본 템플릿 불러오기
+    // TODO: ProfileImage 모델 이름에서 다른 이름으로 바꿔주기
+    func fetchTemplate(completion: @escaping (Result<[ProfileImage], Error>) -> Void) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [ProfileImage]
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
+            method: .get,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func fetchPopularHashTags() {
+        // TODO:
+    }
 
     func fetchTargetHashTags(
         targetId: String,

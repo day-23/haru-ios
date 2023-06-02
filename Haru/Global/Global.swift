@@ -14,11 +14,19 @@ final class Global: ObservableObject {
 
     static let shared: Global = .init()
     @Published var user: Me?
+
     var hashTagAll = HashTag(id: UUID().uuidString, content: "전체보기")
 
     @Published var isTabViewActive: Bool = true
     @Published var isFaded: Bool = false
 
+    var holidayCategory = Category(
+        id: UUID().uuidString,
+        content: "공휴일",
+        color: "#F71E58",
+        isSelected: true
+    )
+    
     var colors = [
         [Color(0x2E2E2E), Color(0x656565), Color(0x818181), Color(0x9D9D9D), Color(0xB9B9B9), Color(0xD5D5D5)],
 

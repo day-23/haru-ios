@@ -235,7 +235,7 @@ final class FriendService {
         
         AF.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/block",
-            method: .delete,
+            method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
             headers: headers
