@@ -68,7 +68,7 @@ struct TimeTableScheduleView: View {
                                         ? Color(0xf71e58)
                                         : (index == 6
                                             ? Color(0x1dafff)
-                                            : Color(0x646464)
+                                            : Color(0xacacac)
                                         )
                                 )
                                 .padding(.bottom, 3)
