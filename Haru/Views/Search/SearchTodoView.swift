@@ -1,19 +1,23 @@
 //
-//  TodoItem.swift
+//  SearchTodoView.swift
 //  Haru
 //
-//  Created by 최정민 on 2023/03/06.
+//  Created by 이준호 on 2023/06/03.
 //
 
 import SwiftUI
 
-struct TodoView: View {
+import SwiftUI
+
+struct SearchTodoView: View {
     var checkListViewModel: CheckListViewModel
     var todo: Todo
     var backgroundColor: Color = .white
     var at: RepeatAt = .front
+    var contentWords: [(String, Bool)]
     var completeAction: () -> Void = {}
     var updateAction: () -> Void = {}
+
 
     // MARK: - API 호출시에 버튼을 비활성화 하는 변수들
 
@@ -157,10 +161,19 @@ struct TodoView: View {
                 .disabled(!isCompletionButtonActive)
 
             VStack(alignment: .leading, spacing: 0) {
-                Text(todo.content)
-                    .font(.pretendard(size: 16, weight: .bold))
-                    .strikethrough(todo.completed)
-                    .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
+                HStack(spacing: 0) {
+                    ForEach(contentWords.indices, id: \.self) { idx in
+                        Text(contentWords[idx].0)
+                            .font(.pretendard(size: 16, weight: .bold))
+                            .strikethrough(todo.completed)
+                            .foregroundColor(
+                                !todo.completed ?
+                                    contentWords[idx].1 ? Color(0x1dafff) : Color(0x191919)
+                                    :
+                                    Color(0xacacac)
+                            )
+                    }
+                }
 
                 if showExtraInfo {
                     HStack(spacing: 0) {

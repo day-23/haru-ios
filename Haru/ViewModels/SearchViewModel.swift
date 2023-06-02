@@ -28,4 +28,14 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
+
+    func fittingSchedule(schedule: Schedule) -> Schedule {
+        guard let repeatOption = schedule.repeatOption,
+              let repeatValue = schedule.repeatValue
+        else {
+            return schedule
+        }
+
+        return schedule
+    }
 }

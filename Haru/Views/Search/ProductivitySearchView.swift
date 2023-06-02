@@ -11,6 +11,7 @@ struct ProductivitySearchView: View {
     @Environment(\.dismiss) var dismissAction
     
     @State var searchContent = ""
+    @State var prevSearchContent = ""
     
     @StateObject var calendarVM: CalendarViewModel
     @StateObject var todoAddViewModel: TodoAddViewModel
@@ -55,6 +56,8 @@ struct ProductivitySearchView: View {
                         
                         Spacer()
                     }
+                    
+                    todoItemList()
                 }
                 .padding(.leading, 40)
                 .padding(.trailing, 20)
@@ -78,12 +81,14 @@ struct ProductivitySearchView: View {
                     .frame(width: 28, height: 28)
                     .foregroundColor(Color(0xACACAC))
                 TextField("검색어를 입력하세요", text: $searchContent)
+                    .disableAutocorrection(true)
                     .font(.pretendard(size: 16, weight: .regular))
                     .focused($focus)
                     .onSubmit {
                         if searchContent != "" {
                             waitingResponse = true
                             searchVM.searchTodoAndSchedule(searchContent: searchContent) {
+                                prevSearchContent = searchContent
                                 searchContent = ""
                                 waitingResponse = false
                             }
@@ -109,10 +114,14 @@ struct ProductivitySearchView: View {
                     .padding(5)
                 
                 VStack(alignment: .leading) {
-                    Text("\(schedule.content)")
-                        .font(.pretendard(size: 16, weight: .bold))
-                        .foregroundColor(Color(0x191919))
-                    
+                    HStack(spacing: 0) {
+                        let stringList = splitContent(content: schedule.content, searchString: prevSearchContent)
+                        ForEach(stringList.indices, id: \.self) { idx in
+                            Text("\(stringList[idx].0)")
+                                .font(.pretendard(size: 16, weight: .bold))
+                                .foregroundColor(stringList[idx].1 ? Color(0x1DAFFF) : Color(0x191919))
+                        }
+                    }
                     Text(schedule.isAllDay ? "하루 종일" :
                         CalendarHelper.isSameDay(
                             date1: schedule.repeatStart,
@@ -133,8 +142,70 @@ struct ProductivitySearchView: View {
     
     @ViewBuilder
     func todoItemList() -> some View {
-//        ForEach(, id: \.self) { idx in
-//            TodoView(checkListViewModel: checkListVM, todo:)
-//        }
+        ForEach(searchVM.todoList, id: \.id) { todo in
+            NavigationLink {
+                TodoAddView(viewModel: todoAddViewModel)
+                    .onAppear {
+                        todoAddViewModel.applyTodoData(
+                            todo: todo,
+                            at: todo.at
+                        )
+                    }
+            } label: {
+                SearchTodoView(
+                    checkListViewModel: checkListVM,
+                    todo: todo,
+                    at: todo.at,
+                    contentWords: splitContent(content: todo.content, searchString: prevSearchContent)
+                ) {
+                    // completeAction
+                    searchVM.searchTodoAndSchedule(searchContent: prevSearchContent) {}
+                } updateAction: {
+                    // updateAction
+                    searchVM.searchTodoAndSchedule(searchContent: prevSearchContent) {}
+                }
+            }
+            .padding(.leading, -40)
+        }
+    }
+    
+    func splitContent(
+        content: String,
+        searchString: String
+    ) -> [(String, Bool)] {
+        var result: [(String, Bool)] = []
+        
+        var preString: String
+        var sufString: String = content
+
+        for str in StringHelper.matches(for: "(?i)\(searchString)", in: content) {
+            if let rangeS = sufString.range(of: str) {
+                let dist = sufString.distance(from: sufString.startIndex, to: rangeS.lowerBound)
+                
+                preString = String(sufString.prefix(dist))
+                if preString != "" {
+                    result.append((preString, false))
+                }
+                result.append((searchString, true))
+                sufString = String(sufString.suffix(sufString.count - (dist + searchString.count)))
+            }
+        }
+
+        if sufString != "" {
+            result.append((sufString, false))
+        }
+        
+        let tmpResult = result
+        var p = 0
+        for (col, str) in tmpResult.enumerated() {
+            var data = ""
+            for _ in str.0 {
+                data += String(content[content.index(content.startIndex, offsetBy: p)])
+                p += 1
+            }
+            result[col].0 = data
+        }
+        
+        return result
     }
 }
