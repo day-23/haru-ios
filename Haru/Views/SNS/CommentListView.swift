@@ -37,7 +37,7 @@ struct CommentListView: View {
 
                     Group {
                         HStack(spacing: 20) {
-                            Image("toggle")
+                            Image("todo-toggle")
                                 .resizable()
                                 .frame(width: 20, height: 20)
                                 .rotationEffect(Angle(degrees: -180))
@@ -56,7 +56,7 @@ struct CommentListView: View {
                                 .background(Color(0xdbdbdb))
                                 .cornerRadius(15)
 
-                            Image("toggle")
+                            Image("todo-toggle")
                                 .resizable()
                                 .frame(width: 20, height: 20)
                                 .onTapGesture {

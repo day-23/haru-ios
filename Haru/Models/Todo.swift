@@ -37,13 +37,106 @@ struct Todo: Identifiable, Codable {
     // MARK: 반복 api를 위한 필드 (임의로 프론트에서 넣어주는 값들) 추후에 DTO를 새로 작성할 필요성 있음
 
     var realRepeatStart: Date?
+
+    init(id: String, content: String, memo: String, todayTodo: Bool, flag: Bool, endDate: Date? = nil, isAllDay: Bool, repeatOption: String? = nil, repeatValue: String? = nil, repeatEnd: Date? = nil, todoOrder: Int? = nil, completed: Bool, folded: Bool, subTodos: [SubTodo], tags: [Tag], alarms: [Alarm], createdAt: Date, updatedAt: Date? = nil, deletedAt: Date? = nil, realRepeatStart: Date? = nil) {
+        self.id = id
+        self.content = content
+        self.memo = memo
+        self.todayTodo = todayTodo
+        self.flag = flag
+        self.endDate = endDate
+        self.isAllDay = isAllDay
+        self.repeatOption = repeatOption
+        self.repeatValue = repeatValue
+        self.repeatEnd = repeatEnd
+        self.todoOrder = todoOrder
+        self.completed = completed
+        self.folded = folded
+        self.subTodos = subTodos
+        self.tags = tags
+        self.alarms = alarms
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.deletedAt = deletedAt
+        self.realRepeatStart = realRepeatStart
+
+        if let alarm = alarms.first {
+            Task {
+                await AlarmHelper.createNotification(
+                    identifier: id,
+                    body: content,
+                    date: alarm.time
+                )
+            }
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.content = try container.decode(String.self, forKey: .content)
+        self.memo = try container.decode(String.self, forKey: .memo)
+        self.todayTodo = try container.decode(Bool.self, forKey: .todayTodo)
+        self.flag = try container.decode(Bool.self, forKey: .flag)
+        self.endDate = try container.decodeIfPresent(Date.self, forKey: .endDate)
+        self.isAllDay = try container.decode(Bool.self, forKey: .isAllDay)
+        self.repeatOption = try container.decodeIfPresent(String.self, forKey: .repeatOption)
+        self.repeatValue = try container.decodeIfPresent(String.self, forKey: .repeatValue)
+        self.repeatEnd = try container.decodeIfPresent(Date.self, forKey: .repeatEnd)
+        self.todoOrder = try container.decodeIfPresent(Int.self, forKey: .todoOrder)
+        self.completed = try container.decode(Bool.self, forKey: .completed)
+        self.folded = try container.decode(Bool.self, forKey: .folded)
+        self.subTodos = try container.decode([SubTodo].self, forKey: .subTodos)
+        self.tags = try container.decode([Tag].self, forKey: .tags)
+        self.alarms = try container.decode([Alarm].self, forKey: .alarms)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+        self.realRepeatStart = try container.decodeIfPresent(Date.self, forKey: .realRepeatStart)
+
+        let id = self.id
+        let content = self.content
+        let alarms = self.alarms
+        if let alarm = alarms.first {
+            Task {
+                await AlarmHelper.createNotification(
+                    identifier: id,
+                    body: content,
+                    date: alarm.time
+                )
+            }
+        }
+    }
+
+    enum CodingKeys: CodingKey {
+        case id
+        case content
+        case memo
+        case todayTodo
+        case flag
+        case endDate
+        case isAllDay
+        case repeatOption
+        case repeatValue
+        case repeatEnd
+        case todoOrder
+        case completed
+        case folded
+        case subTodos
+        case tags
+        case alarms
+        case createdAt
+        case updatedAt
+        case deletedAt
+        case realRepeatStart
+    }
 }
 
 // MARK: - Extensions
 
 extension Todo {
     var at: RepeatAt {
-        if repeatOption == nil || repeatValue == nil {
+        if self.repeatOption == nil || self.repeatValue == nil {
             return .none
         }
 
@@ -63,11 +156,11 @@ extension Todo {
         }
 
         if nextEndDate == nil {
-            if realRepeatStart == endDate {
+            if self.realRepeatStart == self.endDate {
                 return .none
             }
             return .back
-        } else if realRepeatStart == endDate {
+        } else if self.realRepeatStart == self.endDate {
             return .front
         } else {
             return .middle
@@ -503,4 +596,4 @@ extension Todo {
     }
 }
 
-extension Todo: Productivity {}
+extension Todo: Event {}

@@ -26,7 +26,7 @@ struct CheckListView: View {
 
         return ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                HaruHeader {
+                HaruHeader(isIconGradation: true) {
                     Color.white
                         .edgesIgnoringSafeArea(.all)
                 } item: {
@@ -93,13 +93,20 @@ struct CheckListView: View {
                             ) {
                                 todoState.updateOrderMain()
                             } header: {
-                                TagView(
-                                    tag: Tag(
-                                        id: DefaultTag.important.rawValue,
-                                        content: DefaultTag.important.rawValue
-                                    ),
-                                    isSelected: true
-                                )
+                                HStack(spacing: 0) {
+                                    TagView(
+                                        tag: Tag(
+                                            id: DefaultTag.important.rawValue,
+                                            content: DefaultTag.important.rawValue
+                                        ),
+                                        isSelected: true
+                                    )
+
+                                    Spacer()
+
+                                    StarButton(isClicked: true)
+                                        .padding(.trailing, 10)
+                                }
                                 .padding(.leading, 10)
                             }
 
@@ -117,7 +124,8 @@ struct CheckListView: View {
                                         id: DefaultTag.classified.rawValue,
                                         content: DefaultTag.classified.rawValue
                                     ),
-                                    isSelected: true
+                                    isSelected: true,
+                                    disabled: true
                                 )
                                 .padding(.leading, 10)
                             }
@@ -136,7 +144,8 @@ struct CheckListView: View {
                                         id: DefaultTag.unclassified.rawValue,
                                         content: DefaultTag.unclassified.rawValue
                                     ),
-                                    isSelected: true
+                                    isSelected: true,
+                                    disabled: true
                                 )
                                 .padding(.leading, 10)
                             }
@@ -156,7 +165,8 @@ struct CheckListView: View {
                                         id: DefaultTag.completed.rawValue,
                                         content: DefaultTag.completed.rawValue
                                     ),
-                                    isSelected: true
+                                    isSelected: true,
+                                    disabled: true
                                 )
                                 .padding(.leading, 10)
                             }
@@ -165,7 +175,7 @@ struct CheckListView: View {
                         }
                     } else {
                         if let tag = viewModel.selectedTag {
-                            if tag.id == DefaultTag.completed.rawValue {
+                            if tag.id == DefaultTag.important.rawValue {
                                 ListView(checkListViewModel: viewModel) {
                                     ListSectionView(
                                         checkListViewModel: viewModel,
@@ -174,10 +184,17 @@ struct CheckListView: View {
                                     ) {
                                         todoState.updateOrderFlag()
                                     } header: {
-                                        TagView(
-                                            tag: tag,
-                                            isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
-                                        )
+                                        HStack(spacing: 0) {
+                                            TagView(
+                                                tag: tag,
+                                                isSelected: true
+                                            )
+
+                                            Spacer()
+
+                                            StarButton(isClicked: true)
+                                                .padding(.trailing, 10)
+                                        }
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
@@ -194,7 +211,7 @@ struct CheckListView: View {
                                     } header: {
                                         TagView(
                                             tag: tag,
-                                            isSelected: viewModel.selectedTag?.id == DefaultTag.unclassified.rawValue
+                                            isSelected: true
                                         )
                                         .padding(.leading, 10)
                                     }
@@ -213,7 +230,7 @@ struct CheckListView: View {
                                     } header: {
                                         TagView(
                                             tag: tag,
-                                            isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
+                                            isSelected: true
                                         )
                                         .padding(.leading, 10)
                                     }
@@ -272,7 +289,8 @@ struct CheckListView: View {
                                                 id: DefaultTag.completed.rawValue,
                                                 content: DefaultTag.completed.rawValue
                                             ),
-                                            isSelected: true
+                                            isSelected: true,
+                                            disabled: true
                                         )
                                         .padding(.leading, 10)
                                     }

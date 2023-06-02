@@ -19,11 +19,8 @@ struct AccountView: View {
             .padding(.bottom, 29)
 
             ZStack {
-                LinearGradient(
-                    colors: [Color(0xd2d7ff), Color(0xaad7ff), Color(0xd2d7ff)],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ).opacity(0.5)
+                Image("background-gradation")
+                    .resizable()
 
                 VStack(alignment: .leading, spacing: 5) {
                     Text("연동된 이메일")
@@ -53,8 +50,8 @@ struct AccountView: View {
                 Spacer()
                 Spacer()
 
-                Button {
-                    // TODO: 삭제 API 호출
+                NavigationLink {
+                    WithdrawalView()
                 } label: {
                     VStack(spacing: 8) {
                         Text("계정 삭제하기")
@@ -100,11 +97,7 @@ struct AccountRow<Destination: View>: View {
                         .foregroundColor(Color(0x646464))
                         .padding(.trailing, 10)
 
-                    Image("back-button")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x646464))
-                        .opacity(0.5)
-                        .rotationEffect(Angle(degrees: 180))
+                    Image("detail-button")
                         .frame(width: 28, height: 28)
                 }
 

@@ -505,7 +505,7 @@ final class TimeTableViewModel: ObservableObject {
                                         date = modified
                                     }
                                 case RepeatOption.everyYear.rawValue:
-                                    // TODO: 연속되는 일정 매년 반복 처리 필요
+                                    // TODO: 연속되는 일정 매년 반복 처리 필요 CalendarHelper.nextYearDate
                                     // 현재 연속되는 일정의 경우에는 처리가 되어있지 않다.
                                     break
                                 default:

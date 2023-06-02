@@ -34,7 +34,7 @@ struct PopupImagePicker: View {
                     HStack(spacing: 10) {
                         Text("갤러리")
                             .font(.pretendard(size: 20, weight: .bold))
-                        Image("toggle")
+                        Image("todo-toggle")
                             .renderingMode(.template)
                             .resizable()
                             .rotationEffect(.degrees(90))

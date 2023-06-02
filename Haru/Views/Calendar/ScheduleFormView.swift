@@ -226,12 +226,6 @@ struct ScheduleFormView: View {
                         .padding(.horizontal, 20)
                         .foregroundColor(scheduleFormVM.isSelectedAlarm ? .mainBlack : .gray2)
                         
-                        if scheduleFormVM.isSelectedAlarm {
-                            AlarmView(scheduleVM: scheduleFormVM)
-                                .padding(.horizontal, 55)
-                                .padding(.vertical, 6)
-                        }
-                        
                         Divider()
                     }
                     

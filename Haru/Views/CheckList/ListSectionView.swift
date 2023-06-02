@@ -50,8 +50,8 @@ struct ListSectionView<Content>: View where Content: View {
                                 withAnimation {
                                     todoList[index].completed.toggle()
                                 }
-                            }
-                            .foregroundColor(.black)
+                            } updateAction: {}
+                                .foregroundColor(.black)
                         }
 
                         if !todo.folded {
@@ -80,7 +80,7 @@ struct ListSectionView<Content>: View where Content: View {
                         isCollapsed.toggle()
                     }
                 } label: {
-                    Image("toggle")
+                    Image("todo-toggle")
                         .renderingMode(.template)
                         .frame(width: 20, height: 28)
                         .rotationEffect(Angle(degrees: isCollapsed ? 0 : 90))

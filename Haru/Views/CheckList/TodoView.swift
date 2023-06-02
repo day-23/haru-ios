@@ -75,7 +75,7 @@ struct TodoView: View {
                         isToggleButtonActive = true
                     }
                 } label: {
-                    Image("toggle")
+                    Image("todo-toggle")
                         .renderingMode(.template)
                         .frame(width: 20, height: 28)
                         .rotationEffect(Angle(degrees: !todo.folded ? 90 : 0))

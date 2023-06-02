@@ -95,7 +95,7 @@ struct PostFormView: View {
                 NavigationLink {
                     PostFormPreView(postFormVM: postFormVM, shouldPopToRootView: $rootIsActive)
                 } label: {
-                    Image("toggle")
+                    Image("todo-toggle")
                         .renderingMode(.template)
                         .foregroundColor(Color(0x191919))
                 }

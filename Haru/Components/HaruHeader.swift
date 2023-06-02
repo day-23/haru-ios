@@ -14,28 +14,24 @@ struct HaruHeader<
     var toggleOn: Bool
 
     @Binding var toggleIsClicked: Bool
+    var isIconGradation: Bool
     @ViewBuilder var background: () -> HeaderBackground // 배경화면으로 보여질 화면을 추가한다.
     @ViewBuilder var item: () -> HeaderItem // 헤더 오른쪽에 들어갈 아이템을 정의한다.
 
     init(
         toggleIsClicked: Binding<Bool>? = nil,
+        isIconGradation: Bool = false,
         @ViewBuilder background: @escaping () -> HeaderBackground = {
-            LinearGradient(
-                colors: [
-                    Color(0xD2D7FF),
-                    Color(0xAAD7FF),
-                    Color(0xD2D7FF),
-                ],
-                startPoint: .bottomLeading,
-                endPoint: .topTrailing
-            )
-            .opacity(0.5)
+            Image("background-gradation")
+                .resizable()
         },
+
         @ViewBuilder item: @escaping () -> HeaderItem
     ) {
         _toggleIsClicked = toggleIsClicked ?? .constant(false)
         self.background = background
         self.item = item
+        self.isIconGradation = isIconGradation
 
         if toggleIsClicked == nil {
             toggleOn = false
@@ -51,9 +47,13 @@ struct HaruHeader<
 
             VStack(spacing: 0) {
                 HStack {
-                    Image("logo")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
+                    if isIconGradation {
+                        Image("header-logo")
+                    } else {
+                        Image("header-logo")
+                            .renderingMode(.template)
+                            .foregroundColor(Color(0xfdfdfd))
+                    }
 
                     if toggleOn {
                         Button {
@@ -61,7 +61,7 @@ struct HaruHeader<
                                 toggleIsClicked.toggle()
                             }
                         } label: {
-                            Image("toggle")
+                            Image("todo-toggle")
                                 .renderingMode(.template)
                                 .foregroundColor(Color(0x646464))
                                 .rotationEffect(.degrees(toggleIsClicked ? 90 : 0))

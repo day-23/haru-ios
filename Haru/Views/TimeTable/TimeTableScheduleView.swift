@@ -75,10 +75,7 @@ struct TimeTableScheduleView: View {
                                 .onTapGesture {
                                     calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
                                     calendarViewModel.getSelectedScheduleList()
-                                    withAnimation {
-                                        isPopupVisible = true
-                                        Global.shared.isFaded = true
-                                    }
+                                    isPopupVisible = true
                                 }
                         }
                     }
@@ -111,14 +108,11 @@ struct TimeTableScheduleView: View {
                                             )
                                         )
                                 )
-                                .padding(.top, 8)
+                                .padding(.top, 6)
                                 .onTapGesture {
                                     calendarViewModel.pivotDate = timeTableViewModel.thisWeek[index]
                                     calendarViewModel.getSelectedScheduleList()
-                                    withAnimation {
-                                        isPopupVisible = true
-                                        Global.shared.isFaded = true
-                                    }
+                                    isPopupVisible = true
                                 }
                         }
                     }
@@ -394,30 +388,14 @@ struct CellDropDelegate: DropDelegate {
         return formatter
     }()
 
-    private static var thisWeek: [Date] {
-        let calendar = Calendar.current
-        guard let startOfWeek = calendar.date(
-            from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: .now)
-        ) else {
-            return []
-        }
-
-        var datesOfWeek: [Date] = []
-        for i in 0 ... 6 {
-            let date = calendar.date(byAdding: .day, value: i, to: startOfWeek)!
-            datesOfWeek.append(date)
-        }
-        return datesOfWeek
-    }
-
     func dropExited(info: DropInfo) {
         timeTableViewModel.removePreview()
     }
 
     func dropEntered(info: DropInfo) {
-        let year = CellDropDelegate.thisWeek[dayIndex].year
-        let month = CellDropDelegate.thisWeek[dayIndex].month
-        let day = CellDropDelegate.thisWeek[dayIndex].day
+        let year = timeTableViewModel.thisWeek[dayIndex].year
+        let month = timeTableViewModel.thisWeek[dayIndex].month
+        let day = timeTableViewModel.thisWeek[dayIndex].day
         let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
         guard let date = Calendar.current.date(from: components) else {
             return
@@ -439,9 +417,9 @@ struct CellDropDelegate: DropDelegate {
             return false
         }
 
-        let year = CellDropDelegate.thisWeek[dayIndex].year
-        let month = CellDropDelegate.thisWeek[dayIndex].month
-        let day = CellDropDelegate.thisWeek[dayIndex].day
+        let year = timeTableViewModel.thisWeek[dayIndex].year
+        let month = timeTableViewModel.thisWeek[dayIndex].month
+        let day = timeTableViewModel.thisWeek[dayIndex].day
         let components = DateComponents(year: year, month: month, day: day, hour: hourIndex, minute: minuteIndex * 5)
         guard var date = Calendar.current.date(from: components) else {
             return false

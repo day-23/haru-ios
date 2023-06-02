@@ -197,7 +197,7 @@ struct CommentView: View, KeyboardReadable {
                     } else {
                         Group {
                             HStack(spacing: 20) {
-                                Image("toggle")
+                                Image("todo-toggle")
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .rotationEffect(Angle(degrees: -180))
@@ -216,7 +216,7 @@ struct CommentView: View, KeyboardReadable {
                                     .background(Color(0x646464))
                                     .cornerRadius(15)
 
-                                Image("toggle")
+                                Image("todo-toggle")
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .onTapGesture {

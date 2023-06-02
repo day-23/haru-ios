@@ -120,9 +120,7 @@ struct RootView: View {
                                                 Color.black.opacity(0.4)
                                                     .edgesIgnoringSafeArea(.all)
                                                     .onTapGesture {
-                                                        withAnimation {
-                                                            global.isFaded = false
-                                                        }
+                                                        global.isFaded = false
                                                     }
                                             }
                                         }
@@ -132,6 +130,8 @@ struct RootView: View {
                         }
                     }
                     .onAppear {
+                        AlarmHelper.createRegularNotification(regular: .morning)
+                        AlarmHelper.createRegularNotification(regular: .evening)
                         UIDatePicker.appearance().minuteInterval = 5
                     }
                     .environmentObject(todoState)

@@ -94,7 +94,8 @@ struct TagManageView: View {
         }
         .frame(width: width, height: height)
         .background(
-            RadialGradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)], center: .center, startRadius: 0, endRadius: 350)
+            Image("background-manage")
+                .resizable()
         )
         .cornerRadius(10, corners: [.topLeft, .bottomLeft])
         .offset(offset)
@@ -155,7 +156,7 @@ private struct TagOptionItem: View {
                     isSelected: tag.isSelected
                 )
             } label: {
-                Image("ellipsis")
+                Image("edit-button")
                     .renderingMode(.template)
                     .foregroundColor(Color(0x646464))
                     .frame(width: 28, height: 28)

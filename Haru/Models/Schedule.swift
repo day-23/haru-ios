@@ -3,7 +3,7 @@
 //  Haru
 //
 //  Created by 이준호 on 2023/03/07.
-//  Updated by 최정민 on 2023/03/31.
+//  Updated by 최정민 on 2023/05/31.
 //
 
 import Foundation
@@ -22,7 +22,7 @@ struct Schedule: Identifiable, Codable {
 
     var category: Category?
 
-    var alarms: [Alarm]
+    var alarms: [Alarm] // 알람이 설정되었는가? => !alarms.isEmpty
 
     // MARK: - Dates
 
@@ -36,6 +36,100 @@ struct Schedule: Identifiable, Codable {
 
     var prevRepeatEnd: Date?
     var nextRepeatStart: Date?
+
+    init(id: String, content: String, memo: String, isAllDay: Bool, repeatStart: Date, repeatEnd: Date, repeatOption: String? = nil, repeatValue: String? = nil, category: Category? = nil, alarms: [Alarm], createdAt: Date?, updatedAt: Date? = nil, realRepeatStart: Date? = nil, realRepeatEnd: Date? = nil, prevRepeatEnd: Date? = nil, nextRepeatStart: Date? = nil) {
+        self.id = id
+        self.content = content
+        self.memo = memo
+        self.isAllDay = isAllDay
+        self.repeatStart = repeatStart
+        self.repeatEnd = repeatEnd
+        self.repeatOption = repeatOption
+        self.repeatValue = repeatValue
+        self.category = category
+        self.alarms = alarms
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.realRepeatStart = realRepeatStart
+        self.realRepeatEnd = realRepeatEnd
+        self.prevRepeatEnd = prevRepeatEnd
+        self.nextRepeatStart = nextRepeatStart
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.content = try container.decode(String.self, forKey: .content)
+        self.memo = try container.decode(String.self, forKey: .memo)
+        self.isAllDay = try container.decode(Bool.self, forKey: .isAllDay)
+        self.repeatStart = try container.decode(Date.self, forKey: .repeatStart)
+        self.repeatEnd = try container.decode(Date.self, forKey: .repeatEnd)
+        self.repeatOption = try container.decodeIfPresent(String.self, forKey: .repeatOption)
+        self.repeatValue = try container.decodeIfPresent(String.self, forKey: .repeatValue)
+        self.category = try container.decodeIfPresent(Category.self, forKey: .category)
+        self.alarms = try container.decode([Alarm].self, forKey: .alarms)
+        self.createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
+        self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        self.realRepeatStart = try container.decodeIfPresent(Date.self, forKey: .realRepeatStart)
+        self.realRepeatEnd = try container.decodeIfPresent(Date.self, forKey: .realRepeatEnd)
+        self.prevRepeatEnd = try container.decodeIfPresent(Date.self, forKey: .prevRepeatEnd)
+        self.nextRepeatStart = try container.decodeIfPresent(Date.self, forKey: .nextRepeatStart)
+
+        let id = self.id
+        let content = self.content
+        let repeatStart = self.repeatStart
+        if !alarms.isEmpty {
+            Task {
+                await AlarmHelper.createNotification(
+                    identifier: id,
+                    body: content,
+                    date: repeatStart
+                )
+            }
+
+            var repeatDate = repeatStart
+            if repeatOption != nil {
+                if let repeatValue {
+                    while repeatDate < .now {
+                        do {
+                            if repeatValue.hasPrefix("T") {
+                                repeatDate = try nextSucRepeatStartDate(curRepeatStart: repeatDate)
+                            } else {
+                                repeatDate = try nextRepeatStartDate(curRepeatStart: repeatDate)
+                            }
+                        } catch {
+                            print("[Debug] \(error.localizedDescription) \(#fileID) \(#function)")
+                        }
+                    }
+
+                    var count = 1
+                    while count <= 30,
+                          repeatDate <= repeatEnd
+                    {
+                        let date = repeatDate
+                        Task {
+                            await AlarmHelper.createNotification(
+                                identifier: id,
+                                body: content,
+                                date: date
+                            )
+                        }
+
+                        do {
+                            if repeatValue.hasPrefix("T") {
+                                repeatDate = try nextSucRepeatStartDate(curRepeatStart: repeatDate)
+                            } else {
+                                repeatDate = try nextRepeatStartDate(curRepeatStart: repeatDate)
+                            }
+                            count += 1
+                        } catch {
+                            print("[Debug] \(error.localizedDescription) \(#fileID) \(#function)")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // MARK: - extension
@@ -89,7 +183,7 @@ extension Schedule {
     }
 }
 
-extension Schedule: Productivity, Equatable {
+extension Schedule: Event, Equatable {
     static func == (lhs: Schedule, rhs: Schedule) -> Bool {
         lhs.id == rhs.id && lhs.repeatStart == rhs.repeatStart
     }
