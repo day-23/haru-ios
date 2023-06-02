@@ -12,7 +12,7 @@ struct Category: Identifiable, Codable {
     private(set) var content: String
     private(set) var color: String?
 //    private(set) var categoryOrder: Int?
-    private(set) var isSelected: Bool
+    var isSelected: Bool
 
     // MARK: - Dates
 

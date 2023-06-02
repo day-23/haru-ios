@@ -89,6 +89,7 @@ final class ScheduleService {
             struct Data: Codable {
                 let schedules: [Schedule]
                 let todos: [Todo]
+                let holidays: [Holiday]
             }
 
             struct Pagination: Codable {
@@ -121,7 +122,16 @@ final class ScheduleService {
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
-                completion(.success((response.data.schedules, response.data.todos)))
+                completion(
+                    .success(
+                        (
+                            response.data.schedules + response.data.holidays.map { holiday in
+                                Schedule.holidayToSchedule(holiday: holiday)
+                            },
+                            response.data.todos
+                        )
+                    )
+                )
             case let .failure(error):
                 completion(.failure(error))
             }

@@ -35,6 +35,8 @@ struct FeedListView: View {
                             }
                         Spacer()
                     }
+                } else {
+                    Text("게시물이 없습니다")
                 }
             }
             .padding(.top, 14)

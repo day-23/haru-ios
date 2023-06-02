@@ -64,27 +64,34 @@ struct CalendarOptionView: View {
                                             Color(0x191919) : .gray2)
                             }
                             .onTapGesture {
+                                if index == 0 {
+                                    calendarVM.isUnknownCategorySelected.toggle()
+                                } else if index == calendarVM.categoryList.count - 1 {
+                                    calendarVM.isHolidayCategorySelected.toggle()
+                                }
                                 calendarVM.categoryList[index].toggleIsSelected()
                             }
                             .foregroundColor(calendarVM.allCategoryOff ? .gray2 : .none)
                             
                             Spacer()
                             
-                            NavigationLink {
-                                CategoryFormView(
-                                    content: calendarVM.categoryList[index].content,
-                                    color: Color(calendarVM.categoryList[index].color),
-                                    selectedIdx: getSelectedIdx(index: index),
-                                    calendarVM: calendarVM,
-                                    mode: .edit,
-                                    categoryId: calendarVM.categoryList[index].id
-                                )
-                            } label: {
-                                Image("edit-pencil")
-                                    .renderingMode(.template)
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
-                                    .foregroundColor(Color(0x646464))
+                            if index != 0, index != calendarVM.categoryList.count - 1 {
+                                NavigationLink {
+                                    CategoryFormView(
+                                        content: calendarVM.categoryList[index].content,
+                                        color: Color(calendarVM.categoryList[index].color),
+                                        selectedIdx: getSelectedIdx(index: index),
+                                        calendarVM: calendarVM,
+                                        mode: .edit,
+                                        categoryId: calendarVM.categoryList[index].id
+                                    )
+                                } label: {
+                                    Image("edit-pencil")
+                                        .renderingMode(.template)
+                                        .resizable()
+                                        .frame(width: 28, height: 28)
+                                        .foregroundColor(Color(0x646464))
+                                }
                             }
                         }
                         .padding(.init(top: 0, leading: 20, bottom: 5, trailing: 30))

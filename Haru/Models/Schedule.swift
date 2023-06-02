@@ -191,19 +191,19 @@ extension Schedule: Event, Equatable {
 
 extension Schedule {
     static func createRepeatSchedule(
-        schedule: Schedule,
+        schedule: Schedule, // 원본 스케줄
         repeatStart: Date,
         repeatEnd: Date,
         prevRepeatEnd: Date? = nil,
         nextRepeatStart: Date? = nil
     ) -> Schedule {
-        var tmpPrevRepeatEnd: Date?
+        var realPrevRepeatEnd: Date?
 
         if schedule.repeatOption != nil,
            let repeatValue = schedule.repeatValue
         {
             if repeatValue.hasPrefix("T") {
-                tmpPrevRepeatEnd = prevRepeatEnd?.addingTimeInterval(
+                realPrevRepeatEnd = prevRepeatEnd?.addingTimeInterval(
                     TimeInterval(
                         Double(
                             repeatValue.split(separator: "T")[0]
@@ -211,7 +211,7 @@ extension Schedule {
                     )
                 )
             } else {
-                tmpPrevRepeatEnd = schedule.repeatEnd
+                realPrevRepeatEnd = prevRepeatEnd
             }
         }
 
@@ -229,7 +229,7 @@ extension Schedule {
             createdAt: schedule.createdAt,
             realRepeatStart: schedule.repeatStart,
             realRepeatEnd: schedule.repeatEnd,
-            prevRepeatEnd: tmpPrevRepeatEnd,
+            prevRepeatEnd: realPrevRepeatEnd,
             nextRepeatStart: nextRepeatStart
         )
     }
@@ -423,5 +423,21 @@ extension Schedule {
         default:
             throw RepeatError.invalid
         }
+    }
+}
+
+extension Schedule {
+    static func holidayToSchedule(holiday: Holiday) -> Schedule {
+        Schedule(
+            id: String(holiday.id),
+            content: holiday.content,
+            memo: "",
+            isAllDay: true,
+            repeatStart: holiday.repeatStart,
+            repeatEnd: holiday.repeatEnd,
+            category: Global.shared.holidayCategory,
+            alarms: [],
+            createdAt: holiday.repeatStart
+        )
     }
 }

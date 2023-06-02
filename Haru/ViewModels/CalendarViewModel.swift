@@ -43,6 +43,18 @@ final class CalendarViewModel: ObservableObject {
     var startIndex: Int = 0
     var lastIndex: Int = 0
     
+    // MARK: - 카테고리
+
+    @Published var isUnknownCategorySelected: Bool = true
+    @Published var isHolidayCategorySelected: Bool = true
+    
+    var unknownCategory = Category(
+        id: UUID().uuidString,
+        content: "미분류",
+        isSelected: true
+    )
+    var holidayCategory = Global.shared.holidayCategory
+    
     @Published var categoryList: [Category] = []
     
     @Published var allCategoryOff: Bool = false // 카테고리 달력에서 안보이게 하기
@@ -97,7 +109,6 @@ final class CalendarViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 var beforeRepeat = success
-                // FIXME: 반복해야할 스케줄 (나중에는 할일도 넣어줄 수 있게 로직 변경 필요)
                 var repeatScheduleList = [Schedule]()
                 var repeatTodoList = [Todo]()
                 var idx = 0
@@ -192,7 +203,9 @@ final class CalendarViewModel: ObservableObject {
         categoryService.fetchCategoryList { result in
             switch result {
             case .success(let success):
-                self.categoryList = success
+                self.unknownCategory.isSelected = self.isUnknownCategorySelected
+                self.holidayCategory.isSelected = self.isHolidayCategorySelected
+                self.categoryList = [self.unknownCategory] + success + [self.holidayCategory]
             case .failure(let failure):
                 print("[Debug] \(failure)")
             }
@@ -635,17 +648,21 @@ final class CalendarViewModel: ObservableObject {
 
         for schedule in scheduleList {
             // 카테고리 필터링
-            if schedule.category == nil || schedule.category!.isSelected {
-                for (week, dates) in splitDateList.enumerated() {
-                    // 구간 필터링
-                    if schedule.repeatEnd < dates[0] {
-                        break
-                    }
-                    if schedule.repeatStart >= dates[1] {
-                        continue
-                    }
-                    weeksOfScheduleList[week].append(schedule)
+            if schedule.category == nil, !isUnknownCategorySelected { continue }
+            if schedule.category == Global.shared.holidayCategory, !isHolidayCategorySelected { continue }
+            if let category = schedule.category, !category.isSelected {
+                continue
+            }
+            
+            for (week, dates) in splitDateList.enumerated() {
+                // 구간 필터링
+                if schedule.repeatEnd < dates[0] {
+                    break
                 }
+                if schedule.repeatStart >= dates[1] {
+                    continue
+                }
+                weeksOfScheduleList[week].append(schedule)
             }
         }
 
@@ -742,7 +759,7 @@ final class CalendarViewModel: ObservableObject {
         case "매주":
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
         case "격주":
-            return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
+            return repeatEverySecondWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매달":
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         case "매년":
@@ -786,11 +803,20 @@ final class CalendarViewModel: ObservableObject {
         var prevRepeatEnd: Date? = startDate
         var nextRepeatStart: Date? = startDate
         for date in stride(from: startDate, through: endDate, by: dayDurationInSeconds) {
+            // dateComponents에는 달력에 보여질 일정 끝나는 일과 시간
             dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
             dateComponents.hour = schedule.repeatEnd.hour
             dateComponents.minute = schedule.repeatEnd.minute
             dateComponents.second = schedule.repeatEnd.second
-
+            
+            var prevDateComp = dateComponents
+            prevDateComp.day! -= 1
+            if let prevRepEnd = calendar.date(from: prevDateComp) {
+                prevRepeatEnd = prevRepEnd
+            } else {
+                print("[Debug] 날짜 계산에 이상이 있습니다. \(#function) \(#file)")
+            }
+            
             var nextDateComp = dateComponents
             nextDateComp.day! += 1
             nextDateComp.hour = schedule.repeatStart.hour
@@ -798,6 +824,8 @@ final class CalendarViewModel: ObservableObject {
             nextDateComp.second = schedule.repeatStart.second
             if let nextRepStart = calendar.date(from: nextDateComp) {
                 nextRepeatStart = nextRepStart
+            } else {
+                print("[Debug] 날짜 계산에 이상이 있습니다. \(#function) \(#file)")
             }
             
             result.append(
@@ -809,8 +837,6 @@ final class CalendarViewModel: ObservableObject {
                     nextRepeatStart: nextRepeatStart
                 )
             )
-            
-            prevRepeatEnd = calendar.date(from: dateComponents)
         }
         return result
     }
@@ -833,12 +859,12 @@ final class CalendarViewModel: ObservableObject {
             }
         }
         
-        if weekTerm == 2, startDate.month != schedule.repeatStart.month || startDate.day != schedule.repeatStart.day {
-            let diff = CalendarHelper.getDiffWeeks(date1: schedule.repeatStart, date2: startDate)
-            if diff % 2 == 0 {
-                startDate = startDate.addingTimeInterval(TimeInterval(day * 7))
-            }
-        }
+//        if weekTerm == 2, startDate.month != schedule.repeatStart.month || startDate.day != schedule.repeatStart.day {
+//            let diff = CalendarHelper.getDiffWeeks(date1: schedule.repeatStart, date2: startDate)
+//            if diff % 2 == 0 {
+//                startDate = startDate.addingTimeInterval(TimeInterval(day * 7))
+//            }
+//        }
         
         // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
         for _ in 0 ... 5 {
@@ -937,6 +963,70 @@ final class CalendarViewModel: ObservableObject {
             }
             if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
                 startDate = nextStartDate
+            }
+        }
+        
+        return result
+    }
+    
+    func repeatEverySecondWeek(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
+        var result = [Schedule]()
+        
+        guard let repeatValue = schedule.repeatValue else {
+            print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
+            return result
+        }
+        
+        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        
+        let calendar = Calendar.current
+        var dateComponents: DateComponents
+        let day = 60 * 60 * 24
+        
+        dateComponents = calendar.dateComponents([.year, .month, .day], from: schedule.repeatStart)
+        dateComponents.hour = schedule.repeatEnd.hour
+        dateComponents.minute = schedule.repeatEnd.minute
+        dateComponents.second = schedule.repeatEnd.second
+        
+        var curRepStartDate: Date = schedule.repeatStart
+        guard var curRepEndDate = calendar.date(from: dateComponents) else {
+            return result
+        }
+        
+        var prevRepeatEnd = Date()
+        var nextRepeatStart = Date()
+        
+        var resultSchedule = schedule
+        
+        while curRepStartDate <= endDate {
+            do {
+                prevRepeatEnd = try resultSchedule.prevRepeatEndDate(curRepeatEnd: curRepEndDate)
+            } catch {
+                print("[Debug] prevRepeatEndDate에 이상이 있습니다. \(#function) \(#file)")
+            }
+            
+            do {
+                nextRepeatStart = try resultSchedule.nextRepeatStartDate(curRepeatStart: curRepStartDate)
+            } catch {
+                print("[Debug] nextRepeatStartDate에 이상이 있습니다. \(#function) \(#file)")
+            }
+            
+            result.append(
+                Schedule.createRepeatSchedule(
+                    schedule: resultSchedule,
+                    repeatStart: curRepStartDate,
+                    repeatEnd: curRepEndDate,
+                    prevRepeatEnd: prevRepeatEnd,
+                    nextRepeatStart: nextRepeatStart
+                )
+            )
+            
+            curRepStartDate = nextRepeatStart
+            
+            do {
+                curRepEndDate = try resultSchedule.nextRepeatStartDate(curRepeatStart: curRepEndDate)
+            } catch {
+                print("[Debug] nextRepeatStartDate에 이상이 있습니다. \(#function) \(#file)")
             }
         }
         
@@ -1443,10 +1533,12 @@ final class CalendarViewModel: ObservableObject {
     func repeatEveryWeek(firstDate: Date, lastDate: Date, todo: Todo, weekTerm: Int) -> [Todo] {
         var result = [Todo]()
         
-        guard let todoEndDate = todo.endDate else {
+        guard var todoEndDate = todo.endDate else {
             print("[Error] 반복 Todo는 endDate가 반드시 필요합니다. \(#fileID) \(#function)")
             return result
         }
+        
+        let realRepeatStart = todoEndDate
         
         guard let todoRepeatValue = todo.repeatValue else {
             print("[Error] 반복 Todo는 repeatValue가 반드시 필요합니다. \(#fileID) \(#function)")
@@ -1469,33 +1561,53 @@ final class CalendarViewModel: ObservableObject {
         
         let repeatValue = todoRepeatValue.map { $0 == "1" ? 1 : 0 }
         
-        // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
-        for _ in 0 ... 5 {
-            for idx in repeatValue.indices {
-                if repeatValue[(idx + offset) % 7] == 1 {
-                    guard let curEndDate = CalendarHelper.getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: calendar.startOfDay(for: startDate)) else {
-                        print("[Error] getClosestIdxDate 함수 에러 \(#fileID) \(#function)")
-                        continue
+        if weekTerm == 1 {
+            // 최대 6개의 주가 있을 수 있으니 6번 반복 (추후에 더 좋게 구현 할 것)
+            for _ in 0 ... 5 {
+                for idx in repeatValue.indices {
+                    if repeatValue[(idx + offset) % 7] == 1 {
+                        guard let curEndDate = CalendarHelper.getClosestIdxDate(idx: (idx + offset) % 7 + 1, curDate: calendar.startOfDay(for: startDate)) else {
+                            print("[Error] getClosestIdxDate 함수 에러 \(#fileID) \(#function)")
+                            continue
+                        }
+                        
+                        if curEndDate > endDate {
+                            break
+                        }
+                        
+                        dateComponents = calendar.dateComponents([.year, .month, .day], from: curEndDate)
+                        dateComponents.hour = todoEndDate.hour
+                        dateComponents.minute = todoEndDate.minute
+                        dateComponents.second = todoEndDate.second
+                        guard let curEndDate = calendar.date(from: dateComponents) else {
+                            print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
+                            continue
+                        }
+                        
+                        result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
                     }
-                    
-                    if curEndDate > endDate {
-                        break
-                    }
-                    
-                    dateComponents = calendar.dateComponents([.year, .month, .day], from: curEndDate)
-                    dateComponents.hour = todoEndDate.hour
-                    dateComponents.minute = todoEndDate.minute
-                    dateComponents.second = todoEndDate.second
-                    guard let curEndDate = calendar.date(from: dateComponents) else {
-                        print("[Error] todoEndDate의 hour: \(todoEndDate.hour) \(todoEndDate.minute) \(#fileID) \(#function)")
-                        continue
-                    }
-                    
-                    result.append(Todo.createRepeatTodo(todo: todo, endDate: curEndDate))
+                }
+                if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
+                    startDate = nextStartDate
                 }
             }
-            if let nextStartDate = calendar.date(byAdding: .weekOfYear, value: weekTerm, to: startDate) {
-                startDate = nextStartDate
+        } else {
+            var todo = todo
+            result.append(Todo.createRepeatTodo(todo: todo, endDate: todoEndDate, realRepeatStart: realRepeatStart))
+            while todoEndDate <= endDate {
+                do {
+                    guard let nextEndDate = try todo.nextEndDate() else {
+                        return result
+                    }
+                    
+                    todo.endDate = nextEndDate
+                    todoEndDate = nextEndDate
+                    
+                } catch {
+                    print("[Debug] nextEndDate 함수가 잘 못되었습니다. \(#function) \(#file)")
+                }
+                
+                result.append(Todo.createRepeatTodo(todo: todo, endDate: todoEndDate, realRepeatStart: realRepeatStart))
             }
         }
         

@@ -127,10 +127,6 @@ struct ProfileInfoView: View {
                     Text("\(userProfileVM.user.friendCount)")
                         .font(.pretendard(size: 20, weight: .bold))
                     HStack(alignment: .lastTextBaseline) {
-                        // TODO: 친구 신청이 있는 경우만 나오게 하기
-                        Circle()
-                            .frame(width: 6, height: 6)
-                            .foregroundColor(Color(0x1DAFFF))
                         Text("친구")
                             .font(.pretendard(size: 14, weight: .regular))
                     }

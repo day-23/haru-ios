@@ -26,9 +26,7 @@ final class UserProfileViewModel: ObservableObject {
     @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
     @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
 
-    var friendCount: Int {
-        user.friendCount
-    }
+    var friendCount: Int
 
     var reqFriendCount: Int = 0 // 현재 보고 있는 사용자의 친구 요청 수
 
@@ -49,18 +47,8 @@ final class UserProfileViewModel: ObservableObject {
     var friendListTotalPage: Int = -1
     var reqFriListTotalPage: Int = -1
 
-    var lastCreatedAt: Date? {
-//        switch option {
-//        case .friendList:
-//            return friendList
-//        case .requestFriendList:
-//            <#code#>
-//        }
-        nil
-    }
-
-    init(userId: String) {
-        self.user = User(
+    init(userId: String, friendCount: Int? = nil) {
+        user = User(
             id: userId,
             name: "",
             introduction: "",
@@ -70,13 +58,14 @@ final class UserProfileViewModel: ObservableObject {
             isPublicAccount: false
         )
         self.userId = userId
+        self.friendCount = friendCount ?? 0
     }
 
     // MARK: - 페이지네이션
 
     func initLoad() {
         fetchFriend(userId: userId, page: page)
-//        fetchRequestFriend(userId: userId, page: page)
+        fetchRequestFriend(userId: userId, page: page)
     }
 
     func loadMoreFriendList() {
@@ -107,14 +96,17 @@ final class UserProfileViewModel: ObservableObject {
 
     func refreshFriendList() {
         clear(option: option)
+        loadMoreFriendList()
     }
 
     func clear(option: FriendOption) {
         switch option {
         case .friendList:
             friendList.removeAll()
+            friProfileImageList.removeAll()
         case .requestFriendList:
             requestFriendList.removeAll()
+            reqFriProImageList.removeAll()
         }
     }
 
@@ -230,6 +222,7 @@ final class UserProfileViewModel: ObservableObject {
 
                 self.friendList.append(contentsOf: success.0)
                 let pageInfo = success.1
+                self.friendCount = pageInfo.totalItems
                 if self.friendListTotalPage == -1 {
                     self.friendListTotalPage = pageInfo.totalPages
                 }
