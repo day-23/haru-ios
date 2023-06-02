@@ -490,9 +490,6 @@ final class TimeTableViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success(let todoList):
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyyMMdd"
-
                 self.todoListByDate = Array(repeating: [], count: 7)
                 for todo in todoList {
                     guard var endDate = todo.endDate else {
@@ -504,11 +501,11 @@ final class TimeTableViewModel: ObservableObject {
 
                     if todo.repeatOption != nil {
                         if let first = self.thisWeek.first,
-                           let last = self.thisWeek.last
+                           let last = self.thisWeek.last?.addingTimeInterval(TimeInterval(60 * 60 * 24 - 1))
                         {
                             var at: RepeatAt = .front
                             var modified = todo
-                            while dateFormatter.string(from: endDate) < dateFormatter.string(from: first) {
+                            while endDate < first {
                                 do {
                                     guard let next = try modified.nextEndDate() else {
                                         // 반복이 끝난 할 일
@@ -532,7 +529,7 @@ final class TimeTableViewModel: ObservableObject {
                             }
 
                             // 데이터 추가
-                            while dateFormatter.string(from: endDate) <= dateFormatter.string(from: last) {
+                            while endDate <= last {
                                 guard let index = endDate.indexOfWeek() else {
                                     continue
                                 }
@@ -600,7 +597,6 @@ final class TimeTableViewModel: ObservableObject {
         }
         scheduleList = scheduleList.filter { $0.id != draggingSchedule.id }
 
-        // TODO: - front == back 처리 필요
         if at == .none {
             scheduleService.updateSchedule(
                 scheduleId: draggingSchedule.data.id,
