@@ -380,6 +380,17 @@ final class PostViewModel: ObservableObject {
         }
     }
 
+    func reportPost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        postService.reportPost(postId: postId) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
     // MARK: - 게시물 이외
 
     func fetchTargetHashTags() {

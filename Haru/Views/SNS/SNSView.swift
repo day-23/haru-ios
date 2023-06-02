@@ -24,6 +24,7 @@ struct SNSView: View {
 
     @State var deletePost: Bool = false
     @State var hidePost: Bool = false
+    @State var reportPost: Bool = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -131,16 +132,37 @@ struct SNSView: View {
                                 }
                             }
                         } else {
-                            Button {} label: {
+                            Button {
+                                reportPost = true
+                            } label: {
                                 Text("이 게시글 신고하기")
                                     .foregroundColor(Color(0xF71E58))
                                     .font(.pretendard(size: 20, weight: .regular))
+                            }
+                            .confirmationDialog(
+                                "게시글을 신고할까요?",
+                                isPresented: $deletePost,
+                                titleVisibility: .visible
+                            ) {
+                                Button("신고하기", role: .destructive) {
+                                    postVM.reportPost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                        switch result {
+                                        case .success:
+                                            postVM.refreshPosts()
+                                            postOptModalVis.0 = false
+                                            // TODO: 토스트 메시지로 신고가 접수 되었다고 알리기
+                                            print("신고가 잘 접수 되었습니다.")
+                                        case .failure(let failure):
+                                            print("[Debug] \(failure) \(#file) \(#function)")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                     .padding(.top, 40)
                 }
-                .opacity(deletePost || hidePost ? 0 : 1)
+                .opacity(deletePost || hidePost || reportPost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
             }
@@ -201,6 +223,12 @@ struct SNSView: View {
         .onAppear {
             toggleIsClicked = false
         }
+        .onChange(of: isActiveForDrawing) { _ in
+            postVM.refreshPosts()
+        }
+        .onChange(of: isActiveForWriting) { _ in
+            postVM.refreshPosts()
+        }
     }
 
     func showAddMenu() {
@@ -232,7 +260,6 @@ struct SNSView: View {
                         .padding(.vertical, 5)
                         .padding(.horizontal, 10)
                         .background(
-                            //                                            ? LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
                             LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
                         )
                         .cornerRadius(10)

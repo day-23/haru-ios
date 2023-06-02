@@ -159,6 +159,7 @@ struct PostFormPreView: View {
                             switch result {
                             case .success:
                                 shouldPopToRootView = false
+                                
                             case .failure(let failure):
                                 waitingResponse = false
                                 print("[Debug] \(failure) \(#fileID) \(#function)")
