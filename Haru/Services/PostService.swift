@@ -407,6 +407,28 @@ final class PostService {
             }
         }
     }
+    
+    func hidePost(
+        postId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/hide",
+            method: .post,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 
     // MARK: - 게시물 부수적인 기능
 

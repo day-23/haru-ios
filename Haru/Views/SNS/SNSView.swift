@@ -23,6 +23,7 @@ struct SNSView: View {
     @State var showAddButton: Bool = true
 
     @State var deletePost: Bool = false
+    @State var hidePost: Bool = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -66,10 +67,31 @@ struct SNSView: View {
                                     .font(.pretendard(size: 20, weight: .regular))
                             }
                         } else {
-                            Button {} label: {
+                            Button {
+                                withAnimation {
+                                    hidePost = true
+                                }
+                            } label: {
                                 Text("이 게시글 숨기기")
                                     .foregroundColor(Color(0x646464))
                                     .font(.pretendard(size: 20, weight: .regular))
+                            }
+                            .confirmationDialog(
+                                "\(postOptModalVis.1?.user.name ?? "unknown")님의 게시글을 숨길까요? 이 작업은 복원할 수 없습니다.",
+                                isPresented: $hidePost,
+                                titleVisibility: .visible
+                            ) {
+                                Button("숨기기", role: .destructive) {
+                                    postVM.hidePost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                        switch result {
+                                        case .success:
+                                            postVM.refreshPosts()
+                                            postOptModalVis.0 = false
+                                        case .failure(let failure):
+                                            print("[Debug] \(failure) \(#file) \(#function)")
+                                        }
+                                    }
+                                }
                             }
                         }
                         Divider()
@@ -118,7 +140,7 @@ struct SNSView: View {
                     }
                     .padding(.top, 40)
                 }
-                .opacity(deletePost ? 0 : 1)
+                .opacity(deletePost || hidePost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
             }

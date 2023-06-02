@@ -356,6 +356,30 @@ final class PostViewModel: ObservableObject {
         }
     }
 
+    // MARK: - 게시물 수정, 삭제, 숨기기
+
+    func deletePost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        postService.deletePost(postId: postId) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    func hidePost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        postService.hidePost(postId: postId) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
     // MARK: - 게시물 이외
 
     func fetchTargetHashTags() {
@@ -388,17 +412,6 @@ final class PostViewModel: ObservableObject {
                 }
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
-            }
-        }
-    }
-
-    func deletePost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        postService.deletePost(postId: postId) { result in
-            switch result {
-            case .success:
-                completion(.success(true))
-            case .failure(let failure):
-                completion(.failure(failure))
             }
         }
     }
