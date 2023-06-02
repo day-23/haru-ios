@@ -75,9 +75,9 @@ struct Schedule: Identifiable, Codable {
         self.prevRepeatEnd = try container.decodeIfPresent(Date.self, forKey: .prevRepeatEnd)
         self.nextRepeatStart = try container.decodeIfPresent(Date.self, forKey: .nextRepeatStart)
 
-        let id = self.id
-        let content = self.content
-        let repeatStart = self.repeatStart
+        let id = id
+        let content = content
+        let repeatStart = repeatStart
         if !alarms.isEmpty {
             Task {
                 await AlarmHelper.createNotification(
