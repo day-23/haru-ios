@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct PostFormPreView: View {
     @Environment(\.dismiss) var dismissAction
@@ -17,9 +18,11 @@ struct PostFormPreView: View {
     // For pop up to root
     @Binding var shouldPopToRootView: Bool
 
+    @State var selectedTemplateIdx: Int = 0
+
+    let deviceSize = UIScreen.main.bounds.size
     var body: some View {
-        let deviceSize = UIScreen.main.bounds.size
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
             Group {
                 Label {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -61,7 +64,7 @@ struct PostFormPreView: View {
             Spacer()
                 .frame(height: 65)
 
-            if !postFormVM.imageList.isEmpty {
+            if postFormVM.postOption == .drawing {
                 TabView {
                     ForEach(postFormVM.imageList.indices, id: \.self) { idx in
                         Image(uiImage: postFormVM.imageList[idx])
@@ -73,52 +76,77 @@ struct PostFormPreView: View {
                 .indexViewStyle(.page(backgroundDisplayMode: .always))
                 .frame(width: deviceSize.width, height: deviceSize.width)
             } else {
-                ZStack(alignment: .topLeading) {
-                    Rectangle()
-                        .fill(Gradient(colors: [.gradientStart2, .gradientEnd2]))
-                        .frame(width: deviceSize.width, height: deviceSize.width)
+                ZStack {
+                    if postFormVM.templateList.isEmpty {
+                        Rectangle()
+                            .fill(Color(0xfdfdfd))
+                            .frame(width: deviceSize.width, height: deviceSize.width)
+                    } else {
+                        if let uiImage = postFormVM.templateList[selectedTemplateIdx]?.uiImage {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .frame(width: deviceSize.width, height: deviceSize.width)
+                        } else {
+                            ProgressView()
+                                .frame(width: deviceSize.width, height: deviceSize.width)
+                        }
+                    }
 
                     Text(postFormVM.content)
                         .lineLimit(nil)
-                        .font(.pretendard(size: 14, weight: .regular))
+                        .font(.pretendard(size: 24, weight: .bold))
                         .foregroundColor(Color(0x646464))
                         .padding(.all, 20)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
 
-            Spacer()
-                .frame(height: 20)
-
-            if !postFormVM.imageList.isEmpty {
+            if postFormVM.postOption == .drawing {
                 Text(postFormVM.content)
                     .lineLimit(nil)
                     .font(.pretendard(size: 14, weight: .regular))
                     .foregroundColor(Color(0x646464))
                     .padding(.horizontal, 20)
+                    .padding(.top, 20)
+                Spacer()
+            } else {
+                Spacer()
+                    .overlay {
+                        bottomTemplateView()
+                    }
             }
         }
-        .padding(.top, 12)
-        .customNavigationBar {
-            Button {
-                dismissAction.callAsFunction()
-            } label: {
-                Image("cancel")
-                    .renderingMode(.template)
+        .padding(.top, 20)
+        .navigationBarBackButtonHidden()
+        .edgesIgnoringSafeArea(.bottom)
+        .ignoresSafeArea(.keyboard)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismissAction.callAsFunction()
+                } label: {
+                    Image("cancel")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x191919))
+                }
+            }
+
+            ToolbarItem(placement: .principal) {
+                Text("게시하기")
+                    .font(.pretendard(size: 20, weight: .bold))
                     .foregroundColor(Color(0x191919))
             }
-        } rightView: {
-            HStack(spacing: 10) {
+
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     postFormVM.createPost {
                         shouldPopToRootView = false
                     }
                 } label: {
-                    Text("게시하기")
-                        .font(.pretendard(size: 20, weight: .bold))
+                    Image("confirm")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x191919))
                 }
-                Image("confirm")
-                    .renderingMode(.template)
-                    .foregroundColor(Color(0x191919))
             }
         }
     }
@@ -140,6 +168,84 @@ struct PostFormPreView: View {
                 postFormVM.tagList.append(Tag(id: UUID().uuidString, content: trimTag))
                 postFormVM.tag = ""
             }
+        }
+    }
+
+    @ViewBuilder
+    func bottomTemplateView() -> some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("템플릿")
+                    .font(.pretendard(size: 20, weight: .bold))
+                    .foregroundColor(Color(0x191919))
+
+                Spacer()
+            }
+            .padding(.top, 27)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 20)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 7) {
+                    ForEach(postFormVM.templateIdList.indices, id: \.self) { idx in
+                        ZStack(alignment: .topTrailing) {
+                            if let uiImage = postFormVM.templateList[idx]?.uiImage {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .frame(width: 74, height: 74)
+                                    .onTapGesture {
+                                        selectedTemplateIdx = idx
+                                    }
+                            } else {
+                                ProgressView()
+                                    .frame(width: 74, height: 74)
+                            }
+
+                            Group {
+                                Circle()
+                                    .fill(idx == selectedTemplateIdx ? .blue : .white.opacity(0.25))
+
+                                Circle()
+                                    .stroke(.white, lineWidth: 1)
+                            }
+                            .frame(width: 20, height: 20)
+                            .padding(.all, 4)
+                        }
+                        .clipped()
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+
+            HStack(spacing: 10) {
+                Image("today-todo")
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 28, height: 28)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 2)
+                    .background(Color(0x191919))
+                    .cornerRadius(8)
+                    .foregroundColor(Color(0xfdfdfd))
+
+                Image("today-todo")
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 28, height: 28)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 2)
+                    .background(Color(0xfdfdfd))
+                    .cornerRadius(8)
+                    .foregroundColor(Color(0x191919))
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 10)
+        }
+        .frame(width: deviceSize.width, height: deviceSize.height * 0.3)
+        .background {
+            Rectangle()
+                .fill(LinearGradient(colors: [.gradientStart2, .gradientEnd2], startPoint: .leading, endPoint: .trailing))
+                .cornerRadius(20, corners: [.topLeft, .topRight])
         }
     }
 }

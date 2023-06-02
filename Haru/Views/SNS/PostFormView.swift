@@ -11,9 +11,10 @@ import SwiftUI
 struct PostFormView: View {
     @Environment(\.dismiss) var dismissAction
 
-    @StateObject var postFormVM: PostFormViewModel = .init()
+    @StateObject var postFormVM: PostFormViewModel
 
     @State var openPhoto: Bool
+    @State var cancelWriting: Bool = false
 
     @FocusState private var isFocused: Bool
 
@@ -28,6 +29,7 @@ struct PostFormView: View {
                 TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
                     .lineLimit(nil)
                     .frame(height: 400, alignment: .top)
+                    .font(.pretendard(size: 24, weight: .regular))
                     .background(Color(0xfdfdfd))
                     .focused($isFocused)
                     .onTapGesture {
@@ -55,16 +57,20 @@ struct PostFormView: View {
             // .init() Means Exact Size of the Image
             let manager = PHCachingImageManager.default()
             let options = PHImageRequestOptions()
+            var result: [UIImage] = []
             options.isSynchronous = true
-            postFormVM.imageList = []
             DispatchQueue.global(qos: .userInteractive).async {
                 assets.forEach { asset in
-                    manager.requestImage(for: asset, targetSize: .init(), contentMode: .default, options: options) { image, _ in
+                    manager.requestImage(for: asset, targetSize: .init(), contentMode: .aspectFit, options: options) { image, _ in
                         guard let image else { return }
                         DispatchQueue.main.async {
-                            postFormVM.imageList.append(image)
+                            result.append(image)
                         }
                     }
+                }
+
+                DispatchQueue.main.async {
+                    postFormVM.imageList = result
                 }
             }
         }
@@ -72,11 +78,20 @@ struct PostFormView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
-                    dismissAction.callAsFunction()
+                    cancelWriting = true
                 } label: {
                     Image("cancel")
                         .renderingMode(.template)
                         .foregroundColor(Color(0x191919))
+                }
+                .confirmationDialog(
+                    "게시글 작성을 취소할까요? 작성 중인 내용은 삭제됩니다.",
+                    isPresented: $cancelWriting,
+                    titleVisibility: .visible
+                ) {
+                    Button("삭제하기", role: .destructive) {
+                        dismissAction.callAsFunction()
+                    }
                 }
             }
 
@@ -94,6 +109,7 @@ struct PostFormView: View {
                         .renderingMode(.template)
                         .foregroundColor(Color(0x191919))
                 }
+                .disabled(postAddMode == .drawing ? postFormVM.imageList.isEmpty : postFormVM.content == "")
             }
         }
     }

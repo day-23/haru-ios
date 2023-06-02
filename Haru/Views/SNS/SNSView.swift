@@ -102,6 +102,7 @@ struct SNSView: View {
                     if showDrowButton {
                         NavigationLink(
                             destination: PostFormView(
+                                postFormVM: PostFormViewModel(postOption: .drawing),
                                 openPhoto: true,
                                 rootIsActive: $isActiveForDrawing,
                                 postAddMode: .drawing
@@ -116,6 +117,7 @@ struct SNSView: View {
                     if showWriteButton {
                         NavigationLink(
                             destination: PostFormView(
+                                postFormVM: PostFormViewModel(postOption: .writing),
                                 openPhoto: false,
                                 rootIsActive: $isActiveForWriting,
                                 postAddMode: .writing

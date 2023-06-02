@@ -230,17 +230,12 @@ final class PostViewModel: ObservableObject {
                         self.fetchProfileImage(profileUrl: profileUrl)
                     }
                     // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
-                    if let templateUrl = post.templateUrl {
-                        self.postImageList[post.id] = Array(repeating: nil, count: 1)
-                        self.fetchPostImage(postId: post.id, postImageUrlList: [templateUrl])
-                    } else {
-                        self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                        self.fetchPostImage(
-                            postId: post.id,
-                            postImageUrlList: post.images.map { image in
-                                image.url
-                            })
-                    }
+                    self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
+                    self.fetchPostImage(
+                        postId: post.id,
+                        postImageUrlList: post.images.map { image in
+                            image.url
+                        })
                 }
 
                 self.postList.append(contentsOf: success.0)
@@ -270,17 +265,12 @@ final class PostViewModel: ObservableObject {
                         self.fetchProfileImage(profileUrl: profileUrl)
                     }
                     // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
-                    if let templateUrl = post.templateUrl {
-                        self.postImageList[post.id] = Array(repeating: nil, count: 1)
-                        self.fetchPostImage(postId: post.id, postImageUrlList: [templateUrl])
-                    } else {
-                        self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                        self.fetchPostImage(
-                            postId: post.id,
-                            postImageUrlList: post.images.map { image in
-                                image.url
-                            })
-                    }
+                    self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
+                    self.fetchPostImage(
+                        postId: post.id,
+                        postImageUrlList: post.images.map { image in
+                            image.url
+                        })
                 }
 
                 self.postList.append(contentsOf: success.0)

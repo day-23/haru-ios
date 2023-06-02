@@ -35,7 +35,8 @@ struct FeedListView: View {
                             }
                         Spacer()
                     }
-                } else {
+                }
+                if postVM.postList.isEmpty {
                     Text("게시물이 없습니다")
                 }
             }

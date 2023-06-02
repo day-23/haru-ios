@@ -48,22 +48,24 @@ final class ScheduleFormViewModel: ObservableObject {
     
     var isFieldEmpty: Bool {
         if isSelectedRepeat {
-            switch repeatOption {
-            case .everyDay:
-                if repeatDay.isEmpty {
-                    return true
-                }
-            case .everyWeek, .everySecondWeek:
-                if repeatWeek.filter(\.isClicked).isEmpty {
-                    return true
-                }
-            case .everyMonth:
-                if repeatMonth.filter(\.isClicked).isEmpty {
-                    return true
-                }
-            case .everyYear:
-                if repeatYear.filter(\.isClicked).isEmpty {
-                    return true
+            if !overDay {
+                switch repeatOption {
+                case .everyDay:
+                    if repeatDay.isEmpty {
+                        return true
+                    }
+                case .everyWeek, .everySecondWeek:
+                    if repeatWeek.filter(\.isClicked).isEmpty {
+                        return true
+                    }
+                case .everyMonth:
+                    if repeatMonth.filter(\.isClicked).isEmpty {
+                        return true
+                    }
+                case .everyYear:
+                    if repeatYear.filter(\.isClicked).isEmpty {
+                        return true
+                    }
                 }
             }
         }

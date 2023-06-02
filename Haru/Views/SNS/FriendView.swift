@@ -221,7 +221,7 @@ struct FriendView: View {
                     titleVisibility: .visible
                 ) {
                     Button("삭제하기", role: .destructive) {
-                        userProfileVM.deleteFreined(friendId: user.id) {
+                        userProfileVM.deleteFriend(friendId: user.id) {
                             userProfileVM.refreshFriendList()
                         }
                     }
@@ -371,7 +371,7 @@ struct FriendView: View {
                     titleVisibility: .visible
                 ) {
                     Button("삭제하기", role: .destructive) {
-                        userProfileVM.deleteFreined(friendId: user.id) {
+                        userProfileVM.deleteFriend(friendId: user.id) {
                             userProfileVM.refreshFriendList()
                         }
                     }
