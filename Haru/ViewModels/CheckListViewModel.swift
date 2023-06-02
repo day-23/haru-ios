@@ -107,8 +107,8 @@ final class CheckListViewModel: ObservableObject {
                 withAnimation {
                     self.tagList = tagList
                 }
-            case let .failure(error):
-                print("[Debug] \(error) \(#fileID) \(#function)")
+            case .failure:
+                break
             }
         }
     }

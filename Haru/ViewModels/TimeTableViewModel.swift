@@ -471,8 +471,8 @@ final class TimeTableViewModel: ObservableObject {
                 }
                 self.findUnion()
                 self.processScheduleListWithoutTime()
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
+            case .failure:
+                break
             }
         }
     }
@@ -579,8 +579,8 @@ final class TimeTableViewModel: ObservableObject {
                         )
                     }
                 }
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
+            case .failure:
+                break
             }
         }
     }
@@ -618,8 +618,8 @@ final class TimeTableViewModel: ObservableObject {
                     self.scheduleList.append(self.draggingSchedule!)
                     self.draggingSchedule = nil
                     self.findUnion()
-                case .failure(let failure):
-                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                case .failure:
+                    break
                 }
             }
         } else {
@@ -715,8 +715,8 @@ final class TimeTableViewModel: ObservableObject {
                 case .success:
                     self.draggingSchedule = nil
                     self.fetchScheduleList()
-                case .failure(let error):
-                    print("[Debug] \(error) \(#fileID) \(#function)")
+                case .failure:
+                    break
                 }
             }
         }
@@ -787,8 +787,8 @@ final class TimeTableViewModel: ObservableObject {
                                 return endDate1 < endDate2
                             }
                         }
-                    case .failure(let error):
-                        print("[Debug] \(error) \(#fileID) \(#function)")
+                    case .failure:
+                        break
                     }
                     self.draggingTodo = nil
                 }
@@ -820,8 +820,8 @@ final class TimeTableViewModel: ObservableObject {
                                 switch result {
                                 case .success:
                                     self.fetchTodoList()
-                                case .failure(let error):
-                                    print("[Debug] \(error) \(#fileID), \(#function)")
+                                case .failure:
+                                    break
                                 }
                             }
                         }
@@ -873,8 +873,8 @@ final class TimeTableViewModel: ObservableObject {
                     switch result {
                     case .success:
                         self.fetchTodoList()
-                    case .failure(let error):
-                        print("[Debug] \(error) \(#fileID), \(#function)")
+                    case .failure:
+                        break
                     }
                 }
             }

@@ -360,8 +360,6 @@ extension Todo {
                     throw RepeatError.invalid
                 }
             }
-        default:
-            throw RepeatError.invalid
         }
 
         guard let repeatEnd else {
@@ -573,8 +571,6 @@ extension Todo {
                     throw RepeatError.invalid
                 }
             }
-        default:
-            throw RepeatError.invalid
         }
 
         return prevEndDate

@@ -64,7 +64,7 @@ struct Request: Codable {
             try container.encode(self.repeatEnd, forKey: Request.Todo.CodingKeys.repeatEnd)
             try container.encode(self.tags, forKey: Request.Todo.CodingKeys.tags)
             try container.encode(self.subTodos, forKey: Request.Todo.CodingKeys.subTodos)
-            try container.encode(self.subTodosCompleted, forKey: Request.Todo.CodingKeys.subTodosCompleted)
+            try container.encodeIfPresent(self.subTodosCompleted, forKey: Request.Todo.CodingKeys.subTodosCompleted)
         }
     }
 

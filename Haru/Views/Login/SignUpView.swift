@@ -81,8 +81,8 @@ struct SignUpView: View {
                         switch result {
                         case .success(let response):
                             Global.shared.user = response
-                        case .failure(let error):
-                            print("[Debug] \(error) without Image \(#fileID) \(#function)")
+                        case .failure:
+                            break
                         }
                     }
                 }
