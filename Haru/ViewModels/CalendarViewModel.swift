@@ -754,15 +754,15 @@ final class CalendarViewModel: ObservableObject {
     // 하루치 일정의 반복 (repeatValue: 0,1)
     func singleRepeatSchedule(firstDate: Date, lastDate: Date, oriRepeatSch: Schedule) -> [Schedule] {
         switch oriRepeatSch.repeatOption {
-        case "매일":
+        case .everyDay:
             return repeatEveryDay(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
-        case "매주":
+        case .everyWeek:
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
-        case "격주":
+        case .everySecondWeek:
             return repeatEverySecondWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
-        case "매달":
+        case .everyMonth:
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
-        case "매년":
+        case .everyYear:
             return repeatEveryYear(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch)
         default:
             return [Schedule]()
@@ -777,13 +777,13 @@ final class CalendarViewModel: ObservableObject {
         }
         
         switch oriRepeatSch.repeatOption {
-        case "매주":
+        case .everyWeek:
             return sucRepeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 1)
-        case "격주":
+        case .everySecondWeek:
             return sucRepeatEveryWeek(firstDate: firstDate, lastDate: lastDate, schedule: oriRepeatSch, weekTerm: 2)
-        case "매달":
+        case .everyMonth:
             return sucRepeatEveryMonth(firstDate: firstDate, curDate: paramCurDate, lastDate: lastDate, schedule: oriRepeatSch)
-        case "매년":
+        case .everyYear:
             return sucRepeatEveryYear(firstDate: firstDate, curDate: paramCurDate, lastDate: lastDate, schedule: oriRepeatSch)
         default:
             return [Schedule]()
@@ -1534,15 +1534,15 @@ final class CalendarViewModel: ObservableObject {
     
     func singleRepeatTodo(firstDate: Date, lastDate: Date, oriRepeatTodo: Todo) -> [Todo] {
         switch oriRepeatTodo.repeatOption {
-        case "매일":
+        case .everyDay:
             return repeatEveryDay(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
-        case "매주":
+        case .everyWeek:
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo, weekTerm: 1)
-        case "격주":
+        case .everySecondWeek:
             return repeatEveryWeek(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo, weekTerm: 2)
-        case "매달":
+        case .everyMonth:
             return repeatEveryMonth(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
-        case "매년":
+        case .everyYear:
             return repeatEveryYear(firstDate: firstDate, lastDate: lastDate, todo: oriRepeatTodo)
         default:
             return [Todo]()

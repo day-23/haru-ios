@@ -283,7 +283,7 @@ final class TimeTableViewModel: ObservableObject {
                     at = .middle
                 }
 
-                if repeatOption == RepeatOption.everyMonth.rawValue,
+                if repeatOption == .everyMonth,
                    schedule.repeatStart.month != schedule.repeatEnd.month
                 {
                     var components: DateComponents = Calendar.current.dateComponents([.year, .month], from: schedule.repeatStart)
@@ -332,6 +332,25 @@ final class TimeTableViewModel: ObservableObject {
                         || schedule.repeatEnd > nextRepeatStart
                     {
                         at = .back
+                    }
+
+                    if repeatOption == .everyMonth,
+                       schedule.repeatStart.month != schedule.repeatEnd.month
+                    {
+                        var components: DateComponents = Calendar.current.dateComponents([.year, .month], from: schedule.repeatStart)
+                        guard let range = Calendar.current.range(of: .day, in: .month, for: schedule.repeatStart) else {
+                            return []
+                        }
+
+                        let upperBound = range.upperBound - 1
+                        components.day = upperBound
+                        components.hour = 23
+                        components.minute = 55
+
+                        guard let newer = Calendar.current.date(from: components) else {
+                            return []
+                        }
+                        schedule.repeatEnd = newer
                     }
                 }
             } else {
@@ -434,7 +453,7 @@ final class TimeTableViewModel: ObservableObject {
                                 }
                             } else {
                                 if let start = schedule.repeatStart.indexOfWeek() {
-                                    var newer = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
+                                    let newer = ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1)
                                     self.scheduleListWithoutTime[start].append(newer)
                                 }
                             }

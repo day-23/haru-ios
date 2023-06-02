@@ -25,7 +25,7 @@ struct Request: Codable {
         var endDate: Date?
         var isAllDay: Bool
         var alarms: [Date]
-        var repeatOption: String?
+        var repeatOption: RepeatOption?
         var repeatValue: String?
         var repeatEnd: Date?
         var tags: [String]
@@ -59,7 +59,7 @@ struct Request: Codable {
             try container.encode(self.endDate, forKey: Request.Todo.CodingKeys.endDate)
             try container.encode(self.isAllDay, forKey: Request.Todo.CodingKeys.isAllDay)
             try container.encode(self.alarms, forKey: Request.Todo.CodingKeys.alarms)
-            try container.encode(self.repeatOption, forKey: Request.Todo.CodingKeys.repeatOption)
+            try container.encode(self.repeatOption?.rawValue, forKey: Request.Todo.CodingKeys.repeatOption)
             try container.encode(self.repeatValue, forKey: Request.Todo.CodingKeys.repeatValue)
             try container.encode(self.repeatEnd, forKey: Request.Todo.CodingKeys.repeatEnd)
             try container.encode(self.tags, forKey: Request.Todo.CodingKeys.tags)
@@ -74,7 +74,7 @@ struct Request: Codable {
         var isAllDay: Bool
         var repeatStart: Date
         var repeatEnd: Date
-        var repeatOption: String?
+        var repeatOption: RepeatOption?
         var repeatValue: String?
         var categoryId: String?
         var alarms: [Date]
@@ -86,7 +86,7 @@ struct Request: Codable {
             try container.encode(self.isAllDay, forKey: Request.Schedule.CodingKeys.isAllDay)
             try container.encode(self.repeatStart, forKey: Request.Schedule.CodingKeys.repeatStart)
             try container.encode(self.repeatEnd, forKey: Request.Schedule.CodingKeys.repeatEnd)
-            try container.encode(self.repeatOption, forKey: Request.Schedule.CodingKeys.repeatOption)
+            try container.encode(self.repeatOption?.rawValue, forKey: Request.Schedule.CodingKeys.repeatOption)
             try container.encode(self.repeatValue, forKey: Request.Schedule.CodingKeys.repeatValue)
             try container.encode(self.categoryId, forKey: Request.Schedule.CodingKeys.categoryId)
             try container.encode(self.alarms, forKey: Request.Schedule.CodingKeys.alarms)

@@ -576,7 +576,7 @@ struct ScheduleFormView: View {
                                        message: nil,
                                        buttons: [editAfterButton, cancleButton])
                 }
-            } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption.rawValue ||
+            } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption ||
                 scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
                 if (scheduleFormVM.from == .calendar
