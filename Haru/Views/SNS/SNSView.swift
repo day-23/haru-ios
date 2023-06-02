@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SNSView: View {
+    @StateObject var postVM = PostViewModel(option: .main)
+
     @State var toggleIsClicked: Bool = false
 
     // For pop up to root
@@ -20,12 +22,14 @@ struct SNSView: View {
     @State var showWriteButton: Bool = false
     @State var showAddButton: Bool = true
 
+    @State var deletePost: Bool = false
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 HaruHeaderView()
 
-                FeedListView(postVM: PostViewModel(option: .main), postOptModalVis: $postOptModalVis, comeToRoot: true)
+                FeedListView(postVM: postVM, postOptModalVis: $postOptModalVis, comeToRoot: true)
             }
 
             if toggleIsClicked {
@@ -70,7 +74,11 @@ struct SNSView: View {
                         }
                         Divider()
                         if postOptModalVis.1?.user.id == Global.shared.user?.id {
-                            Button {} label: {
+                            Button {
+                                withAnimation {
+                                    deletePost = true
+                                }
+                            } label: {
                                 HStack {
                                     Text("게시글 삭제하기")
                                         .foregroundColor(Color(0xF71E58))
@@ -83,6 +91,23 @@ struct SNSView: View {
                                         .frame(width: 28, height: 28)
                                 }
                             }
+                            .confirmationDialog(
+                                "게시글을 삭제할까요? 이 작업은 복원할 수 없습니다.",
+                                isPresented: $deletePost,
+                                titleVisibility: .visible
+                            ) {
+                                Button("삭제하기", role: .destructive) {
+                                    postVM.deletePost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                        switch result {
+                                        case .success:
+                                            postVM.refreshPosts()
+                                            postOptModalVis.0 = false
+                                        case .failure(let failure):
+                                            print("[Debug] \(failure) \(#file) \(#function)")
+                                        }
+                                    }
+                                }
+                            }
                         } else {
                             Button {} label: {
                                 Text("이 게시글 신고하기")
@@ -93,6 +118,7 @@ struct SNSView: View {
                     }
                     .padding(.top, 40)
                 }
+                .opacity(deletePost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
             }

@@ -21,6 +21,8 @@ struct ProfileView: View {
     
     @State var blockFriend: Bool = false
     
+    @State var deletePost: Bool = false
+    
     var myProfile: Bool = false
     
     var body: some View {
@@ -123,7 +125,11 @@ struct ProfileView: View {
                         }
                         Divider()
                         if postOptModalVis.1?.user.id == Global.shared.user?.id {
-                            Button {} label: {
+                            Button {
+                                withAnimation {
+                                    deletePost = true
+                                }
+                            } label: {
                                 HStack {
                                     Text("게시글 삭제하기")
                                         .foregroundColor(Color(0xF71E58))
@@ -136,6 +142,23 @@ struct ProfileView: View {
                                         .frame(width: 28, height: 28)
                                 }
                             }
+                            .confirmationDialog(
+                                "게시글을 삭제할까요? 이 작업은 복원할 수 없습니다.",
+                                isPresented: $deletePost,
+                                titleVisibility: .visible
+                            ) {
+                                Button("삭제하기", role: .destructive) {
+                                    postVM.deletePost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                        switch result {
+                                        case .success:
+                                            postVM.refreshPosts()
+                                            postOptModalVis.0 = false
+                                        case .failure(let failure):
+                                            print("[Debug] \(failure) \(#file) \(#function)")
+                                        }
+                                    }
+                                }
+                            }
                         } else {
                             Button {} label: {
                                 Text("이 게시글 신고하기")
@@ -146,6 +169,7 @@ struct ProfileView: View {
                     }
                     .padding(.top, 40)
                 }
+                .opacity(deletePost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
             }

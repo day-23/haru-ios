@@ -380,8 +380,30 @@ final class PostService {
             switch response.result {
             case .success:
                 completion(.success(true))
-            case let .failure(failure):
-                completion(.failure(failure))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func deletePost(
+        postId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)",
+            method: .delete,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
             }
         }
     }
