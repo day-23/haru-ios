@@ -107,32 +107,47 @@ struct ProductivitySearchView: View {
     @ViewBuilder
     func scheduleItemList() -> some View {
         ForEach(searchVM.scheduleList, id: \.id) { schedule in
+            let schedule = searchVM.fittingSchedule(schedule: schedule)
             HStack(alignment: .center) {
                 Circle()
                     .fill(Color(schedule.category?.color))
                     .frame(width: 20, height: 20)
                     .padding(5)
                 
-                VStack(alignment: .leading) {
-                    HStack(spacing: 0) {
-                        let stringList = splitContent(content: schedule.content, searchString: prevSearchContent)
-                        ForEach(stringList.indices, id: \.self) { idx in
-                            Text("\(stringList[idx].0)")
-                                .font(.pretendard(size: 16, weight: .bold))
-                                .foregroundColor(stringList[idx].1 ? Color(0x1DAFFF) : Color(0x191919))
-                        }
-                    }
-                    Text(schedule.isAllDay ? "하루 종일" :
-                        CalendarHelper.isSameDay(
-                            date1: schedule.repeatStart,
-                            date2: schedule.repeatEnd
-                        ) ?
-                        "\(schedule.repeatStart.getDateFormatString("a hh:mm")) - \(schedule.repeatEnd.getDateFormatString("a hh:mm"))"
-                        :
-                        "\(schedule.repeatStart.getDateFormatString("M월 d일 a hh:mm")) - \(schedule.repeatEnd.getDateFormatString("M월 d일 a hh:mm"))"
+                NavigationLink {
+                    ScheduleFormView(
+                        scheduleFormVM:
+                        ScheduleFormViewModel(
+                            schedule: schedule,
+                            categoryList: calendarVM.categoryList,
+                            successAction: {
+                                searchVM.searchTodoAndSchedule(searchContent: prevSearchContent) {}
+                            }
+                        ),
+                        isSchModalVisible: .constant(false)
                     )
-                    .font(.pretendard(size: 12, weight: .regular))
-                    .foregroundColor(Color(0x191919))
+                } label: {
+                    VStack(alignment: .leading) {
+                        HStack(spacing: 0) {
+                            let stringList = splitContent(content: schedule.content, searchString: prevSearchContent)
+                            ForEach(stringList.indices, id: \.self) { idx in
+                                Text("\(stringList[idx].0)")
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(stringList[idx].1 ? Color(0x1DAFFF) : Color(0x191919))
+                            }
+                        }
+                        Text(schedule.isAllDay ? "하루 종일" :
+                            CalendarHelper.isSameDay(
+                                date1: schedule.repeatStart,
+                                date2: schedule.repeatEnd
+                            ) ?
+                            "\(schedule.repeatStart.getDateFormatString("a hh:mm")) - \(schedule.repeatEnd.getDateFormatString("a hh:mm"))"
+                            :
+                            "\(schedule.repeatStart.getDateFormatString("M월 d일 a hh:mm")) - \(schedule.repeatEnd.getDateFormatString("M월 d일 a hh:mm"))"
+                        )
+                        .font(.pretendard(size: 12, weight: .regular))
+                        .foregroundColor(Color(0x191919))
+                    }
                 }
                 
                 Spacer()
