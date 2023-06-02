@@ -66,11 +66,11 @@ struct ProfileView: View {
                         
                         ZStack(alignment: .leading) {
                             Rectangle()
-                                .fill(.gray4)
+                                .fill(.clear)
                                 .frame(width: 175 * 2, height: 4)
                             
                             Rectangle()
-                                .fill(.gradation2)
+                                .fill(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]))
                                 .frame(width: 175, height: 4)
                                 .offset(x: isFeedSelected ? 0 : 175)
                         }
@@ -189,7 +189,8 @@ struct ProfileView: View {
                         }
                         .confirmationDialog(
                             "\(userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
-                            isPresented: $blockFriend
+                            isPresented: $blockFriend,
+                            titleVisibility: .visible
                         ) {
                             Button("차단하기", role: .destructive) {
                                 userProfileVM.blockedFriend(blockUserId: userProfileVM.user.id) { result in

@@ -72,7 +72,8 @@ struct FeedView: View {
                     post: post,
                     imageList: postImageList,
                     imageCount: post.images.count,
-                    templateMode: post.templateUrl != nil,
+                    templateMode: post.isTemplatePost != nil,
+                    contentColor: post.isTemplatePost ?? "",
                     content: post.content,
                     isMine: isMine
                 )
@@ -139,7 +140,7 @@ struct FeedView: View {
                 }
                 .padding(.horizontal, 20)
                 
-                if let content = post.content, post.templateUrl == nil {
+                if let content = post.content, post.isTemplatePost == nil {
                     Text(content)
                         .lineLimit(nil)
                         .font(.pretendard(size: 14, weight: .regular))

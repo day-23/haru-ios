@@ -73,16 +73,17 @@ struct PostFormPreView: View {
                 .indexViewStyle(.page(backgroundDisplayMode: .always))
                 .frame(width: deviceSize.width, height: deviceSize.width)
             } else {
-                ZStack(alignment: .topLeading) {
+                ZStack {
                     Rectangle()
                         .fill(Gradient(colors: [.gradientStart2, .gradientEnd2]))
                         .frame(width: deviceSize.width, height: deviceSize.width)
 
                     Text(postFormVM.content)
                         .lineLimit(nil)
-                        .font(.pretendard(size: 14, weight: .regular))
+                        .font(.pretendard(size: 24, weight: .bold))
                         .foregroundColor(Color(0x646464))
                         .padding(.all, 20)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
 
@@ -98,27 +99,34 @@ struct PostFormPreView: View {
             }
         }
         .padding(.top, 12)
-        .customNavigationBar {
-            Button {
-                dismissAction.callAsFunction()
-            } label: {
-                Image("cancel")
-                    .renderingMode(.template)
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismissAction.callAsFunction()
+                } label: {
+                    Image("cancel")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x191919))
+                }
+            }
+
+            ToolbarItem(placement: .principal) {
+                Text("게시하기")
+                    .font(.pretendard(size: 20, weight: .bold))
                     .foregroundColor(Color(0x191919))
             }
-        } rightView: {
-            HStack(spacing: 10) {
+
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     postFormVM.createPost {
                         shouldPopToRootView = false
                     }
                 } label: {
-                    Text("게시하기")
-                        .font(.pretendard(size: 20, weight: .bold))
+                    Image("confirm")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x191919))
                 }
-                Image("confirm")
-                    .renderingMode(.template)
-                    .foregroundColor(Color(0x191919))
             }
         }
     }
