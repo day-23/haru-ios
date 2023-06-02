@@ -309,6 +309,23 @@ final class TimeTableViewModel: ObservableObject {
                                 // 단일 날짜 일정
                                 var at: RepeatAt = .front
 
+                                while dateFormatter.string(from: repeatSchedule.repeatStart) < dateFormatter.string(from: first) {
+                                    at = .middle
+
+                                    do {
+                                        repeatSchedule.repeatStart = try repeatSchedule.nextSucRepeatStartDate(curRepeatStart: repeatSchedule.repeatStart)
+                                    } catch {
+                                        switch error {
+                                        case RepeatError.invalid:
+                                            print("[Debug] 입력 데이터에 문제가 있습니다. \(#fileID) \(#function)")
+                                        case RepeatError.calculation:
+                                            print("[Debug] 날짜를 계산하는데 있어 오류가 있습니다. \(#fileID) \(#function)")
+                                        default:
+                                            print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
+                                        }
+                                    }
+                                }
+
                                 while dateFormatter.string(from: repeatSchedule.repeatStart) <= dateFormatter.string(from: last),
                                       dateFormatter.string(from: repeatSchedule.repeatStart) <= dateFormatter.string(from: schedule.repeatEnd)
                                 {
@@ -329,7 +346,7 @@ final class TimeTableViewModel: ObservableObject {
 
                                     if at == .front {
                                         do {
-                                            let temp = try schedule.nextRepeatStartDate(curRepeatStart: repeatSchedule.repeatStart)
+                                            let temp = try repeatSchedule.nextRepeatStartDate(curRepeatStart: repeatSchedule.repeatStart)
                                             if dateFormatter.string(from: schedule.repeatEnd) < dateFormatter.string(from: temp)
                                             {
                                                 at = .none
@@ -344,13 +361,6 @@ final class TimeTableViewModel: ObservableObject {
                                                 print("[Debug] 알 수 없는 오류입니다. \(#fileID) \(#function)")
                                             }
                                         }
-                                    }
-
-                                    // 만약 반복일 계산 결과가 이번 주의 안으로 오지 않는다면 버린다.
-                                    if dateFormatter.string(from: first) > dateFormatter.string(from: repeatSchedule.repeatStart)
-                                        || dateFormatter.string(from: last) < dateFormatter.string(from: repeatSchedule.repeatStart)
-                                    {
-                                        break
                                     }
 
                                     let cell = ScheduleCell(
