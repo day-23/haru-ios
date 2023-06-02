@@ -372,22 +372,50 @@ struct ScheduleFormView: View {
             }
             if scheduleFormVM.mode == .edit {
                 Spacer()
-                Button {
-                    showDeleteActionSheet = true
-                    actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
-                } label: {
-                    HStack {
-                        Text("일정 삭제하기")
-                            .font(.pretendard(size: 20, weight: .medium))
-                        
-                        Image("trash")
-                            .renderingMode(.template)
-                            .frame(width: 28, height: 28)
+                if scheduleFormVM.overWeek {
+                    Button {
+                        showDeleteActionSheet = true
+                        actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
+                    } label: {
+                        HStack {
+                            Text("일정 삭제하기")
+                                .font(.pretendard(size: 20, weight: .medium))
+                            
+                            Image("trash")
+                                .renderingMode(.template)
+                                .frame(width: 28, height: 28)
+                        }
+                        .foregroundColor(Color(0xf71e58))
                     }
-                    .foregroundColor(Color(0xf71e58))
+                    .padding(.bottom, 20)
+                    .confirmationDialog(
+                        "이 일정을 삭제할까요?",
+                        isPresented: $showDeleteActionSheet,
+                        titleVisibility: .visible
+                    ) {
+                        Button("삭제하기", role: .destructive) {
+                            scheduleFormVM.deleteSchedule()
+                            dismissAction.callAsFunction()
+                        }
+                    }
+                } else {
+                    Button {
+                        showDeleteActionSheet = true
+                        actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
+                    } label: {
+                        HStack {
+                            Text("일정 삭제하기")
+                                .font(.pretendard(size: 20, weight: .medium))
+                            
+                            Image("trash")
+                                .renderingMode(.template)
+                                .frame(width: 28, height: 28)
+                        }
+                        .foregroundColor(Color(0xf71e58))
+                    }
+                    .padding(.bottom, 20)
+                    .actionSheet(isPresented: $showDeleteActionSheet, content: getDeleteActionSheet)
                 }
-                .padding(.bottom, 20)
-                .actionSheet(isPresented: $showDeleteActionSheet, content: getDeleteActionSheet)
             }
         }
         .navigationBarBackButtonHidden()
@@ -406,18 +434,41 @@ struct ScheduleFormView: View {
         .toolbar {
             if scheduleFormVM.mode == .edit {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showEditActionSheet = true
-                        actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
-                    } label: {
-                        Image("confirm")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
-                            .frame(width: 28, height: 28)
+                    if scheduleFormVM.overWeek {
+                        Button {
+                            showEditActionSheet = true
+                            actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
+                        } label: {
+                            Image("confirm")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
+                                .frame(width: 28, height: 28)
+                        }
+                        .confirmationDialog(
+                            "수정사항을 저장할까요?",
+                            isPresented: $showEditActionSheet,
+                            titleVisibility: .visible
+                        ) {
+                            Button("저장하기", role: .destructive) {
+                                scheduleFormVM.updateSchedule()
+                                dismissAction.callAsFunction()
+                            }
+                        }
+                    } else {
+                        Button {
+                            showEditActionSheet = true
+                            actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
+                        } label: {
+                            Image("confirm")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
+                                .frame(width: 28, height: 28)
+                        }
+                        .actionSheet(isPresented: $showEditActionSheet, content: getEditActionSheet)
+                        .disabled(scheduleFormVM.buttonDisable)
                     }
-                    .actionSheet(isPresented: $showEditActionSheet, content: getEditActionSheet)
-                    .disabled(scheduleFormVM.buttonDisable)
                 }
             }
         }
