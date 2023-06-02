@@ -79,20 +79,36 @@ final class PostFormViewModel: ObservableObject {
         }
     }
 
-    func createPost(completion: @escaping () -> Void) {
+    func createPost(templateIdx: Int = 0, completion: @escaping (Result<Bool, Error>) -> Void) {
         switch postOption {
         case .drawing:
             postService.createPostWithImages(imageList: imageList, content: content, tagList: tagList) { result in
                 switch result {
                 case .success:
-                    completion()
+                    completion(.success(true))
                 case .failure(let failure):
-                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                    completion(.failure(failure))
                 }
             }
         case .writing:
-            break
-            // 템플릿 게시물 작성
+            guard let templateId = templateIdList[templateIdx] else {
+                print("[Debug] templateId가 잘못되었습니다. \(#fileID) \(#function)")
+                return
+            }
+
+            postService.createPostWithTemplate(
+                templateId: templateId,
+                templateTextColor: templateTextColor ?? "#191919",
+                content: content,
+                tagList: tagList
+            ) { result in
+                switch result {
+                case .success:
+                    completion(.success(true))
+                case .failure(let failure):
+                    completion(.failure(failure))
+                }
+            }
         }
     }
 }

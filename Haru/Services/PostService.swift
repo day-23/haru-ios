@@ -350,7 +350,41 @@ final class PostService {
             }
     }
 
-    func createPostWithTemplate() {}
+    func createPostWithTemplate(
+        templateId: String,
+        templateTextColor: String,
+        content: String,
+        tagList: [Tag],
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "templateId": templateId,
+            "templateTextColor": templateTextColor,
+            "content": content,
+            "hashTags": tagList.map { tag in
+                tag.content
+            },
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(failure):
+                completion(.failure(failure))
+            }
+        }
+    }
 
     // MARK: - 게시물 부수적인 기능
 
