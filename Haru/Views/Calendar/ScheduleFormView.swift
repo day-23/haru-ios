@@ -469,8 +469,18 @@ struct ScheduleFormView: View {
     }
     
     func getRepeatOption() -> [RepeatOption] {
-        let optionCnt = RepeatOption.allCases.count
-        return RepeatOption.allCases.suffix(scheduleFormVM.overDay ? optionCnt - 1 : optionCnt)
+        // 조건에 따라 필터링
+        if scheduleFormVM.overMonth {
+            return RepeatOption.allCases.filter { option in
+                option != .everyDay && option != .everyMonth
+            }
+        } else if scheduleFormVM.overDay {
+            return RepeatOption.allCases.filter { option in
+                option != .everyDay
+            }
+        } else {
+            return RepeatOption.allCases
+        }
     }
     
     func getDeleteActionSheet() -> ActionSheet {

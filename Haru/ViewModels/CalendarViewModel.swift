@@ -1504,38 +1504,15 @@ final class CalendarViewModel: ObservableObject {
                 return result
             }
             
-            // 달이 넘어가는건 분기 처리
-            if repeatStart.month == repeatEnd.month {
-                result.append(
-                    Schedule.createRepeatSchedule(
-                        schedule: schedule,
-                        repeatStart: repeatStart,
-                        repeatEnd: repeatEnd,
-                        prevRepeatEnd: CalendarHelper.prevYearDate(curDate: repeatStart),
-                        nextRepeatStart: CalendarHelper.nextYearDate(curDate: repeatStart)
-                    )
+            result.append(
+                Schedule.createRepeatSchedule(
+                    schedule: schedule,
+                    repeatStart: repeatStart,
+                    repeatEnd: repeatEnd,
+                    prevRepeatEnd: CalendarHelper.prevYearDate(curDate: repeatStart),
+                    nextRepeatStart: CalendarHelper.nextYearDate(curDate: repeatStart)
                 )
-            } else {
-                dateComponents = calendar.dateComponents([.year, .month], from: repeatStart)
-                dateComponents.day = CalendarHelper.numberOfDaysInMonth(date: repeatStart)
-                dateComponents.hour = 23
-                dateComponents.minute = 55
-                
-                guard let repeatEnd = calendar.date(from: dateComponents) else {
-                    print("[Error] scheduleId: \(schedule.id)에 문제가 있습니다. \(#fileID) \(#function)")
-                    return result
-                }
-                
-                result.append(
-                    Schedule.createRepeatSchedule(
-                        schedule: schedule,
-                        repeatStart: repeatStart,
-                        repeatEnd: repeatEnd,
-                        prevRepeatEnd: CalendarHelper.prevMonthDate(curDate: repeatStart),
-                        nextRepeatStart: CalendarHelper.nextMonthDate(curDate: repeatStart)
-                    )
-                )
-            }
+            )
         }
         
         return result

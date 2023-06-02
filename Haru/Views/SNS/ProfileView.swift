@@ -192,7 +192,7 @@ struct ProfileView: View {
                             }
                             .confirmationDialog(
                                 "게시글을 신고할까요?",
-                                isPresented: $deletePost,
+                                isPresented: $reportPost,
                                 titleVisibility: .visible
                             ) {
                                 Button("신고하기", role: .destructive) {
