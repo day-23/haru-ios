@@ -22,8 +22,6 @@ final class PostFormViewModel: ObservableObject {
 
     @Published var templateList: [PostImage?] = []
 
-    @Published var selectedTemplateIdx: Int = 0
-
     init(postOption: PostAddMode) {
         self.postOption = postOption
 
@@ -34,7 +32,7 @@ final class PostFormViewModel: ObservableObject {
 
     private var postService: PostService = .init()
 
-    func fetchPostImage(templateImageUrlList: [String]) {
+    func fetchTemplateImage(templateImageUrlList: [String]) {
         DispatchQueue.global().async {
             templateImageUrlList.enumerated().forEach { idx, urlString in
                 if let uiImage = ImageCache.shared.object(forKey: urlString as NSString) {
@@ -65,7 +63,7 @@ final class PostFormViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 self.templateList = Array(repeating: nil, count: success.count)
-                self.fetchPostImage(
+                self.fetchTemplateImage(
                     templateImageUrlList: success.map { data in
                         data.url
                     }
