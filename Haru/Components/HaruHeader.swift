@@ -52,7 +52,7 @@ struct HaruHeader<
                     } else {
                         Image("header-logo")
                             .renderingMode(.template)
-                            .foregroundColor(Color(0xfdfdfd))
+                            .foregroundColor(Color(0xFDFDFD))
                     }
 
                     if toggleOn {
@@ -63,7 +63,7 @@ struct HaruHeader<
                         } label: {
                             Image("todo-toggle")
                                 .renderingMode(.template)
-                                .foregroundColor(Color(0x646464))
+                                .foregroundColor(Color(0xFDFDFD))
                                 .rotationEffect(.degrees(toggleIsClicked ? 90 : 0))
                         }
                     }

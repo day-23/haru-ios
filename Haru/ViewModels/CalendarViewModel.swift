@@ -1504,17 +1504,15 @@ final class CalendarViewModel: ObservableObject {
                 return result
             }
             
-            if repeatStart.month == repeatEnd.month {
-                result.append(
-                    Schedule.createRepeatSchedule(
-                        schedule: schedule,
-                        repeatStart: repeatStart,
-                        repeatEnd: repeatEnd,
-                        prevRepeatEnd: CalendarHelper.prevYearDate(curDate: repeatStart),
-                        nextRepeatStart: CalendarHelper.nextYearDate(curDate: repeatStart)
-                    )
+            result.append(
+                Schedule.createRepeatSchedule(
+                    schedule: schedule,
+                    repeatStart: repeatStart,
+                    repeatEnd: repeatEnd,
+                    prevRepeatEnd: CalendarHelper.prevYearDate(curDate: repeatStart),
+                    nextRepeatStart: CalendarHelper.nextYearDate(curDate: repeatStart)
                 )
-            }
+            )
         }
         
         return result

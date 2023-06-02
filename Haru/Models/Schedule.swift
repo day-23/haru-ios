@@ -284,8 +284,8 @@ extension Schedule {
             }
 
         case RepeatOption.everyYear.rawValue:
-            var index = curRepeatStart.month % 12
             nextRepeatStart = CalendarHelper.nextMonthDate(curDate: curRepeatStart)
+            var index = nextRepeatStart.month - 1
             while pattern[index] == false {
                 nextRepeatStart = CalendarHelper.nextMonthDate(curDate: nextRepeatStart)
                 index = nextRepeatStart.month - 1

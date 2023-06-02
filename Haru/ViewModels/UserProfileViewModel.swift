@@ -94,19 +94,16 @@ final class UserProfileViewModel: ObservableObject {
     }
 
     func refreshFriendList() {
-        clear(option: option)
-        loadMoreFriendList()
+        clear()
+        initLoad()
     }
 
-    func clear(option: FriendOption) {
-        switch option {
-        case .friendList:
-            friendList.removeAll()
-            friProfileImageList.removeAll()
-        case .requestFriendList:
-            requestFriendList.removeAll()
-            reqFriProImageList.removeAll()
-        }
+    func clear() {
+        friendList.removeAll()
+        friProfileImageList.removeAll()
+
+        requestFriendList.removeAll()
+        reqFriProImageList.removeAll()
     }
 
     // MARK: - 이미지 캐싱
@@ -249,7 +246,7 @@ final class UserProfileViewModel: ObservableObject {
                     }
                 }
 
-                self.requestFriendList = success.0
+                self.requestFriendList.append(contentsOf: success.0)
                 let pageInfo = success.1
                 self.reqFriendCount = pageInfo.totalItems
                 if self.reqFriListTotalPage == -1 {

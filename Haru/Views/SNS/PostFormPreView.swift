@@ -19,6 +19,12 @@ struct PostFormPreView: View {
     @Binding var shouldPopToRootView: Bool
 
     @State var selectedTemplateIdx: Int = 0
+    @State var blackSelected: Bool = true
+
+    @State var ratio: Double = 0.35
+    @State var isModalUp: Bool = true
+
+    @State var waitingResponse: Bool = false
 
     let deviceSize = UIScreen.main.bounds.size
     var body: some View {
@@ -68,8 +74,14 @@ struct PostFormPreView: View {
                 TabView {
                     ForEach(postFormVM.imageList.indices, id: \.self) { idx in
                         Image(uiImage: postFormVM.imageList[idx])
+                            .renderingMode(.original)
                             .resizable()
-                            .scaledToFill()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(
+                                width: UIScreen.main.bounds.width,
+                                height: UIScreen.main.bounds.height
+                            )
+                            .clipped()
                     }
                 }
                 .tabViewStyle(.page)
@@ -95,7 +107,7 @@ struct PostFormPreView: View {
                     Text(postFormVM.content)
                         .lineLimit(nil)
                         .font(.pretendard(size: 24, weight: .bold))
-                        .foregroundColor(Color(0x646464))
+                        .foregroundColor(blackSelected ? Color(0x191919) : Color(0xfdfdfd))
                         .padding(.all, 20)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -106,20 +118,21 @@ struct PostFormPreView: View {
                     .lineLimit(nil)
                     .font(.pretendard(size: 14, weight: .regular))
                     .foregroundColor(Color(0x646464))
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
                     .padding(.top, 20)
                 Spacer()
             } else {
                 Spacer()
-                    .overlay {
+                    .overlay(alignment: .bottom) {
                         bottomTemplateView()
                     }
             }
         }
-        .padding(.top, 20)
+        .padding(.top, tagInFocus ? 80 : 20)
         .navigationBarBackButtonHidden()
         .edgesIgnoringSafeArea(.bottom)
-        .ignoresSafeArea(.keyboard)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
@@ -139,14 +152,36 @@ struct PostFormPreView: View {
 
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    postFormVM.createPost {
-                        shouldPopToRootView = false
+                    waitingResponse = true
+                    switch postFormVM.postOption {
+                    case .drawing:
+                        postFormVM.createPost { result in
+                            switch result {
+                            case .success:
+                                shouldPopToRootView = false
+                                
+                            case .failure(let failure):
+                                waitingResponse = false
+                                print("[Debug] \(failure) \(#fileID) \(#function)")
+                            }
+                        }
+                    case .writing:
+                        postFormVM.createPost(templateIdx: selectedTemplateIdx) { result in
+                            switch result {
+                            case .success:
+                                shouldPopToRootView = false
+                            case .failure(let failure):
+                                waitingResponse = false
+                                print("[Debug] \(failure) \(#fileID) \(#function)")
+                            }
+                        }
                     }
                 } label: {
                     Image("confirm")
                         .renderingMode(.template)
                         .foregroundColor(Color(0x191919))
                 }
+                .disabled(waitingResponse)
             }
         }
     }
@@ -173,79 +208,129 @@ struct PostFormPreView: View {
 
     @ViewBuilder
     func bottomTemplateView() -> some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("템플릿")
-                    .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(Color(0x191919))
+                Group {
+                    Text("템플릿")
+                        .font(.pretendard(size: 20, weight: .bold))
+                        .foregroundColor(Color(0x191919))
+
+                    Image("toggle")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                }
+                .onTapGesture {
+                    withAnimation {
+                        if isModalUp {
+                            ratio = 0.1
+                        } else {
+                            ratio = 0.35
+                        }
+
+                        isModalUp.toggle()
+                    }
+                }
 
                 Spacer()
             }
+            .clipped()
             .padding(.top, 27)
             .padding(.horizontal, 24)
             .padding(.bottom, 20)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 7) {
-                    ForEach(postFormVM.templateIdList.indices, id: \.self) { idx in
-                        ZStack(alignment: .topTrailing) {
-                            if let uiImage = postFormVM.templateList[idx]?.uiImage {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .frame(width: 74, height: 74)
-                                    .onTapGesture {
-                                        selectedTemplateIdx = idx
-                                    }
-                            } else {
-                                ProgressView()
-                                    .frame(width: 74, height: 74)
-                            }
+            if ratio == 0.35 {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 7) {
+                        ForEach(postFormVM.templateIdList.indices, id: \.self) { idx in
+                            ZStack(alignment: .topTrailing) {
+                                if let uiImage = postFormVM.templateList[idx]?.uiImage {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .frame(width: 74, height: 74)
+                                        .onTapGesture {
+                                            selectedTemplateIdx = idx
+                                        }
+                                } else {
+                                    ProgressView()
+                                        .frame(width: 74, height: 74)
+                                }
 
-                            Group {
-                                Circle()
-                                    .fill(idx == selectedTemplateIdx ? .blue : .white.opacity(0.25))
+                                Group {
+                                    Circle()
+                                        .fill(idx == selectedTemplateIdx ? .blue : .white.opacity(0.25))
 
-                                Circle()
-                                    .stroke(.white, lineWidth: 1)
+                                    Circle()
+                                        .stroke(.white, lineWidth: 1)
+                                }
+                                .frame(width: 20, height: 20)
+                                .padding(.all, 4)
                             }
-                            .frame(width: 20, height: 20)
-                            .padding(.all, 4)
+                            .clipped()
                         }
-                        .clipped()
                     }
                 }
-            }
-            .padding(.horizontal, 20)
+                .padding(.horizontal, 20)
 
-            HStack(spacing: 10) {
-                Image("today-todo")
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 28, height: 28)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 2)
-                    .background(Color(0x191919))
-                    .cornerRadius(8)
-                    .foregroundColor(Color(0xfdfdfd))
+                HStack(spacing: 10) {
+                    Image("today-todo")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 28, height: 28)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 2)
+                        .background(Color(0x191919))
+                        .cornerRadius(8)
+                        .foregroundColor(blackSelected ? Color(0x1dafff) : Color(0xfdfdfd))
+                        .overlay {
+                            if blackSelected {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(
+                                        Color(0x1dafff),
+                                        lineWidth: 2
+                                    )
+                            }
+                        }
+                        .onTapGesture {
+                            blackSelected = true
+                            postFormVM.templateTextColor = "#191919"
+                        }
 
-                Image("today-todo")
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 28, height: 28)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 2)
-                    .background(Color(0xfdfdfd))
-                    .cornerRadius(8)
-                    .foregroundColor(Color(0x191919))
+                    Image("today-todo")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 28, height: 28)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 2)
+                        .background(Color(0xfdfdfd))
+                        .cornerRadius(8)
+                        .foregroundColor(Color(0x191919))
+                        .overlay {
+                            if !blackSelected {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(
+                                        Color(0x1dafff),
+                                        lineWidth: 2
+                                    )
+                            }
+                        }
+                        .onTapGesture {
+                            blackSelected = false
+                            postFormVM.templateTextColor = "#FDFDFD"
+                        }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 18)
+
+                Spacer()
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 10)
         }
-        .frame(width: deviceSize.width, height: deviceSize.height * 0.3)
+        .frame(width: deviceSize.width, height: deviceSize.height * ratio)
         .background {
-            Rectangle()
-                .fill(LinearGradient(colors: [.gradientStart2, .gradientEnd2], startPoint: .leading, endPoint: .trailing))
-                .cornerRadius(20, corners: [.topLeft, .topRight])
+            Image("bg-gradation-calendar")
+                .resizable()
+                .frame(width: deviceSize.width, height: deviceSize.height * ratio)
         }
+        .cornerRadius(30)
+        .shadow(radius: 50)
     }
 }

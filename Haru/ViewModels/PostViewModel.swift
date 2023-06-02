@@ -149,6 +149,7 @@ final class PostViewModel: ObservableObject {
 
     func refreshPosts() {
         clear(option: option)
+        loadMorePosts()
     }
 
     // MARK: - UIImage로 변환 + 이미지 캐싱
@@ -351,6 +352,41 @@ final class PostViewModel: ObservableObject {
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    // MARK: - 게시물 수정, 삭제, 숨기기
+
+    func deletePost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        postService.deletePost(postId: postId) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    func hidePost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        postService.hidePost(postId: postId) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    func reportPost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        postService.reportPost(postId: postId) { result in
+            switch result {
+            case .success:
+                completion(.success(true))
+            case .failure(let failure):
+                completion(.failure(failure))
             }
         }
     }

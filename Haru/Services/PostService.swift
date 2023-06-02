@@ -350,7 +350,107 @@ final class PostService {
             }
     }
 
-    func createPostWithTemplate() {}
+    func createPostWithTemplate(
+        templateId: String,
+        templateTextColor: String,
+        content: String,
+        tagList: [Tag],
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "templateId": templateId,
+            "templateTextColor": templateTextColor,
+            "content": content,
+            "hashTags": tagList.map { tag in
+                tag.content
+            },
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deletePost(
+        postId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)",
+            method: .delete,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func hidePost(
+        postId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/hide",
+            method: .post,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func reportPost(
+        postId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/report",
+            method: .post,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 
     // MARK: - 게시물 부수적인 기능
 

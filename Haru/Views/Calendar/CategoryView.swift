@@ -31,23 +31,27 @@ struct CategoryView: View {
                         ForEach(Array(scheduleFormVM.categoryList.enumerated()),
                                 id: \.offset)
                         { index, category in
-                            HStack(spacing: 20) {
-                                Circle()
-                                    .strokeBorder(Color(scheduleFormVM.categoryList[index].color))
-                                    .background(Circle().foregroundColor(selectedIdx == index ? Color(scheduleFormVM.categoryList[index].color) : .white))
-                                    .frame(width: 20, height: 20)
+                            if category != Global.shared.holidayCategory,
+                               index != 0
+                            {
+                                HStack(spacing: 20) {
+                                    Circle()
+                                        .strokeBorder(Color(scheduleFormVM.categoryList[index].color))
+                                        .background(Circle().foregroundColor(selectedIdx == index ? Color(scheduleFormVM.categoryList[index].color) : .white))
+                                        .frame(width: 20, height: 20)
 
-                                Text("\(category.content)")
-                                    .font(.pretendard(size: 14, weight: .medium))
-                                    .foregroundColor(selectedIdx == index ? .black : .gray1)
-                                Spacer()
-                            }
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                selectedIdx = index
-                                Task {
-                                    try? await Task.sleep(nanoseconds: 250_000_000)
-                                    showCategorySheet = false
+                                    Text("\(category.content)")
+                                        .font(.pretendard(size: 14, weight: .medium))
+                                        .foregroundColor(selectedIdx == index ? .black : .gray1)
+                                    Spacer()
+                                }
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedIdx = index
+                                    Task {
+                                        try? await Task.sleep(nanoseconds: 250_000_000)
+                                        showCategorySheet = false
+                                    }
                                 }
                             }
                         }
