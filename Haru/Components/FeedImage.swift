@@ -56,10 +56,9 @@ struct FeedImage: View {
                                     postPageNum: postPageNum,
                                     isMine: isMine
                                 )
+                            } else {
+                                CommentListView(commentVM: commentVM)
                             }
-//                            else {
-//                                CommentListView(commentVM: commentVM)
-//                            }
                         } label: {
                             Image(uiImage: uiImage)
                                 .renderingMode(.original)

@@ -139,6 +139,7 @@ private struct TagOptionItem: View {
                     case .success:
                         break
                     case .failure:
+                        break
                     }
                 }
             }
@@ -166,10 +167,10 @@ private struct TagOptionItem: View {
 extension TagManageView {
     func onChangeTag(_: String) {
         let trimTag = checkListViewModel.tagContent.trimmingCharacters(in: .whitespaces)
-        if !trimTag.isEmpty
-            && checkListViewModel.tagContent[
-                checkListViewModel.tagContent.index(checkListViewModel.tagContent.endIndex, offsetBy: -1)
-            ] == " "
+        if !trimTag.isEmpty,
+           checkListViewModel.tagContent[
+               checkListViewModel.tagContent.index(checkListViewModel.tagContent.endIndex, offsetBy: -1)
+           ] == " "
         {
             if checkListViewModel.tagList.filter({ $0.content == trimTag }).isEmpty {
                 checkListViewModel.addTag(
@@ -198,6 +199,7 @@ extension TagManageView {
                     case .success:
                         break
                     case .failure:
+                        break
                     }
                 }
             }
