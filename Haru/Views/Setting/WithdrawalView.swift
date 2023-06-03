@@ -15,13 +15,14 @@ struct WithdrawalView: View {
 
     var body: some View {
         ScrollView {
+            SettingHeader(header: "계정 삭제") {
+                dismissAction.callAsFunction()
+            }
+            .padding(.bottom, 20)
+            
+            Divider().padding(.bottom, 20)
+            
             VStack(spacing: 20) {
-                SettingHeader(header: "계정 삭제") {
-                    dismissAction.callAsFunction()
-                }
-                
-                Divider()
-                
                 HStack(spacing: 20) {
                     if let profileImage = global.user?.user.profileImage,
                        let url = URL(string: profileImage)
