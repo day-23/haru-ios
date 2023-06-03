@@ -90,7 +90,16 @@ struct TagDetailView: View {
 
             Spacer()
 
-            Button {} label: {
+            Button {
+                tagService.deleteTag(tagId: tagId) { result in
+                    switch result {
+                    case .success:
+                        dismissAction.callAsFunction()
+                    case .failure:
+                        break
+                    }
+                }
+            } label: {
                 HStack(spacing: 10) {
                     Text("태그 삭제하기")
                         .font(.pretendard(size: 20, weight: .regular))
