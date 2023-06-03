@@ -68,7 +68,8 @@ struct HaruView: View {
                 } header: {
                     TagView(
                         tag: Tag(id: "오늘 할 일", content: "오늘 할 일"),
-                        isSelected: true
+                        isSelected: true,
+                        disabled: todoState.todoListByTodayTodo.isEmpty
                     )
                     .padding(.leading, 10)
                 }
@@ -85,7 +86,8 @@ struct HaruView: View {
                 } header: {
                     TagView(
                         tag: Tag(id: "오늘까지", content: "오늘까지"),
-                        isSelected: true
+                        isSelected: true,
+                        disabled: todoState.todoListByUntilToday.isEmpty
                     )
                     .padding(.leading, 10)
                 }
@@ -106,7 +108,8 @@ struct HaruView: View {
                             id: DefaultTag.completed.rawValue,
                             content: DefaultTag.completed.rawValue
                         ),
-                        isSelected: true
+                        isSelected: true,
+                        disabled: todoState.todoListByCompleted.isEmpty
                     )
                     .padding(.leading, 10)
                 }
