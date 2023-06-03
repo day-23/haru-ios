@@ -118,7 +118,8 @@ struct CalendarDayDetailView: View {
                                 TodoView(
                                     checkListViewModel: checkListVM,
                                     todo: calendarVM.todoList[row][index],
-                                    at: calendarVM.todoList[row][index].at
+                                    at: calendarVM.todoList[row][index].at,
+                                    isMiniCalendar: true
                                 ) {
                                     calendarVM.getRefreshProductivityList()
                                     calendarVM.getCurMonthSchList(calendarVM.dateList)
@@ -126,7 +127,6 @@ struct CalendarDayDetailView: View {
                                     calendarVM.getRefreshProductivityList()
                                     calendarVM.getCurMonthSchList(calendarVM.dateList)
                                 }
-                                .padding(.leading, -25)
                             }
                             .tint(.mainBlack)
                         }

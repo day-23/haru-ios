@@ -11,7 +11,11 @@ import UniformTypeIdentifiers
 struct TimeTableMainView: View {
     // MARK: - Properties
 
+    @EnvironmentObject var todoState: TodoState
+
     @StateObject var timeTableViewModel: TimeTableViewModel
+    @StateObject var checkListViewModel: CheckListViewModel
+
     @StateObject var calendarViewModel: CalendarViewModel = .init()
     @StateObject var todoAddViewModel: TodoAddViewModel
 
@@ -23,9 +27,11 @@ struct TimeTableMainView: View {
 
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
+        checkListViewModel: StateObject<CheckListViewModel>,
         todoAddViewModel: StateObject<TodoAddViewModel>
     ) {
         _timeTableViewModel = timeTableViewModel
+        _checkListViewModel = checkListViewModel
         _todoAddViewModel = todoAddViewModel
     }
 
@@ -82,7 +88,11 @@ struct TimeTableMainView: View {
 
                     NavigationLink {
                         // TODO: 검색 뷰 만들어지면 넣어주기
-                        Text("검색")
+                        ProductivitySearchView(
+                            calendarVM: calendarViewModel,
+                            todoAddViewModel: todoAddViewModel,
+                            checkListVM: checkListViewModel
+                        )
                     } label: {
                         Image("magnifyingglass")
                             .renderingMode(.template)

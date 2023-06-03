@@ -203,10 +203,9 @@ struct CalendarDateView: View {
                             }
                         }
                     }
-                    HStack {
-                        Spacer()
-                        
-                        if self.showAddButton {
+                    if self.showAddButton {
+                        HStack {
+                            Spacer()
                             Button {
                                 withAnimation {
                                     self.showAddMenu()

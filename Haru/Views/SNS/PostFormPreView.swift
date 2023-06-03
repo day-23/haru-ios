@@ -159,7 +159,7 @@ struct PostFormPreView: View {
                             switch result {
                             case .success:
                                 shouldPopToRootView = false
-                                
+
                             case .failure(let failure):
                                 waitingResponse = false
                                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -215,9 +215,11 @@ struct PostFormPreView: View {
                         .font(.pretendard(size: 20, weight: .bold))
                         .foregroundColor(Color(0x191919))
 
-                    Image("toggle")
+                    Image("todo-toggle")
+                        .renderingMode(.template)
                         .resizable()
                         .frame(width: 20, height: 20)
+                        .rotationEffect(isModalUp ? Angle(degrees: 90) : Angle(degrees: -90))
                 }
                 .onTapGesture {
                     withAnimation {

@@ -31,8 +31,11 @@ struct CheckListView: View {
                         .edgesIgnoringSafeArea(.all)
                 } item: {
                     NavigationLink {
-                        // TODO: 검색 뷰 만들어지면 넣어주기
-                        Text("검색")
+                        ProductivitySearchView(
+                            calendarVM: CalendarViewModel(),
+                            todoAddViewModel: addViewModel,
+                            checkListVM: viewModel
+                        )
                     } label: {
                         Image("magnifyingglass")
                             .renderingMode(.template)

@@ -12,6 +12,7 @@ struct TodoView: View {
     var todo: Todo
     var backgroundColor: Color = .white
     var at: RepeatAt = .front
+    var isMiniCalendar: Bool = false
     var completeAction: () -> Void = {}
     var updateAction: () -> Void = {}
 
@@ -67,7 +68,9 @@ struct TodoView: View {
 
     var body: some View {
         HStack(alignment: showExtraInfo ? .top : .center, spacing: 0) {
-            if !todo.subTodos.isEmpty {
+            if !todo.subTodos.isEmpty,
+               !isMiniCalendar
+            {
                 Button {
                     isToggleButtonActive = false
 
@@ -152,7 +155,7 @@ struct TodoView: View {
                         isCompletionButtonActive = true
                     }
                 }
-                .padding(.leading, todo.subTodos.isEmpty ? 6 : 0)
+                .padding(.leading, todo.subTodos.isEmpty && !isMiniCalendar ? 6 : 0)
                 .padding(.trailing, 8)
                 .disabled(!isCompletionButtonActive)
 
@@ -230,7 +233,7 @@ struct TodoView: View {
                 .disabled(!isFlagButtonActive)
         }
         .frame(maxWidth: .infinity)
-        .padding(.leading, todo.subTodos.isEmpty ? 34 : 14)
+        .padding(.leading, todo.subTodos.isEmpty && !isMiniCalendar ? 34 : 14)
         .padding(.trailing, 20)
         .background(backgroundColor)
         .overlay(content: {
