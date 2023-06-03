@@ -88,9 +88,11 @@ struct RootView: View {
                                     // MARK: - TimeTable View
 
                                     let timeTableViewModel: TimeTableViewModel = .init()
+                                    let checkListViewModel: CheckListViewModel = .init(todoState: _todoState)
 
                                     TimeTableMainView(
                                         timeTableViewModel: .init(wrappedValue: timeTableViewModel),
+                                        checkListViewModel: .init(wrappedValue: checkListViewModel),
                                         todoAddViewModel: .init(
                                             wrappedValue: TodoAddViewModel(
                                                 todoState: todoState,
