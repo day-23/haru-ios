@@ -62,7 +62,7 @@ struct FeedView: View {
                     } label: {
                         Image("ellipsis")
                             .renderingMode(.template)
-                            .foregroundColor(Color(0xdbdbdb))
+                            .foregroundColor(Color(0x646464))
                     }
                 }
                 .padding(.horizontal, 20)
