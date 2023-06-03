@@ -60,8 +60,7 @@ struct TagManageView: View {
                                         case .success:
                                             checkListViewModel.tagContent = ""
                                             addButtonTapped = false
-                                        case .failure(let error):
-                                            print("[Debug] \(error) \(#fileID), \(#function)")
+                                        case .failure:
                                             addButtonTapped = false
                                         }
                                     }
@@ -139,8 +138,7 @@ private struct TagOptionItem: View {
                     switch result {
                     case .success:
                         break
-                    case .failure(let error):
-                        print("[Debug] \(error) \(#fileID) \(#function)")
+                    case .failure:
                     }
                 }
             }
@@ -180,8 +178,8 @@ extension TagManageView {
                     switch result {
                     case .success:
                         break
-                    case .failure(let error):
-                        print("[Debug] \(error) \(#fileID), \(#function)")
+                    case .failure:
+                        break
                     }
                 }
             }
@@ -199,8 +197,7 @@ extension TagManageView {
                     switch result {
                     case .success:
                         break
-                    case .failure(let error):
-                        print("[Debug] \(error) \(#fileID), \(#function)")
+                    case .failure:
                     }
                 }
             }

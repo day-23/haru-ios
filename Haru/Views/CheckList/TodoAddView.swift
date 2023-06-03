@@ -51,8 +51,8 @@ struct TodoAddView: View {
                                         withAnimation {
                                             isModalVisible = false
                                         }
-                                    case let .failure(failure):
-                                        print("[Debug] \(failure) \(#fileID) \(#function)")
+                                    case .failure:
+                                        break
                                     }
                                     isConfirmButtonActive = true
                                 }
@@ -495,8 +495,8 @@ struct TodoAddView: View {
                                                 switch result {
                                                 case .success:
                                                     dismissAction.callAsFunction()
-                                                case let .failure(failure):
-                                                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                                                case .failure:
+                                                    break
                                                 }
                                             }
                                         }
@@ -513,8 +513,8 @@ struct TodoAddView: View {
                                                 switch result {
                                                 case .success:
                                                     dismissAction.callAsFunction()
-                                                case let .failure(failure):
-                                                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                                                case .failure:
+                                                    break
                                                 }
                                             }
                                         }
@@ -526,8 +526,8 @@ struct TodoAddView: View {
                                                 switch result {
                                                 case .success:
                                                     dismissAction.callAsFunction()
-                                                case let .failure(failure):
-                                                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                                                case .failure:
+                                                    break
                                                 }
                                             }
                                         }
@@ -538,8 +538,8 @@ struct TodoAddView: View {
                                             switch result {
                                             case .success:
                                                 dismissAction.callAsFunction()
-                                            case let .failure(failure):
-                                                print("[Debug] \(failure) \(#fileID) \(#function)")
+                                            case .failure:
+                                                break
                                             }
                                         }
                                     }
@@ -580,8 +580,8 @@ struct TodoAddView: View {
                                     switch result {
                                     case .success:
                                         dismissAction.callAsFunction()
-                                    case let .failure(failure):
-                                        print("[Debug] \(failure) \(#fileID) \(#function)")
+                                    case .failure:
+                                        break
                                     }
                                 }
                             }
@@ -616,8 +616,8 @@ struct TodoAddView: View {
                                     switch result {
                                     case .success:
                                         dismissAction.callAsFunction()
-                                    case let .failure(failure):
-                                        print("[Debug] \(failure) \(#fileID) \(#function)")
+                                    case .failure:
+                                        break
                                     }
                                 }
                             }
@@ -628,8 +628,8 @@ struct TodoAddView: View {
                                 switch result {
                                 case .success:
                                     dismissAction.callAsFunction()
-                                case let .failure(failure):
-                                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                                case .failure:
+                                    break
                                 }
                             }
                         }
@@ -639,8 +639,8 @@ struct TodoAddView: View {
                                 switch result {
                                 case .success:
                                     dismissAction.callAsFunction()
-                                case let .failure(failure):
-                                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                                case .failure:
+                                    break
                                 }
                             }
                         }

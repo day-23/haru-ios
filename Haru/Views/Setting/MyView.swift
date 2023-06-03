@@ -204,8 +204,8 @@ struct MyView: View {
                         completed = success.completed
                         totalItems = success.totalItems
                     }
-                case .failure(let error):
-                    print("[Debug] \(error) \(#fileID) \(#function)")
+                case .failure:
+                    break
                 }
             }
         }
@@ -220,8 +220,8 @@ struct MyView: View {
                         completed = success.completed
                         totalItems = success.totalItems
                     }
-                case .failure(let error):
-                    print("[Debug] \(error) \(#fileID) \(#function)")
+                case .failure:
+                    break
                 }
             }
         }

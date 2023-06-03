@@ -138,8 +138,8 @@ struct TagDetailView: View {
                         switch response {
                         case .success:
                             dismissAction.callAsFunction()
-                        case .failure(let error):
-                            print("[Debug] \(error) \(#fileID) \(#function)")
+                        case .failure:
+                            break
                         }
                     }
                 } label: {

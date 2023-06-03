@@ -12,7 +12,7 @@ enum RepeatError: Error {
     case calculation
 }
 
-enum RepeatOption: String, CaseIterable {
+enum RepeatOption: String, CaseIterable, Codable {
     case everyDay = "매일"
     case everyWeek = "매주"
     case everySecondWeek = "격주"

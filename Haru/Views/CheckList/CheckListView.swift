@@ -397,6 +397,10 @@ struct CheckListView: View {
             UIApplication.shared.addTapGestureRecognizer()
         }
         .onChange(of: isTextFieldFocused, perform: { value in
+            if isModalVisible {
+                return
+            }
+
             withAnimation {
                 Global.shared.isTabViewActive = !value
             }

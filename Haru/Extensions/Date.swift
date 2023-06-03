@@ -68,6 +68,14 @@ public extension Date {
         self.day == other.day && self.month == other.month && self.year == other.year
     }
     
+    func isEqualWithTime(other: Date) -> Bool {
+        self.day == other.day
+            && self.month == other.month
+            && self.year == other.year
+            && self.hour == other.hour
+            && self.minute == other.minute
+    }
+    
     func subtractDay() -> Date {
         guard let result = Calendar.current.date(byAdding: .day, value: -1, to: self) else { return self }
         return result
