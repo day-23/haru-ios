@@ -179,7 +179,7 @@ struct SNSView: View {
                             ),
                             isActive: $isActiveForDrawing
                         ) {
-                            Image("sns-add-button")
+                            Image("sns-drawing-button")
                                 .shadow(radius: 10, x: 5, y: 0)
                         }
                     }

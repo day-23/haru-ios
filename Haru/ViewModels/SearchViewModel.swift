@@ -37,7 +37,7 @@ final class SearchViewModel: ObservableObject {
         }
 
         if repeatValue.prefix(1) == "T" {
-            var day = 60 * 60 * 24
+            let day = 60 * 60 * 24
             var repeatStart = schedule.repeatStart
 
             while repeatStart < Date() {
@@ -57,7 +57,7 @@ final class SearchViewModel: ObservableObject {
                 )
             )
 
-            var oriRepeatEnd: Date = repeatEnd
+            let oriRepeatEnd: Date = repeatEnd
             if repeatOption == .everyMonth,
                repeatStart.month != repeatEnd.month
             {
@@ -65,9 +65,12 @@ final class SearchViewModel: ObservableObject {
             }
 
             do {
-                var nextRepeatStart = try schedule.nextSucRepeatStartDate(curRepeatStart: repeatStart)
-                var prevRepeatEnd: Date
+                let nextRepeatStart = try schedule.nextSucRepeatStartDate(curRepeatStart: repeatStart)
+                var prevRepeatEnd: Date = repeatEnd
+
                 switch repeatOption {
+                case .everyDay:
+                    break
                 case .everyWeek:
                     prevRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(-day * 7))
                 case .everySecondWeek:
@@ -76,8 +79,6 @@ final class SearchViewModel: ObservableObject {
                     prevRepeatEnd = CalendarHelper.prevMonthDate(curDate: oriRepeatEnd)
                 case .everyYear:
                     prevRepeatEnd = CalendarHelper.prevYearDate(curDate: oriRepeatEnd)
-                default:
-                    prevRepeatEnd = Date()
                 }
 
                 return Schedule.createRepeatSchedule(
@@ -107,8 +108,8 @@ final class SearchViewModel: ObservableObject {
             }
 
             do {
-                var prevRepeatEnd = try schedule.prevRepeatEndDate(curRepeatEnd: repeatEnd)
-                var nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: repeatStart)
+                let prevRepeatEnd = try schedule.prevRepeatEndDate(curRepeatEnd: repeatEnd)
+                let nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: repeatStart)
 
                 return Schedule.createRepeatSchedule(
                     schedule: schedule,

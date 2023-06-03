@@ -179,7 +179,7 @@ struct CalendarDateView: View {
                                 self.isTodoModalVisible = true
                                 self.addViewModel.mode = .add
                             } label: {
-                                Image("schedule-button")
+                                Image("calendar-todo-button")
                                     .resizable()
                                     .frame(width: 56, height: 56)
                                     .clipShape(Circle())
