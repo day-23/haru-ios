@@ -21,31 +21,23 @@ struct CustomNavBar<C, L, R>: ViewModifier where C: View, L: View, R: View {
     func body(content: Content) -> some View {
         VStack(spacing: 0) {
             ZStack {
-                LinearGradient(
-                    colors: [.gradientStart2, .gradientEnd2],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .ignoresSafeArea(.all)
-                 
                 HStack {
-                    self.leftView?()
+                    leftView?()
                      
                     Spacer()
                      
-                    self.rightView?()
+                    rightView?()
                 }
                 .padding(.horizontal, 20)
                  
                 HStack {
                     Spacer()
                      
-                    self.centerView?()
+                    centerView?()
                      
                     Spacer()
                 }
             }
-            .frame(height: 52)
              
             content
              

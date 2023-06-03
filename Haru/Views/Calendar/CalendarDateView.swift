@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CalendarDateView: View {
+    @EnvironmentObject private var todoState: TodoState
+    
     @State private var isSchModalVisible: Bool = false
     @State private var isTodoModalVisible: Bool = false
     @State private var isDayModalVisible: Bool = false
@@ -49,7 +51,11 @@ struct CalendarDateView: View {
                         HStack(spacing: 10) {
                             NavigationLink {
                                 // TODO: 검색 뷰 만들어지면 넣어주기
-                                Text("검색")
+                                ProductivitySearchView(
+                                    calendarVM: self.calendarVM,
+                                    todoAddViewModel: self.addViewModel,
+                                    checkListVM: .init(todoState: StateObject(wrappedValue: self.todoState))
+                                )
                             } label: {
                                 Image("magnifyingglass")
                                     .renderingMode(.template)

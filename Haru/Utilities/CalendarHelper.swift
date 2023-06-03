@@ -460,4 +460,34 @@ class CalendarHelper {
             return nil
         }
     }
+
+    class func makeDate(
+        date: Date,
+        date2: Date
+    ) -> Date {
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        dateComponents.hour = date2.hour
+        dateComponents.minute = date2.minute
+        dateComponents.second = date2.second
+        if let result = calendar.date(from: dateComponents) {
+            return result
+        } else {
+            return Date()
+        }
+    }
+
+    class func makeDate(
+        date: Date,
+        hour: Int,
+        minute: Int
+    ) -> Date {
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+        if let result = calendar.date(from: dateComponents) {
+            return result
+        } else {
+            return Date()
+        }
+    }
 }
