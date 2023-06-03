@@ -60,7 +60,7 @@ private struct TabViewItem: View {
                 .foregroundColor(
                     isSelected
                         ? Color(0x1dafff)
-                        : Color(0x646464)
+                        : Color(0xacacac)
                 )
         }
     }
