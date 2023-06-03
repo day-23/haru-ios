@@ -121,7 +121,7 @@ final class FriendService {
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/request",
             method: .post,
             parameters: parameters,
-            encoding: URLEncoding.default,
+            encoding: JSONEncoding.default,
             headers: headers
         )
         .response { response in
