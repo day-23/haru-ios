@@ -165,6 +165,7 @@ struct TimeTableScheduleView: View {
                                 Spacer()
                                 Text("\(index / 8 + 1)")
                                     .font(.pretendard(size: 12, weight: .regular))
+                                    .foregroundColor(Color(0xacacac))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .offset(x: 6, y: 6)
                             }

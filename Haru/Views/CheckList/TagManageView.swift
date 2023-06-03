@@ -23,7 +23,7 @@ struct TagManageView: View {
                     Text("태그 관리")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(.pretendard(size: 20, weight: .bold))
-                        .foregroundColor(Color(0xF8F8FA))
+                        .foregroundColor(Color(0xf8f8fa))
                 }
                 .padding(.top, 28)
                 .padding(.horizontal, 24)
@@ -33,10 +33,17 @@ struct TagManageView: View {
                     ScrollView {
                         VStack(spacing: 9) {
                             HStack(spacing: 0) {
-                                TextField("태그 추가", text: $checkListViewModel.tagContent)
-                                    .font(.pretendard(size: 14, weight: .medium))
+                                TextField("", text: $checkListViewModel.tagContent)
+                                    .placeholder(when: checkListViewModel.tagContent.isEmpty) {
+                                        Text("태그 추가")
+                                            .font(.pretendard(size: 16, weight: .regular))
+                                            .foregroundColor(
+                                                checkListViewModel.tagContent.isEmpty ? Color(0xacacac) : Color(0x191919)
+                                            )
+                                    }
+                                    .font(.pretendard(size: 16, weight: .regular))
                                     .foregroundColor(
-                                        checkListViewModel.tagContent.isEmpty ? Color(0xACACAC) : Color(0x191919)
+                                        checkListViewModel.tagContent.isEmpty ? Color(0xacacac) : Color(0x191919)
                                     )
                                     .onChange(
                                         of: checkListViewModel.tagContent,
@@ -72,6 +79,7 @@ struct TagManageView: View {
                                 }
                                 .disabled(addButtonTapped)
                             }
+                            .padding(.leading, 9)
 
                             ForEach($checkListViewModel.tagList) { $tag in
                                 TagOptionItem(
@@ -81,12 +89,12 @@ struct TagManageView: View {
                             }
                         }
                         .padding(.top, 18)
-                        .padding(.leading, 44)
+                        .padding(.leading, 35)
                         .padding(.trailing, 30)
                     }
                 }
                 .frame(width: width, height: height * 0.86)
-                .background(Color(0xFDFDFD))
+                .background(Color(0xfdfdfd))
 
                 Spacer(minLength: 26)
             }
