@@ -125,7 +125,7 @@ struct CheckListView: View {
                                         content: DefaultTag.classified.rawValue
                                     ),
                                     isSelected: true,
-                                    disabled: true
+                                    disabled: todoState.todoListWithAnyTag.isEmpty
                                 )
                                 .padding(.leading, 10)
                             }
@@ -145,7 +145,7 @@ struct CheckListView: View {
                                         content: DefaultTag.unclassified.rawValue
                                     ),
                                     isSelected: true,
-                                    disabled: true
+                                    disabled: todoState.todoListWithoutTag.isEmpty
                                 )
                                 .padding(.leading, 10)
                             }
@@ -166,7 +166,7 @@ struct CheckListView: View {
                                         content: DefaultTag.completed.rawValue
                                     ),
                                     isSelected: true,
-                                    disabled: true
+                                    disabled: todoState.todoListByCompleted.isEmpty
                                 )
                                 .padding(.leading, 10)
                             }
@@ -211,7 +211,8 @@ struct CheckListView: View {
                                     } header: {
                                         TagView(
                                             tag: tag,
-                                            isSelected: true
+                                            isSelected: true,
+                                            disabled: todoState.todoListWithoutTag.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
@@ -230,7 +231,8 @@ struct CheckListView: View {
                                     } header: {
                                         TagView(
                                             tag: tag,
-                                            isSelected: true
+                                            isSelected: true,
+                                            disabled: todoState.todoListByCompleted.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
@@ -253,7 +255,8 @@ struct CheckListView: View {
                                                 id: DefaultTag.important.rawValue,
                                                 content: DefaultTag.important.rawValue
                                             ),
-                                            isSelected: true
+                                            isSelected: true,
+                                            disabled: todoState.todoListByFlag.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
@@ -269,7 +272,8 @@ struct CheckListView: View {
                                     } header: {
                                         TagView(
                                             tag: tag,
-                                            isSelected: true
+                                            isSelected: true,
+                                            disabled: todoState.todoListByTag.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
@@ -290,7 +294,7 @@ struct CheckListView: View {
                                                 content: DefaultTag.completed.rawValue
                                             ),
                                             isSelected: true,
-                                            disabled: true
+                                            disabled: todoState.todoListByCompleted.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }

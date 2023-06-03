@@ -58,7 +58,7 @@ final class SearchViewModel: ObservableObject {
             )
 
             var oriRepeatEnd: Date = repeatEnd
-            if repeatOption == RepeatOption.everyMonth.rawValue,
+            if repeatOption == .everyMonth,
                repeatStart.month != repeatEnd.month
             {
                 repeatEnd = CalendarHelper.makeDate(date: repeatStart, hour: 23, minute: 55)
@@ -68,13 +68,13 @@ final class SearchViewModel: ObservableObject {
                 var nextRepeatStart = try schedule.nextSucRepeatStartDate(curRepeatStart: repeatStart)
                 var prevRepeatEnd: Date
                 switch repeatOption {
-                case "매주":
+                case .everyWeek:
                     prevRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(-day * 7))
-                case "격주":
+                case .everySecondWeek:
                     prevRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(-day * 7 * 2))
-                case "매달":
+                case .everyMonth:
                     prevRepeatEnd = CalendarHelper.prevMonthDate(curDate: oriRepeatEnd)
-                case "매년":
+                case .everyYear:
                     prevRepeatEnd = CalendarHelper.prevYearDate(curDate: oriRepeatEnd)
                 default:
                     prevRepeatEnd = Date()

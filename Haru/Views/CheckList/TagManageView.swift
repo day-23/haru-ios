@@ -139,6 +139,7 @@ private struct TagOptionItem: View {
                     case .success:
                         break
                     case .failure:
+                        break
                     }
                 }
             }
@@ -198,6 +199,7 @@ extension TagManageView {
                     case .success:
                         break
                     case .failure:
+                        break
                     }
                 }
             }
