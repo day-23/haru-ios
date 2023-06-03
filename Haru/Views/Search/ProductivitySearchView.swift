@@ -137,12 +137,6 @@ struct ProductivitySearchView: View {
                             }
                         }
                         Text(schedule.isAllDay ? "하루 종일" :
-                            CalendarHelper.isSameDay(
-                                date1: schedule.repeatStart,
-                                date2: schedule.repeatEnd
-                            ) ?
-                            "\(schedule.repeatStart.getDateFormatString("a hh:mm")) - \(schedule.repeatEnd.getDateFormatString("a hh:mm"))"
-                            :
                             "\(schedule.repeatStart.getDateFormatString("M월 d일 a hh:mm")) - \(schedule.repeatEnd.getDateFormatString("M월 d일 a hh:mm"))"
                         )
                         .font(.pretendard(size: 12, weight: .regular))
