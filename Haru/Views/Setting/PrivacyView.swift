@@ -21,7 +21,7 @@ struct PrivacyView: View {
             return !user.user.isPublicAccount
         } set: {
             self.global.user?.user.isPublicAccount = !$0
-            userService.updateUserOption(isPublicAccount: !$0) { _ in }
+            self.userService.updateUserOption(isPublicAccount: !$0) { _ in }
         }
 
         let isPostBrowsingEnabled: Binding<Bool> = Binding {
@@ -31,7 +31,7 @@ struct PrivacyView: View {
             return user.isPostBrowsingEnabled
         } set: {
             self.global.user?.isPostBrowsingEnabled = $0
-            userService.updateUserOption(isPostBrowsingEnabled: $0) { _ in }
+            self.userService.updateUserOption(isPostBrowsingEnabled: $0) { _ in }
         }
 
         let isAllowFeedLike: Binding<String> = Binding {
@@ -52,16 +52,16 @@ struct PrivacyView: View {
             switch $0 {
             case "허용 안함":
                 self.global.user?.isAllowFeedLike = 0
-                userService.updateUserOption(isAllowFeedLike: 0) { _ in }
+                self.userService.updateUserOption(isAllowFeedLike: 0) { _ in }
             case "친구만":
                 self.global.user?.isAllowFeedLike = 1
-                userService.updateUserOption(isAllowFeedLike: 1) { _ in }
+                self.userService.updateUserOption(isAllowFeedLike: 1) { _ in }
             case "모든 사람":
                 self.global.user?.isAllowFeedLike = 2
-                userService.updateUserOption(isAllowFeedLike: 2) { _ in }
+                self.userService.updateUserOption(isAllowFeedLike: 2) { _ in }
             default:
                 self.global.user?.isAllowFeedLike = 0
-                userService.updateUserOption(isAllowFeedLike: 0) { _ in }
+                self.userService.updateUserOption(isAllowFeedLike: 0) { _ in }
             }
         }
 
@@ -83,16 +83,16 @@ struct PrivacyView: View {
             switch $0 {
             case "허용 안함":
                 self.global.user?.isAllowFeedComment = 0
-                userService.updateUserOption(isAllowFeedComment: 0) { _ in }
+                self.userService.updateUserOption(isAllowFeedComment: 0) { _ in }
             case "친구만":
                 self.global.user?.isAllowFeedComment = 1
-                userService.updateUserOption(isAllowFeedComment: 1) { _ in }
+                self.userService.updateUserOption(isAllowFeedComment: 1) { _ in }
             case "모든 사람":
                 self.global.user?.isAllowFeedComment = 2
-                userService.updateUserOption(isAllowFeedComment: 2) { _ in }
+                self.userService.updateUserOption(isAllowFeedComment: 2) { _ in }
             default:
                 self.global.user?.isAllowFeedComment = 0
-                userService.updateUserOption(isAllowFeedComment: 0) { _ in }
+                self.userService.updateUserOption(isAllowFeedComment: 0) { _ in }
             }
         }
 
@@ -103,12 +103,12 @@ struct PrivacyView: View {
             return user.isAllowSearch
         } set: {
             self.global.user?.isAllowSearch = $0
-            userService.updateUserOption(isAllowSearch: $0) { _ in }
+            self.userService.updateUserOption(isAllowSearch: $0) { _ in }
         }
 
         return VStack(spacing: 0) {
             SettingHeader(header: "개인정보 보호") {
-                dismissAction.callAsFunction()
+                self.dismissAction.callAsFunction()
             }
 
             Divider()
@@ -127,8 +127,7 @@ struct PrivacyView: View {
                             .foregroundColor(Color(0x646464))
                             .padding(.trailing, 10)
 
-                        Image("privacy")
-                            .renderingMode(.template)
+                        Image("privacy-lock")
                             .resizable()
                             .frame(width: 20, height: 20)
 
@@ -142,7 +141,7 @@ struct PrivacyView: View {
 
                     Text("계정 공개 상태를 변경하여 나의 피드를 볼 수 있는 사람을 제한할 수 있습니다. 공개 계정일 경우 개별 카테고리에 대한 공개 설정은 카테고리 관리에서, 개별 게시글에 대한 공개 설정은 작성 시 설정할 수 있습니다.")
                         .font(.pretendard(size: 12, weight: .regular))
-                        .foregroundColor(Color(0xacacac))
+                        .foregroundColor(Color(0xACACAC))
                         .lineSpacing(6)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -189,7 +188,7 @@ struct PrivacyView: View {
                             HStack(spacing: 10) {
                                 Text(isAllowFeedLike.wrappedValue)
                                     .font(.pretendard(size: 14, weight: .regular))
-                                    .foregroundColor(Color(0x1dafff))
+                                    .foregroundColor(Color(0x1DAFFF))
 
 //                                Image("back-button")
 //                                    .renderingMode(.template)
@@ -226,7 +225,7 @@ struct PrivacyView: View {
                             HStack(spacing: 10) {
                                 Text(isAllowFeedComment.wrappedValue)
                                     .font(.pretendard(size: 14, weight: .regular))
-                                    .foregroundColor(Color(0x1dafff))
+                                    .foregroundColor(Color(0x1DAFFF))
 
 //                                Image("back-button")
 //                                    .renderingMode(.template)
@@ -245,11 +244,11 @@ struct PrivacyView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("나의 피드의 둘러보기 페이지 노출 여부를 선택할 수 있습니다.")
                             .font(.pretendard(size: 12, weight: .regular))
-                            .foregroundColor(Color(0xacacac))
+                            .foregroundColor(Color(0xACACAC))
 
                         Text("피드에 좋아요와 코멘트를 남길 수 있는 대상 범위를 설정할 수 있습니다.")
                             .font(.pretendard(size: 12, weight: .regular))
-                            .foregroundColor(Color(0xacacac))
+                            .foregroundColor(Color(0xACACAC))
                     }
                     .frame(alignment: .leading)
                 }
@@ -278,7 +277,7 @@ struct PrivacyView: View {
 
                     Text("둘러보기에서 나의 이메일 계정 검색을 제한할 수 있습니다. 이메일 검색이 제한되어도 계정 > 아이디 화면에서 설정된 아이디는 검색에 사용될 수 있습니다.")
                         .font(.pretendard(size: 12, weight: .regular))
-                        .foregroundColor(Color(0xacacac))
+                        .foregroundColor(Color(0xACACAC))
                         .lineSpacing(6)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
