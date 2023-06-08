@@ -26,7 +26,9 @@ final class UserProfileViewModel: ObservableObject {
     @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
     @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
 
-    var friendCount: Int = 0
+    var friendCount: Int {
+        friendList.count
+    }
 
     var reqFriendCount: Int = 0 // 현재 보고 있는 사용자의 친구 요청 수
 
@@ -218,7 +220,6 @@ final class UserProfileViewModel: ObservableObject {
 
                 self.friendList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.friendCount = pageInfo.totalItems
                 if self.friendListTotalPage == -1 {
                     self.friendListTotalPage = pageInfo.totalPages
                 }

@@ -31,6 +31,7 @@ struct ProfileView: View {
         ZStack {
             VStack(spacing: 0) {
                 ProfileInfoView(userProfileVM: userProfileVM)
+                    .background(Color(0xFDFDFD))
                     .padding(.top, 20)
                 
                 Spacer()
@@ -92,6 +93,7 @@ struct ProfileView: View {
                     }
                 }
             }
+            .background(Color(0xFDFDFD))
             
             if postOptModalVis.0 {
                 Color.black.opacity(0.5)

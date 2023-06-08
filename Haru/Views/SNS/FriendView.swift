@@ -297,6 +297,7 @@ struct FriendView: View {
                     .cornerRadius(10)
             } else if user.friendStatus == 0 {
                 Button {
+                    print("hi")
                     userProfileVM.requestFriend(acceptorId: user.id) { result in
                         switch result {
                         case .success(let success):
