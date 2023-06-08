@@ -14,13 +14,11 @@ struct HaruHeader<
     var toggleOn: Bool
 
     @Binding var toggleIsClicked: Bool
-    var isIconGradation: Bool
     @ViewBuilder var background: () -> HeaderBackground // 배경화면으로 보여질 화면을 추가한다.
     @ViewBuilder var item: () -> HeaderItem // 헤더 오른쪽에 들어갈 아이템을 정의한다.
 
     init(
         toggleIsClicked: Binding<Bool>? = nil,
-        isIconGradation: Bool = false,
         @ViewBuilder background: @escaping () -> HeaderBackground = {
             Image("background-gradation")
                 .resizable()
@@ -31,46 +29,39 @@ struct HaruHeader<
         _toggleIsClicked = toggleIsClicked ?? .constant(false)
         self.background = background
         self.item = item
-        self.isIconGradation = isIconGradation
 
         if toggleIsClicked == nil {
-            toggleOn = false
+            self.toggleOn = false
         } else {
-            toggleOn = true
+            self.toggleOn = true
         }
     }
 
     var body: some View {
         ZStack {
-            background()
+            self.background()
                 .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 0) {
                 HStack {
-                    if isIconGradation {
-                        Image("header-logo")
-                    } else {
-                        Image("header-logo")
-                            .renderingMode(.template)
-                            .foregroundColor(Color(0xFDFDFD))
-                    }
+                    Image("logo")
 
-                    if toggleOn {
+                    if self.toggleOn {
                         Button {
                             withAnimation {
-                                toggleIsClicked.toggle()
+                                self.toggleIsClicked.toggle()
                             }
                         } label: {
                             Image("todo-toggle")
                                 .renderingMode(.template)
                                 .foregroundColor(Color(0xFDFDFD))
-                                .rotationEffect(.degrees(toggleIsClicked ? 90 : 0))
+                                .rotationEffect(.degrees(self.toggleIsClicked ? 90 : 0))
                         }
                     }
 
                     Spacer()
 
-                    item()
+                    self.item()
                 }
                 Spacer()
                     .frame(height: 20)

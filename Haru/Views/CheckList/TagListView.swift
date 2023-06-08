@@ -17,24 +17,24 @@ struct TagListView: View {
                 // 중요 태그
                 StarButton(isClicked: true)
                     .onTapGesture {
-                        action(Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
+                        self.action(Tag(id: DefaultTag.important.rawValue, content: DefaultTag.important.rawValue))
                     }
 
                 // 완료 태그
                 TagView(
                     tag: Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue),
-                    isSelected: viewModel.selectedTag?.id == DefaultTag.completed.rawValue
+                    isSelected: self.viewModel.selectedTag?.id == DefaultTag.completed.rawValue
                 )
                 .onTapGesture {
-                    action(Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue))
+                    self.action(Tag(id: DefaultTag.completed.rawValue, content: DefaultTag.completed.rawValue))
                 }
 
                 // 태그 리스트들
-                ForEach(viewModel.tagList) { tag in
+                ForEach(self.viewModel.tagList) { tag in
                     if tag.isSelected {
-                        TagView(tag: tag, isSelected: viewModel.selectedTag?.id == tag.id)
+                        TagView(tag: tag, isSelected: self.viewModel.selectedTag?.id == tag.id)
                             .onTapGesture {
-                                action(tag)
+                                self.action(tag)
                             }
                     }
                 }

@@ -11,7 +11,7 @@ struct StarButton: View {
     var isClicked: Bool
 
     var body: some View {
-        Image(isClicked ? "star-check" : "star")
+        Image(self.isClicked ? "todo-star-fill" : "todo-star")
             .zIndex(1)
             .frame(width: 28, height: 28)
     }
