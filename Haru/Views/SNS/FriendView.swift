@@ -19,6 +19,8 @@ struct FriendView: View {
     @State private var refuseFriend: Bool = false
     @State private var cancelFriend: Bool = false
     
+    @State private var targetUser: FriendUser?
+    
     var body: some View {
         ZStack {
             VStack(spacing: 15) {
@@ -179,6 +181,66 @@ struct FriendView: View {
                 }
             } // VStack
             .padding(.top, 20)
+            .confirmationDialog(
+                "\(targetUser?.name ?? "")님께 보낸 친구 신청을 취소할까요?",
+                isPresented: $cancelFriend,
+                titleVisibility: .visible
+            ) {
+                Button("취소하기", role: .destructive) {
+                    guard let user = targetUser else {
+                        return
+                    }
+                    userProfileVM.cancelRequestFriend(acceptorId: user.id) { result in
+                        switch result {
+                        case .success(let success):
+                            if !success {
+                                print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
+                            }
+                            
+                            userProfileVM.refreshFriendList()
+                        case .failure(let failure):
+                            print("[Debug] \(failure) \(#file) \(#function)")
+                        }
+                    }
+                }
+            }
+            .confirmationDialog(
+                "\(targetUser?.name ?? "")님을 친구 목록에서 삭제할까요?",
+                isPresented: $deleteFriend,
+                titleVisibility: .visible
+            ) {
+                Button("삭제하기", role: .destructive) {
+                    guard let user = targetUser else {
+                        return
+                    }
+                    userProfileVM.deleteFriend(friendId: user.id) {
+                        userProfileVM.refreshFriendList()
+                    }
+                }
+            }
+            .confirmationDialog(
+                "\(targetUser?.name ?? "")님의 친구 신청을 거절할까요?",
+                isPresented: $refuseFriend,
+                titleVisibility: .visible
+            ) {
+                Button("거절하기", role: .destructive) {
+                    guard let user = targetUser else {
+                        return
+                    }
+                    userProfileVM.cancelRequestFriend(acceptorId: user.id) { result in
+                        switch result {
+                        case .success(let success):
+                            if !success {
+                                print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
+                            }
+                            
+                            userProfileVM.refreshFriendList()
+                        case .failure(let failure):
+                            print("[Debug] \(failure) \(#file) \(#function)")
+                        }
+                    }
+                }
+            }
         } // ZStack
         .navigationBarBackButtonHidden()
         .toolbar {
@@ -205,6 +267,7 @@ struct FriendView: View {
         if friendTab {
             HStack(spacing: 10) {
                 Button {
+                    targetUser = user
                     deleteFriend = true
                 } label: {
                     Text("삭제")
@@ -215,19 +278,10 @@ struct FriendView: View {
                         .background(Color(0xF1F1F5))
                         .cornerRadius(10)
                 }
-                .confirmationDialog(
-                    "\(user.name)님을 친구 목록에서 삭제할까요?",
-                    isPresented: $deleteFriend,
-                    titleVisibility: .visible
-                ) {
-                    Button("삭제하기", role: .destructive) {
-                        userProfileVM.deleteFriend(friendId: user.id) {
-                            userProfileVM.refreshFriendList()
-                        }
-                    }
-                }
                 
-                Button {} label: {
+                Button {
+                    // TODO: 친구 차단하기 및 숨기기 기능
+                } label: {
                     Image("ellipsis")
                         .resizable()
                         .frame(width: 28, height: 28)
@@ -262,6 +316,7 @@ struct FriendView: View {
                 }
                 
                 Button {
+                    targetUser = user
                     refuseFriend = true
                 } label: {
                     Text("거절")
@@ -271,15 +326,6 @@ struct FriendView: View {
                         .padding(.vertical, 6)
                         .background(Color(0xF1F1F5))
                         .cornerRadius(10)
-                }
-                .confirmationDialog(
-                    "\(user.name)님의 친구 신청을 거절할까요?",
-                    isPresented: $refuseFriend,
-                    titleVisibility: .visible
-                ) {
-                    Button("거절하기", role: .destructive) {
-                        print("거절하기")
-                    }
                 }
             }
         }
@@ -323,7 +369,7 @@ struct FriendView: View {
                 }
             } else if user.friendStatus == 1 {
                 Button {
-                    print(user.name, user.id)
+                    targetUser = user
                     cancelFriend = true
                 } label: {
                     Text("신청 취소")
@@ -334,30 +380,9 @@ struct FriendView: View {
                         .background(Color(0xF1F1F5))
                         .cornerRadius(10)
                 }
-                .confirmationDialog(
-                    "\(user.name)님께 보낸 친구 신청을 취소할까요?",
-                    isPresented: $cancelFriend,
-                    titleVisibility: .visible
-                ) {
-                    Button("취소하기", role: .destructive) {
-                        print(user.name, user.id)
-                        userProfileVM.cancelRequestFriend(acceptorId: user.id) { result in
-                            switch result {
-                            case .success(let success):
-                                if !success {
-                                    print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
-                                }
-                                
-                                userProfileVM.refreshFriendList()
-                            case .failure(let failure):
-                                print("[Debug] \(failure) \(#file) \(#function)")
-                            }
-                        }
-                    }
-                }
-                
             } else {
                 Button {
+                    targetUser = user
                     deleteFriend = true
                 } label: {
                     Text("내 친구")
@@ -367,17 +392,6 @@ struct FriendView: View {
                         .padding(.vertical, 6)
                         .background(Color(0xF1F1F5))
                         .cornerRadius(10)
-                }
-                .confirmationDialog(
-                    "\(user.name)님을 친구 목록에서 삭제할까요?",
-                    isPresented: $deleteFriend,
-                    titleVisibility: .visible
-                ) {
-                    Button("삭제하기", role: .destructive) {
-                        userProfileVM.deleteFriend(friendId: user.id) {
-                            userProfileVM.refreshFriendList()
-                        }
-                    }
                 }
             }
         }
