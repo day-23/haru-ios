@@ -149,6 +149,5 @@ struct FeedView: View {
                 Divider()
             }
         }
-        .background(Color(0xfdfdfd))
     }
 }
