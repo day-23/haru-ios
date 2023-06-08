@@ -52,7 +52,8 @@ struct CommentView: View, KeyboardReadable {
         return result
     }
 
-    @State var isCommentCreate: Bool = false // 댓글을 작성 중인가 (편집 시에도 true)
+    @State var isCommentWriting: Bool = false // 댓글을 작성 중인가
+    @State var isCommentEditing: Bool = false // 댓글을 수정 중인가 (본인 게시물에서만 가능)
     @State var hiddeComment: Bool = false // 댓글을 가릴건지 안가릴건지 선택
 
     @State var textRect = CGRect()
@@ -76,7 +77,7 @@ struct CommentView: View, KeyboardReadable {
     @State var startingX: CGFloat?
     @State var startingY: CGFloat?
 
-    var isMine: Bool
+    var isMine: Bool // 해당 게시물이 내 게시물인지 남의 게시물인지
 
     // For API
     private let commentService: CommentService = .init()
@@ -100,31 +101,32 @@ struct CommentView: View, KeyboardReadable {
                                     startingX = deviceSize.width / 2
                                     startingY = deviceSize.width / 2
                                 }
-                                isCommentCreate = true
+                                isCommentWriting = true
                                 isFocused = true
                             }
                         } label: {
                             HStack(spacing: 5) {
-                                Image("touch-edit")
+                                Image(isMine ? "touch-edit" : "chat-bubble-empty")
                                     .renderingMode(.template)
                                     .resizable()
                                     .frame(width: 28, height: 28)
 
                                 Text(
-                                    isCommentCreate ?
-                                        !isMine && alreadyComment[postPageNum] == nil
-                                        ? "작성중" : "편집중"
-                                        : !isMine && alreadyComment[postPageNum] == nil
-                                        ? "작성하기" : "편집하기"
+                                    isMine ?
+                                        isCommentEditing ? "편집하기" : "편집중"
+                                        :
+                                        "작성하기"
                                 )
                                 .font(.pretendard(size: 14, weight: .bold))
                             }
                             .foregroundColor(
-                                isCommentCreate ?
-                                    Color(0x1DAFFF) : Color(0xFDFDFD)
+                                isMine ?
+                                    isCommentEditing ? Color(0x1DAFFF) : Color(0xFDFDFD)
+                                    :
+                                    Color(0x646464)
                             )
                         }
-                        .disabled(isCommentCreate)
+                        .disabled(isCommentWriting)
                     }
 
                     Spacer(minLength: 0)
@@ -177,10 +179,10 @@ struct CommentView: View, KeyboardReadable {
                     }
                 }
                 .overlay {
-                    if isCommentCreate, alreadyComment[postPageNum] != nil {
+                    if isCommentWriting, alreadyComment[postPageNum] != nil {
                         Group {
                             Button {
-                                isCommentCreate = false
+                                isCommentWriting = false
                                 content = ""
                             } label: {
                                 HStack(spacing: 5) {
@@ -320,7 +322,7 @@ struct CommentView: View, KeyboardReadable {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(0x191919))
+        .background(isCommentEditing || isCommentWriting ? Color(0x191919) : Color(0xFDFDFD))
         .edgesIgnoringSafeArea(.top)
         .ignoresSafeArea(.keyboard)
         .simultaneousGesture(
@@ -340,8 +342,8 @@ struct CommentView: View, KeyboardReadable {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
-                    if isCommentCreate {
-                        isCommentCreate = false
+                    if isCommentWriting {
+                        isCommentWriting = false
                         content = ""
                     } else {
                         dismissAction.callAsFunction()
@@ -351,20 +353,20 @@ struct CommentView: View, KeyboardReadable {
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 28, height: 28)
-                        .foregroundColor(Color(0xFDFDFD))
+                        .foregroundColor(isCommentEditing || isCommentWriting ? Color(0xFDFDFD) : Color(0x191919))
                 }
             }
 
             ToolbarItem(placement: .principal) {
-                Text(isCommentCreate ?
+                Text(isCommentWriting ?
                     alreadyComment[postPageNum] == nil ? "코멘트 작성" : "코멘트 편집"
                     : "코멘트")
                     .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(Color(0xFDFDFD))
+                    .foregroundColor(isCommentEditing || isCommentWriting ? Color(0xFDFDFD) : Color(0x191919))
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
-                if isCommentCreate {
+                if isCommentWriting {
                     Button {
                         if let comment = alreadyComment[postPageNum] {
                             commentService.updateComment(
@@ -382,7 +384,7 @@ struct CommentView: View, KeyboardReadable {
                                         postImageList[postPageNum].comments[comment.1].y = y / deviceSize.width * 100
                                     }
                                     isFocused = false
-                                    isCommentCreate = false
+                                    isCommentWriting = false
                                 case .failure(let failure):
                                     print("[Debug] \(failure)")
                                     print("\(#function)")
@@ -400,7 +402,7 @@ struct CommentView: View, KeyboardReadable {
                                     x = nil
                                     y = nil
                                     postImageList[postPageNum].comments.append(success)
-                                    isCommentCreate = false
+                                    isCommentWriting = false
                                 case .failure(let failure):
                                     print("[Debug] \(failure)")
                                     print("\(#fileID) \(#function)")
@@ -423,7 +425,7 @@ struct CommentView: View, KeyboardReadable {
     func mainContent(deviceSize: CGSize) -> some View {
         let sz = deviceSize.width
         let longPress = LongPressGesture(minimumDuration: 0.3)
-            .onEnded { value in
+            .onEnded { _ in
                 withAnimation {
                     dragging = true
                 }
@@ -463,7 +465,7 @@ struct CommentView: View, KeyboardReadable {
                         // 삭제 api 연동
                     }
 
-                    isCommentCreate = false
+                    isCommentWriting = false
                     content = ""
                     overDelete = false
                 }
@@ -478,9 +480,9 @@ struct CommentView: View, KeyboardReadable {
 
         let combined = longPress.sequenced(before: drag)
 
-        GeometryReader { proxy in
+        GeometryReader { _ in
             ZStack {
-                if isCommentCreate {
+                if isCommentWriting {
                     Color.black.opacity(0.3)
                         .zIndex(3)
                 }
@@ -490,7 +492,7 @@ struct CommentView: View, KeyboardReadable {
 
                 commentListView()
 
-                if isCommentCreate {
+                if isCommentWriting {
                     ZStack {
                         Circle()
                             .frame(width: overDelete ? 90 : 80, height: overDelete ? 90 : 80)
@@ -516,7 +518,7 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
             .onTapGesture { location in
-                if isMine || isCommentCreate {
+                if isMine || isCommentWriting {
                     return
                 }
 
@@ -534,12 +536,12 @@ struct CommentView: View, KeyboardReadable {
                     startingY = location.y
                 }
 
-                isCommentCreate = true
+                isCommentWriting = true
                 isFocused = true
             }
 
-            if isCommentCreate, let x, let y {
-                TextFieldDynamicWidth(title: "        ", text: $content, textRect: $textRect) { editingChange in
+            if isCommentWriting, let x, let y {
+                TextFieldDynamicWidth(title: "        ", text: $content, textRect: $textRect) { _ in
                     // logic
                 } onCommit: {
                     // logic
@@ -572,7 +574,7 @@ struct CommentView: View, KeyboardReadable {
     func commentListView() -> some View {
         if !hiddeComment {
             ForEach(commentList[postPageNum]) { comment in
-                if !isCommentCreate || alreadyComment[postPageNum]?.0.id != comment.id {
+                if !isCommentWriting || alreadyComment[postPageNum]?.0.id != comment.id {
                     Text("\(comment.content)")
                         .font(.pretendard(size: 14, weight: .regular))
                         .padding(.horizontal, 8)
