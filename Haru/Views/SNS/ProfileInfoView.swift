@@ -16,7 +16,7 @@ struct ProfileInfoView: View {
     @State var cancelFriend: Bool = false
     
     var body: some View {
-        HStack(alignment: .top, spacing: 20) {
+        HStack(alignment: .center, spacing: 20) {
             ProfileImgView(profileImage: userProfileVM.profileImage)
                 .frame(width: 62, height: 62)
             
@@ -125,9 +125,6 @@ struct ProfileInfoView: View {
         }
         .padding(.horizontal, 20)
         
-        Spacer()
-            .frame(height: 20)
-        
         HStack {
             VStack(spacing: 4) {
                 Text("\(userProfileVM.user.postCount)")
@@ -154,6 +151,7 @@ struct ProfileInfoView: View {
             }
             .foregroundColor(Color(0x191919))
             .padding(.trailing, 100)
+            .padding(.top, 6)
         }
     }
 }

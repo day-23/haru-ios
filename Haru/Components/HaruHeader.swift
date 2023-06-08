@@ -46,7 +46,7 @@ struct HaruHeader<
                 .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 0) {
-                HStack {
+                HStack(spacing: 0) {
                     if isIconGradation {
                         Image("header-logo")
                     } else {
@@ -62,8 +62,10 @@ struct HaruHeader<
                             }
                         } label: {
                             Image("todo-toggle")
+                                .resizable()
                                 .renderingMode(.template)
-                                .foregroundColor(Color(0xFDFDFD))
+                                .foregroundColor(Color(0x191919))
+                                .frame(width: 20, height: 20)
                                 .rotationEffect(.degrees(toggleIsClicked ? 90 : 0))
                         }
                     }

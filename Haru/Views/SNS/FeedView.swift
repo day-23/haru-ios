@@ -110,8 +110,7 @@ struct FeedView: View {
                                 isMine: isMine
                             )
                         } label: {
-                            // TODO: post.isCommented인 경우 chat-bubble-fill : chat-bubble
-                            Image(post.commentCount > 0 ? "chat-bubble-fill" : "chat-bubble-empty")
+                            Image(post.isCommented ? "chat-bubble-fill" : "chat-bubble-empty")
                                 .resizable()
                                 .frame(width: 28, height: 28)
                         }

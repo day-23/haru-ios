@@ -24,7 +24,6 @@ struct FeedListView: View {
                         postOptModalVis: $postOptModalVis,
                         comeToRoot: comeToRoot
                     )
-                    .background(Color(0xfdfdfd))
                 }
                 if !postVM.postList.isEmpty, postVM.page <= postVM.feedTotalPage {
                     HStack {
@@ -43,6 +42,7 @@ struct FeedListView: View {
             }
             .padding(.top, 14)
         }
+        .background(Color(0xfdfdfd))
         .onAppear {
             postVM.option = postVM.targetId == nil ? .main : .target_feed
 

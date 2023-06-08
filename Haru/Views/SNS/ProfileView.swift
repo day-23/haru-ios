@@ -30,18 +30,11 @@ struct ProfileView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                if myProfile {
-                    HaruHeaderView()
-                        .padding(.bottom, 16)
-                }
-                
-                Spacer()
-                    .frame(height: 14)
-                
                 ProfileInfoView(userProfileVM: userProfileVM)
+                    .padding(.top, 20)
                 
                 Spacer()
-                    .frame(height: 28)
+                    .frame(height: 33)
                 
                 if userProfileVM.isPublic {
                     VStack(spacing: 0) {
@@ -238,90 +231,60 @@ struct ProfileView: View {
         }
         .navigationBarBackButtonHidden()
         .toolbar {
-            if !myProfile {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismissAction.callAsFunction()
-                    } label: {
-                        Image("back-button")
-                            .frame(width: 28, height: 28)
-                    }
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismissAction.callAsFunction()
+                } label: {
+                    Image("back-button")
+                        .frame(width: 28, height: 28)
                 }
-                
-                if !userProfileVM.isMe {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            blockFriend = true
-                        } label: {
-                            Image("ellipsis")
-                        }
-                        .confirmationDialog(
-                            "\(userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
-                            isPresented: $blockFriend,
-                            titleVisibility: .visible
-                        ) {
-                            Button("차단하기", role: .destructive) {
-                                userProfileVM.blockedFriend(blockUserId: userProfileVM.user.id) { result in
-                                    switch result {
-                                    case .success(let success):
-                                        if !success {
-                                            print("Toast Message로 알려주기")
-                                        }
-                                        userProfileVM.fetchUserProfile()
-                                    case .failure(let failure):
-                                        print("\(failure) \(#file) \(#function)")
+            }
+            
+            if !userProfileVM.isMe {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        blockFriend = true
+                    } label: {
+                        Image("ellipsis")
+                    }
+                    .confirmationDialog(
+                        "\(userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
+                        isPresented: $blockFriend,
+                        titleVisibility: .visible
+                    ) {
+                        Button("차단하기", role: .destructive) {
+                            userProfileVM.blockedFriend(blockUserId: userProfileVM.user.id) { result in
+                                switch result {
+                                case .success(let success):
+                                    if !success {
+                                        print("Toast Message로 알려주기")
                                     }
+                                    userProfileVM.fetchUserProfile()
+                                case .failure(let failure):
+                                    print("\(failure) \(#file) \(#function)")
                                 }
                             }
                         }
                     }
                 }
+            } else {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack(spacing: 5) {
+                        Image("my-history")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 28, height: 28)
+                        
+                        Text("내 기록")
+                            .font(.pretendard(size: 14, weight: .bold))
+                    }
+                    .foregroundColor(Color(0x1DAFFF))
+                    .padding(.trailing, 8)
+                }
             }
         }
         .onAppear {
             userProfileVM.fetchUserProfile()
-        }
-    }
-    
-    @ViewBuilder
-    func HaruHeaderView() -> some View {
-        HaruHeader(
-            toggleIsClicked: $toggleIsClicked
-        ) {
-            HStack(spacing: 10) {
-                Text("내 기록")
-                    .font(.pretendard(size: 16, weight: .bold))
-                    .foregroundColor(Color(0xFDFDFD))
-                    .padding(.vertical, 5)
-                    .padding(.horizontal, 10)
-                    .background(
-                        LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
-                    .cornerRadius(10)
-                    .overlay(content: {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(
-                                LinearGradient(
-                                    colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1
-                            )
-                            
-                    })
-                    .padding(.vertical, 1)
-                
-                NavigationLink {
-                    Text("검색")
-                } label: {
-                    Image("magnifyingglass")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundColor(Color(0x191919))
-                        .frame(width: 28, height: 28)
-                }
-            }
         }
     }
 }
