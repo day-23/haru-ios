@@ -8,25 +8,26 @@
 import SwiftUI
 
 struct SettingView: View {
+    // MARK: Internal
+
     @Environment(\.dismiss) var dismissAction
     @Binding var isLoggedIn: Bool
-    @State private var isLogoutButtonClicked: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
             SettingHeader(header: "설정") {
-                dismissAction.callAsFunction()
+                self.dismissAction.callAsFunction()
             }
 
             Divider()
                 .padding(.top, 19)
 
             VStack(spacing: 14) {
-                SettingRow(iconName: "account", content: "계정") {
+                SettingRow(iconName: "setting-account", content: "계정") {
                     AccountView()
                 }
 
-                SettingRow(iconName: "privacy", content: "개인정보 보호") {
+                SettingRow(iconName: "setting-privacy", content: "개인정보 보호") {
                     PrivacyView()
                 }
 
@@ -34,11 +35,11 @@ struct SettingView: View {
 //                    ScreenView()
 //                }
 
-                SettingRow(iconName: "alarm-setting", content: "알림") {
+                SettingRow(iconName: "setting-alarm", content: "알림") {
                     // TODO: 알림으로 연결
                 }
 
-                SettingRow(iconName: "information", content: "정보") {
+                SettingRow(iconName: "setting-information", content: "정보") {
                     InformationView()
                 }
 
@@ -65,7 +66,7 @@ struct SettingView: View {
                 if let user = Global.shared.user {
                     HStack(spacing: 0) {
                         Button {
-                            isLogoutButtonClicked = true
+                            self.isLogoutButtonClicked = true
                         } label: {
                             Text("로그아웃")
                                 .font(.pretendard(size: 14, weight: .regular))
@@ -73,13 +74,13 @@ struct SettingView: View {
                         }
                         .confirmationDialog(
                             "\(user.user.name) 계정에서 로그아웃 할까요?",
-                            isPresented: $isLogoutButtonClicked,
+                            isPresented: self.$isLogoutButtonClicked,
                             titleVisibility: .visible
                         ) {
                             Button("로그아웃", role: .destructive) {
                                 KeychainService.logout()
                                 AlarmHelper.removeAllNotification()
-                                isLoggedIn = false
+                                self.isLoggedIn = false
                             }
                         }
 
@@ -92,6 +93,10 @@ struct SettingView: View {
         }
         .navigationBarBackButtonHidden()
     }
+
+    // MARK: Private
+
+    @State private var isLogoutButtonClicked: Bool = false
 }
 
 struct SettingRow<Destination: View>: View {
@@ -102,22 +107,22 @@ struct SettingRow<Destination: View>: View {
     var body: some View {
         VStack(spacing: 0) {
             NavigationLink {
-                destination()
+                self.destination()
             } label: {
                 HStack(spacing: 0) {
-                    Image(iconName)
+                    Image(self.iconName)
                         .renderingMode(.template)
                         .foregroundColor(Color(0x646464))
                         .frame(width: 28, height: 28)
                         .padding(.trailing, 10)
 
-                    Text(content)
+                    Text(self.content)
                         .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(Color(0x191919))
 
                     Spacer()
 
-                    Image("detail-button")
+                    Image("setting-detail-button")
                         .frame(width: 28, height: 28)
                 }
             }

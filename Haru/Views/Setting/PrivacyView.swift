@@ -127,7 +127,7 @@ struct PrivacyView: View {
                             .foregroundColor(Color(0x646464))
                             .padding(.trailing, 10)
 
-                        Image("privacy-lock")
+                        Image("setting-privacy-lock")
                             .resizable()
                             .frame(width: 20, height: 20)
 
