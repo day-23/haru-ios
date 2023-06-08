@@ -88,13 +88,53 @@ struct ProfileInfoView: View {
                                     .cornerRadius(10)
                             }
                         } else if userProfileVM.user.friendStatus == 1 {
-                            Button {} label: {
+                            Button {
+                                cancelFriend = true
+                            } label: {
                                 Text("신청 취소")
                                     .foregroundColor(Color(0x646464))
                                     .font(.pretendard(size: 16, weight: .regular))
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
                                     .background(Color(0xF1F1F5))
+                                    .cornerRadius(10)
+                            }
+                            .confirmationDialog(
+                                "\(userProfileVM.user.name)님께 보낸 친구 신청을 취소할까요?",
+                                isPresented: $cancelFriend,
+                                titleVisibility: .visible
+                            ) {
+                                Button("삭제하기", role: .destructive) {
+                                    userProfileVM.deleteFriend(friendId: userProfileVM.user.id) {
+                                        userProfileVM.fetchUserProfile()
+                                    }
+                                }
+                            }
+                        } else if userProfileVM.user.friendStatus == 3 {
+                            // TODO: friendStatus 하나 더 구분해서 수락 기능
+                            Button {
+                                userProfileVM.acceptRequestFriend(requesterId: userProfileVM.user.id) { result in
+                                    switch result {
+                                    case .success(let success):
+                                        if !success {
+                                            print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
+                                        }
+                                        
+                                        userProfileVM.refreshFriendList()
+                                        
+                                    case .failure(let failure):
+                                        print("[Debug] \(failure) \(#file) \(#function)")
+                                    }
+                                }
+                            } label: {
+                                Text("수락")
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)])
+                                    )
                                     .cornerRadius(10)
                             }
                         } else {

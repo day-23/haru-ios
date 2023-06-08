@@ -380,6 +380,47 @@ struct FriendView: View {
                         .background(Color(0xF1F1F5))
                         .cornerRadius(10)
                 }
+            } else if user.friendStatus == 3 {
+                HStack(spacing: 10) {
+                    Button {
+                        userProfileVM.acceptRequestFriend(requesterId: user.id) { result in
+                            switch result {
+                            case .success(let success):
+                                if !success {
+                                    print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
+                                }
+                                
+                                userProfileVM.refreshFriendList()
+                                
+                            case .failure(let failure):
+                                print("[Debug] \(failure) \(#file) \(#function)")
+                            }
+                        }
+                    } label: {
+                        Text("수락")
+                            .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)])
+                            )
+                            .cornerRadius(10)
+                    }
+                    
+                    Button {
+                        targetUser = user
+                        refuseFriend = true
+                    } label: {
+                        Text("거절")
+                            .font(.pretendard(size: 16, weight: .regular))
+                            .foregroundColor(Color(0x646464))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color(0xF1F1F5))
+                            .cornerRadius(10)
+                    }
+                }
             } else {
                 Button {
                     targetUser = user
