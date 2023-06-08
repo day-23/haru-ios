@@ -29,12 +29,12 @@ struct SNSView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
-                HaruHeaderView()
+                self.HaruHeaderView()
 
-                FeedListView(postVM: postVM, postOptModalVis: $postOptModalVis, comeToRoot: true)
+                FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis, comeToRoot: true)
             }
 
-            if toggleIsClicked {
+            if self.toggleIsClicked {
                 DropdownMenu {
                     Text("친구피드")
                         .font(.pretendard(size: 16, weight: .bold))
@@ -49,19 +49,19 @@ struct SNSView: View {
                 }
             }
 
-            if postOptModalVis.0 {
+            if self.postOptModalVis.0 {
                 Color.black.opacity(0.5)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
                         withAnimation {
-                            postOptModalVis.0 = false
+                            self.postOptModalVis.0 = false
                         }
                     }
 
-                Modal(isActive: $postOptModalVis.0, ratio: 0.1) {
+                Modal(isActive: self.$postOptModalVis.0, ratio: 0.1) {
                     VStack(spacing: 20) {
-                        if postOptModalVis.1?.user.id == Global.shared.user?.id {
+                        if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {} label: {
                                 Text("이 게시글 수정하기")
                                     .foregroundColor(Color(0x646464))
@@ -70,7 +70,7 @@ struct SNSView: View {
                         } else {
                             Button {
                                 withAnimation {
-                                    hidePost = true
+                                    self.hidePost = true
                                 }
                             } label: {
                                 Text("이 게시글 숨기기")
@@ -78,17 +78,17 @@ struct SNSView: View {
                                     .font(.pretendard(size: 20, weight: .regular))
                             }
                             .confirmationDialog(
-                                "\(postOptModalVis.1?.user.name ?? "unknown")님의 게시글을 숨길까요? 이 작업은 복원할 수 없습니다.",
-                                isPresented: $hidePost,
+                                "\(self.postOptModalVis.1?.user.name ?? "unknown")님의 게시글을 숨길까요? 이 작업은 복원할 수 없습니다.",
+                                isPresented: self.$hidePost,
                                 titleVisibility: .visible
                             ) {
                                 Button("숨기기", role: .destructive) {
-                                    postVM.hidePost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                    self.postVM.hidePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            postVM.refreshPosts()
-                                            postOptModalVis.0 = false
-                                        case .failure(let failure):
+                                            self.postVM.refreshPosts()
+                                            self.postOptModalVis.0 = false
+                                        case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
                                     }
@@ -96,10 +96,10 @@ struct SNSView: View {
                             }
                         }
                         Divider()
-                        if postOptModalVis.1?.user.id == Global.shared.user?.id {
+                        if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {
                                 withAnimation {
-                                    deletePost = true
+                                    self.deletePost = true
                                 }
                             } label: {
                                 HStack {
@@ -116,16 +116,16 @@ struct SNSView: View {
                             }
                             .confirmationDialog(
                                 "게시글을 삭제할까요? 이 작업은 복원할 수 없습니다.",
-                                isPresented: $deletePost,
+                                isPresented: self.$deletePost,
                                 titleVisibility: .visible
                             ) {
                                 Button("삭제하기", role: .destructive) {
-                                    postVM.deletePost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                    self.postVM.deletePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            postVM.refreshPosts()
-                                            postOptModalVis.0 = false
-                                        case .failure(let failure):
+                                            self.postVM.refreshPosts()
+                                            self.postOptModalVis.0 = false
+                                        case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
                                     }
@@ -133,7 +133,7 @@ struct SNSView: View {
                             }
                         } else {
                             Button {
-                                reportPost = true
+                                self.reportPost = true
                             } label: {
                                 Text("이 게시글 신고하기")
                                     .foregroundColor(Color(0xF71E58))
@@ -141,18 +141,18 @@ struct SNSView: View {
                             }
                             .confirmationDialog(
                                 "게시글을 신고할까요?",
-                                isPresented: $reportPost,
+                                isPresented: self.$reportPost,
                                 titleVisibility: .visible
                             ) {
                                 Button("신고하기", role: .destructive) {
-                                    postVM.reportPost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                    self.postVM.reportPost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            postVM.refreshPosts()
-                                            postOptModalVis.0 = false
+                                            self.postVM.refreshPosts()
+                                            self.postOptModalVis.0 = false
                                             // TODO: 토스트 메시지로 신고가 접수 되었다고 알리기
                                             print("신고가 잘 접수 되었습니다.")
-                                        case .failure(let failure):
+                                        case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
                                     }
@@ -162,47 +162,47 @@ struct SNSView: View {
                     }
                     .padding(.top, 40)
                 }
-                .opacity(deletePost || hidePost || reportPost ? 0 : 1)
+                .opacity(self.deletePost || self.hidePost || self.reportPost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
             }
 
-            if !postOptModalVis.0 {
+            if !self.postOptModalVis.0 {
                 VStack {
-                    if showDrowButton {
+                    if self.showDrowButton {
                         NavigationLink(
                             destination: PostFormView(
                                 postFormVM: PostFormViewModel(postOption: .drawing),
                                 openPhoto: true,
-                                rootIsActive: $isActiveForDrawing,
+                                rootIsActive: self.$isActiveForDrawing,
                                 postAddMode: .drawing
                             ),
-                            isActive: $isActiveForDrawing
+                            isActive: self.$isActiveForDrawing
                         ) {
                             Image("sns-drawing-button")
                                 .shadow(radius: 10, x: 5, y: 0)
                         }
                     }
 
-                    if showWriteButton {
+                    if self.showWriteButton {
                         NavigationLink(
                             destination: PostFormView(
                                 postFormVM: PostFormViewModel(postOption: .writing),
                                 openPhoto: false,
-                                rootIsActive: $isActiveForWriting,
+                                rootIsActive: self.$isActiveForWriting,
                                 postAddMode: .writing
                             ),
-                            isActive: $isActiveForWriting
+                            isActive: self.$isActiveForWriting
                         ) {
                             Image("sns-write-button")
                                 .shadow(radius: 10, x: 5, y: 0)
                         }
                     }
 
-                    if showAddButton {
+                    if self.showAddButton {
                         Button {
                             withAnimation {
-                                showAddMenu()
+                                self.showAddMenu()
                             }
                         } label: {
                             Image("sns-add-button")
@@ -217,35 +217,35 @@ struct SNSView: View {
         }
         .onTapGesture {
             withAnimation {
-                hideAddMenu()
+                self.hideAddMenu()
             }
         }
         .onAppear {
-            toggleIsClicked = false
+            self.toggleIsClicked = false
         }
-        .onChange(of: isActiveForDrawing) { _ in
-            postVM.refreshPosts()
+        .onChange(of: self.isActiveForDrawing) { _ in
+            self.postVM.refreshPosts()
         }
-        .onChange(of: isActiveForWriting) { _ in
-            postVM.refreshPosts()
+        .onChange(of: self.isActiveForWriting) { _ in
+            self.postVM.refreshPosts()
         }
     }
 
     func showAddMenu() {
-        showAddButton = false
-        showWriteButton = true
-        showDrowButton = true
+        self.showAddButton = false
+        self.showWriteButton = true
+        self.showDrowButton = true
     }
 
     func hideAddMenu() {
-        showDrowButton = false
-        showWriteButton = false
-        showAddButton = true
+        self.showDrowButton = false
+        self.showWriteButton = false
+        self.showAddButton = true
     }
 
     @ViewBuilder
     func HaruHeaderView() -> some View {
-        HaruHeader(toggleIsClicked: $toggleIsClicked) {
+        HaruHeader(toggleIsClicked: self.$toggleIsClicked) {
             HStack(spacing: 10) {
                 NavigationLink {
                     ProfileView(
@@ -282,7 +282,7 @@ struct SNSView: View {
                     // TODO: 검색 뷰 만들어지면 넣어주기
                     Text("검색")
                 } label: {
-                    Image("magnifyingglass")
+                    Image("search")
                         .renderingMode(.template)
                         .resizable()
                         .foregroundColor(Color(0x191919))

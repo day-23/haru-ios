@@ -9,23 +9,23 @@ import SwiftUI
 
 struct CalendarDateView: View {
     @EnvironmentObject private var todoState: TodoState
-    
+
     @State private var isSchModalVisible: Bool = false
     @State private var isTodoModalVisible: Bool = false
     @State private var isDayModalVisible: Bool = false
-    
+
     @State private var isOptionModalVisible: Bool = false
-    
+
     @State var showAddButton: Bool = true
     @State var showSchButton: Bool = false
     @State var showTodoButton: Bool = false
 
     @StateObject var calendarVM: CalendarViewModel
     @StateObject var addViewModel: TodoAddViewModel
-    
+
     @State var width = UIScreen.main.bounds.width - 50
     @State var x = UIScreen.main.bounds.width
-    
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -35,19 +35,19 @@ struct CalendarDateView: View {
                             Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[0])년")
                                 .font(.pretendard(size: 28, weight: .bold))
                                 .padding(.trailing, 4)
-                            
+
                             Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[1])월")
                                 .font(.pretendard(size: 28, weight: .bold))
-                            
+
                             Image("toggle-datepicker")
                                 .resizable()
                                 .renderingMode(.template)
                                 .foregroundColor(Color(0x191919))
                                 .frame(width: 28, height: 28)
                         } // HStack
-                        
+
                         Spacer()
-                        
+
                         HStack(spacing: 10) {
                             NavigationLink {
                                 // TODO: 검색 뷰 만들어지면 넣어주기
@@ -57,31 +57,31 @@ struct CalendarDateView: View {
                                     checkListVM: .init(todoState: StateObject(wrappedValue: self.todoState))
                                 )
                             } label: {
-                                Image("magnifyingglass")
+                                Image("search")
                                     .renderingMode(.template)
                                     .resizable()
                                     .foregroundColor(Color(0x191919))
                                     .frame(width: 28, height: 28)
                             }
-                            
+
                             Button {
                                 self.calendarVM.monthOffest = 0
                             } label: {
                                 Text("\(Date().day)")
                                     .font(.pretendard(size: 12, weight: .bold))
-                                    .foregroundColor(Color(0x2ca4ff))
+                                    .foregroundColor(Color(0x2CA4FF))
                                     .padding(.vertical, 3)
                                     .padding(.horizontal, 6)
                                     .background(
                                         Circle()
-                                            .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x15afff)],
+                                            .stroke(LinearGradient(colors: [Color(0x9FA9FF), Color(0x15AFFF)],
                                                                    startPoint: .topLeading,
                                                                    endPoint: .bottomTrailing),
                                                     lineWidth: 2)
                                     )
                             }
                             .tint(Color.gradientStart1)
-                            
+
                             Image("option-button")
                                 .resizable()
                                 .renderingMode(.template)
@@ -98,7 +98,7 @@ struct CalendarDateView: View {
                     } // HStack
                     .padding(.leading, 33)
                     .padding(.trailing, 20)
-                    
+
                     Group {
                         // Day View ...
                         HStack(spacing: 0) {
@@ -108,25 +108,25 @@ struct CalendarDateView: View {
                                     .frame(maxWidth: .infinity)
                                     .foregroundColor(
                                         index == 0 ?
-                                            Color(0xf71e58) :
+                                            Color(0xF71E58) :
                                             index == 6 ?
-                                            Color(0x1dafff) :
-                                            Color(0xacacac)
+                                            Color(0x1DAFFF) :
+                                            Color(0xACACAC)
                                     )
                             }
                         } // HStack
                         .padding(.top, 14)
                         .padding(.bottom, 3)
-                        
+
                         TabView(selection: self.$calendarVM.monthOffest) {
                             ForEach(-10 ... 100, id: \.self) { _ in
                                 GeometryReader { proxy in
-                                    
+
                                     let longPress = LongPressGesture(minimumDuration: 0.3)
-                                        .onEnded { longPress in
+                                        .onEnded { _ in
                                             self.calendarVM.firstSelected = true
                                         }
-                                    
+
                                     let drag = DragGesture()
                                         .onChanged { value in
                                             self.calendarVM.addSelectedItems(
@@ -135,12 +135,12 @@ struct CalendarDateView: View {
                                                 proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks)
                                             )
                                         }
-                                        .onEnded { value in
+                                        .onEnded { _ in
                                             self.isSchModalVisible = true
                                         }
-                                    
+
                                     let combined = longPress.sequenced(before: drag)
-                                    
+
                                     CalendarWeekView(
                                         calendarVM: self.calendarVM,
                                         isDayModalVisible: self.$isDayModalVisible,
@@ -189,7 +189,7 @@ struct CalendarDateView: View {
                     }
                     HStack {
                         Spacer()
-                        
+
                         if self.showSchButton {
                             Button {
                                 self.calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
@@ -224,7 +224,7 @@ struct CalendarDateView: View {
                 .padding(.bottom, 10)
                 .zIndex(2)
             }
-            
+
             // 일정 추가를 위한 모달창
             if self.isSchModalVisible {
                 Color.black.opacity(0.5)
@@ -249,7 +249,7 @@ struct CalendarDateView: View {
                 .transition(.modal)
                 .zIndex(2)
             }
-            
+
             // 할일 추가를 위한 모달창
             if self.isTodoModalVisible {
                 Color.black.opacity(0.5)
@@ -280,11 +280,11 @@ struct CalendarDateView: View {
                             Global.shared.isFaded = false
                         }
                     }
-                
+
                 CalendarDayView(calendarViewModel: self.calendarVM)
                     .zIndex(2)
             }
-            
+
             // 설정을 위한 슬라이드 메뉴
             Group {
                 if self.isOptionModalVisible {
@@ -308,7 +308,7 @@ struct CalendarDateView: View {
                                 self.x = value.translation.width
                             }
                         }
-                    }.onEnded { value in
+                    }.onEnded { _ in
                         withAnimation {
                             if self.x > self.width / 3 {
                                 self.x = UIScreen.main.bounds.width
@@ -339,13 +339,13 @@ struct CalendarDateView: View {
             }
         }
     }
-    
+
     func showAddMenu() {
         self.showAddButton = false
         self.showSchButton = true
         self.showTodoButton = true
     }
-    
+
     func hideAddMenu() {
         self.showTodoButton = false
         self.showSchButton = false

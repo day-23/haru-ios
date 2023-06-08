@@ -15,15 +15,15 @@ struct LookAroundView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
-                HaruHeaderView()
+                self.HaruHeaderView()
                 MediaListView(postVM: PostViewModel(option: .media))
             }
 
-            if toggleIsClicked {
+            if self.toggleIsClicked {
                 DropdownMenu {
                     Button {
 //                        toggleIsClicked = false
-                        dismissAction.callAsFunction()
+                        self.dismissAction.callAsFunction()
                     } label: {
                         Text("친구피드")
                             .font(.pretendard(size: 16, weight: .bold))
@@ -40,7 +40,7 @@ struct LookAroundView: View {
 
     @ViewBuilder
     func HaruHeaderView() -> some View {
-        HaruHeader(toggleIsClicked: $toggleIsClicked) {
+        HaruHeader(toggleIsClicked: self.$toggleIsClicked) {
             HStack(spacing: 10) {
                 NavigationLink {
                     ProfileView(
@@ -78,7 +78,7 @@ struct LookAroundView: View {
                     // TODO: 검색 뷰 만들어지면 넣어주기
                     Text("검색")
                 } label: {
-                    Image("magnifyingglass")
+                    Image("search")
                         .renderingMode(.template)
                         .resizable()
                         .foregroundColor(Color(0x191919))
