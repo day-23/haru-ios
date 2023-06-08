@@ -772,7 +772,7 @@ final class CalendarViewModel: ObservableObject {
     // 2일 이상치 일정의 반복
     func successionRepeatSchedule(firstDate: Date, curDate: Date, lastDate: Date, oriRepeatSch: Schedule) -> [Schedule] {
         var paramCurDate: Date?
-        if firstDate.month != curDate.month, lastDate.month != curDate.month {
+        if firstDate.month != curDate.month || lastDate.month != curDate.month {
             paramCurDate = curDate
         }
         
@@ -1473,6 +1473,11 @@ final class CalendarViewModel: ObservableObject {
             dateString = "\(curDate.year)-\(curDate.month)-\(schedule.repeatStart.day)"
         } else if schedule.repeatStart.month == lastDate.month {
             dateString = "\(lastDate.year)-\(lastDate.month)-\(schedule.repeatStart.day)"
+        } else if (schedule.repeatStart.month + 1) % 12 == firstDate.month,
+                  firstDate.month == curDate?.month
+        {
+            let pivotDate = firstDate.addingTimeInterval(TimeInterval(-(60 * 60 * 24)))
+            dateString = "\(pivotDate.year)-\(pivotDate.month)-\(schedule.repeatStart.day)"
         }
         
         if let date = dateFormatter.date(from: dateString) {

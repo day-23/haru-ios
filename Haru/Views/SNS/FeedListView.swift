@@ -24,6 +24,7 @@ struct FeedListView: View {
                         postOptModalVis: $postOptModalVis,
                         comeToRoot: comeToRoot
                     )
+                    .background(Color(0xfdfdfd))
                 }
                 if !postVM.postList.isEmpty, postVM.page <= postVM.feedTotalPage {
                     HStack {
