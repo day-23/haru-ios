@@ -19,6 +19,7 @@ final class Global: ObservableObject {
 
     @Published var isTabViewActive: Bool = true
     @Published var isFaded: Bool = false
+    @Published var isNetworkConnected: Bool = false
 
     var holidayCategory = Category(
         id: UUID().uuidString,
@@ -26,7 +27,7 @@ final class Global: ObservableObject {
         color: "#F71E58",
         isSelected: true
     )
-    
+
     var colors = [
         [Color(0x2E2E2E), Color(0x656565), Color(0x818181), Color(0x9D9D9D), Color(0xB9B9B9), Color(0xD5D5D5)],
 

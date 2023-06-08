@@ -16,11 +16,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        NetworkManager.shared.startMonitoring()
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "day23.haru.regular-alarm", using: nil) { task in
             self.scheduledNotificationAPI(task: task as! BGAppRefreshTask)
         }
 
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
             if granted {
                 print("[Debug] 알림 권한 획득")
             } else {
