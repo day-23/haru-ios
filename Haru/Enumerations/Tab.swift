@@ -14,6 +14,8 @@ enum Tab: Int, CaseIterable {
     case timetable
     case my
 
+    // MARK: Internal
+
     var title: String {
         switch self {
         case .sns: return "기록"
@@ -26,11 +28,11 @@ enum Tab: Int, CaseIterable {
 
     var icon: String {
         switch self {
-        case .sns: return "sns-tabview"
-        case .calendar: return "calendar-tabview"
-        case .todo: return "todo-tabview"
-        case .timetable: return "timetable-tabview"
-        case .my: return "my-tabview"
+        case .sns: return "tabview-sns"
+        case .calendar: return "tabview-calendar"
+        case .todo: return "tabview-todo"
+        case .timetable: return "tabview-time-table"
+        case .my: return "tabview-setting"
         }
     }
 }
