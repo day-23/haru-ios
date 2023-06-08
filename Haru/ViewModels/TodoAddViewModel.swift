@@ -888,7 +888,9 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func removeSubTodo(_ subTodo: SubTodo) {
-        subTodoList = subTodoList.filter { $0.id != subTodo.id }
+        withAnimation {
+            subTodoList = subTodoList.filter { $0.id != subTodo.id }
+        }
     }
 
     func clear() {

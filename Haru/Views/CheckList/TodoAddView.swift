@@ -104,7 +104,9 @@ struct TodoAddView: View {
                                 )
                                     
                                 Button {
-                                    viewModel.removeSubTodo(subTodo)
+                                    if !viewModel.subTodoList.filter({ $0.id == subTodo.id }).isEmpty {
+                                        viewModel.removeSubTodo(subTodo)
+                                    }
                                 } label: {
                                     Image(systemName: "minus")
                                         .foregroundStyle(Color(0x191919))
