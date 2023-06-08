@@ -91,8 +91,9 @@ struct FriendView: View {
                 ScrollView {
                     LazyVStack(spacing: 30) {
                         ForEach(friendTab ?
-                            userProfileVM.friendList : userProfileVM.requestFriendList, id: \.id)
-                        { user in
+                            userProfileVM.friendList.indices : userProfileVM.requestFriendList.indices, id: \.self)
+                        { idx in
+                            let user = friendTab ? userProfileVM.friendList[idx] : userProfileVM.requestFriendList[idx]
                             HStack {
                                 NavigationLink {
                                     ProfileView(
@@ -297,7 +298,6 @@ struct FriendView: View {
                     .cornerRadius(10)
             } else if user.friendStatus == 0 {
                 Button {
-                    print("hi")
                     userProfileVM.requestFriend(acceptorId: user.id) { result in
                         switch result {
                         case .success(let success):
@@ -323,6 +323,7 @@ struct FriendView: View {
                 }
             } else if user.friendStatus == 1 {
                 Button {
+                    print(user.name, user.id)
                     cancelFriend = true
                 } label: {
                     Text("신청 취소")
@@ -339,6 +340,7 @@ struct FriendView: View {
                     titleVisibility: .visible
                 ) {
                     Button("취소하기", role: .destructive) {
+                        print(user.name, user.id)
                         userProfileVM.cancelRequestFriend(acceptorId: user.id) { result in
                             switch result {
                             case .success(let success):

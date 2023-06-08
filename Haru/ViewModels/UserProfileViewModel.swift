@@ -30,7 +30,9 @@ final class UserProfileViewModel: ObservableObject {
         friendList.count
     }
 
-    var reqFriendCount: Int = 0 // 현재 보고 있는 사용자의 친구 요청 수
+    var reqFriendCount: Int {
+        requestFriendList.count
+    } // 현재 보고 있는 사용자의 친구 요청 수
 
     private let profileService: ProfileService = .init()
     private let friendService: FriendService = .init()
@@ -249,7 +251,6 @@ final class UserProfileViewModel: ObservableObject {
 
                 self.requestFriendList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.reqFriendCount = pageInfo.totalItems
                 if self.reqFriListTotalPage == -1 {
                     self.reqFriListTotalPage = pageInfo.totalPages
                 }
