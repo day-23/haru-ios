@@ -14,7 +14,7 @@ struct SubTodoView: View {
     var backgroundColor: Color = .white
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(alignment: .top, spacing: 0) {
             CompleteButton(isClicked: subTodo.completed)
                 .onTapGesture {
                     checkListViewModel.completeSubTodo(
@@ -28,6 +28,7 @@ struct SubTodoView: View {
                 .strikethrough(subTodo.completed)
                 .font(.pretendard(size: 16, weight: .bold))
                 .foregroundColor(!subTodo.completed ? Color(0x191919) : Color(0xacacac))
+                .padding(.top, 4)
 
             Spacer()
         }
