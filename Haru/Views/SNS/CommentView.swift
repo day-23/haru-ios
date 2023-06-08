@@ -86,48 +86,27 @@ struct CommentView: View, KeyboardReadable {
         ZStack {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .center, spacing: 0) {
-                    Group {
-                        Button {
-                            if !isMine {
-                                if let comment = alreadyComment[postPageNum] { // 기존 댓글이 있는 경우
-                                    x = CGFloat(comment.0.x)
-                                    y = CGFloat(comment.0.y)
-                                    startingX = CGFloat(comment.0.x)
-                                    startingY = CGFloat(comment.0.y)
-                                    content = comment.0.content
-                                } else {
-                                    x = deviceSize.width / 2
-                                    y = deviceSize.width / 2
-                                    startingX = deviceSize.width / 2
-                                    startingY = deviceSize.width / 2
-                                }
-                                isCommentWriting = true
-                                isFocused = true
-                            }
-                        } label: {
-                            HStack(spacing: 5) {
-                                Image(isMine ? "touch-edit" : "chat-bubble-empty")
-                                    .renderingMode(.template)
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
+                    HStack(spacing: 5) {
+                        Image(isMine ? "touch-edit" : "chat-bubble-empty")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 28, height: 28)
 
-                                Text(
-                                    isMine ?
-                                        isCommentEditing ? "편집하기" : "편집중"
-                                        :
-                                        "작성하기"
-                                )
-                                .font(.pretendard(size: 14, weight: .bold))
-                            }
-                            .foregroundColor(
-                                isMine ?
-                                    isCommentEditing ? Color(0x1DAFFF) : Color(0xFDFDFD)
-                                    :
-                                    Color(0x646464)
-                            )
-                        }
-                        .disabled(isCommentWriting)
+                        Text(
+                            isMine ?
+                                isCommentEditing ? "편집하기" : "편집중"
+                                :
+                                "작성하기"
+                        )
+                        .font(.pretendard(size: 14, weight: .bold))
                     }
+                    .foregroundColor(
+                        isMine ?
+                            isCommentEditing ? Color(0x1DAFFF) : Color(0x646464)
+                            :
+                            Color(0x646464)
+                    )
+                    .opacity(isCommentWriting ? 0 : 1)
 
                     Spacer(minLength: 0)
 
@@ -140,7 +119,7 @@ struct CommentView: View, KeyboardReadable {
                                     Image("comment-disable")
                                         .resizable()
                                         .renderingMode(.template)
-                                        .foregroundColor(Color(0x1CAFFF))
+                                        .foregroundColor(Color(0xCACACA))
                                         .frame(width: 28, height: 28)
                                 }
                             } else {
@@ -151,7 +130,7 @@ struct CommentView: View, KeyboardReadable {
                                         .renderingMode(.template)
                                         .resizable()
                                         .frame(width: 28, height: 28)
-                                        .foregroundColor(Color(0xFDFDFD))
+                                        .foregroundColor(Color(0x1CAFFF))
                                 }
                             }
 
@@ -172,17 +151,19 @@ struct CommentView: View, KeyboardReadable {
                                         .resizable()
                                         .renderingMode(.template)
                                         .frame(width: 28, height: 28)
-                                        .foregroundColor(Color(0xFDFDFD))
+                                        .foregroundColor(Color(0x646464))
                                 }
                             }
                         }
+                        .opacity(isCommentEditing || isCommentWriting ? 0 : 1)
                     }
                 }
                 .overlay {
-                    if isCommentWriting, alreadyComment[postPageNum] != nil {
+                    if isCommentEditing {
                         Group {
                             Button {
-                                isCommentWriting = false
+                                // TODO: confirmation으로 초기화할 것인지 묻기
+                                isCommentEditing = false
                                 content = ""
                             } label: {
                                 HStack(spacing: 5) {
@@ -196,7 +177,7 @@ struct CommentView: View, KeyboardReadable {
                                 }
                             }
                         }
-                    } else {
+                    } else if !isCommentWriting {
                         Group {
                             HStack(spacing: 20) {
                                 Image("todo-toggle")
