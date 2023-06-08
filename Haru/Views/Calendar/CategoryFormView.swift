@@ -30,6 +30,11 @@ struct CategoryFormView: View {
             HStack {
                 TextField("카테고리 입력", text: $content)
                     .font(.pretendard(size: 24, weight: .medium))
+                    .onChange(of: content) { _ in
+                        if content.count > 8 {
+                            content = String(content[content.startIndex ..< content.index(content.endIndex, offsetBy: -1)])
+                        }
+                    }
                     
                 Spacer()
                 
