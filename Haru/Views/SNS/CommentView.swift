@@ -556,7 +556,7 @@ struct CommentView: View, KeyboardReadable {
                 }
                 .lineLimit(4)
                 .focused($isFocused)
-                .font(.pretendard(size: dragging ? 18 : 14, weight: .bold))
+                .font(.pretendard(size: dragging ? overDelete ? 11 : 18 : 14, weight: .bold))
                 .foregroundColor(Color(0x1DAFFF))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
@@ -615,6 +615,7 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
         }
+        .background(Color(0xFDFDFD))
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
 }

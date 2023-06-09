@@ -52,7 +52,6 @@ struct FeedListView: View {
         }
         .refreshable {
             postVM.refreshPosts()
-            postVM.loadMorePosts()
         }
     }
 }
