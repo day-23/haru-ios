@@ -135,6 +135,12 @@ struct TagDetailView: View {
                 }
             }
 
+            ToolbarItem(placement: .principal) {
+                Text("태그 수정")
+                    .font(.pretendard(size: 20, weight: .bold))
+                    .foregroundColor(Color(0x191919))
+            }
+
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     checkListViewModel.updateTag(
@@ -169,5 +175,6 @@ struct TagDetailView: View {
                 }
             }
         }
+        .padding(.top, 15)
     }
 }
