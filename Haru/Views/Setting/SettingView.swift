@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct SettingView: View {
-    // MARK: Internal
-
     @Environment(\.dismiss) var dismissAction
     @Binding var isLoggedIn: Bool
     @StateObject var userProfileVM: UserProfileViewModel
@@ -37,7 +35,7 @@ struct SettingView: View {
 //                }
 
                 SettingRow(iconName: "setting-alarm", content: "알림") {
-                    // TODO: 알림으로 연결
+                    SettingAlarmView()
                 }
 
                 SettingRow(iconName: "setting-information", content: "정보") {

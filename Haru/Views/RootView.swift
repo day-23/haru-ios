@@ -144,8 +144,12 @@ struct RootView: View {
                             }
                         }
                         .onAppear {
-                            AlarmHelper.createRegularNotification(regular: .morning)
-                            AlarmHelper.createRegularNotification(regular: .evening)
+                            if let morning = global.user?.morningAlarmTime {
+                                AlarmHelper.createRegularNotification(regular: .morning, time: morning)
+                            }
+                            if let night = global.user?.nightAlarmTime {
+                                AlarmHelper.createRegularNotification(regular: .evening, time: night)
+                            }
                             UIDatePicker.appearance().minuteInterval = 5
                         }
                         .environmentObject(todoState)

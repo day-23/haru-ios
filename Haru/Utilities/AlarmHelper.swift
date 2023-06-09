@@ -18,7 +18,8 @@ final class AlarmHelper {
     private static let todoService: TodoService = .init()
 
     static func createRegularNotification(
-        regular: Regular
+        regular: Regular,
+        time: Date
     ) {
         todoService.fetchTodoListByTodayTodoAndUntilToday { result in
             switch result {
@@ -43,7 +44,7 @@ final class AlarmHelper {
                 content.sound = .default
 
                 var dateComponents = DateComponents()
-                dateComponents.hour = regular == .morning ? 7 : 21
+                dateComponents.hour = time.hour
                 dateComponents.minute = 0
                 let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
                 let request = UNNotificationRequest(identifier: regular.rawValue, content: content, trigger: trigger)

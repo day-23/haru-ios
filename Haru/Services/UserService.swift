@@ -80,4 +80,80 @@ struct UserService {
             }
         }
     }
+
+    func updateMorningAlarmTime(
+        time: Date?,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        struct RequestTime: Codable {
+            let morningAlarmTime: Date?
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encode(self.morningAlarmTime, forKey: .morningAlarmTime)
+            }
+        }
+
+        AF.request(
+            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/setting",
+            method: .patch,
+            parameters: RequestTime(morningAlarmTime: time),
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case .success(let data):
+                completion(.success(data.success))
+            case .failure(let error):
+                print("[Debug] \(error) \(#fileID) \(#function)")
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func updateNightAlarmTime(
+        time: Date?,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        struct RequestTime: Codable {
+            let nightAlarmTime: Date?
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encode(self.nightAlarmTime, forKey: .nightAlarmTime)
+            }
+        }
+
+        AF.request(
+            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/setting",
+            method: .patch,
+            parameters: RequestTime(nightAlarmTime: time),
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case .success(let data):
+                completion(.success(data.success))
+            case .failure(let error):
+                print("[Debug] \(error) \(#fileID) \(#function)")
+                completion(.failure(error))
+            }
+        }
+    }
 }
