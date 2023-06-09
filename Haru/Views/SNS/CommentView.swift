@@ -56,9 +56,12 @@ struct CommentView: View, KeyboardReadable {
     @State var isCommentDeleting: Bool = false // 댓글을 삭제 중인가 (자신이 작성한 댓글)
     @State var isCommentEditing: Bool = false // 댓글을 수정 중인가 (본인 게시물에서만 가능)
     @State var hideAllComment: Bool = false // 댓글을 가릴건지 안가릴건지 선택
+    @State var showUserProfile: Bool = false
 
     @State var cancelWriting: Bool = false // 작성 중인 댓글 취소하기
     @State var deleteWriting: Bool = false // 작성한 댓글 삭제하기
+
+    @State var cancelEditing: Bool = false
 
     @State var textRect = CGRect()
 
@@ -101,11 +104,16 @@ struct CommentView: View, KeyboardReadable {
                         if alreadyComment[postPageNum] == nil {
                             Text(
                                 isMine ?
-                                    isCommentEditing ? "편집하기" : "편집중"
+                                    isCommentEditing ? "편집중" : "편집하기"
                                     :
                                     "작성하기"
                             )
                             .font(.pretendard(size: 14, weight: .bold))
+                        }
+                    }
+                    .onTapGesture {
+                        if isMine {
+                            isCommentEditing = true
                         }
                     }
                     .foregroundColor(
@@ -292,40 +300,6 @@ struct CommentView: View, KeyboardReadable {
                 .zIndex(5)
             }
         }
-        .confirmationDialog("코멘트 작성을 취소할까요? 작성 중인 내용은 삭제됩니다.",
-                            isPresented: $cancelWriting,
-                            titleVisibility: .visible)
-        {
-            Button("삭제하기", role: .destructive) {
-                content = ""
-                isCommentWriting = false
-            }
-        }
-        .confirmationDialog("코멘트를 삭제할까요? 이 작업은 복원할 수 없습니다.",
-                            isPresented: $deleteWriting,
-                            titleVisibility: .visible)
-        {
-            Button("삭제하기", role: .destructive) {
-                // TODO: 댓글 삭제하는 api 연동
-                if let target = delCommentTarget {
-                    commentService.deleteComment(
-                        targetUserId: target.user.id,
-                        targetCommentId: target.id
-                    ) { result in
-                        switch result {
-                        case .success(let success):
-                            if success {
-                                postImageList[postPageNum].comments = postImageList[postPageNum].comments.filter {
-                                    $0.id != delCommentTarget?.id
-                                }
-                            }
-                        case .failure(let failure):
-                            print("[Debug] \(failure)")
-                        }
-                    }
-                }
-            }
-        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(isCommentEditing || isCommentDeleting || isCommentWriting ? Color(0x191919) : Color(0xFDFDFD))
         .edgesIgnoringSafeArea(.top)
@@ -353,8 +327,9 @@ struct CommentView: View, KeyboardReadable {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     if isCommentWriting {
-                        isCommentWriting = false
-                        content = ""
+                        cancelWriting = true
+                    } else if isCommentEditing {
+                        cancelEditing = true
                     } else {
                         dismissAction.callAsFunction()
                     }
@@ -407,12 +382,54 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
         }
+        .confirmationDialog("코멘트 작성을 취소할까요? 작성 중인 내용은 삭제됩니다.",
+                            isPresented: $cancelWriting,
+                            titleVisibility: .visible)
+        {
+            Button("삭제하기", role: .destructive) {
+                content = ""
+                isCommentWriting = false
+            }
+        }
+        .confirmationDialog("코멘트를 삭제할까요? 이 작업은 복원할 수 없습니다.",
+                            isPresented: $deleteWriting,
+                            titleVisibility: .visible)
+        {
+            Button("삭제하기", role: .destructive) {
+                // TODO: 댓글 삭제하는 api 연동
+                if let target = delCommentTarget {
+                    commentService.deleteComment(
+                        targetUserId: target.user.id,
+                        targetCommentId: target.id
+                    ) { result in
+                        switch result {
+                        case .success(let success):
+                            if success {
+                                postImageList[postPageNum].comments = postImageList[postPageNum].comments.filter {
+                                    $0.id != delCommentTarget?.id
+                                }
+                            }
+                        case .failure(let failure):
+                            print("[Debug] \(failure)")
+                        }
+                    }
+                }
+            }
+        }
+        .confirmationDialog("코멘트 편집을 취소할까요? 편집 중인 내용은 초기화됩니다.",
+                            isPresented: $cancelEditing,
+                            titleVisibility: .visible)
+        {
+            Button("편집 취소하기", role: .destructive) {
+                isCommentEditing = false
+            }
+        }
     }
 
     @ViewBuilder
     func mainContent(deviceSize: CGSize) -> some View {
         let sz = deviceSize.width
-        let longPress = LongPressGesture(minimumDuration: 0.3)
+        let longPress = LongPressGesture(minimumDuration: 0.15)
             .onEnded { _ in
                 withAnimation {
                     dragging = true
@@ -511,7 +528,12 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
             .onTapGesture { location in
-                if isMine || isCommentWriting || isCommentDeleting {
+                if isMine {
+                    showUserProfile.toggle()
+                    return
+                }
+
+                if isCommentWriting || isCommentDeleting {
                     return
                 }
 
@@ -577,7 +599,7 @@ struct CommentView: View, KeyboardReadable {
                     )
                     .zIndex(alreadyComment[postPageNum]?.0.id == comment.id ? 5 : 2)
                     .overlay {
-                        if isMine {
+                        if isMine, showUserProfile {
                             userProfileInfoView(comment: comment)
                                 .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
                                 .offset(
@@ -601,6 +623,12 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
         }
+        .overlay(
+            if isCommentEditing {
+                Rectangle()
+                    .fill(Color(0x191919).opacity(0.5))
+            }
+        )
         .background(Color(0xFDFDFD))
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
