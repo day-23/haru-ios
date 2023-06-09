@@ -59,7 +59,7 @@ struct CheckListView: View {
                     }
 
                     // 태그 설정창
-                    Image("option-button")
+                    Image("slider")
                         .frame(width: 28, height: 28)
                         .onTapGesture {
                             withAnimation {
@@ -368,7 +368,7 @@ struct CheckListView: View {
                         .foregroundColor(Color(0x646464))
                         .padding(.vertical, 10)
                         .padding(.horizontal, 12)
-                        .background(Color(0xF1F1F5))
+                        .background(Color(0xf1f1f5))
                         .cornerRadius(8)
                         .padding(.trailing, 18)
                         .padding(.bottom, 4)

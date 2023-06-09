@@ -10,7 +10,7 @@ import SwiftUI
 struct HaruLinkView: View {
     var body: some View {
         HStack {
-            Image("today-todo")
+            Image("todo-today-todo")
                 .renderingMode(.template)
                 .padding(.vertical, 12)
                 .padding(.leading, 20)
@@ -19,10 +19,11 @@ struct HaruLinkView: View {
             Text("오늘 나의 하루")
                 .font(.pretendard(size: 20, weight: .bold))
             Spacer()
-            Image("detail-button")
+            Image("todo-toggle")
                 .renderingMode(.template)
                 .frame(width: 28, height: 28)
                 .padding(.trailing, 20)
+                .tint(.white)
         }
         .frame(height: 52)
         .foregroundColor(Color(0xFDFDFD))

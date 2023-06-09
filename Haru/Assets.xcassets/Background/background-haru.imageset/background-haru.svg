@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="528" height="1141" viewBox="0 0 528 1141">
+  <defs>
+    <radialGradient id="radial-gradient" cx="0.5" cy="0.436" r="0.867" gradientTransform="matrix(0.941, -0.337, 0.187, 0.522, -0.052, 0.377)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#aad7ff"/>
+      <stop offset="1" stop-color="#d2d7ff"/>
+    </radialGradient>
+  </defs>
+  <g id="오늘나의하루배경" transform="translate(0.02 -0.497)">
+    <rect id="사각형_25764" data-name="사각형 25764" width="1141" height="528" transform="translate(527.98 0.497) rotate(90)" fill="#fff"/>
+    <rect id="사각형_25762" data-name="사각형 25762" width="1141" height="528" transform="translate(527.98 0.497) rotate(90)" opacity="0.5" fill="url(#radial-gradient)"/>
+  </g>
+</svg>

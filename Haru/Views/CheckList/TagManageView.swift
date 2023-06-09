@@ -72,7 +72,7 @@ struct TagManageView: View {
                                         }
                                     }
                                 } label: {
-                                    Image("plus")
+                                    Image("todo-add-sub-todo")
                                         .renderingMode(.template)
                                         .frame(width: 28, height: 28)
                                         .foregroundColor(Color(0x191919))

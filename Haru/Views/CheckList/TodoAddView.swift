@@ -90,7 +90,10 @@ struct TodoAddView: View {
 
                         ForEach(self.viewModel.subTodoList.indices, id: \.self) { index in
                             HStack {
-                                Image("dot")
+                                Image("todo-dot")
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0x191919))
+
                                 TextField("", text: self.$viewModel.subTodoList[index].content)
                                     .font(.pretendard(size: 16, weight: .bold))
                                     .strikethrough(self.viewModel.subTodoList[index].completed)
@@ -118,7 +121,7 @@ struct TodoAddView: View {
                                     Text("하위 항목 추가")
                                         .font(.pretendard(size: 16, weight: .regular))
                                 } icon: {
-                                    Image("add-sub-todo")
+                                    Image("todo-add-sub-todo")
                                         .renderingMode(.template)
                                         .frame(width: 28, height: 28)
                                         .foregroundColor(Color(0xACACAC))
@@ -193,7 +196,7 @@ struct TodoAddView: View {
                             }
                             .toggleStyle(CustomToggleStyle())
                         } icon: {
-                            Image("today-todo")
+                            Image("todo-today-todo")
                                 .renderingMode(.template)
                                 .padding(.trailing, 10)
                                 .foregroundColor(self.viewModel.isTodayTodo ? Color(0x191919) : Color(0xACACAC))
@@ -222,7 +225,7 @@ struct TodoAddView: View {
                             }
                             .toggleStyle(CustomToggleStyle())
                         } icon: {
-                            Image("alarm")
+                            Image("todo-alarm")
                                 .renderingMode(.template)
                                 .padding(.trailing, 10)
                                 .foregroundColor(self.viewModel.isSelectedAlarm ? Color(0x191919) : Color(0xACACAC))
@@ -254,7 +257,7 @@ struct TodoAddView: View {
                             }
                             .toggleStyle(CustomToggleStyle())
                         } icon: {
-                            Image("date")
+                            Image("todo-end-date")
                                 .renderingMode(.template)
                                 .padding(.trailing, 10)
                                 .foregroundColor(self.viewModel.isSelectedEndDate ? Color(0x191919) : Color(0xACACAC))
@@ -308,7 +311,7 @@ struct TodoAddView: View {
                             }
                             .toggleStyle(CustomToggleStyle())
                         } icon: {
-                            Image("repeat")
+                            Image("todo-repeat")
                                 .renderingMode(.template)
                                 .padding(.trailing, 10)
                                 .foregroundColor(self.viewModel.isSelectedRepeat ? Color(0x191919) : Color(0xACACAC))
@@ -412,7 +415,7 @@ struct TodoAddView: View {
                             }
                             .toggleStyle(CustomToggleStyle())
                         } icon: {
-                            Image("memo")
+                            Image("todo-memo")
                                 .renderingMode(.template)
                                 .padding(.trailing, 10)
                                 .foregroundColor(!self.viewModel.memo.isEmpty ? Color(0x191919) : Color(0xACACAC))
@@ -558,7 +561,7 @@ struct TodoAddView: View {
                     HStack(spacing: 10) {
                         Text("할 일 삭제하기")
                             .font(.pretendard(size: 20, weight: .regular))
-                        Image("trash")
+                        Image("todo-delete")
                             .renderingMode(.template)
                     }
                     .foregroundColor(Color(0xF71E58))
