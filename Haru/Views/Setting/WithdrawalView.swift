@@ -57,8 +57,7 @@ struct WithdrawalView: View {
                     .padding(.horizontal, 20)
 
                     ZStack {
-                        Image("background-gradation")
-                            .resizable()
+                        Color(0xf1f1f5)
 
                         VStack(alignment: .leading, spacing: 5) {
                             Text("연동된 이메일")
@@ -84,7 +83,7 @@ struct WithdrawalView: View {
 
                         Text("하루 계정이 삭제됩니다. 내 디바이스의 하루 데이터가 모두 삭제되며 닉네임, 사용자 아이디, 공개 프로필이 더 이상 하루 기록에 표시되지 않습니다. 실수로 계정을 삭제한 경우 30일 이내 복구가 가능합니다.")
                             .font(.pretendard(size: 12, weight: .regular))
-                            .foregroundColor(Color(0xACACAC))
+                            .foregroundColor(Color(0xacacac))
                             .lineSpacing(3)
                     }
                     .padding(.horizontal, 34)
@@ -98,7 +97,7 @@ struct WithdrawalView: View {
                     } label: {
                         Text("계정 삭제")
                             .font(.pretendard(size: 20, weight: .regular))
-                            .foregroundColor(Color(0xF71E58))
+                            .foregroundColor(Color(0xf71e58))
                     }
                     .confirmationDialog(
                         "계정을 정말로 삭제하시나요?",

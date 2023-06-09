@@ -8,26 +8,18 @@
 import SwiftUI
 
 struct HaruHeader<
-    HeaderBackground: View,
     HeaderItem: View
 >: View {
     var toggleOn: Bool
 
     @Binding var toggleIsClicked: Bool
-    @ViewBuilder var background: () -> HeaderBackground // 배경화면으로 보여질 화면을 추가한다.
     @ViewBuilder var item: () -> HeaderItem // 헤더 오른쪽에 들어갈 아이템을 정의한다.
 
     init(
         toggleIsClicked: Binding<Bool>? = nil,
-        @ViewBuilder background: @escaping () -> HeaderBackground = {
-            Image("background-gradation")
-                .resizable()
-        },
-
         @ViewBuilder item: @escaping () -> HeaderItem
     ) {
         _toggleIsClicked = toggleIsClicked ?? .constant(false)
-        self.background = background
         self.item = item
 
         if toggleIsClicked == nil {
@@ -39,7 +31,7 @@ struct HaruHeader<
 
     var body: some View {
         ZStack {
-            self.background()
+            Color.white
                 .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 0) {

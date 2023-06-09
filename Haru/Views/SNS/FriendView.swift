@@ -105,7 +105,7 @@ struct FriendView: View {
                                                 ProfileImgView(profileImage: profileImage)
                                                     .frame(width: 30, height: 30)
                                             } else {
-                                                Image("default-profile-image")
+                                                Image("background-main-splash")
                                                     .resizable()
                                                     .clipShape(Circle())
                                                     .frame(width: 30, height: 30)
@@ -115,7 +115,7 @@ struct FriendView: View {
                                                 ProfileImgView(profileImage: profileImage)
                                                     .frame(width: 30, height: 30)
                                             } else {
-                                                Image("default-profile-image")
+                                                Image("background-main-splash")
                                                     .resizable()
                                                     .clipShape(Circle())
                                                     .frame(width: 30, height: 30)

@@ -54,7 +54,7 @@ struct InformationRow<Destination: View>: View {
 
                 Spacer()
 
-                Image("detail-button")
+                Image("setting-detail-button")
                     .frame(width: 28, height: 28)
             }
         }

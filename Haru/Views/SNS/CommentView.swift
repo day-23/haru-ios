@@ -263,7 +263,7 @@ struct CommentView: View, KeyboardReadable {
                                 ProfileImgView(imageUrl: URL(string: profileImage))
                                     .frame(width: 70, height: 70)
                             } else {
-                                Image("default-profile-image")
+                                Image("background-main-splash")
                                     .resizable()
                                     .clipShape(Circle())
                                     .frame(width: 70, height: 70)
