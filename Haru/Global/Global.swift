@@ -21,6 +21,7 @@ final class Global: ObservableObject {
     @Published var isFaded: Bool = false
     @Published var isNetworkConnected: Bool = false
     @Published var isLoading: Bool = false
+    @Published var isLoggedIn: Bool = false
 
     var holidayCategory = Category(
         id: UUID().uuidString,

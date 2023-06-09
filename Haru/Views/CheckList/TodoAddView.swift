@@ -480,6 +480,12 @@ struct TodoAddView: View {
                         }
                     }
 
+                    ToolbarItem(placement: .principal) {
+                        Text(viewModel.todo?.completed == true ? "완료한 일" : "할 일 수정")
+                            .font(.pretendard(size: 20, weight: .bold))
+                            .foregroundColor(Color(0x191919))
+                    }
+
                     if let complete = viewModel.todo?.completed, !complete {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button {
@@ -525,7 +531,7 @@ struct TodoAddView: View {
                                     if self.viewModel.at == .middle
                                         || self.viewModel.at == .back
                                     {
-                                        Button("이 할 일부터 수정") {
+                                        Button("이 할 일부터 수정", role: .destructive) {
                                             self.viewModel.updateTodoWithRepeat(
                                                 at: .back
                                             ) { result in
@@ -574,7 +580,7 @@ struct TodoAddView: View {
                     self.deleteButtonTapped = true
                 } label: {
                     HStack(spacing: 10) {
-                        Text("할 일 삭제하기")
+                        Text("할 일 삭제")
                             .font(.pretendard(size: 20, weight: .regular))
                         Image("todo-delete")
                             .renderingMode(.template)

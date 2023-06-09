@@ -101,7 +101,7 @@ struct TagDetailView: View {
                 }
             } label: {
                 HStack(spacing: 10) {
-                    Text("태그 삭제하기")
+                    Text("태그 삭제")
                         .font(.pretendard(size: 20, weight: .regular))
                     Image("todo-delete")
                         .renderingMode(.template)
@@ -133,6 +133,12 @@ struct TagDetailView: View {
                         dismissAction.callAsFunction()
                     }
                 }
+            }
+
+            ToolbarItem(placement: .principal) {
+                Text("태그 수정")
+                    .font(.pretendard(size: 20, weight: .bold))
+                    .foregroundColor(Color(0x191919))
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -169,5 +175,6 @@ struct TagDetailView: View {
                 }
             }
         }
+        .padding(.top, 15)
     }
 }

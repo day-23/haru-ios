@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct CheckListView: View {
-    // MARK: Internal
-
     @EnvironmentObject var todoState: TodoState
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
+
+    @State private var isModalVisible: Bool = false
+    @State private var prevOffset: CGFloat?
+    @State private var offset: CGFloat?
+    @State private var viewIsShown: Bool = true
+    @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         let isTagManageModalVisible: Binding<Bool> = .init {
@@ -24,48 +28,47 @@ struct CheckListView: View {
         return ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
                 HaruHeader {
-                    NavigationLink {
-                        ProductivitySearchView(
-                            calendarVM: CalendarViewModel(),
-                            todoAddViewModel: self.addViewModel,
-                            checkListVM: self.viewModel
-                        )
-                    } label: {
-                        Image("search")
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundColor(Color(0x191919))
+                    HStack(spacing: 10) {
+                        NavigationLink {
+                            ProductivitySearchView(
+                                calendarVM: CalendarViewModel(),
+                                todoAddViewModel: self.addViewModel,
+                                checkListVM: self.viewModel
+                            )
+                        } label: {
+                            Image("search")
+                                .renderingMode(.template)
+                                .resizable()
+                                .foregroundColor(Color(0x191919))
+                                .frame(width: 28, height: 28)
+                        }
+
+                        // 태그 설정창
+                        Image("slider")
                             .frame(width: 28, height: 28)
+                            .onTapGesture {
+                                withAnimation {
+                                    isTagManageModalVisible.wrappedValue = true
+                                }
+                            }
                     }
                 }
 
-                HStack(spacing: 0) {
-                    // 태그 리스트
-                    TagListView(viewModel: self.viewModel) { tag in
-                        withAnimation {
-                            if let selectedTag = viewModel.selectedTag,
-                               selectedTag == tag
-                            {
-                                self.viewModel.selectedTag = nil
-                                self.prevOffset = nil
-                            } else {
-                                self.viewModel.selectedTag = tag
-                                self.prevOffset = nil
-                            }
+                // 태그 리스트
+                TagListView(viewModel: self.viewModel) { tag in
+                    withAnimation {
+                        if let selectedTag = viewModel.selectedTag,
+                           selectedTag == tag
+                        {
+                            self.viewModel.selectedTag = nil
+                            self.prevOffset = nil
+                        } else {
+                            self.viewModel.selectedTag = tag
+                            self.prevOffset = nil
                         }
                     }
-
-                    // 태그 설정창
-                    Image("slider")
-                        .frame(width: 28, height: 28)
-                        .onTapGesture {
-                            withAnimation {
-                                isTagManageModalVisible.wrappedValue = true
-                            }
-                        }
                 }
                 .padding(.bottom, 10)
-                .padding(.trailing, 20)
 
                 // 오늘 나의 하루
                 NavigationLink {
@@ -357,7 +360,7 @@ struct CheckListView: View {
                 HStack(alignment: .bottom, spacing: 0) {
                     TextField("", text: self.$addViewModel.content)
                         .placeholder(when: self.addViewModel.content.isEmpty) {
-                            Text("간편 추가")
+                            Text("오늘 할 일 빠른 추가")
                                 .font(.pretendard(size: 14, weight: .regular))
                                 .foregroundColor(Color(0x646464))
                         }
@@ -433,12 +436,4 @@ struct CheckListView: View {
             self.prevOffset = offset
         }
     }
-
-    // MARK: Private
-
-    @State private var isModalVisible: Bool = false
-    @State private var prevOffset: CGFloat?
-    @State private var offset: CGFloat?
-    @State private var viewIsShown: Bool = true
-    @FocusState private var isTextFieldFocused: Bool
 }

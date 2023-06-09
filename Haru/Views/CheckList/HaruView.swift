@@ -137,7 +137,7 @@ struct HaruView: View {
                 HStack(alignment: .bottom, spacing: 0) {
                     TextField("", text: self.$addViewModel.content)
                         .placeholder(when: self.addViewModel.content.isEmpty) {
-                            Text("간편 추가")
+                            Text("오늘 할 일 빠른 추가")
                                 .font(.pretendard(size: 14, weight: .regular))
                                 .foregroundColor(Color(0x646464))
                         }

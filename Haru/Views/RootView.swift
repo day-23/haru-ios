@@ -12,7 +12,6 @@ struct RootView: View {
     @EnvironmentObject var global: Global
     @StateObject private var todoState: TodoState = .init()
     @State private var showSplash: Bool = true
-    @State private var isLoggedIn: Bool = false
 
     @State private var selection: Tab = .sns
 
@@ -22,7 +21,7 @@ struct RootView: View {
 
             if showSplash {
                 SplashView(
-                    isLoggedIn: $isLoggedIn
+                    isLoggedIn: $global.isLoggedIn
                 )
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -34,8 +33,19 @@ struct RootView: View {
             } else {
                 if global.isNetworkConnected {
                     if let me = global.user,
-                       isLoggedIn,
-                       !me.user.name.isEmpty
+                       me.isMaliciousUser
+                    {
+                        Image("background-main")
+                            .edgesIgnoringSafeArea(.all)
+                            .overlay {
+                                Text("정지된 아이디입니다.")
+                                    .font(.pretendard(size: 20, weight: .bold))
+                                    .foregroundColor(Color(0xfdfdfd))
+                            }
+                    } else if let me = global.user,
+                              global.isLoggedIn,
+                              !me.user.name.isEmpty,
+                              !me.haruId.isEmpty
                     {
                         NavigationView {
                             ZStack {
@@ -109,7 +119,7 @@ struct RootView: View {
                                         // MARK: - Setting View
                                         
                                         MyView(
-                                            isLoggedIn: $isLoggedIn
+                                            isLoggedIn: $global.isLoggedIn
                                         )
                                     }
                                     
@@ -133,21 +143,26 @@ struct RootView: View {
                             }
                         }
                         .onAppear {
-                            AlarmHelper.createRegularNotification(regular: .morning)
-                            AlarmHelper.createRegularNotification(regular: .evening)
+                            if let morning = global.user?.morningAlarmTime {
+                                AlarmHelper.createRegularNotification(regular: .morning, time: morning)
+                            }
+                            if let night = global.user?.nightAlarmTime {
+                                AlarmHelper.createRegularNotification(regular: .evening, time: night)
+                            }
                             UIDatePicker.appearance().minuteInterval = 5
                         }
                         .environmentObject(todoState)
                         .navigationViewStyle(.stack)
                     } else if let me = global.user,
-                              isLoggedIn,
-                              me.user.name.isEmpty
+                              global.isLoggedIn,
+                              me.user.name.isEmpty,
+                              me.haruId.isEmpty
                     {
                         // 회원 가입
                         SignUpView()
                     } else {
                         LoginView(
-                            isLoggedIn: $isLoggedIn
+                            isLoggedIn: $global.isLoggedIn
                         )
                     }
                 } else {

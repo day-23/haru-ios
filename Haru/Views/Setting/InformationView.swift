@@ -21,14 +21,18 @@ struct InformationView: View {
                 .padding(.bottom, 20)
 
             VStack(spacing: 8) {
-                InformationRow(content: "이용 약관") {}
+                InformationRow(content: "이용 약관") {
+                    TermsOfUseView()
+                }
                 Divider().padding(.bottom, 6)
 
-                InformationRow(content: "개인정보 정책") {}
+                InformationRow(content: "개인정보 정책") {
+                    PolicyView()
+                }
                 Divider().padding(.bottom, 6)
-
-                InformationRow(content: "오픈 소스") {}
-                Divider().padding(.bottom, 6)
+//
+//                InformationRow(content: "오픈 소스") {}
+//                Divider().padding(.bottom, 6)
             }
             .padding(.horizontal, 20)
 
@@ -48,7 +52,7 @@ struct InformationRow<Destination: View>: View {
         } label: {
             HStack(spacing: 0) {
                 Text(content)
-                    .font(.pretendard(size: 14, weight: .regular))
+                    .font(.pretendard(size: 16, weight: .regular))
                     .foregroundColor(Color(0x191919))
                     .padding(.leading, 14)
 

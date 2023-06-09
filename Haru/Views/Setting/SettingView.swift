@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct SettingView: View {
-    // MARK: Internal
-
     @Environment(\.dismiss) var dismissAction
     @Binding var isLoggedIn: Bool
+    @StateObject var userProfileVM: UserProfileViewModel
 
     var body: some View {
         VStack(spacing: 0) {
@@ -22,9 +21,9 @@ struct SettingView: View {
             Divider()
                 .padding(.top, 19)
 
-            VStack(spacing: 14) {
+            VStack(spacing: 12) {
                 SettingRow(iconName: "setting-account", content: "계정") {
-                    AccountView()
+                    AccountView(userProfileVM: userProfileVM)
                 }
 
                 SettingRow(iconName: "setting-privacy", content: "개인정보 보호") {
@@ -36,7 +35,7 @@ struct SettingView: View {
 //                }
 
                 SettingRow(iconName: "setting-alarm", content: "알림") {
-                    // TODO: 알림으로 연결
+                    SettingAlarmView()
                 }
 
                 SettingRow(iconName: "setting-information", content: "정보") {
@@ -53,6 +52,9 @@ struct SettingView: View {
             Spacer()
 
             VStack(alignment: .leading, spacing: 14) {
+                Divider()
+                    .padding(.horizontal, 20)
+
                 HStack(spacing: 0) {
                     NavigationLink {} label: {
                         Text("Version")
@@ -62,6 +64,7 @@ struct SettingView: View {
                 }.padding(.leading, 34)
 
                 Divider()
+                    .padding(.horizontal, 20)
 
                 if let user = Global.shared.user {
                     HStack(spacing: 0) {
@@ -85,8 +88,6 @@ struct SettingView: View {
                         }
 
                     }.padding(.leading, 34)
-
-                    Divider()
                 }
             }
             .padding(.bottom, 64)
@@ -117,7 +118,7 @@ struct SettingRow<Destination: View>: View {
                         .padding(.trailing, 10)
 
                     Text(self.content)
-                        .font(.pretendard(size: 14, weight: .regular))
+                        .font(.pretendard(size: 16, weight: .regular))
                         .foregroundColor(Color(0x191919))
 
                     Spacer()

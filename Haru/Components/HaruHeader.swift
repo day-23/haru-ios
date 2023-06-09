@@ -46,7 +46,7 @@ struct HaruHeader<
                         } label: {
                             Image("todo-toggle")
                                 .renderingMode(.template)
-                                .foregroundColor(Color(0xFDFDFD))
+                                .foregroundColor(Color(0x646464))
                                 .rotationEffect(.degrees(self.toggleIsClicked ? 90 : 0))
                         }
                     }
