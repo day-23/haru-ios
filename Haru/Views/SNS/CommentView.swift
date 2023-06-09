@@ -53,6 +53,7 @@ struct CommentView: View, KeyboardReadable {
     }
 
     @State var isCommentWriting: Bool = false // 댓글을 작성 중인가
+    @State var isCommentDeleting: Bool = false // 댓글을 삭제 중인가 (자신이 작성한 댓글)
     @State var isCommentEditing: Bool = false // 댓글을 수정 중인가 (본인 게시물에서만 가능)
     @State var hiddeComment: Bool = false // 댓글을 가릴건지 안가릴건지 선택
 
@@ -95,21 +96,23 @@ struct CommentView: View, KeyboardReadable {
                             .resizable()
                             .frame(width: 28, height: 28)
 
-                        Text(
-                            isMine ?
-                                isCommentEditing ? "편집하기" : "편집중"
-                                :
-                                "작성하기"
-                        )
-                        .font(.pretendard(size: 14, weight: .bold))
+                        if alreadyComment[postPageNum] == nil {
+                            Text(
+                                isMine ?
+                                    isCommentEditing ? "편집하기" : "편집중"
+                                    :
+                                    "작성하기"
+                            )
+                            .font(.pretendard(size: 14, weight: .bold))
+                        }
                     }
                     .foregroundColor(
                         isMine ?
                             isCommentEditing ? Color(0x1DAFFF) : Color(0x646464)
                             :
-                            Color(0x646464)
+                            alreadyComment[postPageNum] == nil ? Color(0x646464) : Color(0x1DAFFF)
                     )
-                    .opacity(isCommentWriting ? 0 : 1)
+                    .opacity(isCommentWriting || isCommentDeleting ? 0 : 1)
 
                     Spacer(minLength: 0)
 
@@ -158,7 +161,7 @@ struct CommentView: View, KeyboardReadable {
                                 }
                             }
                         }
-                        .opacity(isCommentEditing || isCommentWriting ? 0 : 1)
+                        .opacity(isCommentEditing || (isCommentWriting || isCommentDeleting) ? 0 : 1)
                     }
                 }
                 .overlay {
@@ -180,7 +183,7 @@ struct CommentView: View, KeyboardReadable {
                                 }
                             }
                         }
-                    } else if !isCommentWriting {
+                    } else if !isCommentWriting && !isCommentDeleting {
                         Group {
                             HStack(spacing: 20) {
                                 Image("todo-toggle")
@@ -319,13 +322,29 @@ struct CommentView: View, KeyboardReadable {
                             titleVisibility: .visible)
         {
             Button("삭제하기", role: .destructive) {
-                content = ""
-                isCommentWriting = false
                 // TODO: 댓글 삭제하는 api 연동
+                if let target = delCommentTarget {
+                    commentService.deleteComment(
+                        targetUserId: target.user.id,
+                        targetCommentId: target.id
+                    ) { result in
+                        switch result {
+                        case .success(let success):
+                            delCommentModalVis = !success
+                            if success {
+                                postImageList[postPageNum].comments = postImageList[postPageNum].comments.filter {
+                                    $0.id != delCommentTarget?.id
+                                }
+                            }
+                        case .failure(let failure):
+                            print("[Debug] \(failure)")
+                        }
+                    }
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(isCommentEditing || isCommentWriting ? Color(0x191919) : Color(0xFDFDFD))
+        .background(isCommentEditing || isCommentDeleting || isCommentWriting ? Color(0x191919) : Color(0xFDFDFD))
         .edgesIgnoringSafeArea(.top)
         .ignoresSafeArea(.keyboard)
         .simultaneousGesture(
@@ -338,6 +357,11 @@ struct CommentView: View, KeyboardReadable {
         .onReceive(keyboardEventPublisher, perform: { value in
             withAnimation {
                 keyboardUp = value
+            }
+        })
+        .onChange(of: deleteWriting, perform: { value in
+            if value == false {
+                isCommentDeleting = false
             }
         })
         .navigationBarBackButtonHidden()
@@ -356,16 +380,16 @@ struct CommentView: View, KeyboardReadable {
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 28, height: 28)
-                        .foregroundColor(isCommentEditing || isCommentWriting ? Color(0xFDFDFD) : Color(0x191919))
+                        .foregroundColor(isCommentEditing || isCommentDeleting || isCommentWriting ? Color(0xFDFDFD) : Color(0x191919))
                 }
             }
 
             ToolbarItem(placement: .principal) {
-                Text(!isCommentWriting && !isCommentEditing ?
+                Text(!isCommentWriting && !isCommentEditing && !isCommentDeleting ?
                     "코멘트" :
-                    isCommentWriting ? "코멘트 작성" : "코멘트 편집")
+                    isCommentWriting ? "코멘트 작성" : isCommentEditing ? "코멘트 편집" : "코멘트 삭제")
                     .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(isCommentEditing || isCommentWriting ? Color(0xFDFDFD) : Color(0x191919))
+                    .foregroundColor(isCommentEditing || isCommentDeleting || isCommentWriting ? Color(0xFDFDFD) : Color(0x191919))
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -526,26 +550,28 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
             .onTapGesture { location in
-                if isMine || isCommentWriting {
+                if isMine || isCommentWriting || isCommentDeleting {
                     return
                 }
 
                 // 기존에 댓글을 작성했는지 처음 작성인지 판별
                 if let comment = alreadyComment[postPageNum] { // 기존 댓글이 있는 경우
-                    x = CGFloat(comment.0.x)
-                    y = CGFloat(comment.0.y)
-                    startingX = CGFloat(comment.0.x)
-                    startingY = CGFloat(comment.0.y)
-                    content = comment.0.content
+//                    x = CGFloat(comment.0.x)
+//                    y = CGFloat(comment.0.y)
+//                    startingX = CGFloat(comment.0.x)
+//                    startingY = CGFloat(comment.0.y)
+//                    content = comment.0.content
+                    delCommentTarget = comment.0
+                    isCommentDeleting = true
+                    deleteWriting = true
                 } else {
                     x = location.x
                     y = location.y
                     startingX = location.x
                     startingY = location.y
+                    isCommentWriting = true
+                    isFocused = true
                 }
-
-                isCommentWriting = true
-                isFocused = true
             }
 
             if isCommentWriting, let x, let y {
@@ -582,23 +608,24 @@ struct CommentView: View, KeyboardReadable {
     func commentListView() -> some View {
         if !hiddeComment {
             ForEach(commentList[postPageNum]) { comment in
-                if !isCommentWriting || alreadyComment[postPageNum]?.0.id != comment.id {
-                    Text("\(comment.content)")
-                        .font(.pretendard(size: 14, weight: .regular))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color(0xFDFDFD))
-                        .cornerRadius(9)
-                        .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
-                        .foregroundColor(Color(0x191919))
-                        .zIndex(2)
-                        .onTapGesture {
-                            if isMine {
-                                delCommentTarget = comment
-                                delCommentModalVis = true
-                            }
+                Text("\(comment.content)")
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(0xFDFDFD))
+                    .cornerRadius(9)
+                    .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
+                    .foregroundColor(
+                        isCommentDeleting && alreadyComment[postPageNum]?.0.id == comment.id ?
+                            Color(0x1AFFF) : Color(0x191919)
+                    )
+                    .zIndex(alreadyComment[postPageNum]?.0.id == comment.id ? 5 : 2)
+                    .onTapGesture {
+                        if isMine {
+                            delCommentTarget = comment
+                            delCommentModalVis = true
                         }
-                }
+                    }
             }
         }
     }
