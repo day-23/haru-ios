@@ -21,14 +21,14 @@ struct CalendarDateItem: View {
                 .frame(height: 7)
 
             Text("\(value.day)")
-                .font(.pretendard(size: 14, weight: isSameDay ? .bold : .regular))
+                .font(.pretendard(size: 14, weight: .regular))
                 .foregroundColor(
                     isSameDay ?
                         .gradientStart1 :
                         Calendar.current.component(.weekday, from: value.date) == 1
                         ? .red : Calendar.current.component(.weekday, from: value.date) == 7 ? .gradientStart1 : Color(0x646464))
                 .background(
-                    Image("calendar-today-circle")
+                    Image("calendar-date-circle")
                         .resizable()
                         .frame(width: 20, height: 20)
                         .opacity(isSameDay ? 1 : 0)

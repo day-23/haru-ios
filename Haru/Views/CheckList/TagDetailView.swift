@@ -25,9 +25,9 @@ struct TagDetailView: View {
     @State private var backButtonTapped: Bool = false
 
     private var noChanges: Bool {
-        return (originalContent == content
+        return originalContent == content
             && originalOnAlarm == onAlarm
-            && originalIsSelected == isSelected)
+            && originalIsSelected == isSelected
     }
 
     init(
@@ -103,7 +103,7 @@ struct TagDetailView: View {
                 HStack(spacing: 10) {
                     Text("태그 삭제하기")
                         .font(.pretendard(size: 20, weight: .regular))
-                    Image("trash")
+                    Image("todo-delete")
                         .renderingMode(.template)
                 }
                 .foregroundColor(Color(0xf71e58))

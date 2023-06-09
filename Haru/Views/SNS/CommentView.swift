@@ -166,7 +166,7 @@ struct CommentView: View, KeyboardReadable {
                                         )
                                     )
                                 } label: {
-                                    Image("option-button")
+                                    Image("slider")
                                         .resizable()
                                         .renderingMode(.template)
                                         .frame(width: 28, height: 28)
@@ -423,7 +423,7 @@ struct CommentView: View, KeyboardReadable {
     func mainContent(deviceSize: CGSize) -> some View {
         let sz = deviceSize.width
         let longPress = LongPressGesture(minimumDuration: 0.3)
-            .onEnded { value in
+            .onEnded { _ in
                 withAnimation {
                     dragging = true
                 }
@@ -478,7 +478,7 @@ struct CommentView: View, KeyboardReadable {
 
         let combined = longPress.sequenced(before: drag)
 
-        GeometryReader { proxy in
+        GeometryReader { _ in
             ZStack {
                 if isCommentCreate {
                     Color.black.opacity(0.3)
@@ -539,7 +539,7 @@ struct CommentView: View, KeyboardReadable {
             }
 
             if isCommentCreate, let x, let y {
-                TextFieldDynamicWidth(title: "        ", text: $content, textRect: $textRect) { editingChange in
+                TextFieldDynamicWidth(title: "        ", text: $content, textRect: $textRect) { _ in
                     // logic
                 } onCommit: {
                     // logic

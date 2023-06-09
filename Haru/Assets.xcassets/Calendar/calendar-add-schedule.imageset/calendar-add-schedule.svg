@@ -1,0 +1,27 @@
+<svg id="추가버튼" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="56" height="56" viewBox="0 0 56 56">
+  <defs>
+    <linearGradient id="linear-gradient" x2="0.854" y2="0.898" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#d2d7ff"/>
+      <stop offset="1" stop-color="#aad7ff"/>
+    </linearGradient>
+  </defs>
+  <g id="그룹_18815" data-name="그룹 18815" transform="translate(-11926 -1082)">
+    <circle id="타원_58" data-name="타원 58" cx="28" cy="28" r="28" transform="translate(11926 1082)" fill="url(#linear-gradient)"/>
+    <rect id="사각형_25738" data-name="사각형 25738" width="1.3" height="12" rx="0.65" transform="translate(11945.35 1095.533)" fill="#fdfdfd"/>
+    <rect id="사각형_25739" data-name="사각형 25739" width="1.3" height="12" rx="0.65" transform="translate(11952 1100.883) rotate(90)" fill="#fdfdfd"/>
+    <g id="카테고리_관리_일정_할일" data-name="카테고리 관리_일정, 할일" transform="translate(11946 1101)">
+      <g id="그룹_20565" data-name="그룹 20565" transform="translate(2 2)">
+        <rect id="사각형_25112" data-name="사각형 25112" width="28" height="28" transform="translate(-2 -2)" fill="none"/>
+      </g>
+      <g id="그룹_21411" data-name="그룹 21411" transform="translate(-441 -796)">
+        <g id="그룹_20568" data-name="그룹 20568" transform="translate(443 800)">
+          <rect id="사각형_25119" data-name="사각형 25119" width="22" height="22" fill="none"/>
+        </g>
+        <g id="그룹_20565-2" data-name="그룹 20565" transform="translate(443 800)">
+          <rect id="사각형_25112-2" data-name="사각형 25112" width="28" height="28" transform="translate(-2 -4)" fill="none"/>
+          <path id="합치기_22" data-name="합치기 22" d="M1,16a1.071,1.071,0,0,1-.121-.007A.831.831,0,0,1,.773,16,.772.772,0,0,1,0,15.228V3.556A.773.773,0,0,1,.879,2.79,1.012,1.012,0,0,1,1,2.783H3.864V.773a.773.773,0,1,1,1.545,0v2.01h6.182V.773a.773.773,0,1,1,1.545,0v2.01h3.091A.772.772,0,0,1,17,3.556V15.228a.772.772,0,0,1-.772.772Zm.545-1.391h13.91V4.174H13.136v2.01a.773.773,0,1,1-1.545,0V4.174H5.409v2.01a.773.773,0,1,1-1.545,0V4.174H1.545Z" transform="translate(3 2)" fill="#fdfdfd"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -30,14 +30,6 @@ struct CategoryFormView: View {
             HStack {
                 TextField("카테고리 입력", text: $content)
                     .font(.pretendard(size: 24, weight: .medium))
-                    
-                Spacer()
-                
-                if content != "" {
-                    Image("edit-pencil")
-                        .resizable()
-                        .frame(width: 28, height: 28)
-                }
             }
             .padding(.horizontal, 30)
             Divider()
@@ -80,7 +72,7 @@ struct CategoryFormView: View {
                         Text("카테고리 삭제하기")
                             .font(.pretendard(size: 20, weight: .regular))
                             .foregroundColor(Color(0xf71e58))
-                        Image("trash")
+                        Image("todo-delete")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(Color(0xf71e58))
@@ -119,7 +111,7 @@ struct CategoryFormView: View {
                         }
                     }
                 } label: {
-                    Image("confirm")
+                    Image("todo-confirm")
                         .resizable()
                         .renderingMode(.template)
                         .foregroundColor(disable ? Color(0x646464) : Color(0x191919))
@@ -137,7 +129,7 @@ struct CategoryFormView: View {
                 HStack(spacing: 20) {
                     ForEach(colors[row].indices, id: \.self) { col in
                         ZStack {
-                            Image("circle")
+                            Image("calendar-picked-circle")
                                 .resizable()
                                 .frame(width: 38, height: 38)
                                 .opacity(row * colors[row].count + col == selectedIdx ? 1 : 0)

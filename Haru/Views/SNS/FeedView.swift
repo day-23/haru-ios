@@ -130,7 +130,7 @@ struct FeedView: View {
                                 commentVM: commentVM
                             )
                         } label: {
-                            Image("option-button")
+                            Image("slider")
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 28, height: 28)

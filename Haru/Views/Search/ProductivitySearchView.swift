@@ -26,7 +26,7 @@ struct ProductivitySearchView: View {
             VStack(spacing: 14) {
                 Group {
                     HStack(spacing: 6) {
-                        Image("calendar")
+                        Image("calendar-schedule")
                             .resizable()
                             .frame(width: 28, height: 28)
 
@@ -46,7 +46,7 @@ struct ProductivitySearchView: View {
 
                 Group {
                     HStack(spacing: 6) {
-                        Image("checkMark")
+                        Image("calendar-todo")
                             .resizable()
                             .frame(width: 28, height: 28)
 

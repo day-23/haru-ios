@@ -39,7 +39,7 @@ struct CalendarDateView: View {
                             Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[1])월")
                                 .font(.pretendard(size: 28, weight: .bold))
 
-                            Image("toggle-datepicker")
+                            Image("header-date-picker")
                                 .resizable()
                                 .renderingMode(.template)
                                 .foregroundColor(Color(0x191919))
@@ -67,22 +67,16 @@ struct CalendarDateView: View {
                             Button {
                                 self.calendarVM.monthOffest = 0
                             } label: {
-                                Text("\(Date().day)")
-                                    .font(.pretendard(size: 12, weight: .bold))
-                                    .foregroundColor(Color(0x2CA4FF))
-                                    .padding(.vertical, 3)
-                                    .padding(.horizontal, 6)
-                                    .background(
-                                        Circle()
-                                            .stroke(LinearGradient(colors: [Color(0x9FA9FF), Color(0x15AFFF)],
-                                                                   startPoint: .topLeading,
-                                                                   endPoint: .bottomTrailing),
-                                                    lineWidth: 2)
-                                    )
+                                Image("time-table-date-circle")
+                                    .overlay {
+                                        Text("\(Date().day)")
+                                            .font(.pretendard(size: 14, weight: .bold))
+                                            .foregroundColor(Color(0x2CA4FF))
+                                    }
                             }
                             .tint(Color.gradientStart1)
 
-                            Image("option-button")
+                            Image("slider")
                                 .resizable()
                                 .renderingMode(.template)
                                 .foregroundColor(Color(0x191919))
@@ -179,7 +173,7 @@ struct CalendarDateView: View {
                                 self.isTodoModalVisible = true
                                 self.addViewModel.mode = .add
                             } label: {
-                                Image("calendar-todo-button")
+                                Image("calendar-add-todo")
                                     .resizable()
                                     .frame(width: 56, height: 56)
                                     .clipShape(Circle())
@@ -195,7 +189,7 @@ struct CalendarDateView: View {
                                 self.calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
                                 self.isSchModalVisible = true
                             } label: {
-                                Image("schedule-button")
+                                Image("calendar-add-schedule")
                                     .resizable()
                                     .frame(width: 56, height: 56)
                                     .clipShape(Circle())
