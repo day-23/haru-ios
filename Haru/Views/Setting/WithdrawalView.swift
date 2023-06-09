@@ -8,15 +8,13 @@
 import SwiftUI
 
 struct WithdrawalView: View {
-    // MARK: Internal
-
     @Environment(\.dismiss) var dismissAction
     @EnvironmentObject var global: Global
     @StateObject var userProfileVM: UserProfileViewModel
 
-    // MARK: Private
-
     @State private var deleteButtonTapped: Bool = false
+
+    private let userService = UserService()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -114,7 +112,7 @@ struct WithdrawalView: View {
                         titleVisibility: .visible
                     ) {
                         Button("삭제하기", role: .destructive) {
-                            // TODO: 삭제하기 API 호출
+                            userService.deleteUser { _ in }
                         }
                     }
                 }

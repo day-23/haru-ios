@@ -156,4 +156,38 @@ struct UserService {
             }
         }
     }
+
+    func deleteUser(
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        if Global.shared.user?.socialAccountType == "K" {
+            // 카카오 계정
+            AF.request(
+                Self.baseURL + "\(Global.shared.user?.id ?? "unknown")",
+                method: .delete,
+                encoding: JSONEncoding.default,
+                headers: headers
+            ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+                switch response.result {
+                case .success(let data):
+                    Global.shared.isLoggedIn = false
+                    KeychainService.logout()
+                    AlarmHelper.removeAllNotification()
+                    completion(.success(data.success))
+                case .failure(let error):
+                    print("[Debug] \(error) \(#fileID) \(#function)")
+                }
+            }
+        } else if Global.shared.user?.socialAccountType == "A" {
+            // 애플 계정
+        }
+    }
 }

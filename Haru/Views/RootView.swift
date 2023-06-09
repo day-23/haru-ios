@@ -12,7 +12,6 @@ struct RootView: View {
     @EnvironmentObject var global: Global
     @StateObject private var todoState: TodoState = .init()
     @State private var showSplash: Bool = true
-    @State private var isLoggedIn: Bool = false
 
     @State private var selection: Tab = .sns
 
@@ -22,7 +21,7 @@ struct RootView: View {
 
             if showSplash {
                 SplashView(
-                    isLoggedIn: $isLoggedIn
+                    isLoggedIn: $global.isLoggedIn
                 )
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -44,7 +43,7 @@ struct RootView: View {
                                     .foregroundColor(Color(0xfdfdfd))
                             }
                     } else if let me = global.user,
-                              isLoggedIn,
+                              global.isLoggedIn,
                               !me.user.name.isEmpty,
                               !me.haruId.isEmpty
                     {
@@ -120,7 +119,7 @@ struct RootView: View {
                                         // MARK: - Setting View
                                         
                                         MyView(
-                                            isLoggedIn: $isLoggedIn
+                                            isLoggedIn: $global.isLoggedIn
                                         )
                                     }
                                     
@@ -155,7 +154,7 @@ struct RootView: View {
                         .environmentObject(todoState)
                         .navigationViewStyle(.stack)
                     } else if let me = global.user,
-                              isLoggedIn,
+                              global.isLoggedIn,
                               me.user.name.isEmpty,
                               me.haruId.isEmpty
                     {
@@ -163,7 +162,7 @@ struct RootView: View {
                         SignUpView()
                     } else {
                         LoginView(
-                            isLoggedIn: $isLoggedIn
+                            isLoggedIn: $global.isLoggedIn
                         )
                     }
                 } else {
