@@ -27,7 +27,7 @@ struct MediaListView: View {
                                             postImageList: mediaList[idx].images,
                                             imageList: postVM.mediaImageList[mediaList[idx].id] ?? [],
                                             postPageNum: 0,
-                                            hiddeComment: true,
+                                            hideAllComment: true,
                                             isMine: mediaList[idx].user.id == Global.shared.user?.id
                                         )
 

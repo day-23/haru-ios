@@ -55,7 +55,7 @@ struct CommentView: View, KeyboardReadable {
     @State var isCommentWriting: Bool = false // 댓글을 작성 중인가
     @State var isCommentDeleting: Bool = false // 댓글을 삭제 중인가 (자신이 작성한 댓글)
     @State var isCommentEditing: Bool = false // 댓글을 수정 중인가 (본인 게시물에서만 가능)
-    @State var hiddeComment: Bool = false // 댓글을 가릴건지 안가릴건지 선택
+    @State var hideAllComment: Bool = false // 댓글을 가릴건지 안가릴건지 선택
 
     @State var cancelWriting: Bool = false // 작성 중인 댓글 취소하기
     @State var deleteWriting: Bool = false // 작성한 댓글 삭제하기
@@ -70,7 +70,9 @@ struct CommentView: View, KeyboardReadable {
     @FocusState var isFocused: Bool
     @State var keyboardUp: Bool = false
 
-    @State var delCommentModalVis: Bool = false
+    @State var hideCommentModalVis: Bool = false
+
+    @State var hideCommentTarget: Post.Comment?
     @State var delCommentTarget: Post.Comment?
 
     // 댓글 작성에 필요한 필드
@@ -118,9 +120,9 @@ struct CommentView: View, KeyboardReadable {
 
                     Group {
                         HStack(spacing: 10) {
-                            if hiddeComment {
+                            if hideAllComment {
                                 Button {
-                                    hiddeComment = false
+                                    hideAllComment = false
                                 } label: {
                                     Image("comment-disable")
                                         .resizable()
@@ -130,7 +132,7 @@ struct CommentView: View, KeyboardReadable {
                                 }
                             } else {
                                 Button {
-                                    hiddeComment = true
+                                    hideAllComment = true
                                 } label: {
                                     Image("comment-bubble")
                                         .renderingMode(.template)
@@ -235,71 +237,53 @@ struct CommentView: View, KeyboardReadable {
             mainContent(deviceSize: deviceSize)
                 .zIndex(3)
 
-            if delCommentModalVis {
+            if hideCommentModalVis,
+               let target = hideCommentTarget
+            {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(4)
                     .onTapGesture {
                         withAnimation {
-                            delCommentModalVis = false
+                            hideCommentModalVis = false
                         }
                     }
 
-                Modal(isActive: $delCommentModalVis, ratio: 0.4) {
-                    VStack(spacing: 12) {
-                        if let target = delCommentTarget {
+                Modal(isActive: $hideCommentModalVis, ratio: 0.3) {
+                    VStack(spacing: 0) {
+                        HStack(alignment: .center, spacing: 0) {
                             if let profileImage = target.user.profileImage {
                                 ProfileImgView(imageUrl: URL(string: profileImage))
-                                    .frame(width: 70, height: 70)
+                                    .frame(width: 62, height: 62)
                             } else {
                                 Image("default-profile-image")
                                     .resizable()
                                     .clipShape(Circle())
-                                    .frame(width: 70, height: 70)
+                                    .frame(width: 62, height: 62)
                             }
+
                             Text(target.user.name)
                                 .font(.pretendard(size: 20, weight: .bold))
-                            Text("댓글을 정말로 삭제하시겠습니까?")
-                                .font(.pretendard(size: 16, weight: .regular))
+                                .foregroundColor(Color(0x191919))
+                                .padding(.leading, 20)
+                        }
+                        .padding(.bottom, 20)
 
-                            Spacer()
-                                .frame(height: 30)
+                        Text("\(target.content)")
+                            .font(.pretendard(size: 20, weight: .regular))
+                            .foregroundColor(Color(0x646464))
 
-                            HStack {
-                                Button {
-                                    delCommentModalVis = false
-                                } label: {
-                                    Text("취소")
-                                        .font(.pretendard(size: 20, weight: .regular))
-                                }
+                        Divider()
+                            .padding(.vertical, 30)
 
-                                Spacer()
-
-                                Button {
-                                    print("targetCommentId: \(target.id)")
-                                    commentService.deleteComment(
-                                        targetUserId: target.user.id,
-                                        targetCommentId: target.id
-                                    ) { result in
-                                        switch result {
-                                        case .success(let success):
-                                            delCommentModalVis = !success
-                                            if success {
-                                                postImageList[postPageNum].comments = postImageList[postPageNum].comments.filter {
-                                                    $0.id != delCommentTarget?.id
-                                                }
-                                            }
-                                        case .failure(let failure):
-                                            print("[Debug] \(failure)")
-                                        }
-                                    }
-                                } label: {
-                                    Text("확인")
-                                        .font(.pretendard(size: 20, weight: .regular))
-                                        .foregroundColor(Color(0xF71E58))
-                                }
-                            }
-                            .padding(.horizontal, 60)
+                        Button {
+                            print("이 코멘트 숨기기 api 연동")
+                            // TODO: completion에 넣어주기
+                            hideCommentModalVis = false
+                        } label: {
+                            Text("이 코멘트 숨기기")
+                                .font(.pretendard(size: 20, weight: .regular))
+                                .foregroundColor(Color(0x1DAFFF))
                         }
                     }
                     .padding(.top, 20)
@@ -330,7 +314,6 @@ struct CommentView: View, KeyboardReadable {
                     ) { result in
                         switch result {
                         case .success(let success):
-                            delCommentModalVis = !success
                             if success {
                                 postImageList[postPageNum].comments = postImageList[postPageNum].comments.filter {
                                     $0.id != delCommentTarget?.id
@@ -395,45 +378,21 @@ struct CommentView: View, KeyboardReadable {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isCommentWriting {
                     Button {
-                        if let comment = alreadyComment[postPageNum] {
-                            commentService.updateComment(
-                                targetUserId: comment.0.user.id,
-                                targetCommentId: comment.0.id,
-                                comment: Request.Comment(content: content, x: x, y: y)
-                            ) { result in
-                                switch result {
-                                case .success(let success):
-                                    print("수정 완료")
-                                    // 댓글 업데이트 시 필드 값 변경해주기
-                                    postImageList[postPageNum].comments[comment.1].content = content
-                                    if let x, let y {
-                                        postImageList[postPageNum].comments[comment.1].x = x / deviceSize.width * 100
-                                        postImageList[postPageNum].comments[comment.1].y = y / deviceSize.width * 100
-                                    }
-                                    isFocused = false
-                                    isCommentWriting = false
-                                case .failure(let failure):
-                                    print("[Debug] \(failure)")
-                                    print("\(#function)")
-                                }
-                            }
-                        } else {
-                            commentService.createComment(
-                                targetPostId: postId,
-                                targetPostImageId: postImageList[postPageNum].id,
-                                comment: Request.Comment(content: content, x: x, y: y)
-                            ) { result in
-                                switch result {
-                                case .success(let success):
-                                    content = ""
-                                    x = nil
-                                    y = nil
-                                    postImageList[postPageNum].comments.append(success)
-                                    isCommentWriting = false
-                                case .failure(let failure):
-                                    print("[Debug] \(failure)")
-                                    print("\(#fileID) \(#function)")
-                                }
+                        commentService.createComment(
+                            targetPostId: postId,
+                            targetPostImageId: postImageList[postPageNum].id,
+                            comment: Request.Comment(content: content, x: x, y: y)
+                        ) { result in
+                            switch result {
+                            case .success(let success):
+                                content = ""
+                                x = nil
+                                y = nil
+                                postImageList[postPageNum].comments.append(success)
+                                isCommentWriting = false
+                            case .failure(let failure):
+                                print("[Debug] \(failure)")
+                                print("\(#fileID) \(#function)")
                             }
                         }
                     } label: {
@@ -442,7 +401,9 @@ struct CommentView: View, KeyboardReadable {
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
                             .foregroundColor(Color(0xFDFDFD))
-                    }
+                    }.disabled(content == "")
+                } else {
+                    EmptyView()
                 }
             }
         }
@@ -556,11 +517,6 @@ struct CommentView: View, KeyboardReadable {
 
                 // 기존에 댓글을 작성했는지 처음 작성인지 판별
                 if let comment = alreadyComment[postPageNum] { // 기존 댓글이 있는 경우
-//                    x = CGFloat(comment.0.x)
-//                    y = CGFloat(comment.0.y)
-//                    startingX = CGFloat(comment.0.x)
-//                    startingY = CGFloat(comment.0.y)
-//                    content = comment.0.content
                     delCommentTarget = comment.0
                     isCommentDeleting = true
                     deleteWriting = true
@@ -606,7 +562,7 @@ struct CommentView: View, KeyboardReadable {
 
     @ViewBuilder
     func commentListView() -> some View {
-        if !hiddeComment {
+        if !hideAllComment {
             ForEach(commentList[postPageNum]) { comment in
                 Text("\(comment.content)")
                     .font(.pretendard(size: 14, weight: .regular))
@@ -620,10 +576,13 @@ struct CommentView: View, KeyboardReadable {
                             Color(0x1AFFF) : Color(0x191919)
                     )
                     .zIndex(alreadyComment[postPageNum]?.0.id == comment.id ? 5 : 2)
-                    .onTapGesture {
+                    .overlay {
                         if isMine {
-                            delCommentTarget = comment
-                            delCommentModalVis = true
+                            userProfileInfoView(comment: comment)
+                                .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
+                                .offset(
+                                    y: comment.y > 50 ? -35 : 35
+                                )
                         }
                     }
             }
@@ -645,4 +604,54 @@ struct CommentView: View, KeyboardReadable {
         .background(Color(0xFDFDFD))
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
+
+    @ViewBuilder
+    func userProfileInfoView(comment: Post.Comment) -> some View {
+        HStack(spacing: 0) {
+            ProfileImgView(imageUrl: URL(string: comment.user.profileImage ?? "unknown"))
+                .frame(width: 18, height: 18)
+                .padding(.trailing, 8)
+
+            Text("\(comment.user.name)")
+                .font(.pretendard(size: 16, weight: .bold))
+                .foregroundColor(Color(0x191919))
+
+            Image("todo-toggle")
+                .renderingMode(.template)
+                .frame(width: 20, height: 20)
+                .foregroundColor(Color(0x646464))
+        }
+        .onTapGesture {
+            hideCommentTarget = comment
+            hideCommentModalVis = true
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(Color(0xFDFDFD).opacity(0.5))
+        .cornerRadius(10)
+    }
 }
+
+//                        if let comment = alreadyComment[postPageNum] {
+//                            commentService.updateComment(
+//                                targetUserId: comment.0.user.id,
+//                                targetCommentId: comment.0.id,
+//                                comment: Request.Comment(content: content, x: x, y: y)
+//                            ) { result in
+//                                switch result {
+//                                case .success(let success):
+//                                    print("수정 완료")
+//                                    // 댓글 업데이트 시 필드 값 변경해주기
+//                                    postImageList[postPageNum].comments[comment.1].content = content
+//                                    if let x, let y {
+//                                        postImageList[postPageNum].comments[comment.1].x = x / deviceSize.width * 100
+//                                        postImageList[postPageNum].comments[comment.1].y = y / deviceSize.width * 100
+//                                    }
+//                                    isFocused = false
+//                                    isCommentWriting = false
+//                                case .failure(let failure):
+//                                    print("[Debug] \(failure)")
+//                                    print("\(#function)")
+//                                }
+//                            }
+//                        } else {
