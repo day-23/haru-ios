@@ -112,6 +112,15 @@ struct HaruApp: App {
                         break
                     }
                 }
+                .overlay {
+                    VStack {
+                        if global.isLoading {
+                            LoadingView()
+                                .offset(y: UIScreen.main.bounds.height * 0.3)
+                                .zIndex(2)
+                        }
+                    }
+                }
         }
     }
 }
