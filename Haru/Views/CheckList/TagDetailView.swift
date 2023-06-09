@@ -101,7 +101,7 @@ struct TagDetailView: View {
                 }
             } label: {
                 HStack(spacing: 10) {
-                    Text("태그 삭제하기")
+                    Text("태그 삭제")
                         .font(.pretendard(size: 20, weight: .regular))
                     Image("todo-delete")
                         .renderingMode(.template)
