@@ -26,7 +26,7 @@ struct TagManageView: View {
                         .foregroundColor(Color(0xf8f8fa))
                 }
                 .padding(.top, 28)
-                .padding(.horizontal, 24)
+                .padding(.horizontal, 30)
                 .padding(.bottom, 18)
 
                 VStack(spacing: 0) {
@@ -50,6 +50,7 @@ struct TagManageView: View {
                                         perform: onChangeTag(_:)
                                     )
                                     .onSubmit(onSubmitTag)
+
                                 Spacer()
 
                                 Button {
@@ -79,7 +80,7 @@ struct TagManageView: View {
                                 }
                                 .disabled(addButtonTapped)
                             }
-                            .padding(.leading, 9)
+                            .padding(.leading, 5)
 
                             ForEach($checkListViewModel.tagList) { $tag in
                                 TagOptionItem(
@@ -132,11 +133,10 @@ private struct TagOptionItem: View {
     var tag: Tag
 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             TagView(
                 tag: tag,
-                isSelected: false,
-                disabled: !tag.isSelected
+                isHidden: !tag.isSelected
             )
             .onTapGesture {
                 checkListViewModel.toggleVisibility(
@@ -154,6 +154,22 @@ private struct TagOptionItem: View {
 
             Spacer()
 
+            Image(tag.isSelected ? "todo-tag-visible" : "todo-tag-hidden")
+                .padding(.trailing, 10)
+                .onTapGesture {
+                    checkListViewModel.toggleVisibility(
+                        tagId: tag.id,
+                        isSeleted: tag.isSelected
+                    ) { result in
+                        switch result {
+                        case .success:
+                            break
+                        case .failure:
+                            break
+                        }
+                    }
+                }
+
             NavigationLink {
                 TagDetailView(
                     checkListViewModel: _checkListViewModel,
@@ -163,9 +179,7 @@ private struct TagOptionItem: View {
                     isSelected: tag.isSelected
                 )
             } label: {
-                Image("edit-button")
-                    .renderingMode(.template)
-                    .foregroundColor(Color(0x646464))
+                Image("todo-edit-button\(tag.isSelected ? "" : "-disable")")
                     .frame(width: 28, height: 28)
             }
         }
