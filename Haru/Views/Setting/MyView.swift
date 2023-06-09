@@ -62,7 +62,6 @@ struct MyView: View {
                             .frame(width: 28, height: 28)
                     }
                 }
-                .padding(.bottom)
 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -80,7 +79,7 @@ struct MyView: View {
                         VStack(spacing: 20) {
                             HStack(spacing: 0) {
                                 Text(self.dateFormatter.string(from: self.now))
-                                    .font(.pretendard(size: 14, weight: .bold))
+                                    .font(.pretendard(size: 20, weight: .bold))
                                     .foregroundColor(Color(0x191919))
 
                                 Spacer()
@@ -166,7 +165,7 @@ struct MyView: View {
                         VStack(spacing: 20) {
                             Text("하루와 함께한 지 벌써")
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(.pretendard(size: 14, weight: .bold))
+                                .font(.pretendard(size: 20, weight: .bold))
                                 .foregroundColor(Color(0x191919))
 
                             HStack(spacing: 0) {

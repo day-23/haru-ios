@@ -68,20 +68,21 @@ struct LoginView: View {
                                 Global.shared.user = Me(
                                     user: User(
                                         id: "005224c0-eec1-4638-9143-58cbfc9688c5",
-                                        name: "Guest",
+                                        name: "",
                                         introduction: "게스트 계정입니다.",
                                         postCount: 0,
                                         friendCount: 0,
                                         friendStatus: 0,
                                         isPublicAccount: true
                                     ),
-                                    haruId: "Guest",
+                                    haruId: "",
                                     email: "Guest@haru.com",
                                     socialAccountType: "K",
                                     isPostBrowsingEnabled: true,
                                     isAllowFeedLike: 2,
                                     isAllowFeedComment: 2,
                                     isAllowSearch: true,
+                                    isMaliciousUser: true,
                                     createdAt: .now,
                                     accessToken: "GUEST"
                                 )

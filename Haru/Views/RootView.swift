@@ -34,8 +34,19 @@ struct RootView: View {
             } else {
                 if global.isNetworkConnected {
                     if let me = global.user,
-                       isLoggedIn,
-                       !me.user.name.isEmpty
+                       me.isMaliciousUser
+                    {
+                        Image("background-main")
+                            .edgesIgnoringSafeArea(.all)
+                            .overlay {
+                                Text("정지된 아이디입니다.")
+                                    .font(.pretendard(size: 20, weight: .bold))
+                                    .foregroundColor(Color(0xfdfdfd))
+                            }
+                    } else if let me = global.user,
+                              isLoggedIn,
+                              !me.user.name.isEmpty,
+                              !me.haruId.isEmpty
                     {
                         NavigationView {
                             ZStack {
@@ -141,7 +152,8 @@ struct RootView: View {
                         .navigationViewStyle(.stack)
                     } else if let me = global.user,
                               isLoggedIn,
-                              me.user.name.isEmpty
+                              me.user.name.isEmpty,
+                              me.haruId.isEmpty
                     {
                         // 회원 가입
                         SignUpView()

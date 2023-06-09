@@ -17,10 +17,11 @@ struct Me: Codable {
     var isAllowFeedLike: Int
     var isAllowFeedComment: Int
     var isAllowSearch: Bool
+    let isMaliciousUser: Bool
     let createdAt: Date
     let accessToken: String
 
-    init(user: User, haruId: String, email: String, socialAccountType: String, isPostBrowsingEnabled: Bool, isAllowFeedLike: Int, isAllowFeedComment: Int, isAllowSearch: Bool, createdAt: Date, accessToken: String) {
+    init(user: User, haruId: String, email: String, socialAccountType: String, isPostBrowsingEnabled: Bool, isAllowFeedLike: Int, isAllowFeedComment: Int, isAllowSearch: Bool, isMaliciousUser: Bool, createdAt: Date, accessToken: String) {
         self.user = user
         self.haruId = haruId
         self.email = email
@@ -29,6 +30,7 @@ struct Me: Codable {
         self.isAllowFeedLike = isAllowFeedLike
         self.isAllowFeedComment = isAllowFeedComment
         self.isAllowSearch = isAllowSearch
+        self.isMaliciousUser = isMaliciousUser
         self.createdAt = createdAt
         self.accessToken = accessToken
     }
@@ -43,6 +45,7 @@ struct Me: Codable {
         self.isAllowFeedLike = try container.decode(Int.self, forKey: .isAllowFeedLike)
         self.isAllowFeedComment = try container.decode(Int.self, forKey: .isAllowFeedComment)
         self.isAllowSearch = try container.decode(Bool.self, forKey: .isAllowSearch)
+        self.isMaliciousUser = try container.decode(Bool.self, forKey: .isMaliciousUser)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.accessToken = try container.decodeIfPresent(String.self, forKey: .accessToken) ?? ""
     }

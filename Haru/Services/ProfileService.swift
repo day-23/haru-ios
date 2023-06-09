@@ -13,6 +13,7 @@ import UIKit
 struct ProfileService {
     enum ProfileError: Error {
         case duplicated
+        case badname
         case invalid
     }
 
@@ -243,8 +244,13 @@ struct ProfileService {
                 completion(.success(response.data))
             case let .failure(error):
                 if let statusCode = response.response?.statusCode {
-                    if statusCode == 409 {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(ProfileError.badname))
+                    case 409:
                         completion(.failure(ProfileError.duplicated))
+                    default:
+                        completion(.failure(error))
                     }
                 } else {
                     completion(.failure(error))

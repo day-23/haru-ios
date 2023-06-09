@@ -63,8 +63,8 @@ struct TimeTableMainView: View {
                             .rotationEffect(
                                 Angle(
                                     degrees: self.isDateButtonClicked
-                                        ? 90
-                                        : 0
+                                        ? 0
+                                        : -90
                                 )
                             )
                     }
