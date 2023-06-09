@@ -666,6 +666,7 @@ struct TodoAddView: View {
                 }
             }
         }
+        .ignoresSafeArea(.keyboard)
         .onChange(of: tagInFocus, perform: { value in
             if !value {
                 viewModel.onSubmitTag()
