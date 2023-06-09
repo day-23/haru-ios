@@ -225,7 +225,7 @@ struct FriendView: View {
                 }
 
                 Button {} label: {
-                    Image("ellipsis")
+                    Image("more")
                         .resizable()
                         .frame(width: 28, height: 28)
                 }

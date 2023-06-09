@@ -111,7 +111,7 @@ struct CategoryFormView: View {
                         }
                     }
                 } label: {
-                    Image("todo-confirm")
+                    Image("confirm")
                         .resizable()
                         .renderingMode(.template)
                         .foregroundColor(disable ? Color(0x646464) : Color(0x191919))

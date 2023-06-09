@@ -18,7 +18,6 @@ struct SearchTodoView: View {
     var completeAction: () -> Void = {}
     var updateAction: () -> Void = {}
 
-
     // MARK: - API 호출시에 버튼을 비활성화 하는 변수들
 
     @State private var isCompletionButtonActive = true

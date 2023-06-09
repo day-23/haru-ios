@@ -274,7 +274,7 @@ struct PostFormPreView: View {
                 .padding(.horizontal, 20)
 
                 HStack(spacing: 10) {
-                    Image("today-todo")
+                    Image("todo-today-todo")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 28, height: 28)
@@ -297,7 +297,7 @@ struct PostFormPreView: View {
                             postFormVM.templateTextColor = "#191919"
                         }
 
-                    Image("today-todo")
+                    Image("todo-today-todo")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 28, height: 28)
@@ -328,7 +328,7 @@ struct PostFormPreView: View {
         }
         .frame(width: deviceSize.width, height: deviceSize.height * ratio)
         .background {
-            Image("bg-gradation-calendar")
+            Image("background-calendar")
                 .resizable()
                 .frame(width: deviceSize.width, height: deviceSize.height * ratio)
         }

@@ -179,7 +179,7 @@ struct SNSView: View {
                             ),
                             isActive: self.$isActiveForDrawing
                         ) {
-                            Image("sns-drawing-button")
+                            Image("sns-haru-draw-button")
                                 .shadow(radius: 10, x: 5, y: 0)
                         }
                     }
@@ -194,7 +194,7 @@ struct SNSView: View {
                             ),
                             isActive: self.$isActiveForWriting
                         ) {
-                            Image("sns-write-button")
+                            Image("sns-haru-write-button")
                                 .shadow(radius: 10, x: 5, y: 0)
                         }
                     }
@@ -205,7 +205,7 @@ struct SNSView: View {
                                 self.showAddMenu()
                             }
                         } label: {
-                            Image("sns-add-button")
+                            Image("add-button")
                                 .shadow(radius: 10, x: 5, y: 0)
                         }
                     }

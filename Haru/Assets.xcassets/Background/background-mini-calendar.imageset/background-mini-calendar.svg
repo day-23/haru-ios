@@ -1,0 +1,9 @@
+<svg id="미니캘린더" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="406" height="487" viewBox="0 0 406 487">
+  <defs>
+    <radialGradient id="radial-gradient" cx="0.601" cy="0.421" r="0.666" gradientTransform="matrix(0.571, -0.821, 0.931, 0.647, -0.251, 0.587)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#aad7ff"/>
+      <stop offset="1" stop-color="#d2d7ff"/>
+    </radialGradient>
+  </defs>
+  <rect id="사각형_25742" data-name="사각형 25742" width="406" height="487" fill="url(#radial-gradient)"/>
+</svg>

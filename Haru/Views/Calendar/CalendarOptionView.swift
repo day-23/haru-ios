@@ -91,7 +91,7 @@ struct CalendarOptionView: View {
                                         categoryId: calendarVM.categoryList[index].id
                                     )
                                 } label: {
-                                    Image("calendar-category-detail")
+                                    Image("more")
                                         .renderingMode(.template)
                                         .resizable()
                                         .frame(width: 28, height: 28)

@@ -49,7 +49,7 @@ struct ScheduleFormView: View {
                         scheduleFormVM.addSchedule()
                         isSchModalVisible = false
                     } label: {
-                        Image("todo-confirm")
+                        Image("confirm")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))

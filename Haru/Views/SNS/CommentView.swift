@@ -105,7 +105,7 @@ struct CommentView: View, KeyboardReadable {
                             }
                         } label: {
                             HStack(spacing: 5) {
-                                Image("touch-edit")
+                                Image("sns-edit")
                                     .renderingMode(.template)
                                     .resizable()
                                     .frame(width: 28, height: 28)
@@ -145,7 +145,7 @@ struct CommentView: View, KeyboardReadable {
                                 Button {
                                     hiddeComment = true
                                 } label: {
-                                    Image("comment-bubble")
+                                    Image("sns-comment")
                                         .renderingMode(.template)
                                         .resizable()
                                         .frame(width: 28, height: 28)

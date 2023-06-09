@@ -253,7 +253,7 @@ struct ProfileView: View {
                         Button {
                             self.blockFriend = true
                         } label: {
-                            Image("ellipsis")
+                            Image("more")
                         }
                         .confirmationDialog(
                             "\(self.userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",

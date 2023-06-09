@@ -58,7 +58,7 @@ struct TodoAddView: View {
                                     self.isConfirmButtonActive = true
                                 }
                             } label: {
-                                Image("todo-confirm")
+                                Image("confirm")
                                     .renderingMode(.template)
                                     .foregroundColor(self.viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x646464))
                             }
@@ -470,7 +470,7 @@ struct TodoAddView: View {
                             Button {
                                 self.updateButtonTapped = true
                             } label: {
-                                Image("todo-confirm")
+                                Image("confirm")
                                     .renderingMode(.template)
                                     .foregroundColor(self.viewModel.isPreviousStateEqual || self.viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x191919))
                             }
