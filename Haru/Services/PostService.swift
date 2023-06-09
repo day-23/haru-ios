@@ -349,6 +349,10 @@ final class PostService {
             "hashTags": tagList,
         ]
 
+        withAnimation {
+            Global.shared.isLoading = true
+        }
+
         AF.upload(multipartFormData: { multipartFormData in
                       for postImage in imageList {
                           if let image = postImage.jpegData(compressionQuality: 1) {
@@ -376,6 +380,9 @@ final class PostService {
                     completion(.success(true))
                 case let .failure(error):
                     completion(.failure(error))
+                }
+                withAnimation {
+                    Global.shared.isLoading = false
                 }
             }
     }
