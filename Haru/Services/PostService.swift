@@ -299,6 +299,26 @@ final class PostService {
                 let templateUrl: String?
                 let createdAt: Date?
                 let updatedAt: Date?
+
+                init(from decoder: Decoder) throws {
+                    let container: KeyedDecodingContainer<Response.Post.CodingKeys> = try decoder.container(keyedBy: Response.Post.CodingKeys.self)
+                    self.id = try container.decode(String.self, forKey: Response.Post.CodingKeys.id)
+                    self.images = try container.decode([Response.Image].self, forKey: Response.Post.CodingKeys.images)
+
+                    var hashTags: [String] = []
+                    do {
+                        let hashTag = try container.decode(String.self, forKey: Response.Post.CodingKeys.hashTags)
+                        hashTags = [hashTag]
+                    } catch {}
+                    if hashTags.isEmpty {
+                        hashTags = try container.decode([String].self, forKey: Response.Post.CodingKeys.hashTags)
+                    }
+                    self.hashTags = hashTags
+                    self.content = try container.decode(String.self, forKey: Response.Post.CodingKeys.content)
+                    self.templateUrl = try container.decodeIfPresent(String.self, forKey: Response.Post.CodingKeys.templateUrl)
+                    self.createdAt = try container.decodeIfPresent(Date.self, forKey: Response.Post.CodingKeys.createdAt)
+                    self.updatedAt = try container.decodeIfPresent(Date.self, forKey: Response.Post.CodingKeys.updatedAt)
+                }
             }
 
             struct Image: Codable {
@@ -307,6 +327,15 @@ final class PostService {
                 var url: String
                 var mimeType: String
                 var comments: [String]
+
+                init(from decoder: Decoder) throws {
+                    let container: KeyedDecodingContainer<Response.Image.CodingKeys> = try decoder.container(keyedBy: Response.Image.CodingKeys.self)
+                    self.id = try container.decode(String.self, forKey: Response.Image.CodingKeys.id)
+                    self.originalName = try container.decode(String.self, forKey: Response.Image.CodingKeys.originalName)
+                    self.url = try container.decode(String.self, forKey: Response.Image.CodingKeys.url)
+                    self.mimeType = try container.decode(String.self, forKey: Response.Image.CodingKeys.mimeType)
+                    self.comments = try container.decode([String].self, forKey: Response.Image.CodingKeys.comments)
+                }
             }
         }
 
@@ -330,8 +359,12 @@ final class PostService {
                           if let data = value as? String {
                               multipartFormData.append(data.data(using: .utf8)!, withName: key)
                           } else if let dataList = value as? [Tag] {
-                              for data in dataList {
-                                  multipartFormData.append(data.content.data(using: .utf8)!, withName: key)
+                              if dataList.isEmpty {
+                                  multipartFormData.append("[]".data(using: .utf8)!, withName: key)
+                              } else {
+                                  for data in dataList {
+                                      multipartFormData.append(data.content.data(using: .utf8)!, withName: key)
+                                  }
                               }
                           }
                       }

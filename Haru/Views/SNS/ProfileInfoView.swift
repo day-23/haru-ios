@@ -120,7 +120,7 @@ struct ProfileInfoView: View {
                                             print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                                         }
                                         
-                                        userProfileVM.refreshFriendList()
+                                        userProfileVM.fetchUserProfile()
                                         
                                     case .failure(let failure):
                                         print("[Debug] \(failure) \(#file) \(#function)")

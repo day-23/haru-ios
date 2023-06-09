@@ -56,6 +56,9 @@ struct CommentView: View, KeyboardReadable {
     @State var isCommentEditing: Bool = false // 댓글을 수정 중인가 (본인 게시물에서만 가능)
     @State var hiddeComment: Bool = false // 댓글을 가릴건지 안가릴건지 선택
 
+    @State var cancelWriting: Bool = false // 작성 중인 댓글 취소하기
+    @State var deleteWriting: Bool = false // 작성한 댓글 삭제하기
+
     @State var textRect = CGRect()
 
     // For Gesture
@@ -302,6 +305,25 @@ struct CommentView: View, KeyboardReadable {
                 .zIndex(5)
             }
         }
+        .confirmationDialog("코멘트 작성을 취소할까요? 작성 중인 내용은 삭제됩니다.",
+                            isPresented: $cancelWriting,
+                            titleVisibility: .visible)
+        {
+            Button("삭제하기", role: .destructive) {
+                content = ""
+                isCommentWriting = false
+            }
+        }
+        .confirmationDialog("코멘트를 삭제할까요? 이 작업은 복원할 수 없습니다.",
+                            isPresented: $deleteWriting,
+                            titleVisibility: .visible)
+        {
+            Button("삭제하기", role: .destructive) {
+                content = ""
+                isCommentWriting = false
+                // TODO: 댓글 삭제하는 api 연동
+            }
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(isCommentEditing || isCommentWriting ? Color(0x191919) : Color(0xFDFDFD))
         .edgesIgnoringSafeArea(.top)
@@ -339,9 +361,9 @@ struct CommentView: View, KeyboardReadable {
             }
 
             ToolbarItem(placement: .principal) {
-                Text(isCommentWriting ?
-                    alreadyComment[postPageNum] == nil ? "코멘트 작성" : "코멘트 편집"
-                    : "코멘트")
+                Text(!isCommentWriting && !isCommentEditing ?
+                    "코멘트" :
+                    isCommentWriting ? "코멘트 작성" : "코멘트 편집")
                     .font(.pretendard(size: 20, weight: .bold))
                     .foregroundColor(isCommentEditing || isCommentWriting ? Color(0xFDFDFD) : Color(0x191919))
             }
@@ -442,14 +464,19 @@ struct CommentView: View, KeyboardReadable {
             }
             .onEnded { value in
                 if overDelete {
-                    if alreadyComment[postPageNum] != nil {
-                        // 삭제 api 연동
+                    if !isMine {
+                        if alreadyComment[postPageNum] != nil {
+                            deleteWriting = true
+                        } else {
+                            cancelWriting = true
+                        }
+                    } else {
+                        // TODO: 게시물 작성자가 남의 댓글 삭제할 수 있게
                     }
 
-                    isCommentWriting = false
-                    content = ""
                     overDelete = false
                 }
+
                 if value.location.y + textRect.height / 2 > sz - 5 {
                     x = startingX ?? 190
                     y = startingY ?? 190
@@ -530,6 +557,7 @@ struct CommentView: View, KeyboardReadable {
                 .lineLimit(4)
                 .focused($isFocused)
                 .font(.pretendard(size: dragging ? 18 : 14, weight: .bold))
+                .foregroundColor(Color(0x1DAFFF))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(Color(0xFDFDFD))
@@ -548,7 +576,6 @@ struct CommentView: View, KeyboardReadable {
             width: deviceSize.width,
             height: deviceSize.width
         )
-//        .confirmationDialog("", isPresented: , actions: <#T##() -> View#>)
     }
 
     @ViewBuilder

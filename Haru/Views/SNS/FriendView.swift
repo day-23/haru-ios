@@ -175,6 +175,7 @@ struct FriendView: View {
                         }
                     }
                 } // Scroll
+                .animation(.none)
                 .onAppear {
                     print("init")
                     userProfileVM.initLoad()
