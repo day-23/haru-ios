@@ -89,11 +89,11 @@ struct CommentView: View, KeyboardReadable {
     // 댓글 편집에 필요한 필드
     @State var textSize: [String: CGSize] = [:]
     @State var draggingList: [String: Bool] = [:]
-    @State var xList: [String: Double?] = [:]
-    @State var yList: [String: Double?] = [:]
+    @State var xList: [String: Double] = [:]
+    @State var yList: [String: Double] = [:]
 
-    @State var startingXList: [String: CGFloat?] = [:]
-    @State var startingYList: [String: CGFloat?] = [:]
+    @State var startingXList: [String: CGFloat] = [:]
+    @State var startingYList: [String: CGFloat] = [:]
 
     @State var overHide: Bool = false
 
@@ -360,24 +360,13 @@ struct CommentView: View, KeyboardReadable {
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
-                if isCommentWriting {
+                if isCommentWriting || isCommentEditing {
                     Button {
-                        commentService.createComment(
-                            targetPostId: postId,
-                            targetPostImageId: postImageList[postPageNum].id,
-                            comment: Request.Comment(content: content, x: x, y: y)
-                        ) { result in
-                            switch result {
-                            case .success(let success):
-                                content = ""
-                                x = nil
-                                y = nil
-                                postImageList[postPageNum].comments.append(success)
-                                isCommentWriting = false
-                            case .failure(let failure):
-                                print("[Debug] \(failure)")
-                                print("\(#fileID) \(#function)")
-                            }
+                        if isCommentWriting {
+                            createComment()
+                        } else {
+                            print("hi")
+                            updateComment()
                         }
                     } label: {
                         Image("confirm")
@@ -385,9 +374,7 @@ struct CommentView: View, KeyboardReadable {
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
                             .foregroundColor(Color(0xFDFDFD))
-                    }.disabled(content == "")
-                } else {
-                    EmptyView()
+                    }.disabled(isCommentWriting && content == "")
                 }
             }
         }
@@ -603,8 +590,6 @@ struct CommentView: View, KeyboardReadable {
             ForEach(commentList[postPageNum]) { comment in
                 let longPress = LongPressGesture(minimumDuration: 0.15)
                     .onEnded { _ in
-                        xList[comment.id] = CGFloat(comment.x)
-                        yList[comment.id] = CGFloat(comment.y)
                         startingXList[comment.id] = CGFloat(comment.x)
                         startingYList[comment.id] = CGFloat(comment.y)
                         withAnimation {
@@ -648,8 +633,8 @@ struct CommentView: View, KeyboardReadable {
                         }
 
                         if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz - 5 {
-                            xList[comment.id] = startingX ?? 190
-                            yList[comment.id] = startingY ?? 190
+                            xList[comment.id] = startingXList[comment.id] ?? 190
+                            yList[comment.id] = startingYList[comment.id] ?? 190
                         }
                         withAnimation {
                             draggingList[comment.id] = false
@@ -687,14 +672,8 @@ struct CommentView: View, KeyboardReadable {
                         }
                     }
                     .simultaneousGesture(
-                        combined
+                        isCommentEditing ? combined : nil
                     )
-                    .onChange(of: xList[comment.id]) { newValue in
-                        print("x: \(newValue)")
-                    }
-                    .onChange(of: yList[comment.id]) { newValue in
-                        print("y: \(newValue)")
-                    }
             }
         }
     }
@@ -717,6 +696,18 @@ struct CommentView: View, KeyboardReadable {
                     .fill(Color(0x191919).opacity(0.5))
             }
         }
+        .onChange(of: postPageNum, perform: { _ in
+            xList = [:]
+            yList = [:]
+            startingXList = [:]
+            startingYList = [:]
+            draggingList = [:]
+            content = ""
+            x = nil
+            y = nil
+            startingX = nil
+            startingY = nil
+        })
         .background(Color(0xFDFDFD))
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
@@ -745,6 +736,58 @@ struct CommentView: View, KeyboardReadable {
         .padding(.horizontal, 12)
         .background(Color(0xFDFDFD).opacity(0.5))
         .cornerRadius(10)
+    }
+
+    func createComment() {
+        commentService.createComment(
+            targetPostId: postId,
+            targetPostImageId: postImageList[postPageNum].id,
+            comment: Request.Comment(content: content, x: x, y: y)
+        ) { result in
+            switch result {
+            case .success(let success):
+                content = ""
+                x = nil
+                y = nil
+                postImageList[postPageNum].comments.append(success)
+                isCommentWriting = false
+            case .failure(let failure):
+                print("[Debug] \(failure)")
+                print("\(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func updateComment() {
+        let targetCommentIdList = Array(xList.keys)
+        var xList_ = [Double]()
+        var yList_ = [Double]()
+        for key in targetCommentIdList {
+            let x = (xList[key] ?? 190) / UIScreen.main.bounds.size.width * 100
+            let y = (yList[key] ?? 190) / UIScreen.main.bounds.size.width * 100
+            xList_.append(x)
+            yList_.append(y)
+        }
+
+        commentService.updateCommentList(
+            targetPostId: postId,
+            targetCommentIdList: targetCommentIdList,
+            xList: xList_,
+            yList: yList_
+        ) { result in
+            switch result {
+            case .success:
+                // TODO: 게시물 이미지 댓글 다시 불러오기
+                xList = [:]
+                yList = [:]
+                startingXList = [:]
+                startingYList = [:]
+                draggingList = [:]
+                isCommentEditing = false
+            case .failure:
+                print("실패!")
+            }
+        }
     }
 }
 
