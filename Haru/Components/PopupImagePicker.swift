@@ -77,6 +77,7 @@ struct PopupImagePicker: View {
                                     }
                                 }
                             }
+                            .contentShape(RoundedRectangle(cornerRadius: 8))
                     }
                 }
             }
