@@ -846,7 +846,8 @@ struct TodoService {
     ) {
         if at == .none {
             completeTodo(todoId: todo.id,
-                         completed: !todo.completed) { result in
+                         completed: !todo.completed)
+            { result in
                 switch result {
                 case .success:
                     completion(.success(true))

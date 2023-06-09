@@ -92,26 +92,32 @@ struct HaruApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environmentObject(global)
-                .onOpenURL { url in
-                    // Handle the URL callback from KakaoTalk login
-                    if AuthApi.isKakaoTalkLoginUrl(url) {
-                        _ = AuthController.handleOpenUrl(url: url)
+            ZStack {
+                RootView()
+                    .environmentObject(global)
+                    .onOpenURL { url in
+                        // Handle the URL callback from KakaoTalk login
+                        if AuthApi.isKakaoTalkLoginUrl(url) {
+                            _ = AuthController.handleOpenUrl(url: url)
+                        }
                     }
-                }
-                .onChange(of: scenePhase) { phase in
-                    switch phase {
-                    case .active:
-                        break
-                    case .inactive:
-                        break
-                    case .background:
-                        appDelegate.scheduleAppRefresh()
-                    @unknown default:
-                        break
+                    .onChange(of: scenePhase) { phase in
+                        switch phase {
+                        case .active:
+                            break
+                        case .inactive:
+                            break
+                        case .background:
+                            appDelegate.scheduleAppRefresh()
+                        @unknown default:
+                            break
+                        }
                     }
+
+                if global.isLoading {
+                    LoadingView()
                 }
+            }
         }
     }
 }
