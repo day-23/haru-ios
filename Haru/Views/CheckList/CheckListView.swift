@@ -8,14 +8,11 @@
 import SwiftUI
 
 struct CheckListView: View {
+    // MARK: Internal
+
     @EnvironmentObject var todoState: TodoState
     @StateObject var viewModel: CheckListViewModel
     @StateObject var addViewModel: TodoAddViewModel
-    @State private var isModalVisible: Bool = false
-    @State private var prevOffset: CGFloat?
-    @State private var offset: CGFloat?
-    @State private var viewIsShown: Bool = true
-    @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         let isTagManageModalVisible: Binding<Bool> = .init {
@@ -26,18 +23,15 @@ struct CheckListView: View {
 
         return ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                HaruHeader(isIconGradation: true) {
-                    Color.white
-                        .edgesIgnoringSafeArea(.all)
-                } item: {
+                HaruHeader {
                     NavigationLink {
                         ProductivitySearchView(
                             calendarVM: CalendarViewModel(),
-                            todoAddViewModel: addViewModel,
-                            checkListVM: viewModel
+                            todoAddViewModel: self.addViewModel,
+                            checkListVM: self.viewModel
                         )
                     } label: {
-                        Image("magnifyingglass")
+                        Image("search")
                             .renderingMode(.template)
                             .resizable()
                             .foregroundColor(Color(0x191919))
@@ -47,22 +41,22 @@ struct CheckListView: View {
 
                 HStack(spacing: 0) {
                     // 태그 리스트
-                    TagListView(viewModel: viewModel) { tag in
+                    TagListView(viewModel: self.viewModel) { tag in
                         withAnimation {
                             if let selectedTag = viewModel.selectedTag,
                                selectedTag == tag
                             {
-                                viewModel.selectedTag = nil
-                                prevOffset = nil
+                                self.viewModel.selectedTag = nil
+                                self.prevOffset = nil
                             } else {
-                                viewModel.selectedTag = tag
-                                prevOffset = nil
+                                self.viewModel.selectedTag = tag
+                                self.prevOffset = nil
                             }
                         }
                     }
 
                     // 태그 설정창
-                    Image("option-button")
+                    Image("slider")
                         .frame(width: 28, height: 28)
                         .onTapGesture {
                             withAnimation {
@@ -76,8 +70,8 @@ struct CheckListView: View {
                 // 오늘 나의 하루
                 NavigationLink {
                     HaruView(
-                        viewModel: viewModel,
-                        addViewModel: addViewModel
+                        viewModel: self.viewModel,
+                        addViewModel: self.addViewModel
                     )
                 } label: {
                     HaruLinkView()
@@ -85,16 +79,16 @@ struct CheckListView: View {
                 .padding(.bottom, 12)
 
                 // 체크 리스트
-                if !viewModel.isEmpty {
-                    if viewModel.selectedTag == nil {
-                        ListView(checkListViewModel: viewModel) {
+                if !self.viewModel.isEmpty {
+                    if self.viewModel.selectedTag == nil {
+                        ListView(checkListViewModel: self.viewModel) {
                             ListSectionView(
-                                checkListViewModel: viewModel,
-                                todoAddViewModel: addViewModel,
-                                todoList: $todoState.todoListByFlag,
+                                checkListViewModel: self.viewModel,
+                                todoAddViewModel: self.addViewModel,
+                                todoList: self.$todoState.todoListByFlag,
                                 emptyTextContent: "중요한 할 일이 있나요?"
                             ) {
-                                todoState.updateOrderMain()
+                                self.todoState.updateOrderMain()
                             } header: {
                                 HStack(spacing: 0) {
                                     TagView(
@@ -116,11 +110,11 @@ struct CheckListView: View {
                             Divider()
 
                             ListSectionView(
-                                checkListViewModel: viewModel,
-                                todoAddViewModel: addViewModel,
-                                todoList: $todoState.todoListWithAnyTag
+                                checkListViewModel: self.viewModel,
+                                todoAddViewModel: self.addViewModel,
+                                todoList: self.$todoState.todoListWithAnyTag
                             ) {
-                                todoState.updateOrderMain()
+                                self.todoState.updateOrderMain()
                             } header: {
                                 TagView(
                                     tag: Tag(
@@ -128,7 +122,7 @@ struct CheckListView: View {
                                         content: DefaultTag.classified.rawValue
                                     ),
                                     isSelected: true,
-                                    disabled: todoState.todoListWithAnyTag.isEmpty
+                                    disabled: self.todoState.todoListWithAnyTag.isEmpty
                                 )
                                 .padding(.leading, 10)
                             }
@@ -136,11 +130,11 @@ struct CheckListView: View {
                             Divider()
 
                             ListSectionView(
-                                checkListViewModel: viewModel,
-                                todoAddViewModel: addViewModel,
-                                todoList: $todoState.todoListWithoutTag
+                                checkListViewModel: self.viewModel,
+                                todoAddViewModel: self.addViewModel,
+                                todoList: self.$todoState.todoListWithoutTag
                             ) {
-                                todoState.updateOrderMain()
+                                self.todoState.updateOrderMain()
                             } header: {
                                 TagView(
                                     tag: Tag(
@@ -148,7 +142,7 @@ struct CheckListView: View {
                                         content: DefaultTag.unclassified.rawValue
                                     ),
                                     isSelected: true,
-                                    disabled: todoState.todoListWithoutTag.isEmpty
+                                    disabled: self.todoState.todoListWithoutTag.isEmpty
                                 )
                                 .padding(.leading, 10)
                             }
@@ -156,12 +150,12 @@ struct CheckListView: View {
                             Divider()
 
                             ListSectionView(
-                                checkListViewModel: viewModel,
-                                todoAddViewModel: addViewModel,
-                                todoList: $todoState.todoListByCompleted,
+                                checkListViewModel: self.viewModel,
+                                todoAddViewModel: self.addViewModel,
+                                todoList: self.$todoState.todoListByCompleted,
                                 emptyTextContent: "할 일을 완료해 보세요!"
                             ) {
-                                todoState.updateOrderMain()
+                                self.todoState.updateOrderMain()
                             } header: {
                                 TagView(
                                     tag: Tag(
@@ -169,23 +163,23 @@ struct CheckListView: View {
                                         content: DefaultTag.completed.rawValue
                                     ),
                                     isSelected: true,
-                                    disabled: todoState.todoListByCompleted.isEmpty
+                                    disabled: self.todoState.todoListByCompleted.isEmpty
                                 )
                                 .padding(.leading, 10)
                             }
                         } offsetChanged: {
-                            changeOffset($0)
+                            self.changeOffset($0)
                         }
                     } else {
                         if let tag = viewModel.selectedTag {
                             if tag.id == DefaultTag.important.rawValue {
-                                ListView(checkListViewModel: viewModel) {
+                                ListView(checkListViewModel: self.viewModel) {
                                     ListSectionView(
-                                        checkListViewModel: viewModel,
-                                        todoAddViewModel: addViewModel,
-                                        todoList: $todoState.todoListByFlag
+                                        checkListViewModel: self.viewModel,
+                                        todoAddViewModel: self.addViewModel,
+                                        todoList: self.$todoState.todoListByFlag
                                     ) {
-                                        todoState.updateOrderFlag()
+                                        self.todoState.updateOrderFlag()
                                     } header: {
                                         HStack(spacing: 0) {
                                             TagView(
@@ -201,57 +195,57 @@ struct CheckListView: View {
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    changeOffset($0)
+                                    self.changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.unclassified.rawValue {
-                                ListView(checkListViewModel: viewModel) {
+                                ListView(checkListViewModel: self.viewModel) {
                                     ListSectionView(
-                                        checkListViewModel: viewModel,
-                                        todoAddViewModel: addViewModel,
-                                        todoList: $todoState.todoListWithoutTag
+                                        checkListViewModel: self.viewModel,
+                                        todoAddViewModel: self.addViewModel,
+                                        todoList: self.$todoState.todoListWithoutTag
                                     ) {
-                                        todoState.updateOrderWithoutTag()
+                                        self.todoState.updateOrderWithoutTag()
                                     } header: {
                                         TagView(
                                             tag: tag,
                                             isSelected: true,
-                                            disabled: todoState.todoListWithoutTag.isEmpty
+                                            disabled: self.todoState.todoListWithoutTag.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    changeOffset($0)
+                                    self.changeOffset($0)
                                 }
                             } else if tag.id == DefaultTag.completed.rawValue {
-                                ListView(checkListViewModel: viewModel) {
+                                ListView(checkListViewModel: self.viewModel) {
                                     ListSectionView(
-                                        checkListViewModel: viewModel,
-                                        todoAddViewModel: addViewModel,
-                                        todoList: $todoState.todoListByCompleted,
+                                        checkListViewModel: self.viewModel,
+                                        todoAddViewModel: self.addViewModel,
+                                        todoList: self.$todoState.todoListByCompleted,
                                         emptyTextContent: "할 일을 완료해 보세요!"
                                     ) {
-                                        todoState.updateOrderWithoutTag()
+                                        self.todoState.updateOrderWithoutTag()
                                     } header: {
                                         TagView(
                                             tag: tag,
                                             isSelected: true,
-                                            disabled: todoState.todoListByCompleted.isEmpty
+                                            disabled: self.todoState.todoListByCompleted.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
                                 } offsetChanged: {
-                                    changeOffset($0)
+                                    self.changeOffset($0)
                                 }
                             } else {
                                 // Tag 클릭시
-                                ListView(checkListViewModel: viewModel) {
+                                ListView(checkListViewModel: self.viewModel) {
                                     ListSectionView(
-                                        checkListViewModel: viewModel,
-                                        todoAddViewModel: addViewModel,
-                                        todoList: $todoState.todoListByFlag,
+                                        checkListViewModel: self.viewModel,
+                                        todoAddViewModel: self.addViewModel,
+                                        todoList: self.$todoState.todoListByFlag,
                                         emptyTextContent: "중요한 할 일이 있나요?"
                                     ) {
-                                        todoState.updateOrderByTag(tagId: tag.id)
+                                        self.todoState.updateOrderByTag(tagId: tag.id)
                                     } header: {
                                         TagView(
                                             tag: Tag(
@@ -259,7 +253,7 @@ struct CheckListView: View {
                                                 content: DefaultTag.important.rawValue
                                             ),
                                             isSelected: true,
-                                            disabled: todoState.todoListByFlag.isEmpty
+                                            disabled: self.todoState.todoListByFlag.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
@@ -267,16 +261,16 @@ struct CheckListView: View {
                                     Divider()
 
                                     ListSectionView(
-                                        checkListViewModel: viewModel,
-                                        todoAddViewModel: addViewModel,
-                                        todoList: $todoState.todoListByTag
+                                        checkListViewModel: self.viewModel,
+                                        todoAddViewModel: self.addViewModel,
+                                        todoList: self.$todoState.todoListByTag
                                     ) {
-                                        todoState.updateOrderByTag(tagId: tag.id)
+                                        self.todoState.updateOrderByTag(tagId: tag.id)
                                     } header: {
                                         TagView(
                                             tag: tag,
                                             isSelected: true,
-                                            disabled: todoState.todoListByTag.isEmpty
+                                            disabled: self.todoState.todoListByTag.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
@@ -284,12 +278,12 @@ struct CheckListView: View {
                                     Divider()
 
                                     ListSectionView(
-                                        checkListViewModel: viewModel,
-                                        todoAddViewModel: addViewModel,
-                                        todoList: $todoState.todoListByCompleted,
+                                        checkListViewModel: self.viewModel,
+                                        todoAddViewModel: self.addViewModel,
+                                        todoList: self.$todoState.todoListByCompleted,
                                         emptyTextContent: "할 일을 완료해 보세요!"
                                     ) {
-                                        todoState.updateOrderByTag(tagId: tag.id)
+                                        self.todoState.updateOrderByTag(tagId: tag.id)
                                     } header: {
                                         TagView(
                                             tag: Tag(
@@ -297,13 +291,13 @@ struct CheckListView: View {
                                                 content: DefaultTag.completed.rawValue
                                             ),
                                             isSelected: true,
-                                            disabled: todoState.todoListByCompleted.isEmpty
+                                            disabled: self.todoState.todoListByCompleted.isEmpty
                                         )
                                         .padding(.leading, 10)
                                     }
 
                                 } offsetChanged: {
-                                    changeOffset($0)
+                                    self.changeOffset($0)
                                 }
                             }
                         }
@@ -318,20 +312,20 @@ struct CheckListView: View {
             }
             .background(.white)
 
-            if isModalVisible {
+            if self.isModalVisible {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
                         withAnimation {
-                            isModalVisible = false
+                            self.isModalVisible = false
                         }
                     }
 
-                Modal(isActive: $isModalVisible, ratio: 0.9) {
+                Modal(isActive: self.$isModalVisible, ratio: 0.9) {
                     TodoAddView(
-                        viewModel: addViewModel,
-                        isModalVisible: $isModalVisible
+                        viewModel: self.addViewModel,
+                        isModalVisible: self.$isModalVisible
                     )
                 }
                 .transition(.modal)
@@ -347,7 +341,7 @@ struct CheckListView: View {
                     }
 
                 TagManageView(
-                    checkListViewModel: viewModel,
+                    checkListViewModel: self.viewModel,
                     isActive: isTagManageModalVisible
                 )
                 .position(
@@ -359,10 +353,10 @@ struct CheckListView: View {
                     .asymmetric(insertion: .push(from: .trailing), removal: .push(from: .leading))
                 )
 
-            } else if viewIsShown {
+            } else if self.viewIsShown {
                 HStack(alignment: .bottom, spacing: 0) {
-                    TextField("", text: $addViewModel.content)
-                        .placeholder(when: addViewModel.content.isEmpty) {
+                    TextField("", text: self.$addViewModel.content)
+                        .placeholder(when: self.addViewModel.content.isEmpty) {
                             Text("간편 추가")
                                 .font(.pretendard(size: 14, weight: .regular))
                                 .foregroundColor(Color(0x646464))
@@ -375,19 +369,18 @@ struct CheckListView: View {
                         .cornerRadius(8)
                         .padding(.trailing, 18)
                         .padding(.bottom, 4)
-                        .focused($isTextFieldFocused)
+                        .focused(self.$isTextFieldFocused)
                         .onSubmit {
-                            addViewModel.addSimpleTodo()
+                            self.addViewModel.addSimpleTodo()
                         }
 
                     Button {
                         withAnimation {
-                            isModalVisible = true
-                            addViewModel.mode = .add
+                            self.isModalVisible = true
+                            self.addViewModel.mode = .add
                         }
                     } label: {
                         Image("add-button")
-                            .shadow(radius: 10, x: 5, y: 0)
                     }
                 }
                 .zIndex(5)
@@ -396,15 +389,15 @@ struct CheckListView: View {
             }
         }
         .onAppear {
-            isModalVisible = false
+            self.isModalVisible = false
             isTagManageModalVisible.wrappedValue = false
-            viewModel.selectedTag = nil
-            viewModel.fetchTodoList()
-            viewModel.fetchTags()
+            self.viewModel.selectedTag = nil
+            self.viewModel.fetchTodoList()
+            self.viewModel.fetchTags()
             UIApplication.shared.addTapGestureRecognizer()
         }
-        .onChange(of: isTextFieldFocused, perform: { value in
-            if isModalVisible {
+        .onChange(of: self.isTextFieldFocused, perform: { value in
+            if self.isModalVisible {
                 return
             }
 
@@ -417,7 +410,7 @@ struct CheckListView: View {
 
     func changeOffset(_ value: CGPoint?) {
         if self.prevOffset == nil {
-            viewIsShown = true
+            self.viewIsShown = true
             self.prevOffset = value?.y
             return
         }
@@ -431,13 +424,21 @@ struct CheckListView: View {
 
         withAnimation(.easeInOut(duration: 0.25)) {
             if offset >= 0 {
-                viewIsShown = true
+                self.viewIsShown = true
             } else if prevOffset > offset {
-                viewIsShown = false
+                self.viewIsShown = false
             } else {
-                viewIsShown = true
+                self.viewIsShown = true
             }
             self.prevOffset = offset
         }
     }
+
+    // MARK: Private
+
+    @State private var isModalVisible: Bool = false
+    @State private var prevOffset: CGFloat?
+    @State private var offset: CGFloat?
+    @State private var viewIsShown: Bool = true
+    @FocusState private var isTextFieldFocused: Bool
 }

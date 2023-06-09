@@ -19,10 +19,10 @@ struct MyView: View {
     @State private var totalItems: Int = 0
 
     private var completionRate: Double {
-        if totalItems == 0 {
+        if self.totalItems == 0 {
             return 0
         }
-        return Double(completed) / Double(totalItems)
+        return Double(self.completed) / Double(self.totalItems)
     }
 
     private let dateFormatter: DateFormatter = {
@@ -54,7 +54,7 @@ struct MyView: View {
             VStack(spacing: 0) {
                 HaruHeader {
                     NavigationLink {
-                        SettingView(isLoggedIn: $isLoggedIn)
+                        SettingView(isLoggedIn: self.$isLoggedIn)
                     } label: {
                         Image("setting")
                             .renderingMode(.template)
@@ -67,9 +67,9 @@ struct MyView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         // --- 프로필 view
-                        ProfileInfoView(userProfileVM: userProfileVM)
+                        ProfileInfoView(userProfileVM: self.userProfileVM)
                             .onAppear {
-                                userProfileVM.fetchUserProfile()
+                                self.userProfileVM.fetchUserProfile()
                             }
 
                         Divider()
@@ -79,7 +79,7 @@ struct MyView: View {
                         // 오늘 나의 하루
                         VStack(spacing: 20) {
                             HStack(spacing: 0) {
-                                Text(dateFormatter.string(from: now))
+                                Text(self.dateFormatter.string(from: self.now))
                                     .font(.pretendard(size: 14, weight: .bold))
                                     .foregroundColor(Color(0x191919))
 
@@ -90,7 +90,7 @@ struct MyView: View {
                                         guard let prevMonth = Calendar.current.date(byAdding: .month, value: -1, to: now) else {
                                             return
                                         }
-                                        now = prevMonth
+                                        self.now = prevMonth
                                     } label: {
                                         Image("back-button")
                                             .renderingMode(.template)
@@ -100,7 +100,7 @@ struct MyView: View {
                                             .opacity(0.5)
                                     }
 
-                                    Text("\(now.month)월")
+                                    Text("\(self.now.month)월")
                                         .font(.pretendard(size: 14, weight: .regular))
                                         .foregroundColor(Color(0x646464))
 
@@ -108,7 +108,7 @@ struct MyView: View {
                                         guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: now) else {
                                             return
                                         }
-                                        now = nextMonth
+                                        self.now = nextMonth
                                     } label: {
                                         Image("back-button")
                                             .renderingMode(.template)
@@ -123,9 +123,9 @@ struct MyView: View {
 
                             HStack(spacing: 0) {
                                 VStack(spacing: 4) {
-                                    Text("\(completed)")
+                                    Text("\(self.completed)")
                                         .font(.pretendard(size: 20, weight: .bold))
-                                        .foregroundColor(Color(0x1dafff))
+                                        .foregroundColor(Color(0x1DAFFF))
                                         .animation(.none)
                                     Text("완료한 일")
                                         .font(.pretendard(size: 14, weight: .regular))
@@ -133,7 +133,7 @@ struct MyView: View {
                                 }
                                 Spacer()
                                 VStack(spacing: 4) {
-                                    Text("\(totalItems)")
+                                    Text("\(self.totalItems)")
                                         .font(.pretendard(size: 20, weight: .bold))
                                         .foregroundColor(Color(0x191919))
                                         .animation(.none)
@@ -146,12 +146,12 @@ struct MyView: View {
                             .padding(.trailing, 81)
 
                             CircularProgressView(
-                                progress: completionRate
+                                progress: self.completionRate
                             )
                             .overlay {
-                                Text("\(Int(completionRate * 100))%")
+                                Text("\(Int(self.completionRate * 100))%")
                                     .font(.pretendard(size: 30, weight: .bold))
-                                    .foregroundColor(Color(0x1dafff))
+                                    .foregroundColor(Color(0x1DAFFF))
                                     .animation(.none)
                             }
                         }
@@ -170,9 +170,9 @@ struct MyView: View {
                                 .foregroundColor(Color(0x191919))
 
                             HStack(spacing: 0) {
-                                Text("\(fromCreatedAt)")
+                                Text("\(self.fromCreatedAt)")
                                     .font(.pretendard(size: 20, weight: .bold))
-                                    .foregroundColor(Color(0x1dafff))
+                                    .foregroundColor(Color(0x1DAFFF))
                                 Text("  일 째")
                                     .font(.pretendard(size: 14, weight: .regular))
                                     .foregroundColor(Color(0x191919))
@@ -180,7 +180,7 @@ struct MyView: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.bottom, 8)
 
-                            Image("haru-fighting")
+                            Image("setting-hagi-ruri")
                                 .resizable()
                                 .frame(width: 180, height: 125)
                         }
@@ -194,31 +194,31 @@ struct MyView: View {
             }
         }
         .onAppear {
-            todoService.fetchStatisticsByRange(
-                startDate: now.startOfMonth(),
-                endDate: now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
+            self.todoService.fetchStatisticsByRange(
+                startDate: self.now.startOfMonth(),
+                endDate: self.now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
             ) { result in
                 switch result {
-                case .success(let success):
+                case let .success(success):
                     withAnimation {
-                        completed = success.completed
-                        totalItems = success.totalItems
+                        self.completed = success.completed
+                        self.totalItems = success.totalItems
                     }
                 case .failure:
                     break
                 }
             }
         }
-        .onChange(of: now) { _ in
-            todoService.fetchStatisticsByRange(
-                startDate: now.startOfMonth(),
-                endDate: now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
+        .onChange(of: self.now) { _ in
+            self.todoService.fetchStatisticsByRange(
+                startDate: self.now.startOfMonth(),
+                endDate: self.now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
             ) { result in
                 switch result {
-                case .success(let success):
+                case let .success(success):
                     withAnimation {
-                        completed = success.completed
-                        totalItems = success.totalItems
+                        self.completed = success.completed
+                        self.totalItems = success.totalItems
                     }
                 case .failure:
                     break
@@ -235,13 +235,13 @@ struct CircularProgressView: View {
         ZStack {
             Circle()
                 .stroke(
-                    Color(0xd2d7ff),
+                    Color(0xD2D7FF),
                     lineWidth: 10
                 )
             Circle()
-                .trim(from: 0, to: progress)
+                .trim(from: 0, to: self.progress)
                 .stroke(
-                    Color(0x1dafff),
+                    Color(0x1DAFFF),
                     style: StrokeStyle(
                         lineWidth: 10,
                         lineCap: .round

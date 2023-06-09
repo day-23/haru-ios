@@ -1,0 +1,20 @@
+<svg id="추가버튼" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x2="0.854" y2="0.898" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#d2d7ff"/>
+      <stop offset="1" stop-color="#aad7ff"/>
+    </linearGradient>
+  </defs>
+  <g id="그룹_18815" data-name="그룹 18815" transform="translate(-12 -12)">
+    <circle id="타원_58" data-name="타원 58" cx="14" cy="14" r="14" transform="translate(12 12)" fill="url(#linear-gradient)"/>
+    <path id="패스_7693" data-name="패스 7693" d="M0,0H0Z" transform="translate(25.942 24)" fill="none" opacity="0.5"/>
+  </g>
+  <g id="그룹_21306" data-name="그룹 21306" transform="translate(10 10.35)">
+    <g id="그룹_21305" data-name="그룹 21305">
+      <g id="그룹_21306-2" data-name="그룹 21306">
+        <rect id="사각형_23863" data-name="사각형 23863" width="1.3" height="12" rx="0.65" transform="translate(3.351 -2.35)" fill="#fdfdfd"/>
+        <rect id="사각형_23864" data-name="사각형 23864" width="1.3" height="12" rx="0.65" transform="translate(10 3) rotate(90)" fill="#fdfdfd"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,14 @@
+<svg id="하루종일" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <g id="그룹_20469" data-name="그룹 20469" transform="translate(-587 -235)">
+    <g id="그룹_20335" data-name="그룹 20335" transform="translate(364 -2471)">
+      <g id="그룹_18820" data-name="그룹 18820" transform="translate(-9319 2079)">
+        <g id="타원_82" data-name="타원 82" transform="translate(9548 633)" fill="none" stroke="#acacac" stroke-width="1.3">
+          <circle cx="8" cy="8" r="8" stroke="none"/>
+          <circle cx="8" cy="8" r="7.35" fill="none"/>
+        </g>
+      </g>
+    </g>
+    <rect id="사각형_25044" data-name="사각형 25044" width="28" height="28" transform="translate(587 235)" fill="none" opacity="0.5"/>
+  </g>
+  <path id="합치기_7" data-name="합치기 7" d="M.651,5.3h0A.65.65,0,0,1,0,4.65V.95a.65.65,0,0,1,1.3,0V4H4.35a.65.65,0,1,1,0,1.3Z" transform="translate(13 10)" fill="#acacac"/>
+</svg>

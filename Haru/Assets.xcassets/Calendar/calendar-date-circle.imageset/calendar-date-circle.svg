@@ -1,0 +1,14 @@
+<svg id="오늘_날짜" data-name="오늘 날짜" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="-0.098" y1="-0.086" x2="1.1" y2="1.1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9ea9ff"/>
+      <stop offset="1" stop-color="#1dafff"/>
+    </linearGradient>
+  </defs>
+  <g id="그룹_20568" data-name="그룹 20568" transform="translate(-385 -11)">
+    <rect id="사각형_25119" data-name="사각형 25119" width="28" height="28" transform="translate(385 11)" fill="none"/>
+    <g id="그룹_21405" data-name="그룹 21405" transform="translate(324 -723)">
+      <path id="제외_2" data-name="제외 2" d="M-11671-2995a11.927,11.927,0,0,1-8.486-3.514A11.917,11.917,0,0,1-11683-3007a11.922,11.922,0,0,1,3.515-8.487A11.925,11.925,0,0,1-11671-3019a11.922,11.922,0,0,1,8.485,3.514A11.923,11.923,0,0,1-11659-3007a11.918,11.918,0,0,1-3.516,8.484A11.923,11.923,0,0,1-11671-2995Zm0-22a10.012,10.012,0,0,0-10,10,10.011,10.011,0,0,0,10,10,10.011,10.011,0,0,0,10-10A10.012,10.012,0,0,0-11671-3017Z" transform="translate(11746 3755)" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+</svg>

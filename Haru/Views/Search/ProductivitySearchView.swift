@@ -9,55 +9,55 @@ import SwiftUI
 
 struct ProductivitySearchView: View {
     @Environment(\.dismiss) var dismissAction
-    
+
     @State var searchContent = ""
     @State var prevSearchContent = ""
-    
+
     @StateObject var calendarVM: CalendarViewModel
     @StateObject var todoAddViewModel: TodoAddViewModel
     @StateObject var checkListVM: CheckListViewModel
     @StateObject var searchVM: SearchViewModel = .init()
-    
+
     @FocusState var focus: Bool
     @State var waitingResponse: Bool = false
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 14) {
                 Group {
                     HStack(spacing: 6) {
-                        Image("calendar")
+                        Image("calendar-schedule")
                             .resizable()
                             .frame(width: 28, height: 28)
 
                         Text("일정")
                             .font(.pretendard(size: 16, weight: .bold))
                             .foregroundColor(Color(0x1DAFFF))
-                        
+
                         Spacer()
                     }
-                    
-                    scheduleItemList()
+
+                    self.scheduleItemList()
                 }
                 .padding(.leading, 40)
                 .padding(.trailing, 20)
-                
+
                 Divider()
-                
+
                 Group {
                     HStack(spacing: 6) {
-                        Image("checkMark")
+                        Image("calendar-todo")
                             .resizable()
                             .frame(width: 28, height: 28)
-                        
+
                         Text("할일")
                             .font(.pretendard(size: 16, weight: .bold))
                             .foregroundColor(Color(0x1DAFFF))
-                        
+
                         Spacer()
                     }
-                    
-                    todoItemList()
+
+                    self.todoItemList()
                 }
                 .padding(.leading, 40)
                 .padding(.trailing, 20)
@@ -67,7 +67,7 @@ struct ProductivitySearchView: View {
         .navigationBarBackButtonHidden()
         .customNavigationBar(leftView: {
             Button {
-                dismissAction.callAsFunction()
+                self.dismissAction.callAsFunction()
             } label: {
                 Image("back-button")
                     .resizable()
@@ -75,26 +75,26 @@ struct ProductivitySearchView: View {
             }
         }, rightView: {
             HStack(spacing: 8) {
-                Image("magnifyingglass")
+                Image("search")
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 28, height: 28)
                     .foregroundColor(Color(0xACACAC))
-                TextField("검색어를 입력하세요", text: $searchContent)
+                TextField("검색어를 입력하세요", text: self.$searchContent)
                     .disableAutocorrection(true)
                     .font(.pretendard(size: 16, weight: .regular))
-                    .focused($focus)
+                    .focused(self.$focus)
                     .onSubmit {
-                        if searchContent != "" {
-                            waitingResponse = true
-                            searchVM.searchTodoAndSchedule(searchContent: searchContent) {
-                                prevSearchContent = searchContent
-                                searchContent = ""
-                                waitingResponse = false
+                        if self.searchContent != "" {
+                            self.waitingResponse = true
+                            self.searchVM.searchTodoAndSchedule(searchContent: self.searchContent) {
+                                self.prevSearchContent = self.searchContent
+                                self.searchContent = ""
+                                self.waitingResponse = false
                             }
                         }
                     }
-                    .disabled(waitingResponse)
+                    .disabled(self.waitingResponse)
                 Spacer()
             }
             .padding(.vertical, 5)
@@ -103,25 +103,25 @@ struct ProductivitySearchView: View {
             .cornerRadius(10)
         })
     }
-    
+
     @ViewBuilder
     func scheduleItemList() -> some View {
-        ForEach(searchVM.scheduleList, id: \.id) { schedule in
-            let schedule = searchVM.fittingSchedule(schedule: schedule)
+        ForEach(self.searchVM.scheduleList, id: \.id) { schedule in
+            let schedule = self.searchVM.fittingSchedule(schedule: schedule)
             HStack(alignment: .center) {
                 Circle()
                     .fill(Color(schedule.category?.color))
                     .frame(width: 20, height: 20)
                     .padding(5)
-                
+
                 NavigationLink {
                     ScheduleFormView(
                         scheduleFormVM:
                         ScheduleFormViewModel(
                             schedule: schedule,
-                            categoryList: calendarVM.categoryList,
+                            categoryList: self.calendarVM.categoryList,
                             successAction: {
-                                searchVM.searchTodoAndSchedule(searchContent: prevSearchContent) {}
+                                self.searchVM.searchTodoAndSchedule(searchContent: self.prevSearchContent) {}
                             }
                         ),
                         isSchModalVisible: .constant(false)
@@ -129,7 +129,7 @@ struct ProductivitySearchView: View {
                 } label: {
                     VStack(alignment: .leading) {
                         HStack(spacing: 0) {
-                            let stringList = splitContent(content: schedule.content, searchString: prevSearchContent)
+                            let stringList = self.splitContent(content: schedule.content, searchString: self.prevSearchContent)
                             ForEach(stringList.indices, id: \.self) { idx in
                                 Text("\(stringList[idx].0)")
                                     .font(.pretendard(size: 16, weight: .bold))
@@ -143,54 +143,54 @@ struct ProductivitySearchView: View {
                         .foregroundColor(Color(0x191919))
                     }
                 }
-                
+
                 Spacer()
             }
         }
     }
-    
+
     @ViewBuilder
     func todoItemList() -> some View {
-        ForEach(searchVM.todoList, id: \.id) { todo in
+        ForEach(self.searchVM.todoList, id: \.id) { todo in
             NavigationLink {
-                TodoAddView(viewModel: todoAddViewModel)
+                TodoAddView(viewModel: self.todoAddViewModel)
                     .onAppear {
-                        todoAddViewModel.applyTodoData(
+                        self.todoAddViewModel.applyTodoData(
                             todo: todo,
                             at: todo.at
                         )
                     }
             } label: {
                 SearchTodoView(
-                    checkListViewModel: checkListVM,
+                    checkListViewModel: self.checkListVM,
                     todo: todo,
                     at: todo.at,
-                    contentWords: splitContent(content: todo.content, searchString: prevSearchContent)
+                    contentWords: self.splitContent(content: todo.content, searchString: self.prevSearchContent)
                 ) {
                     // completeAction
-                    searchVM.searchTodoAndSchedule(searchContent: prevSearchContent) {}
+                    self.searchVM.searchTodoAndSchedule(searchContent: self.prevSearchContent) {}
                 } updateAction: {
                     // updateAction
-                    searchVM.searchTodoAndSchedule(searchContent: prevSearchContent) {}
+                    self.searchVM.searchTodoAndSchedule(searchContent: self.prevSearchContent) {}
                 }
             }
             .padding(.leading, -40)
         }
     }
-    
+
     func splitContent(
         content: String,
         searchString: String
     ) -> [(String, Bool)] {
         var result: [(String, Bool)] = []
-        
+
         var preString: String
         var sufString: String = content
 
         for str in StringHelper.matches(for: "(?i)\(searchString)", in: content) {
             if let rangeS = sufString.range(of: str) {
                 let dist = sufString.distance(from: sufString.startIndex, to: rangeS.lowerBound)
-                
+
                 preString = String(sufString.prefix(dist))
                 if preString != "" {
                     result.append((preString, false))
@@ -203,7 +203,7 @@ struct ProductivitySearchView: View {
         if sufString != "" {
             result.append((sufString, false))
         }
-        
+
         let tmpResult = result
         var p = 0
         for (col, str) in tmpResult.enumerated() {
@@ -214,7 +214,7 @@ struct ProductivitySearchView: View {
             }
             result[col].0 = data
         }
-        
+
         return result
     }
 }

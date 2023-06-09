@@ -29,7 +29,7 @@ struct ProfileImgView: View {
                     .resizable()
                     .clipShape(Circle())
             } else {
-                Image("default-profile-image")
+                Image("background-main-splash")
                     .resizable()
                     .clipShape(Circle())
             }

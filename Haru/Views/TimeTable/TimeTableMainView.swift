@@ -9,22 +9,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct TimeTableMainView: View {
-    // MARK: - Properties
-
-    @EnvironmentObject var todoState: TodoState
-
-    @StateObject var timeTableViewModel: TimeTableViewModel
-    @StateObject var checkListViewModel: CheckListViewModel
-
-    @StateObject var calendarViewModel: CalendarViewModel = .init()
-    @StateObject var todoAddViewModel: TodoAddViewModel
-
-    @State private var isScheduleView: Bool = true
-
-    @State private var isModalVisible: Bool = false
-
-    @State private var isDateButtonClicked: Bool = false
-
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
         checkListViewModel: StateObject<CheckListViewModel>,
@@ -35,6 +19,18 @@ struct TimeTableMainView: View {
         _todoAddViewModel = todoAddViewModel
     }
 
+    @EnvironmentObject var todoState: TodoState
+
+    @StateObject var timeTableViewModel: TimeTableViewModel
+    @StateObject var checkListViewModel: CheckListViewModel
+
+    @StateObject var calendarViewModel: CalendarViewModel = .init()
+    @StateObject var todoAddViewModel: TodoAddViewModel
+
+    @State private var isScheduleView: Bool = true
+    @State private var isModalVisible: Bool = false
+    @State private var isDateButtonClicked: Bool = false
+
     var body: some View {
         let isPopupVisible: Binding<Bool> = .init {
             Global.shared.isFaded
@@ -44,11 +40,11 @@ struct TimeTableMainView: View {
             VStack(spacing: 0) {
                 // 날짜 레이아웃
                 HStack(spacing: 0) {
-                    Text("\(String(timeTableViewModel.currentYear))년")
+                    Text("\(String(self.timeTableViewModel.currentYear))년")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
                         .padding(.leading, 33)
-                    Text("\(timeTableViewModel.currentMonth)월")
+                    Text("\(self.timeTableViewModel.currentMonth)월")
                         .font(.pretendard(size: 28, weight: .bold))
                         .foregroundColor(Color(0x191919))
                         .padding(.leading, 10)
@@ -56,29 +52,29 @@ struct TimeTableMainView: View {
 
                     Button {
                         withAnimation(.easeInOut(duration: 0.1)) {
-                            isDateButtonClicked.toggle()
+                            self.isDateButtonClicked.toggle()
                         }
                     } label: {
-                        Image("toggle-datepicker")
+                        Image("header-date-picker")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(Color(0x191919))
                             .frame(width: 28, height: 28)
                             .rotationEffect(
                                 Angle(
-                                    degrees: isDateButtonClicked
+                                    degrees: self.isDateButtonClicked
                                         ? 90
                                         : 0
                                 )
                             )
                     }
                     .popover(
-                        isPresented: $isDateButtonClicked,
+                        isPresented: self.$isDateButtonClicked,
                         arrowDirection: .up
                     ) {
                         DatePicker(
                             "",
-                            selection: $timeTableViewModel.currentDate,
+                            selection: self.$timeTableViewModel.currentDate,
                             displayedComponents: .date
                         )
                         .datePickerStyle(.graphical)
@@ -89,12 +85,12 @@ struct TimeTableMainView: View {
                     NavigationLink {
                         // TODO: 검색 뷰 만들어지면 넣어주기
                         ProductivitySearchView(
-                            calendarVM: calendarViewModel,
-                            todoAddViewModel: todoAddViewModel,
-                            checkListVM: checkListViewModel
+                            calendarVM: self.calendarViewModel,
+                            todoAddViewModel: self.todoAddViewModel,
+                            checkListVM: self.checkListViewModel
                         )
                     } label: {
-                        Image("magnifyingglass")
+                        Image("search")
                             .renderingMode(.template)
                             .resizable()
                             .foregroundColor(Color(0x191919))
@@ -103,38 +99,32 @@ struct TimeTableMainView: View {
                     .padding(.trailing, 10)
 
                     Button {
-                        timeTableViewModel.currentDate = .now
+                        self.timeTableViewModel.currentDate = .now
                     } label: {
-                        Text("\(Date().day)")
-                            .font(.pretendard(size: 12, weight: .bold))
-                            .foregroundColor(Color(0x2ca4ff))
-                            .padding(.vertical, 3)
-                            .padding(.horizontal, 6)
-                            .background(
-                                Circle()
-                                    .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x15afff)],
-                                                           startPoint: .topLeading,
-                                                           endPoint: .bottomTrailing),
-                                            lineWidth: 2)
-                            )
+                        Image("time-table-date-circle")
+                            .overlay {
+                                Text("\(Date().day)")
+                                    .font(.pretendard(size: 14, weight: .bold))
+                                    .foregroundColor(Color(0x2ca4ff))
+                            }
                             .padding(.trailing, 10)
                     }
 
                     Image(
-                        isScheduleView
+                        self.isScheduleView
                             ? "time-table-todo"
                             : "time-table-schedule"
                     )
                     .resizable()
                     .frame(width: 28, height: 28)
                     .onTapGesture {
-                        isScheduleView.toggle()
+                        self.isScheduleView.toggle()
                     }
                 }
                 .padding(.trailing, 20)
                 .padding(.bottom, 14)
 
-                if isScheduleView {
+                if self.isScheduleView {
                     TimeTableScheduleView(
                         timeTableViewModel: _timeTableViewModel,
                         calendarViewModel: _calendarViewModel,
@@ -151,35 +141,35 @@ struct TimeTableMainView: View {
                 Spacer()
             }
 
-            if isModalVisible {
+            if self.isModalVisible {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
                         withAnimation {
-                            isModalVisible = false
+                            self.isModalVisible = false
                         }
                     }
 
-                Modal(isActive: $isModalVisible, ratio: 0.9) {
-                    if isScheduleView {
+                Modal(isActive: self.$isModalVisible, ratio: 0.9) {
+                    if self.isScheduleView {
                         ScheduleFormView(
                             scheduleFormVM: ScheduleFormViewModel(
-                                selectionSet: calendarViewModel.selectionSet,
-                                categoryList: calendarViewModel.categoryList,
+                                selectionSet: self.calendarViewModel.selectionSet,
+                                categoryList: self.calendarViewModel.categoryList,
                                 successAction: {
-                                    timeTableViewModel.fetchScheduleList()
+                                    self.timeTableViewModel.fetchScheduleList()
                                 }
                             ),
-                            isSchModalVisible: $isModalVisible
+                            isSchModalVisible: self.$isModalVisible
                         )
                     } else {
                         TodoAddView(
-                            viewModel: todoAddViewModel,
-                            isModalVisible: $isModalVisible
+                            viewModel: self.todoAddViewModel,
+                            isModalVisible: self.$isModalVisible
                         )
                         .onAppear {
-                            todoAddViewModel.isSelectedEndDate = true
+                            self.todoAddViewModel.isSelectedEndDate = true
                         }
                     }
                 }
@@ -195,17 +185,16 @@ struct TimeTableMainView: View {
                                 isPopupVisible.wrappedValue = false
                             }
 
-                        CalendarDayView(calendarViewModel: calendarViewModel)
+                        CalendarDayView(calendarViewModel: self.calendarViewModel)
                             .zIndex(2)
                     }
                 } else {
                     Button {
                         withAnimation {
-                            isModalVisible = true
+                            self.isModalVisible = true
                         }
                     } label: {
                         Image("add-button")
-                            .shadow(radius: 10, x: 5, y: 0)
                             .padding(.trailing, 20)
                             .padding(.bottom, 10)
                     }
@@ -213,7 +202,7 @@ struct TimeTableMainView: View {
             }
         }
         .onAppear {
-            timeTableViewModel.fetchScheduleList()
+            self.timeTableViewModel.fetchScheduleList()
         }
     }
 }

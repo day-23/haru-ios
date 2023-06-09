@@ -1,0 +1,19 @@
+<svg id="타임테이블" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="-0.124" y1="-0.205" x2="1.192" y2="1.119" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9fa9ff"/>
+      <stop offset="1" stop-color="#15afff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="-0.147" y1="0" x2="1.147" y2="1.196" xlink:href="#linear-gradient"/>
+  </defs>
+  <g id="그룹_20567" data-name="그룹 20567" transform="translate(-19900 3400)">
+    <g id="그룹_20566" data-name="그룹 20566">
+      <rect id="사각형_25111" data-name="사각형 25111" width="28" height="28" transform="translate(19900 -3400)" fill="none"/>
+      <path id="합치기_10" data-name="합치기 10" d="M8.332,15.836l-3.855-4.6A1,1,0,0,1,6.008,9.953l3.215,3.832,10.727-9,1.285,1.53-11.1,9.314a1.014,1.014,0,0,1-.219.14,1.053,1.053,0,0,1-.174.19,1,1,0,0,1-1.41-.124Z" transform="translate(19903 -3397)" opacity="0" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+  <g id="그룹_20565" data-name="그룹 20565" transform="translate(-19936 3424)">
+    <rect id="사각형_25112" data-name="사각형 25112" width="28" height="28" transform="translate(19936 -3424)" fill="none"/>
+    <path id="합치기_22" data-name="합치기 22" d="M1,22a1,1,0,0,1-1-1V5.652a1,1,0,0,1,1-1H5V2A1,1,0,0,1,7,2V4.652h8V2a1,1,0,0,1,2,0V4.652h4a1,1,0,0,1,1,1V21a1,1,0,0,1-1,1Zm1-1.826H20V6.478H17V9.13a1,1,0,0,1-2,0V6.478H7V9.13a1,1,0,0,1-2,0V6.478H2Z" transform="translate(19939 -3422)" fill="url(#linear-gradient-2)"/>
+  </g>
+</svg>

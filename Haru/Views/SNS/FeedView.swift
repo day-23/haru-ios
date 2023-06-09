@@ -60,7 +60,7 @@ struct FeedView: View {
                             postOptModalVis.1 = post
                         }
                     } label: {
-                        Image("ellipsis")
+                        Image("more")
                             .renderingMode(.template)
                             .foregroundColor(Color(0x646464))
                     }
@@ -83,7 +83,7 @@ struct FeedView: View {
                         Button {
                             postVM.likeThisPost(targetPostId: post.id)
                         } label: {
-                            Image(post.isLiked ? "heart-fill" : "heart-empty")
+                            Image(post.isLiked ? "sns-heart-fill" : "sns-heart")
                                 .resizable()
                                 .frame(width: 28, height: 28)
                         }
@@ -111,7 +111,7 @@ struct FeedView: View {
                             )
                         } label: {
                             // TODO: post.isCommented인 경우 chat-bubble-fill : chat-bubble
-                            Image(post.commentCount > 0 ? "chat-bubble-fill" : "chat-bubble-empty")
+                            Image(post.commentCount > 0 ? "sns-comment-fill" : "sns-comment-empty")
                                 .resizable()
                                 .frame(width: 28, height: 28)
                         }
@@ -130,7 +130,7 @@ struct FeedView: View {
                                 commentVM: commentVM
                             )
                         } label: {
-                            Image("option-button")
+                            Image("slider")
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 28, height: 28)

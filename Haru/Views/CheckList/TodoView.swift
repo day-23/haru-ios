@@ -191,28 +191,28 @@ struct TodoView: View {
                                 || todo.repeatOption != nil
                                 || !todo.memo.isEmpty)
                         {
-                            Image("dot-small")
+                            Image("todo-dot-small")
                                 .renderingMode(.template)
                                 .frame(width: 20, height: 20)
                         }
 
                         if todo.todayTodo {
-                            Image("today-todo-small")
+                            Image("todo-today-todo-small")
                                 .renderingMode(.template)
                         }
 
                         if todo.alarms.count > 0 {
-                            Image("alarm-small")
+                            Image("todo-alarm-small")
                                 .renderingMode(.template)
                         }
 
                         if todo.repeatValue != nil || todo.repeatOption != nil {
-                            Image("repeat-small")
+                            Image("todo-repeat-small")
                                 .renderingMode(.template)
                         }
 
                         if !todo.memo.isEmpty {
-                            Image("memo-small")
+                            Image("todo-memo-small")
                                 .renderingMode(.template)
                         }
                     }

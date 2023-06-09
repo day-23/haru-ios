@@ -50,6 +50,6 @@ struct Me: Codable {
 
 extension Me: Identifiable {
     var id: String {
-        user.id
+        self.user.id
     }
 }

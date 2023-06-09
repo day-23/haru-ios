@@ -19,8 +19,7 @@ struct AccountView: View {
             .padding(.bottom, 29)
 
             ZStack {
-                Image("background-gradation")
-                    .resizable()
+                Color(0xf1f1f5)
 
                 VStack(alignment: .leading, spacing: 5) {
                     Text("연동된 이메일")
@@ -97,7 +96,7 @@ struct AccountRow<Destination: View>: View {
                         .foregroundColor(Color(0x646464))
                         .padding(.trailing, 10)
 
-                    Image("detail-button")
+                    Image("setting-detail-button")
                         .frame(width: 28, height: 28)
                 }
 

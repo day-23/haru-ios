@@ -1,0 +1,25 @@
+<svg id="카테고리_관리_일정_할일" data-name="카테고리 관리_일정, 할일" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="-0.151" y1="-0.159" x2="1.173" y2="1.165" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9fa9ff"/>
+      <stop offset="1" stop-color="#15afff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="-0.098" y1="-0.086" x2="1.1" y2="1.1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9ea9ff"/>
+      <stop offset="1" stop-color="#1dafff"/>
+    </linearGradient>
+  </defs>
+  <g id="그룹_20565" data-name="그룹 20565" transform="translate(2 2)">
+    <rect id="사각형_25112" data-name="사각형 25112" width="28" height="28" transform="translate(-2 -2)" fill="none"/>
+  </g>
+  <g id="그룹_21410" data-name="그룹 21410" transform="translate(-485 -798)">
+    <g id="그룹_20567" data-name="그룹 20567" transform="translate(488 801)">
+      <g id="그룹_20566" data-name="그룹 20566" transform="translate(0)">
+        <path id="합치기_10" data-name="합치기 10" d="M3.215,8.682.184,5.071a.785.785,0,1,1,1.2-1.01l2.526,3.01L12.341,0l1.011,1.2L4.795,8.383a1,1,0,0,1-.288.169.786.786,0,0,1-1.293.13Z" transform="translate(5.691 6.117)" fill="url(#linear-gradient)"/>
+      </g>
+    </g>
+    <g id="그룹_21406" data-name="그룹 21406" transform="translate(489.57 802.572)">
+      <path id="제외_2" data-name="제외 2" d="M9,18A9,9,0,0,1,2.636,2.636,9,9,0,1,1,15.363,15.364,8.94,8.94,0,0,1,9,18ZM9,1.5A7.5,7.5,0,1,0,16.5,9,7.509,7.509,0,0,0,9,1.5Z" transform="translate(0.43 0.428)" fill="url(#linear-gradient-2)"/>
+    </g>
+  </g>
+</svg>

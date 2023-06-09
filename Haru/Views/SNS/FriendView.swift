@@ -8,63 +8,61 @@
 import SwiftUI
 
 struct FriendView: View {
+    // MARK: Internal
+
     @Environment(\.dismiss) var dismissAction
-    
+
     @StateObject var userProfileVM: UserProfileViewModel
-    
+
     @State var friendTab: Bool = true
     @State var searchWord: String = ""
-    
-    @State private var deleteFriend: Bool = false
-    @State private var refuseFriend: Bool = false
-    @State private var cancelFriend: Bool = false
-    
+
     var body: some View {
         ZStack {
             VStack(spacing: 15) {
                 VStack(spacing: 0) {
-                    if userProfileVM.isMe {
+                    if self.userProfileVM.isMe {
                         HStack(spacing: 0) {
-                            Text("친구 목록 \(userProfileVM.friendCount)")
+                            Text("친구 목록 \(self.userProfileVM.friendCount)")
                                 .frame(width: 175, height: 20)
                                 .font(.pretendard(size: 16, weight: .bold))
-                                .foregroundColor(friendTab ? Color(0x1DAFFF) : Color(0xACACAC))
+                                .foregroundColor(self.friendTab ? Color(0x1DAFFF) : Color(0xACACAC))
                                 .onTapGesture {
-                                    userProfileVM.option = .friendList
+                                    self.userProfileVM.option = .friendList
                                     withAnimation {
-                                        friendTab = true
+                                        self.friendTab = true
                                     }
                                 }
-                            
-                            Text("친구 신청 \(userProfileVM.reqFriendCount)")
+
+                            Text("친구 신청 \(self.userProfileVM.reqFriendCount)")
                                 .frame(width: 175, height: 20)
                                 .font(.pretendard(size: 16, weight: .bold))
-                                .foregroundColor(friendTab ? Color(0xACACAC) : Color(0x1DAFFF))
+                                .foregroundColor(self.friendTab ? Color(0xACACAC) : Color(0x1DAFFF))
                                 .onTapGesture {
-                                    userProfileVM.option = .requestFriendList
+                                    self.userProfileVM.option = .requestFriendList
                                     withAnimation {
-                                        friendTab = false
+                                        self.friendTab = false
                                     }
                                 }
                         }
                         .padding(.bottom, 10)
-                        
+
                         ZStack(alignment: .leading) {
                             Rectangle()
                                 .fill(.clear)
                                 .frame(width: 175 * 2, height: 4)
-                            
+
                             Rectangle()
                                 .fill(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]))
                                 .frame(width: 175, height: 4)
-                                .offset(x: friendTab ? 0 : 175)
+                                .offset(x: self.friendTab ? 0 : 175)
                         }
                     } else {
                         Rectangle()
                             .fill(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]))
                             .frame(width: 175 * 2, height: 4)
                             .overlay {
-                                Text("친구 목록 \(userProfileVM.friendCount)")
+                                Text("친구 목록 \(self.userProfileVM.friendCount)")
                                     .font(.pretendard(size: 16, weight: .bold))
                                     .foregroundColor(Color(0x1DAFFF))
                                     .offset(y: -24)
@@ -72,14 +70,14 @@ struct FriendView: View {
                             .padding(.top, 24)
                     }
                 }
-                
+
                 HStack {
-                    Image("magnifyingglass")
+                    Image("search")
                         .resizable()
                         .renderingMode(.template)
                         .frame(width: 28, height: 28)
                         .foregroundColor(Color(0xACACAC))
-                    TextField("검색어를 입력하세요", text: $searchWord)
+                    TextField("검색어를 입력하세요", text: self.$searchWord)
                         .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(Color(0xACACAC))
                 }
@@ -87,11 +85,11 @@ struct FriendView: View {
                 .background(Color(0xF1F1F5))
                 .cornerRadius(15)
                 .padding(.horizontal, 20)
-                
+
                 ScrollView {
                     LazyVStack(spacing: 30) {
-                        ForEach(friendTab ?
-                            userProfileVM.friendList : userProfileVM.requestFriendList, id: \.id)
+                        ForEach(self.friendTab ?
+                            self.userProfileVM.friendList : self.userProfileVM.requestFriendList, id: \.id)
                         { user in
                             HStack {
                                 NavigationLink {
@@ -101,13 +99,13 @@ struct FriendView: View {
                                     )
                                 } label: {
                                     HStack(spacing: 16) {
-                                        switch userProfileVM.option {
+                                        switch self.userProfileVM.option {
                                         case .friendList:
                                             if let profileImage = userProfileVM.friProfileImageList[user.id] {
                                                 ProfileImgView(profileImage: profileImage)
                                                     .frame(width: 30, height: 30)
                                             } else {
-                                                Image("default-profile-image")
+                                                Image("background-main-splash")
                                                     .resizable()
                                                     .clipShape(Circle())
                                                     .frame(width: 30, height: 30)
@@ -117,54 +115,54 @@ struct FriendView: View {
                                                 ProfileImgView(profileImage: profileImage)
                                                     .frame(width: 30, height: 30)
                                             } else {
-                                                Image("default-profile-image")
+                                                Image("background-main-splash")
                                                     .resizable()
                                                     .clipShape(Circle())
                                                     .frame(width: 30, height: 30)
                                             }
                                         }
-                                        
+
                                         Text(user.name)
                                             .font(.pretendard(size: 16, weight: .bold))
                                     }
                                 }
                                 .foregroundColor(Color(0x191919))
-                                
+
                                 Spacer()
-                                
-                                if userProfileVM.isMe {
-                                    myFriendView(user: user)
+
+                                if self.userProfileVM.isMe {
+                                    self.myFriendView(user: user)
                                 } else {
-                                    otherFriendView(user: user)
+                                    self.otherFriendView(user: user)
                                 }
                             }
                             .padding(.horizontal, 20)
                         }
-                        switch userProfileVM.option {
+                        switch self.userProfileVM.option {
                         case .friendList:
-                            if !userProfileVM.friendList.isEmpty,
-                               userProfileVM.page <= userProfileVM.friendListTotalPage
+                            if !self.userProfileVM.friendList.isEmpty,
+                               self.userProfileVM.page <= self.userProfileVM.friendListTotalPage
                             {
                                 HStack {
                                     Spacer()
                                     ProgressView()
                                         .onAppear {
                                             print("더 불러오기")
-                                            userProfileVM.loadMoreFriendList()
+                                            self.userProfileVM.loadMoreFriendList()
                                         }
                                     Spacer()
                                 }
                             }
                         case .requestFriendList:
-                            if !userProfileVM.requestFriendList.isEmpty,
-                               userProfileVM.page <= userProfileVM.reqFriListTotalPage
+                            if !self.userProfileVM.requestFriendList.isEmpty,
+                               self.userProfileVM.page <= self.userProfileVM.reqFriListTotalPage
                             {
                                 HStack {
                                     Spacer()
                                     ProgressView()
                                         .onAppear {
                                             print("더 불러오기")
-                                            userProfileVM.loadMoreFriendList()
+                                            self.userProfileVM.loadMoreFriendList()
                                         }
                                     Spacer()
                                 }
@@ -174,7 +172,7 @@ struct FriendView: View {
                 } // Scroll
                 .onAppear {
                     print("init")
-                    userProfileVM.initLoad()
+                    self.userProfileVM.initLoad()
                 }
             } // VStack
             .padding(.top, 20)
@@ -183,14 +181,14 @@ struct FriendView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
-                    dismissAction.callAsFunction()
+                    self.dismissAction.callAsFunction()
                 } label: {
                     Image("back-button")
                         .resizable()
                         .frame(width: 28, height: 28)
                 }
             }
-            
+
             ToolbarItem(placement: .principal) {
                 Text("친구")
                     .font(.pretendard(size: 20, weight: .bold))
@@ -198,13 +196,13 @@ struct FriendView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func myFriendView(user: FriendUser) -> some View {
-        if friendTab {
+        if self.friendTab {
             HStack(spacing: 10) {
                 Button {
-                    deleteFriend = true
+                    self.deleteFriend = true
                 } label: {
                     Text("삭제")
                         .font(.pretendard(size: 16, weight: .regular))
@@ -216,18 +214,18 @@ struct FriendView: View {
                 }
                 .confirmationDialog(
                     "\(user.name)님을 친구 목록에서 삭제할까요?",
-                    isPresented: $deleteFriend,
+                    isPresented: self.$deleteFriend,
                     titleVisibility: .visible
                 ) {
                     Button("삭제하기", role: .destructive) {
-                        userProfileVM.deleteFriend(friendId: user.id) {
-                            userProfileVM.refreshFriendList()
+                        self.userProfileVM.deleteFriend(friendId: user.id) {
+                            self.userProfileVM.refreshFriendList()
                         }
                     }
                 }
-                
+
                 Button {} label: {
-                    Image("ellipsis")
+                    Image("more")
                         .resizable()
                         .frame(width: 28, height: 28)
                 }
@@ -235,16 +233,16 @@ struct FriendView: View {
         } else {
             HStack(spacing: 10) {
                 Button {
-                    userProfileVM.acceptRequestFriend(requesterId: user.id) { result in
+                    self.userProfileVM.acceptRequestFriend(requesterId: user.id) { result in
                         switch result {
-                        case .success(let success):
+                        case let .success(success):
                             if !success {
                                 print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                             }
-                            
-                            userProfileVM.refreshFriendList()
-                            
-                        case .failure(let failure):
+
+                            self.userProfileVM.refreshFriendList()
+
+                        case let .failure(failure):
                             print("[Debug] \(failure) \(#file) \(#function)")
                         }
                     }
@@ -259,9 +257,9 @@ struct FriendView: View {
                         )
                         .cornerRadius(10)
                 }
-                
+
                 Button {
-                    refuseFriend = true
+                    self.refuseFriend = true
                 } label: {
                     Text("거절")
                         .font(.pretendard(size: 16, weight: .regular))
@@ -273,7 +271,7 @@ struct FriendView: View {
                 }
                 .confirmationDialog(
                     "\(user.name)님의 친구 신청을 거절할까요?",
-                    isPresented: $refuseFriend,
+                    isPresented: self.$refuseFriend,
                     titleVisibility: .visible
                 ) {
                     Button("거절하기", role: .destructive) {
@@ -283,7 +281,7 @@ struct FriendView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func otherFriendView(user: FriendUser) -> some View {
         HStack {
@@ -297,15 +295,15 @@ struct FriendView: View {
                     .cornerRadius(10)
             } else if user.friendStatus == 0 {
                 Button {
-                    userProfileVM.requestFriend(acceptorId: user.id) { result in
+                    self.userProfileVM.requestFriend(acceptorId: user.id) { result in
                         switch result {
-                        case .success(let success):
+                        case let .success(success):
                             if !success {
                                 print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                             }
-                            
-                            userProfileVM.refreshFriendList()
-                        case .failure(let failure):
+
+                            self.userProfileVM.refreshFriendList()
+                        case let .failure(failure):
                             print("[Debug] \(failure) \(#file) \(#function)")
                         }
                     }
@@ -322,7 +320,7 @@ struct FriendView: View {
                 }
             } else if user.friendStatus == 1 {
                 Button {
-                    cancelFriend = true
+                    self.cancelFriend = true
                 } label: {
                     Text("신청 취소")
                         .font(.pretendard(size: 16, weight: .regular))
@@ -334,28 +332,28 @@ struct FriendView: View {
                 }
                 .confirmationDialog(
                     "\(user.name)님께 보낸 친구 신청을 취소할까요?",
-                    isPresented: $cancelFriend,
+                    isPresented: self.$cancelFriend,
                     titleVisibility: .visible
                 ) {
                     Button("취소하기", role: .destructive) {
-                        userProfileVM.cancelRequestFriend(acceptorId: user.id) { result in
+                        self.userProfileVM.cancelRequestFriend(acceptorId: user.id) { result in
                             switch result {
-                            case .success(let success):
+                            case let .success(success):
                                 if !success {
                                     print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                                 }
-                                
-                                userProfileVM.refreshFriendList()
-                            case .failure(let failure):
+
+                                self.userProfileVM.refreshFriendList()
+                            case let .failure(failure):
                                 print("[Debug] \(failure) \(#file) \(#function)")
                             }
                         }
                     }
                 }
-                
+
             } else {
                 Button {
-                    deleteFriend = true
+                    self.deleteFriend = true
                 } label: {
                     Text("내 친구")
                         .font(.pretendard(size: 16, weight: .regular))
@@ -367,16 +365,22 @@ struct FriendView: View {
                 }
                 .confirmationDialog(
                     "\(user.name)님을 친구 목록에서 삭제할까요?",
-                    isPresented: $deleteFriend,
+                    isPresented: self.$deleteFriend,
                     titleVisibility: .visible
                 ) {
                     Button("삭제하기", role: .destructive) {
-                        userProfileVM.deleteFriend(friendId: user.id) {
-                            userProfileVM.refreshFriendList()
+                        self.userProfileVM.deleteFriend(friendId: user.id) {
+                            self.userProfileVM.refreshFriendList()
                         }
                     }
                 }
             }
         }
     }
+
+    // MARK: Private
+
+    @State private var deleteFriend: Bool = false
+    @State private var refuseFriend: Bool = false
+    @State private var cancelFriend: Bool = false
 }
