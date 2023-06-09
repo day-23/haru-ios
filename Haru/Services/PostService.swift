@@ -7,6 +7,7 @@
 
 import Alamofire
 import Foundation
+import SwiftUI
 import UIKit
 
 final class PostService {
