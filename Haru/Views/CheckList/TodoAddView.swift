@@ -531,7 +531,7 @@ struct TodoAddView: View {
                                     if self.viewModel.at == .middle
                                         || self.viewModel.at == .back
                                     {
-                                        Button("이 할 일부터 수정") {
+                                        Button("이 할 일부터 수정", role: .destructive) {
                                             self.viewModel.updateTodoWithRepeat(
                                                 at: .back
                                             ) { result in
