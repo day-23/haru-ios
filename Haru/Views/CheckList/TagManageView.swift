@@ -22,8 +22,8 @@ struct TagManageView: View {
                 HStack(spacing: 0) {
                     Text("태그 관리")
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.pretendard(size: 20, weight: .bold))
-                        .foregroundColor(Color(0xf8f8fa))
+                        .font(.pretendard(size: 24, weight: .bold))
+                        .foregroundColor(Color(0xfdfdfd))
                 }
                 .padding(.top, 28)
                 .padding(.horizontal, 30)
