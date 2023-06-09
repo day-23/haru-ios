@@ -92,32 +92,35 @@ struct HaruApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                RootView()
-                    .environmentObject(global)
-                    .onOpenURL { url in
-                        // Handle the URL callback from KakaoTalk login
-                        if AuthApi.isKakaoTalkLoginUrl(url) {
-                            _ = AuthController.handleOpenUrl(url: url)
-                        }
+            RootView()
+                .environmentObject(global)
+                .onOpenURL { url in
+                    // Handle the URL callback from KakaoTalk login
+                    if AuthApi.isKakaoTalkLoginUrl(url) {
+                        _ = AuthController.handleOpenUrl(url: url)
                     }
-                    .onChange(of: scenePhase) { phase in
-                        switch phase {
-                        case .active:
-                            break
-                        case .inactive:
-                            break
-                        case .background:
-                            appDelegate.scheduleAppRefresh()
-                        @unknown default:
-                            break
-                        }
-                    }
-
-                if global.isLoading {
-                    LoadingView()
                 }
-            }
+                .onChange(of: scenePhase) { phase in
+                    switch phase {
+                    case .active:
+                        break
+                    case .inactive:
+                        break
+                    case .background:
+                        appDelegate.scheduleAppRefresh()
+                    @unknown default:
+                        break
+                    }
+                }
+                .overlay {
+                    VStack {
+                        if global.isLoading {
+                            LoadingView()
+                                .offset(y: UIScreen.main.bounds.height * 0.3)
+                                .zIndex(2)
+                        }
+                    }
+                }
         }
     }
 }
