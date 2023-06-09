@@ -359,12 +359,8 @@ final class PostService {
                           if let data = value as? String {
                               multipartFormData.append(data.data(using: .utf8)!, withName: key)
                           } else if let dataList = value as? [Tag] {
-                              if dataList.isEmpty {
-                                  multipartFormData.append("[]".data(using: .utf8)!, withName: key)
-                              } else {
-                                  for data in dataList {
-                                      multipartFormData.append(data.content.data(using: .utf8)!, withName: key)
-                                  }
+                              for data in dataList {
+                                  multipartFormData.append(data.content.data(using: .utf8)!, withName: key)
                               }
                           }
                       }
