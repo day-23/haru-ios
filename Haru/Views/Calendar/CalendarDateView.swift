@@ -71,7 +71,7 @@ struct CalendarDateView: View {
                                     .overlay {
                                         Text("\(Date().day)")
                                             .font(.pretendard(size: 14, weight: .bold))
-                                            .foregroundColor(Color(0x2CA4FF))
+                                            .foregroundColor(Color(0x2ca4ff))
                                     }
                             }
                             .tint(Color.gradientStart1)
@@ -102,10 +102,10 @@ struct CalendarDateView: View {
                                     .frame(maxWidth: .infinity)
                                     .foregroundColor(
                                         index == 0 ?
-                                            Color(0xF71E58) :
+                                            Color(0xf71e58) :
                                             index == 6 ?
-                                            Color(0x1DAFFF) :
-                                            Color(0xACACAC)
+                                            Color(0x1dafff) :
+                                            Color(0x646464)
                                     )
                             }
                         } // HStack
