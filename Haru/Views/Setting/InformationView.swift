@@ -48,7 +48,7 @@ struct InformationRow<Destination: View>: View {
         } label: {
             HStack(spacing: 0) {
                 Text(content)
-                    .font(.pretendard(size: 14, weight: .regular))
+                    .font(.pretendard(size: 16, weight: .regular))
                     .foregroundColor(Color(0x191919))
                     .padding(.leading, 14)
 

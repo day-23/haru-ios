@@ -54,7 +54,7 @@ struct MyView: View {
             VStack(spacing: 0) {
                 HaruHeader {
                     NavigationLink {
-                        SettingView(isLoggedIn: self.$isLoggedIn)
+                        SettingView(isLoggedIn: self.$isLoggedIn, userProfileVM: self.userProfileVM)
                     } label: {
                         Image("setting")
                             .renderingMode(.template)
@@ -92,11 +92,12 @@ struct MyView: View {
                                         }
                                         self.now = prevMonth
                                     } label: {
-                                        Image("back-button")
+                                        Image("todo-toggle")
                                             .renderingMode(.template)
                                             .resizable()
                                             .frame(width: 20, height: 20)
                                             .foregroundColor(Color(0x191919))
+                                            .rotationEffect(Angle(degrees: 180))
                                             .opacity(0.5)
                                     }
 
@@ -110,13 +111,12 @@ struct MyView: View {
                                         }
                                         self.now = nextMonth
                                     } label: {
-                                        Image("back-button")
+                                        Image("todo-toggle")
                                             .renderingMode(.template)
                                             .resizable()
                                             .frame(width: 20, height: 20)
                                             .foregroundColor(Color(0x191919))
                                             .opacity(0.5)
-                                            .rotationEffect(Angle(degrees: 180))
                                     }
                                 }
                             }
@@ -125,7 +125,7 @@ struct MyView: View {
                                 VStack(spacing: 4) {
                                     Text("\(self.completed)")
                                         .font(.pretendard(size: 20, weight: .bold))
-                                        .foregroundColor(Color(0x1DAFFF))
+                                        .foregroundColor(Color(0x1dafff))
                                         .animation(.none)
                                     Text("완료한 일")
                                         .font(.pretendard(size: 14, weight: .regular))
@@ -151,7 +151,7 @@ struct MyView: View {
                             .overlay {
                                 Text("\(Int(self.completionRate * 100))%")
                                     .font(.pretendard(size: 30, weight: .bold))
-                                    .foregroundColor(Color(0x1DAFFF))
+                                    .foregroundColor(Color(0x1dafff))
                                     .animation(.none)
                             }
                         }
@@ -172,7 +172,7 @@ struct MyView: View {
                             HStack(spacing: 0) {
                                 Text("\(self.fromCreatedAt)")
                                     .font(.pretendard(size: 20, weight: .bold))
-                                    .foregroundColor(Color(0x1DAFFF))
+                                    .foregroundColor(Color(0x1dafff))
                                 Text("  일 째")
                                     .font(.pretendard(size: 14, weight: .regular))
                                     .foregroundColor(Color(0x191919))
@@ -235,13 +235,13 @@ struct CircularProgressView: View {
         ZStack {
             Circle()
                 .stroke(
-                    Color(0xD2D7FF),
+                    Color(0xd2d7ff),
                     lineWidth: 10
                 )
             Circle()
                 .trim(from: 0, to: self.progress)
                 .stroke(
-                    Color(0x1DAFFF),
+                    Color(0x1dafff),
                     style: StrokeStyle(
                         lineWidth: 10,
                         lineCap: .round

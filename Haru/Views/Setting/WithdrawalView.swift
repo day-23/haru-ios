@@ -12,13 +12,18 @@ struct WithdrawalView: View {
 
     @Environment(\.dismiss) var dismissAction
     @EnvironmentObject var global: Global
+    @StateObject var userProfileVM: UserProfileViewModel
+
+    // MARK: Private
+
+    @State private var deleteButtonTapped: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
             SettingHeader(header: "계정 삭제") {
                 self.dismissAction.callAsFunction()
             }
-            .padding(.bottom, 20)
+            .padding(.bottom, 19)
 
             Divider()
                 .padding(.bottom, 20)
@@ -61,7 +66,7 @@ struct WithdrawalView: View {
 
                         VStack(alignment: .leading, spacing: 5) {
                             Text("연동된 이메일")
-                                .font(.pretendard(size: 12, weight: .regular))
+                                .font(.pretendard(size: 16, weight: .regular))
                                 .foregroundColor(Color(0x191919))
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -79,7 +84,7 @@ struct WithdrawalView: View {
 
                     VStack(alignment: .leading, spacing: 22) {
                         Text("계정이 삭제됩니다.")
-                            .font(.pretendard(size: 14, weight: .bold))
+                            .font(.pretendard(size: 16, weight: .bold))
 
                         Text("하루 계정이 삭제됩니다. 내 디바이스의 하루 데이터가 모두 삭제되며 닉네임, 사용자 아이디, 공개 프로필이 더 이상 하루 기록에 표시되지 않습니다. 실수로 계정을 삭제한 경우 30일 이내 복구가 가능합니다.")
                             .font(.pretendard(size: 12, weight: .regular))
@@ -95,9 +100,13 @@ struct WithdrawalView: View {
                     Button {
                         self.deleteButtonTapped = true
                     } label: {
-                        Text("계정 삭제")
-                            .font(.pretendard(size: 20, weight: .regular))
-                            .foregroundColor(Color(0xf71e58))
+                        Text("계정 삭제 완료")
+                            .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(Color(0xfdfdfd))
+                            .padding(.horizontal, 111)
+                            .padding(.vertical, 13)
+                            .background(Color(0xf71e58))
+                            .cornerRadius(10)
                     }
                     .confirmationDialog(
                         "계정을 정말로 삭제하시나요?",
@@ -114,16 +123,5 @@ struct WithdrawalView: View {
             Spacer()
         }
         .navigationBarBackButtonHidden()
-    }
-
-    // MARK: Private
-
-    @State private var deleteButtonTapped: Bool = false
-}
-
-struct WithdrawalView_Previews: PreviewProvider {
-    static var previews: some View {
-        WithdrawalView()
-            .environmentObject(Global.shared)
     }
 }
