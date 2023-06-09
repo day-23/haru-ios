@@ -498,6 +498,10 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func createSubTodo() {
+        if subTodoList.count + 1 > 10 {
+            return
+        }
+
         subTodoList.append(
             SubTodo(
                 id: UUID().uuidString,
@@ -620,6 +624,11 @@ final class TodoAddViewModel: ObservableObject {
 
     func onChangeTag(_: String) {
         let trimTag = tag.trimmingCharacters(in: .whitespaces)
+
+        if trimTag.count > 8 {
+            tag = String(trimTag[trimTag.startIndex ..< trimTag.index(trimTag.endIndex, offsetBy: -1)])
+        }
+
         if !trimTag.isEmpty,
            tag[tag.index(tag.endIndex, offsetBy: -1)] == " "
         {
@@ -878,13 +887,10 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func removeSubTodo(index: Int) {
-        if index < 0
-            || index >= subTodoList.count
-        {
-            return
+    func removeSubTodo(_ subTodo: SubTodo) {
+        withAnimation {
+            subTodoList = subTodoList.filter { $0.id != subTodo.id }
         }
-        subTodoList.remove(at: index)
     }
 
     func clear() {

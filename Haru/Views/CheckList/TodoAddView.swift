@@ -27,7 +27,7 @@ struct TodoAddView: View {
     var body: some View {
         VStack {
             ScrollView {
-                VStack {
+                LazyVStack {
                     if isModalVisible {
                         HStack(spacing: 0) {
                             Button {
@@ -87,18 +87,26 @@ struct TodoAddView: View {
                         }
                         .padding(.bottom, 7)
                         
-                        ForEach(viewModel.subTodoList.indices, id: \.self) { index in
+                        ForEach(viewModel.subTodoList) { subTodo in
                             HStack {
                                 Image("dot")
-                                TextField("", text: $viewModel.subTodoList[index].content)
-                                    .font(.pretendard(size: 16, weight: .bold))
-                                    .strikethrough(viewModel.subTodoList[index].completed)
-                                    .foregroundColor(
-                                        viewModel.subTodoList[index].completed ? Color(0xACACAC) : Color(0x191919)
-                                    )
-                                
+                                TextField("", text: .init(get: {
+                                    subTodo.content
+                                }, set: {
+                                    if let index = viewModel.subTodoList.firstIndex(where: { $0.id == subTodo.id }) {
+                                        viewModel.subTodoList[index].content = $0
+                                    }
+                                }))
+                                .font(.pretendard(size: 16, weight: .bold))
+                                .strikethrough(subTodo.completed)
+                                .foregroundColor(
+                                    subTodo.completed ? Color(0xACACAC) : Color(0x191919)
+                                )
+                                    
                                 Button {
-                                    viewModel.removeSubTodo(index: index)
+                                    if !viewModel.subTodoList.filter({ $0.id == subTodo.id }).isEmpty {
+                                        viewModel.removeSubTodo(subTodo)
+                                    }
                                 } label: {
                                     Image(systemName: "minus")
                                         .foregroundStyle(Color(0x191919))
@@ -107,9 +115,10 @@ struct TodoAddView: View {
                             }
                             .padding(.leading, 14)
                             .padding(.vertical, 7)
+                            .id(subTodo.id)
                         }
                         
-                        if viewModel.todo == nil || viewModel.todo?.completed == false {
+                        if viewModel.subTodoList.count + 1 <= 10 && viewModel.todo == nil || viewModel.todo?.completed == false {
                             Button {
                                 viewModel.createSubTodo()
                             } label: {
@@ -430,6 +439,15 @@ struct TodoAddView: View {
                             .padding(.leading, 45)
                             .padding(.horizontal, 20)
                             .focused($memoInFocus)
+                            .onChange(of: viewModel.memo) { _ in
+                                if viewModel.memo.count > 500 {
+                                    viewModel.memo = String(
+                                        viewModel.memo[
+                                            viewModel.memo.startIndex ..< viewModel.memo.index(viewModel.memo.endIndex, offsetBy: -1)
+                                        ]
+                                    )
+                                }
+                            }
                         
                         Divider()
                     }

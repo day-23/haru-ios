@@ -67,7 +67,7 @@ struct TodoView: View {
     }()
 
     var body: some View {
-        HStack(alignment: showExtraInfo ? .top : .center, spacing: 0) {
+        HStack(alignment: .top, spacing: 0) {
             if !todo.subTodos.isEmpty,
                !isMiniCalendar
             {
@@ -161,6 +161,7 @@ struct TodoView: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(todo.content)
+                    .multilineTextAlignment(.leading)
                     .font(.pretendard(size: 16, weight: .bold))
                     .strikethrough(todo.completed)
                     .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
@@ -219,6 +220,7 @@ struct TodoView: View {
                     .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
                 }
             }
+            .padding(.top, 4)
 
             Spacer()
             StarButton(isClicked: todo.flag)
