@@ -3,6 +3,7 @@
 //  Haru
 //
 //  Created by 이준호 on 2023/04/05.
+//  Updated by 최정민 on 2023/06/09.
 //
 
 import Alamofire
@@ -10,6 +11,11 @@ import Foundation
 import UIKit
 
 struct ProfileService {
+    enum ProfileError: Error {
+        case duplicated
+        case invalid
+    }
+
     private static let baseURL = Constants.baseURL + "post/"
 
     private static let formatter: DateFormatter = {
@@ -203,6 +209,16 @@ struct ProfileService {
             let data: Me
         }
 
+        struct ResponseError: Codable {
+            let success: Bool
+            let error: Data
+
+            struct Data: Codable {
+                let code: Int
+                let message: String
+            }
+        }
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -226,7 +242,13 @@ struct ProfileService {
             case let .success(response):
                 completion(.success(response.data))
             case let .failure(error):
-                completion(.failure(error))
+                if let statusCode = response.response?.statusCode {
+                    if statusCode == 409 {
+                        completion(.failure(ProfileError.duplicated))
+                    }
+                } else {
+                    completion(.failure(error))
+                }
             }
         }
     }

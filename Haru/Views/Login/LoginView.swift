@@ -34,8 +34,7 @@ struct LoginView: View {
                         .font(.pretendard(size: 16, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.top, 13)
-                    
-                
+
                     Image("login-text-box")
                         .padding(.top, 51)
                         .padding(.leading, 128)
