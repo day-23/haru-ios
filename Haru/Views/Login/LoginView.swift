@@ -82,7 +82,7 @@ struct LoginView: View {
                                     isAllowFeedLike: 2,
                                     isAllowFeedComment: 2,
                                     isAllowSearch: true,
-                                    isMaliciousUser: true,
+                                    isMaliciousUser: false,
                                     createdAt: .now,
                                     accessToken: "GUEST"
                                 )
