@@ -130,6 +130,10 @@ struct RootView: View {
                                     }
                                 }
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                
+                                if global.isLoading {
+                                    LoadingView()
+                                }
                             }
                         }
                         .onAppear {

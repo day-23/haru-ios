@@ -20,6 +20,7 @@ final class Global: ObservableObject {
     @Published var isTabViewActive: Bool = true
     @Published var isFaded: Bool = false
     @Published var isNetworkConnected: Bool = false
+    @Published var isLoading: Bool = false
 
     var holidayCategory = Category(
         id: UUID().uuidString,
