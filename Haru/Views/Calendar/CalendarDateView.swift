@@ -209,7 +209,6 @@ struct CalendarDateView: View {
                                     .resizable()
                                     .frame(width: 56, height: 56)
                                     .clipShape(Circle())
-                                    .shadow(radius: 10, x: 5, y: 0)
                             }
                         }
                     }

@@ -14,7 +14,9 @@ struct SignUpView: View {
     @State private var nickname: String = ""
     @State private var haruId: String = ""
 
-    @State var openPhoto: Bool = false
+    @State private var isInvalidInput: Bool = false
+    @State private var isDuplicated: Bool = false
+    @State private var isLongNickname: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -32,24 +34,53 @@ struct SignUpView: View {
                     .frame(width: 168.33, height: 84.74)
             )
             .padding(.top, 55)
-            .padding(.bottom, 100)
+            .padding(.bottom, 90)
 
             Group {
-                VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 10) {
                     VStack(alignment: .leading, spacing: 14) {
                         Text("하루 ID")
                             .font(.pretendard(size: 20, weight: .bold))
+                            .foregroundColor(Color(0x191919))
 
-                        TextField("ID를 입력해 주세요.", text: $haruId)
-                            .font(.pretendard(size: 24, weight: .regular))
+                        HStack(spacing: 0) {
+                            TextField("", text: $haruId)
+                                .font(.pretendard(size: 24, weight: .regular))
+                                .foregroundColor(Color(0x191919))
+                                .placeholder(when: haruId.isEmpty) {
+                                    Text("ID를 입력해 주세요")
+                                        .font(.pretendard(size: 24, weight: .regular))
+                                        .foregroundColor(Color(0xACACAC))
+                                }
+
+                            if (isInvalidInput && haruId.isEmpty) || isDuplicated {
+                                Image("cancel")
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0xF71E58))
+                            }
+                        }
                     }
 
                     Divider()
+                        .padding(.leading, -16)
+                        .padding(.trailing, -13)
 
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("하루 ID는 타 사용자가 나의 계정을 검색할 때 외에 노출되지 않습니다.")
-                            .lineLimit(1)
-                        Text("ID는 초기 생성 이후 변경이 가능합니다.")
+                        if isInvalidInput {
+                            if haruId.isEmpty {
+                                Text("반드시 입력해야 합니다.")
+                                    .font(.pretendard(size: 12, weight: .regular))
+                                    .foregroundColor(Color(0xF71E58))
+                            }
+                        } else if isDuplicated {
+                            Text("중복된 아이디입니다.")
+                                .font(.pretendard(size: 12, weight: .regular))
+                                .foregroundColor(Color(0xF71E58))
+                        } else {
+                            Text("하루 ID는 타 사용자가 나의 계정을 검색할 때 외에 노출되지 않습니다.")
+                                .lineLimit(1)
+                            Text("ID는 초기 생성 이후 변경이 가능합니다.")
+                        }
                     }
                     .font(.pretendard(size: 12, weight: .regular))
                     .foregroundColor(Color(0xACACAC))
@@ -60,18 +91,60 @@ struct SignUpView: View {
                     VStack(alignment: .leading, spacing: 14) {
                         Text("닉네임")
                             .font(.pretendard(size: 20, weight: .bold))
+                            .foregroundColor(Color(0x191919))
 
-                        TextField("최대 8글자를 입력해 주세요", text: $nickname)
-                            .font(.pretendard(size: 24, weight: .regular))
+                        HStack(spacing: 0) {
+                            TextField("", text: $nickname)
+                                .font(.pretendard(size: 24, weight: .regular))
+                                .foregroundColor(Color(0x191919))
+                                .placeholder(when: nickname.isEmpty) {
+                                    Text("최대 8글자를 입력해 주세요")
+                                        .font(.pretendard(size: 24, weight: .regular))
+                                        .foregroundColor(Color(0xACACAC))
+                                }
+                                .onChange(of: nickname) { newValue in
+                                    if newValue.count > 8 {
+                                        isLongNickname = true
+                                        nickname = String(newValue[newValue.startIndex ..< newValue.index(newValue.endIndex, offsetBy: -1)])
+                                    }
+                                }
+
+                            // TODO: 사용 불가능한 아이디 체크 필요
+                            if (isInvalidInput && nickname.isEmpty) || isLongNickname {
+                                Image("cancel")
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0xF71E58))
+                            }
+                        }
                     }
 
                     Divider()
+                        .padding(.leading, -16)
+                        .padding(.trailing, -13)
+
+                    VStack(alignment: .leading, spacing: 0) {
+                        if isInvalidInput {
+                            if nickname.isEmpty {
+                                Text("반드시 입력해야 합니다.")
+                            }
+                        } else if isLongNickname {
+                            Text("닉네임이 8글자를 초과했습니다.")
+                        }
+                    }
+                    .font(.pretendard(size: 12, weight: .regular))
+                    .foregroundColor(Color(0xF71E58))
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .padding(.leading, 36)
             .padding(.trailing, 33)
 
             Button {
+                if haruId.isEmpty || nickname.isEmpty {
+                    isInvalidInput = true
+                    return
+                }
+
                 if let user = Global.shared.user {
                     profileService.initUserProfileWithoutImage(
                         userId: user.id,
@@ -81,8 +154,13 @@ struct SignUpView: View {
                         switch result {
                         case .success(let response):
                             Global.shared.user = response
-                        case .failure:
-                            break
+                        case .failure(let error):
+                            switch error {
+                            case ProfileService.ProfileError.duplicated:
+                                isDuplicated = true
+                            default:
+                                break
+                            }
                         }
                     }
                 }
@@ -102,8 +180,7 @@ struct SignUpView: View {
                     .cornerRadius(10)
             }
             .padding(.top, 50)
-
-            Spacer()
+            .padding(.bottom, 75)
         }
     }
 }

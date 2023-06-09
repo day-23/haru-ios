@@ -36,7 +36,7 @@ struct SplashView: View {
                     .foregroundColor(.white)
                     .padding(.top, 13)
 
-                Image("character-main")
+                Image("character-hagi-ruri")
                     .padding(.top, 100)
 
                 Spacer()

@@ -9,8 +9,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct TimeTableMainView: View {
-    // MARK: Lifecycle
-
     init(
         timeTableViewModel: StateObject<TimeTableViewModel>,
         checkListViewModel: StateObject<CheckListViewModel>,
@@ -21,10 +19,6 @@ struct TimeTableMainView: View {
         _todoAddViewModel = todoAddViewModel
     }
 
-    // MARK: Internal
-
-    // MARK: - Properties
-
     @EnvironmentObject var todoState: TodoState
 
     @StateObject var timeTableViewModel: TimeTableViewModel
@@ -32,6 +26,10 @@ struct TimeTableMainView: View {
 
     @StateObject var calendarViewModel: CalendarViewModel = .init()
     @StateObject var todoAddViewModel: TodoAddViewModel
+
+    @State private var isScheduleView: Bool = true
+    @State private var isModalVisible: Bool = false
+    @State private var isDateButtonClicked: Bool = false
 
     var body: some View {
         let isPopupVisible: Binding<Bool> = .init {
@@ -107,7 +105,7 @@ struct TimeTableMainView: View {
                             .overlay {
                                 Text("\(Date().day)")
                                     .font(.pretendard(size: 14, weight: .bold))
-                                    .foregroundColor(Color(0x2CA4FF))
+                                    .foregroundColor(Color(0x2ca4ff))
                             }
                             .padding(.trailing, 10)
                     }
@@ -197,7 +195,6 @@ struct TimeTableMainView: View {
                         }
                     } label: {
                         Image("add-button")
-                            .shadow(radius: 10, x: 5, y: 0)
                             .padding(.trailing, 20)
                             .padding(.bottom, 10)
                     }
@@ -208,12 +205,4 @@ struct TimeTableMainView: View {
             self.timeTableViewModel.fetchScheduleList()
         }
     }
-
-    // MARK: Private
-
-    @State private var isScheduleView: Bool = true
-
-    @State private var isModalVisible: Bool = false
-
-    @State private var isDateButtonClicked: Bool = false
 }

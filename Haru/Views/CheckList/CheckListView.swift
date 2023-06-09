@@ -381,7 +381,6 @@ struct CheckListView: View {
                         }
                     } label: {
                         Image("add-button")
-                            .shadow(radius: 10, x: 5, y: 0)
                     }
                 }
                 .zIndex(5)

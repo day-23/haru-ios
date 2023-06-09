@@ -175,6 +175,11 @@ private struct TagOptionItem: View {
 extension TagManageView {
     func onChangeTag(_: String) {
         let trimTag = checkListViewModel.tagContent.trimmingCharacters(in: .whitespaces)
+
+        if trimTag.count > 8 {
+            checkListViewModel.tagContent = String(trimTag[trimTag.startIndex ..< trimTag.index(trimTag.endIndex, offsetBy: -1)])
+        }
+
         if !trimTag.isEmpty,
            checkListViewModel.tagContent[
                checkListViewModel.tagContent.index(checkListViewModel.tagContent.endIndex, offsetBy: -1)

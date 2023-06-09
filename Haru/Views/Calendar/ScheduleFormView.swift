@@ -353,6 +353,12 @@ struct ScheduleFormView: View {
                             .padding(.leading, 45)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 8)
+                            .onChange(of: scheduleFormVM.memo) { _ in
+                                if scheduleFormVM.memo.count > 500 {
+                                    let memo = scheduleFormVM.memo
+                                    scheduleFormVM.memo = String(memo[memo.startIndex ..< memo.index(memo.endIndex, offsetBy: -1)])
+                                }
+                            }
                         
                         Divider()
                     }

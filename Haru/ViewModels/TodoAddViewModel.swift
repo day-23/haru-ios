@@ -498,6 +498,10 @@ final class TodoAddViewModel: ObservableObject {
     }
 
     func createSubTodo() {
+        if subTodoList.count + 1 > 10 {
+            return
+        }
+
         subTodoList.append(
             SubTodo(
                 id: UUID().uuidString,
@@ -518,14 +522,22 @@ final class TodoAddViewModel: ObservableObject {
             return
         }
 
+        withAnimation {
+            Global.shared.isLoading = true
+        }
         todoState.updateTodo(
             todoId: todo.id,
             todo: createTodoData()
         ) { result in
             switch result {
             case let .success(response):
-                self.updateAction(todo.id)
-                completion(.success(response))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation {
+                        Global.shared.isLoading = false
+                        self.updateAction(todo.id)
+                        completion(.success(response))
+                    }
+                }
             case let .failure(error):
                 completion(.failure(error))
             }
@@ -620,6 +632,11 @@ final class TodoAddViewModel: ObservableObject {
 
     func onChangeTag(_: String) {
         let trimTag = tag.trimmingCharacters(in: .whitespaces)
+
+        if trimTag.count > 8 {
+            tag = String(trimTag[trimTag.startIndex ..< trimTag.index(trimTag.endIndex, offsetBy: -1)])
+        }
+
         if !trimTag.isEmpty,
            tag[tag.index(tag.endIndex, offsetBy: -1)] == " "
         {
@@ -878,13 +895,10 @@ final class TodoAddViewModel: ObservableObject {
         }
     }
 
-    func removeSubTodo(index: Int) {
-        if index < 0
-            || index >= subTodoList.count
-        {
-            return
+    func removeSubTodo(_ subTodo: SubTodo) {
+        withAnimation {
+            subTodoList = subTodoList.filter { $0.id != subTodo.id }
         }
-        subTodoList.remove(at: index)
     }
 
     func clear() {
