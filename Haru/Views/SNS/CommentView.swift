@@ -86,6 +86,17 @@ struct CommentView: View, KeyboardReadable {
     @State var startingX: CGFloat?
     @State var startingY: CGFloat?
 
+    // 댓글 편집에 필요한 필드
+    @State var textSize: [String: CGSize] = [:]
+    @State var draggingList: [String: Bool] = [:]
+    @State var xList: [String: Double?] = [:]
+    @State var yList: [String: Double?] = [:]
+
+    @State var startingXList: [String: CGFloat?] = [:]
+    @State var startingYList: [String: CGFloat?] = [:]
+
+    @State var overHide: Bool = false
+
     var isMine: Bool // 해당 게시물이 내 게시물인지 남의 게시물인지
 
     // For API
@@ -178,9 +189,7 @@ struct CommentView: View, KeyboardReadable {
                     if isCommentEditing {
                         Group {
                             Button {
-                                // TODO: confirmation으로 초기화할 것인지 묻기
-                                isCommentEditing = false
-                                content = ""
+                                cancelEditing = true
                             } label: {
                                 HStack(spacing: 5) {
                                     Image("comment-reset")
@@ -421,6 +430,11 @@ struct CommentView: View, KeyboardReadable {
                             titleVisibility: .visible)
         {
             Button("편집 취소하기", role: .destructive) {
+                xList = [:]
+                yList = [:]
+                startingXList = [:]
+                startingYList = [:]
+                draggingList = [:]
                 isCommentEditing = false
             }
         }
@@ -528,12 +542,12 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
             .onTapGesture { location in
-                if isMine {
-                    showUserProfile.toggle()
+                if isCommentWriting || isCommentDeleting || isCommentEditing {
                     return
                 }
 
-                if isCommentWriting || isCommentDeleting {
+                if isMine {
+                    showUserProfile.toggle()
                     return
                 }
 
@@ -584,28 +598,102 @@ struct CommentView: View, KeyboardReadable {
 
     @ViewBuilder
     func commentListView() -> some View {
+        let sz = deviceSize.width
         if !hideAllComment {
             ForEach(commentList[postPageNum]) { comment in
+                let longPress = LongPressGesture(minimumDuration: 0.15)
+                    .onEnded { _ in
+                        xList[comment.id] = CGFloat(comment.x)
+                        yList[comment.id] = CGFloat(comment.y)
+                        startingXList[comment.id] = CGFloat(comment.x)
+                        startingYList[comment.id] = CGFloat(comment.y)
+                        withAnimation {
+                            draggingList[comment.id] = true
+                        }
+                    }
+
+                let drag = DragGesture()
+                    .onChanged { value in
+                        // 삭제 버튼 근처인 경우
+                        if value.location.x >= sz / 2 - 45,
+                           value.location.x <= sz / 2 + 45,
+                           value.location.y >= sz + 25,
+                           value.location.y <= sz + 120
+                        {
+                            overHide = true
+                        } else {
+                            overHide = false
+                        }
+
+                        // 범위 막기
+                        if value.location.y < 0 {
+                            return
+                        }
+
+                        if value.location.x + ((textSize[comment.id]?.width ?? 0) / 2) >= sz - 10 ||
+                            value.location.x - ((textSize[comment.id]?.width ?? 0) / 2) <= 10 ||
+                            value.location.y - ((textSize[comment.id]?.height ?? 0) / 2) <= 10
+                        {
+                            return
+                        } else {
+                            xList[comment.id] = value.location.x
+                            yList[comment.id] = value.location.y
+                        }
+                    }
+                    .onEnded { value in
+                        if overHide {
+                            print("\(comment.content)를 숨기기")
+                            // TODO: 댓글 숨기기 API 연동
+                            overHide = false
+                        }
+
+                        if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz - 5 {
+                            xList[comment.id] = startingX ?? 190
+                            yList[comment.id] = startingY ?? 190
+                        }
+                        withAnimation {
+                            draggingList[comment.id] = false
+                        }
+                    }
+
+                let combined = longPress.sequenced(before: drag)
+
                 Text("\(comment.content)")
                     .font(.pretendard(size: 14, weight: .regular))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(Color(0xFDFDFD))
                     .cornerRadius(9)
-                    .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
+                    .background(ViewGeometry())
+                    .onPreferenceChange(ViewSizeKey.self) {
+                        textSize[comment.id] = $0
+                    }
+                    .position(
+                        x: isCommentEditing ? (xList[comment.id] ?? comment.x)! : comment.x,
+                        y: isCommentEditing ? (yList[comment.id] ?? comment.y)! : comment.y
+                    )
                     .foregroundColor(
                         isCommentDeleting && alreadyComment[postPageNum]?.0.id == comment.id ?
                             Color(0x1AFFF) : Color(0x191919)
                     )
-                    .zIndex(alreadyComment[postPageNum]?.0.id == comment.id ? 5 : 2)
+                    .zIndex(2)
                     .overlay {
-                        if isMine, showUserProfile {
+                        if isMine, showUserProfile, !isCommentEditing {
                             userProfileInfoView(comment: comment)
                                 .position(x: CGFloat(comment.x), y: CGFloat(comment.y))
                                 .offset(
                                     y: comment.y > 50 ? -35 : 35
                                 )
                         }
+                    }
+                    .simultaneousGesture(
+                        combined
+                    )
+                    .onChange(of: xList[comment.id]) { newValue in
+                        print("x: \(newValue)")
+                    }
+                    .onChange(of: yList[comment.id]) { newValue in
+                        print("y: \(newValue)")
                     }
             }
         }
@@ -623,12 +711,12 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
         }
-        .overlay(
+        .overlay {
             if isCommentEditing {
                 Rectangle()
                     .fill(Color(0x191919).opacity(0.5))
             }
-        )
+        }
         .background(Color(0xFDFDFD))
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
@@ -660,26 +748,19 @@ struct CommentView: View, KeyboardReadable {
     }
 }
 
-//                        if let comment = alreadyComment[postPageNum] {
-//                            commentService.updateComment(
-//                                targetUserId: comment.0.user.id,
-//                                targetCommentId: comment.0.id,
-//                                comment: Request.Comment(content: content, x: x, y: y)
-//                            ) { result in
-//                                switch result {
-//                                case .success(let success):
-//                                    print("수정 완료")
-//                                    // 댓글 업데이트 시 필드 값 변경해주기
-//                                    postImageList[postPageNum].comments[comment.1].content = content
-//                                    if let x, let y {
-//                                        postImageList[postPageNum].comments[comment.1].x = x / deviceSize.width * 100
-//                                        postImageList[postPageNum].comments[comment.1].y = y / deviceSize.width * 100
-//                                    }
-//                                    isFocused = false
-//                                    isCommentWriting = false
-//                                case .failure(let failure):
-//                                    print("[Debug] \(failure)")
-//                                    print("\(#function)")
-//                                }
-//                            }
-//                        } else {
+struct ViewSizeKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+struct ViewGeometry: View {
+    var body: some View {
+        GeometryReader { geometry in
+            Color.clear
+                .preference(key: ViewSizeKey.self, value: geometry.size)
+        }
+    }
+}
