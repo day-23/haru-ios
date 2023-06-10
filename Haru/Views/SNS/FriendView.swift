@@ -285,7 +285,7 @@ struct FriendView: View {
                 Button {
                     // TODO: 친구 차단하기 및 숨기기 기능
                 } label: {
-                    Image("ellipsis")
+                    Image("more")
                         .resizable()
                         .frame(width: 28, height: 28)
                 }

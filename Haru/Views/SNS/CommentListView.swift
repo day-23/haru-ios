@@ -35,6 +35,16 @@ struct CommentListView: View {
 
                     Spacer(minLength: 0)
 
+                    Image("sns-comment-fill")
+                        .overlay(content: {
+                            Text("\(commentVM.commentTotalCount[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0)")
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x646464))
+                                .offset(x: 30)
+                        })
+                        .padding(.trailing, 38)
+                }
+                .overlay(content: {
                     Group {
                         HStack(spacing: 20) {
                             Image("todo-toggle")
@@ -67,22 +77,9 @@ struct CommentListView: View {
                                 .disabled(commentVM.imagePageNum == commentVM.postImageIDList.count - 1)
                         }
                     }
-
-                    Spacer(minLength: 0)
-
-                    Group {
-                        HStack(spacing: 10) {
-                            Image("sns-comment-fill")
-
-                            Text("\(commentVM.commentTotalCount[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0)")
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(Color(0x646464))
-                        }
-                    }
-                }
+                })
                 .padding(.top, 10)
                 .padding(.horizontal, 20)
-                .padding(.trailing, 15)
 
                 if let commentList = commentVM.imageCommentList[commentVM.postImageIDList[commentVM.imagePageNum]] {
                     ForEach(commentList.indices, id: \.self) { idx in
