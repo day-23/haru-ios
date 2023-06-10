@@ -8,71 +8,52 @@
 import SwiftUI
 
 struct HaruHeader<
-    HeaderBackground: View,
     HeaderItem: View
 >: View {
     var toggleOn: Bool
 
     @Binding var toggleIsClicked: Bool
-    var isIconGradation: Bool
-    @ViewBuilder var background: () -> HeaderBackground // 배경화면으로 보여질 화면을 추가한다.
     @ViewBuilder var item: () -> HeaderItem // 헤더 오른쪽에 들어갈 아이템을 정의한다.
 
     init(
         toggleIsClicked: Binding<Bool>? = nil,
-        isIconGradation: Bool = false,
-        @ViewBuilder background: @escaping () -> HeaderBackground = {
-            Image("background-gradation")
-                .resizable()
-        },
-
         @ViewBuilder item: @escaping () -> HeaderItem
     ) {
         _toggleIsClicked = toggleIsClicked ?? .constant(false)
-        self.background = background
         self.item = item
-        self.isIconGradation = isIconGradation
 
         if toggleIsClicked == nil {
-            toggleOn = false
+            self.toggleOn = false
         } else {
-            toggleOn = true
+            self.toggleOn = true
         }
     }
 
     var body: some View {
         ZStack {
-            background()
+            Color.white
                 .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    if isIconGradation {
-                        Image("header-logo")
-                    } else {
-                        Image("header-logo")
-                            .renderingMode(.template)
-                            .foregroundColor(Color(0xFDFDFD))
-                    }
+                HStack {
+                    Image("logo")
 
-                    if toggleOn {
+                    if self.toggleOn {
                         Button {
                             withAnimation {
-                                toggleIsClicked.toggle()
+                                self.toggleIsClicked.toggle()
                             }
                         } label: {
                             Image("todo-toggle")
-                                .resizable()
                                 .renderingMode(.template)
-                                .foregroundColor(Color(0x191919))
-                                .frame(width: 20, height: 20)
-                                .rotationEffect(.degrees(toggleIsClicked ? 90 : 0))
+                                .foregroundColor(Color(0x646464))
+                                .rotationEffect(.degrees(self.toggleIsClicked ? 90 : 0))
                         }
                     }
 
                     Spacer()
 
-                    item()
+                    self.item()
                 }
                 Spacer()
                     .frame(height: 20)

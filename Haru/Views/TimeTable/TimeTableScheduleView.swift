@@ -55,7 +55,8 @@ struct TimeTableScheduleView: View {
             // 날짜 및 하루종일, 여러 날짜에 걸쳐 나타나는 일정이 보이는 View
             Pager(page: page,
                   data: timeTableViewModel.indices,
-                  id: \.self) { _ in
+                  id: \.self)
+            { _ in
                 VStack(spacing: 0) {
                     LazyVGrid(columns: column, spacing: 30) {
                         Text("")
@@ -68,7 +69,7 @@ struct TimeTableScheduleView: View {
                                         ? Color(0xf71e58)
                                         : (index == 6
                                             ? Color(0x1dafff)
-                                            : Color(0xacacac)
+                                            : Color(0x646464)
                                         )
                                 )
                                 .padding(.bottom, 3)
@@ -165,7 +166,7 @@ struct TimeTableScheduleView: View {
                                 Spacer()
                                 Text("\(index / 8 + 1)")
                                     .font(.pretendard(size: 12, weight: .regular))
-                                    .foregroundColor(Color(0xacacac))
+                                    .foregroundColor(Color(0x191919))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     .offset(x: 6, y: 6)
                             }

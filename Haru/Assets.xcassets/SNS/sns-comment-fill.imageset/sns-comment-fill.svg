@@ -1,0 +1,10 @@
+<svg id="코멘트" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.149" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#9fa9ff"/>
+      <stop offset="1" stop-color="#15afff"/>
+    </linearGradient>
+  </defs>
+  <rect id="사각형_25164" data-name="사각형 25164" width="28" height="28" fill="none" opacity="0.5"/>
+  <path id="패스_7720" data-name="패스 7720" d="M7.647,0h6.372c4.223,0,7.326,5.485,5.675,9.819s6.144,10.058-5.675,4.432H7.647A7.4,7.4,0,0,1,0,7.126,7.4,7.4,0,0,1,7.647,0Z" transform="translate(4 6)" fill="url(#linear-gradient)"/>
+</svg>

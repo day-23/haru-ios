@@ -29,15 +29,15 @@ struct HaruView: View {
                 .resizable()
                 .edgesIgnoringSafeArea(.all)
 
-            ListView(checkListViewModel: viewModel) {
+            ListView(checkListViewModel: self.viewModel) {
                 ListSectionView(
-                    checkListViewModel: viewModel,
-                    todoAddViewModel: addViewModel,
-                    todoList: $todoState.todoListByFlagWithToday,
+                    checkListViewModel: self.viewModel,
+                    todoAddViewModel: self.addViewModel,
+                    todoList: self.$todoState.todoListByFlagWithToday,
                     itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
                     emptyTextContent: "중요한 할 일이 있나요?"
                 ) {
-                    todoState.updateOrderHaru()
+                    self.todoState.updateOrderHaru()
                 } header: {
                     HStack(spacing: 0) {
                         TagView(
@@ -59,17 +59,17 @@ struct HaruView: View {
                 Divider()
 
                 ListSectionView(
-                    checkListViewModel: viewModel,
-                    todoAddViewModel: addViewModel,
-                    todoList: $todoState.todoListByTodayTodo,
+                    checkListViewModel: self.viewModel,
+                    todoAddViewModel: self.addViewModel,
+                    todoList: self.$todoState.todoListByTodayTodo,
                     itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
                 ) {
-                    todoState.updateOrderHaru()
+                    self.todoState.updateOrderHaru()
                 } header: {
                     TagView(
                         tag: Tag(id: "오늘 할 일", content: "오늘 할 일"),
                         isSelected: true,
-                        disabled: todoState.todoListByTodayTodo.isEmpty
+                        disabled: self.todoState.todoListByTodayTodo.isEmpty
                     )
                     .padding(.leading, 10)
                 }
@@ -77,17 +77,17 @@ struct HaruView: View {
                 Divider()
 
                 ListSectionView(
-                    checkListViewModel: viewModel,
-                    todoAddViewModel: addViewModel,
-                    todoList: $todoState.todoListByUntilToday,
+                    checkListViewModel: self.viewModel,
+                    todoAddViewModel: self.addViewModel,
+                    todoList: self.$todoState.todoListByUntilToday,
                     itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
                 ) {
-                    todoState.updateOrderHaru()
+                    self.todoState.updateOrderHaru()
                 } header: {
                     TagView(
                         tag: Tag(id: "오늘까지", content: "오늘까지"),
                         isSelected: true,
-                        disabled: todoState.todoListByUntilToday.isEmpty
+                        disabled: self.todoState.todoListByUntilToday.isEmpty
                     )
                     .padding(.leading, 10)
                 }
@@ -95,13 +95,13 @@ struct HaruView: View {
                 Divider()
 
                 ListSectionView(
-                    checkListViewModel: viewModel,
-                    todoAddViewModel: addViewModel,
-                    todoList: $todoState.todoListByCompleted,
+                    checkListViewModel: self.viewModel,
+                    todoAddViewModel: self.addViewModel,
+                    todoList: self.$todoState.todoListByCompleted,
                     itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
                     emptyTextContent: "할 일을 완료해 보세요!"
                 ) {
-                    todoState.updateOrderHaru()
+                    self.todoState.updateOrderHaru()
                 } header: {
                     TagView(
                         tag: Tag(
@@ -109,35 +109,35 @@ struct HaruView: View {
                             content: DefaultTag.completed.rawValue
                         ),
                         isSelected: true,
-                        disabled: todoState.todoListByCompleted.isEmpty
+                        disabled: self.todoState.todoListByCompleted.isEmpty
                     )
                     .padding(.leading, 10)
                 }
-            } offsetChanged: { changeOffset($0) }
+            } offsetChanged: { self.changeOffset($0) }
 
-            if isModalVisible {
+            if self.isModalVisible {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
                         withAnimation {
-                            isModalVisible = false
+                            self.isModalVisible = false
                         }
                     }
 
-                Modal(isActive: $isModalVisible, ratio: 0.9) {
+                Modal(isActive: self.$isModalVisible, ratio: 0.9) {
                     TodoAddView(
-                        viewModel: addViewModel,
-                        isModalVisible: $isModalVisible
+                        viewModel: self.addViewModel,
+                        isModalVisible: self.$isModalVisible
                     )
                 }
                 .transition(.modal)
                 .zIndex(2)
-            } else if viewIsShown {
+            } else if self.viewIsShown {
                 HStack(alignment: .bottom, spacing: 0) {
-                    TextField("", text: $addViewModel.content)
-                        .placeholder(when: addViewModel.content.isEmpty) {
-                            Text("간편 추가")
+                    TextField("", text: self.$addViewModel.content)
+                        .placeholder(when: self.addViewModel.content.isEmpty) {
+                            Text("오늘 할 일 빠른 추가")
                                 .font(.pretendard(size: 14, weight: .regular))
                                 .foregroundColor(Color(0x646464))
                         }
@@ -150,19 +150,18 @@ struct HaruView: View {
                         .padding(.trailing, 18)
                         .padding(.bottom, 4)
                         .onSubmit {
-                            addViewModel.addSimpleTodo()
+                            self.addViewModel.addSimpleTodo()
                         }
 
                     Button {
                         withAnimation {
-                            isModalVisible = true
-                            addViewModel.mode = .add
-                            addViewModel.isTodayTodo = true
-                            addViewModel.isSelectedEndDate = true
+                            self.isModalVisible = true
+                            self.addViewModel.mode = .add
+                            self.addViewModel.isTodayTodo = true
+                            self.addViewModel.isSelectedEndDate = true
                         }
                     } label: {
                         Image("add-button")
-                            .shadow(radius: 10, x: 5, y: 0)
                     }
                 }
                 .zIndex(5)
@@ -177,12 +176,12 @@ struct HaruView: View {
                     .frame(width: 28, height: 28)
                     .padding(.leading, 5)
                     .onTapGesture {
-                        dismissAction.callAsFunction()
+                        self.dismissAction.callAsFunction()
                     }
             }
 
             ToolbarItem(placement: .principal) {
-                Text(formatter.string(from: .now))
+                Text(self.formatter.string(from: .now))
                     .font(.system(size: 20, weight: .bold))
             }
 
@@ -191,7 +190,7 @@ struct HaruView: View {
                     // TODO: 검색 뷰 만들어지면 넣어주기
                     Text("검색")
                 } label: {
-                    Image("magnifyingglass")
+                    Image("search")
                         .renderingMode(.template)
                         .resizable()
                         .foregroundColor(Color(0x191919))
@@ -202,11 +201,11 @@ struct HaruView: View {
         }
         .toolbarBackground(Color(0xD9EAFD))
         .onAppear {
-            viewModel.mode = .haru
-            todoState.fetchTodoListByTodayTodoAndUntilToday()
+            self.viewModel.mode = .haru
+            self.todoState.fetchTodoListByTodayTodoAndUntilToday()
         }
         .onDisappear {
-            viewModel.mode = .main
+            self.viewModel.mode = .main
         }
         .contentShape(Rectangle())
         .gesture(

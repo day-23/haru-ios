@@ -17,87 +17,82 @@ struct TagManageView: View {
     @State private var addButtonTapped = false
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    Text("태그 관리")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.pretendard(size: 20, weight: .bold))
-                        .foregroundColor(Color(0xf8f8fa))
-                }
-                .padding(.top, 28)
-                .padding(.horizontal, 24)
-                .padding(.bottom, 18)
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Text("태그 관리")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.pretendard(size: 24, weight: .bold))
+                    .foregroundColor(Color(0xfdfdfd))
+            }
+            .padding(.top, 25)
+            .padding(.leading, 30)
+            .padding(.bottom, 15)
 
-                VStack(spacing: 0) {
-                    ScrollView {
-                        VStack(spacing: 9) {
-                            HStack(spacing: 0) {
-                                TextField("", text: $checkListViewModel.tagContent)
-                                    .placeholder(when: checkListViewModel.tagContent.isEmpty) {
-                                        Text("태그 추가")
-                                            .font(.pretendard(size: 16, weight: .regular))
-                                            .foregroundColor(
-                                                checkListViewModel.tagContent.isEmpty ? Color(0xacacac) : Color(0x191919)
-                                            )
-                                    }
+            ScrollView {
+                VStack(spacing: 9) {
+                    HStack(spacing: 0) {
+                        TextField("", text: $checkListViewModel.tagContent)
+                            .placeholder(when: checkListViewModel.tagContent.isEmpty) {
+                                Text("태그 추가")
                                     .font(.pretendard(size: 16, weight: .regular))
                                     .foregroundColor(
                                         checkListViewModel.tagContent.isEmpty ? Color(0xacacac) : Color(0x191919)
                                     )
-                                    .onChange(
-                                        of: checkListViewModel.tagContent,
-                                        perform: onChangeTag(_:)
-                                    )
-                                    .onSubmit(onSubmitTag)
-                                Spacer()
+                            }
+                            .font(.pretendard(size: 16, weight: .regular))
+                            .foregroundColor(
+                                checkListViewModel.tagContent.isEmpty ? Color(0xacacac) : Color(0x191919)
+                            )
+                            .onChange(
+                                of: checkListViewModel.tagContent,
+                                perform: onChangeTag(_:)
+                            )
+                            .onSubmit(onSubmitTag)
 
-                                Button {
-                                    if addButtonTapped ||
-                                        checkListViewModel.tagContent.trimmingCharacters(in: .whitespaces).isEmpty
-                                    {
-                                        return
-                                    }
-                                    addButtonTapped = true
+                        Spacer()
 
-                                    checkListViewModel.addTag(
-                                        content: checkListViewModel.tagContent
-                                    ) { result in
-                                        switch result {
-                                        case .success:
-                                            checkListViewModel.tagContent = ""
-                                            addButtonTapped = false
-                                        case .failure:
-                                            addButtonTapped = false
-                                        }
-                                    }
-                                } label: {
-                                    Image("plus")
-                                        .renderingMode(.template)
-                                        .frame(width: 28, height: 28)
-                                        .foregroundColor(Color(0x191919))
+                        Button {
+                            if addButtonTapped ||
+                                checkListViewModel.tagContent.trimmingCharacters(in: .whitespaces).isEmpty
+                            {
+                                return
+                            }
+                            addButtonTapped = true
+
+                            checkListViewModel.addTag(
+                                content: checkListViewModel.tagContent
+                            ) { result in
+                                switch result {
+                                case .success:
+                                    checkListViewModel.tagContent = ""
+                                    addButtonTapped = false
+                                case .failure:
+                                    addButtonTapped = false
                                 }
-                                .disabled(addButtonTapped)
                             }
-                            .padding(.leading, 9)
-
-                            ForEach($checkListViewModel.tagList) { $tag in
-                                TagOptionItem(
-                                    checkListViewModel: checkListViewModel,
-                                    tag: tag
-                                )
-                            }
+                        } label: {
+                            Image("todo-add-sub-todo")
+                                .renderingMode(.template)
+                                .frame(width: 28, height: 28)
+                                .foregroundColor(Color(0x191919))
                         }
-                        .padding(.top, 18)
-                        .padding(.leading, 35)
-                        .padding(.trailing, 30)
+                        .disabled(addButtonTapped)
+                    }
+                    .padding(.leading, 5)
+
+                    ForEach($checkListViewModel.tagList) { $tag in
+                        TagOptionItem(
+                            checkListViewModel: checkListViewModel,
+                            tag: tag
+                        )
                     }
                 }
-                .frame(width: width, height: height * 0.86)
-                .background(Color(0xfdfdfd))
-
-                Spacer(minLength: 26)
+                .padding(.top, 18)
+                .padding(.leading, 35)
+                .padding(.trailing, 30)
             }
+            .frame(maxHeight: .infinity)
+            .background(Color(0xfdfdfd))
         }
         .frame(width: width, height: height)
         .background(
@@ -132,11 +127,10 @@ private struct TagOptionItem: View {
     var tag: Tag
 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             TagView(
                 tag: tag,
-                isSelected: false,
-                disabled: !tag.isSelected
+                isHidden: !tag.isSelected
             )
             .onTapGesture {
                 checkListViewModel.toggleVisibility(
@@ -154,6 +148,22 @@ private struct TagOptionItem: View {
 
             Spacer()
 
+            Image(tag.isSelected ? "todo-tag-visible" : "todo-tag-hidden")
+                .padding(.trailing, 10)
+                .onTapGesture {
+                    checkListViewModel.toggleVisibility(
+                        tagId: tag.id,
+                        isSeleted: tag.isSelected
+                    ) { result in
+                        switch result {
+                        case .success:
+                            break
+                        case .failure:
+                            break
+                        }
+                    }
+                }
+
             NavigationLink {
                 TagDetailView(
                     checkListViewModel: _checkListViewModel,
@@ -163,9 +173,7 @@ private struct TagOptionItem: View {
                     isSelected: tag.isSelected
                 )
             } label: {
-                Image("edit-button")
-                    .renderingMode(.template)
-                    .foregroundColor(Color(0x646464))
+                Image("todo-edit-button\(tag.isSelected ? "" : "-disable")")
                     .frame(width: 28, height: 28)
             }
         }

@@ -49,10 +49,10 @@ struct PopupImagePicker: View {
                     Button {
                         enable.toggle()
                     } label: {
-                        Image(enable ? "enable-select-photo" : "disable-select-photo")
+                        Image(enable ? "sns-multiple-button" : "sns-multiple-button-disable")
                     }
                 }
-                Image("default-camera")
+                Image("sns-camera-disable")
                     .resizable()
                     .frame(width: 30, height: 30)
             }

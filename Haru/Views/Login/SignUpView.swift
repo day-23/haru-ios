@@ -17,6 +17,8 @@ struct SignUpView: View {
     @State private var isInvalidInput: Bool = false
     @State private var isDuplicated: Bool = false
     @State private var isLongNickname: Bool = false
+    @State private var isBadNickname: Bool = false
+    @State private var isInvalidId: Bool = false // 영어 소문자, 숫자로만 이루어졌는가?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -52,8 +54,16 @@ struct SignUpView: View {
                                         .font(.pretendard(size: 24, weight: .regular))
                                         .foregroundColor(Color(0xACACAC))
                                 }
+                                .onChange(of: haruId) { _ in
+                                    let regex = /^[a-z0-9]*$/
+                                    if let match = haruId.wholeMatch(of: regex) {
+                                        isInvalidId = false
+                                    } else {
+                                        isInvalidId = true
+                                    }
+                                }
 
-                            if (isInvalidInput && haruId.isEmpty) || isDuplicated {
+                            if (isInvalidInput && haruId.isEmpty) || isDuplicated || isInvalidId {
                                 Image("cancel")
                                     .renderingMode(.template)
                                     .foregroundColor(Color(0xF71E58))
@@ -67,13 +77,17 @@ struct SignUpView: View {
 
                     VStack(alignment: .leading, spacing: 0) {
                         if isInvalidInput {
-                            if haruId.isEmpty {
+                            if haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 Text("반드시 입력해야 합니다.")
                                     .font(.pretendard(size: 12, weight: .regular))
                                     .foregroundColor(Color(0xF71E58))
                             }
                         } else if isDuplicated {
                             Text("중복된 아이디입니다.")
+                                .font(.pretendard(size: 12, weight: .regular))
+                                .foregroundColor(Color(0xF71E58))
+                        } else if isInvalidId {
+                            Text("영어 소문자, 숫자로만 이루어져야 합니다.")
                                 .font(.pretendard(size: 12, weight: .regular))
                                 .foregroundColor(Color(0xF71E58))
                         } else {
@@ -110,7 +124,7 @@ struct SignUpView: View {
                                 }
 
                             // TODO: 사용 불가능한 아이디 체크 필요
-                            if (isInvalidInput && nickname.isEmpty) || isLongNickname {
+                            if (isInvalidInput && nickname.isEmpty) || isLongNickname || isBadNickname {
                                 Image("cancel")
                                     .renderingMode(.template)
                                     .foregroundColor(Color(0xF71E58))
@@ -124,11 +138,13 @@ struct SignUpView: View {
 
                     VStack(alignment: .leading, spacing: 0) {
                         if isInvalidInput {
-                            if nickname.isEmpty {
+                            if nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 Text("반드시 입력해야 합니다.")
                             }
                         } else if isLongNickname {
                             Text("닉네임이 8글자를 초과했습니다.")
+                        } else if isBadNickname {
+                            Text("부적절한 이름입니다.")
                         }
                     }
                     .font(.pretendard(size: 12, weight: .regular))
@@ -140,6 +156,12 @@ struct SignUpView: View {
             .padding(.trailing, 33)
 
             Button {
+                isDuplicated = false
+                isBadNickname = false
+                isLongNickname = false
+                isInvalidInput = false
+                isInvalidId = false
+
                 if haruId.isEmpty || nickname.isEmpty {
                     isInvalidInput = true
                     return
@@ -156,6 +178,8 @@ struct SignUpView: View {
                             Global.shared.user = response
                         case .failure(let error):
                             switch error {
+                            case ProfileService.ProfileError.badname:
+                                isBadNickname = true
                             case ProfileService.ProfileError.duplicated:
                                 isDuplicated = true
                             default:

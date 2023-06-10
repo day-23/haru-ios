@@ -16,68 +16,68 @@ struct ProfileView: View {
 
     @StateObject var postVM: PostViewModel
     @StateObject var userProfileVM: UserProfileViewModel
-    
+
     @State var postOptModalVis: (Bool, Post?) = (false, nil)
-    
+
     @State var blockFriend: Bool = false
-    
+
     @State var deletePost: Bool = false
     @State var hidePost: Bool = false
     @State var reportPost: Bool = false
-    
+
     var myProfile: Bool = false
-    
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
                 ProfileInfoView(userProfileVM: userProfileVM)
                     .background(Color(0xFDFDFD))
                     .padding(.top, 20)
-                
+
                 Spacer()
                     .frame(height: 33)
-                
+
                 if userProfileVM.isPublic {
                     VStack(spacing: 0) {
                         HStack(spacing: 0) {
-                            Text(userProfileVM.isMe ? "내 피드" : "피드")
+                            Text(self.userProfileVM.isMe ? "내 피드" : "피드")
                                 .frame(width: 175)
                                 .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(isFeedSelected ? Color(0x1DAFFF) : Color(0xACACAC))
+                                .foregroundColor(self.isFeedSelected ? Color(0x1DAFFF) : Color(0xACACAC))
                                 .onTapGesture {
                                     withAnimation {
-                                        isFeedSelected = true
+                                        self.isFeedSelected = true
                                     }
                                 }
-                            
+
                             Text("미디어")
                                 .frame(width: 175)
                                 .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(isFeedSelected ? Color(0xACACAC) : Color(0x1DAFFF))
+                                .foregroundColor(self.isFeedSelected ? Color(0xACACAC) : Color(0x1DAFFF))
                                 .onTapGesture {
                                     withAnimation {
-                                        isFeedSelected = false
+                                        self.isFeedSelected = false
                                     }
                                 }
                         }
                         .padding(.bottom, 10)
-                        
+
                         ZStack(alignment: .leading) {
                             Rectangle()
                                 .fill(.clear)
                                 .frame(width: 175 * 2, height: 4)
-                            
+
                             Rectangle()
                                 .fill(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]))
                                 .frame(width: 175, height: 4)
-                                .offset(x: isFeedSelected ? 0 : 175)
+                                .offset(x: self.isFeedSelected ? 0 : 175)
                         }
                     }
-                    
-                    if isFeedSelected {
-                        FeedListView(postVM: postVM, postOptModalVis: $postOptModalVis)
+
+                    if self.isFeedSelected {
+                        FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
                     } else {
-                        MediaListView(postVM: postVM)
+                        MediaListView(postVM: self.postVM)
                     }
                 } else {
                     VStack(spacing: 0) {
@@ -94,20 +94,20 @@ struct ProfileView: View {
                 }
             }
             .background(Color(0xFDFDFD))
-            
+
             if postOptModalVis.0 {
                 Color.black.opacity(0.5)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
                         withAnimation {
-                            postOptModalVis.0 = false
+                            self.postOptModalVis.0 = false
                         }
                     }
 
-                Modal(isActive: $postOptModalVis.0, ratio: 0.1) {
+                Modal(isActive: self.$postOptModalVis.0, ratio: 0.1) {
                     VStack(spacing: 20) {
-                        if postOptModalVis.1?.user.id == Global.shared.user?.id {
+                        if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {} label: {
                                 Text("이 게시글 수정하기")
                                     .foregroundColor(Color(0x646464))
@@ -116,7 +116,7 @@ struct ProfileView: View {
                         } else {
                             Button {
                                 withAnimation {
-                                    hidePost = true
+                                    self.hidePost = true
                                 }
                             } label: {
                                 Text("이 게시글 숨기기")
@@ -124,17 +124,17 @@ struct ProfileView: View {
                                     .font(.pretendard(size: 20, weight: .regular))
                             }
                             .confirmationDialog(
-                                "\(postOptModalVis.1?.user.name ?? "unknown")님의 게시글을 숨길까요? 이 작업은 복원할 수 없습니다.",
-                                isPresented: $hidePost,
+                                "\(self.postOptModalVis.1?.user.name ?? "unknown")님의 게시글을 숨길까요? 이 작업은 복원할 수 없습니다.",
+                                isPresented: self.$hidePost,
                                 titleVisibility: .visible
                             ) {
                                 Button("숨기기", role: .destructive) {
-                                    postVM.hidePost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                    self.postVM.hidePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            postVM.refreshPosts()
-                                            postOptModalVis.0 = false
-                                        case .failure(let failure):
+                                            self.postVM.refreshPosts()
+                                            self.postOptModalVis.0 = false
+                                        case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
                                     }
@@ -142,17 +142,17 @@ struct ProfileView: View {
                             }
                         }
                         Divider()
-                        if postOptModalVis.1?.user.id == Global.shared.user?.id {
+                        if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {
                                 withAnimation {
-                                    deletePost = true
+                                    self.deletePost = true
                                 }
                             } label: {
                                 HStack {
                                     Text("게시글 삭제하기")
                                         .foregroundColor(Color(0xF71E58))
                                         .font(.pretendard(size: 20, weight: .regular))
-                                    
+
                                     Image("trash")
                                         .resizable()
                                         .renderingMode(.template)
@@ -162,16 +162,16 @@ struct ProfileView: View {
                             }
                             .confirmationDialog(
                                 "게시글을 삭제할까요? 이 작업은 복원할 수 없습니다.",
-                                isPresented: $deletePost,
+                                isPresented: self.$deletePost,
                                 titleVisibility: .visible
                             ) {
                                 Button("삭제하기", role: .destructive) {
-                                    postVM.deletePost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                    self.postVM.deletePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            postVM.refreshPosts()
-                                            postOptModalVis.0 = false
-                                        case .failure(let failure):
+                                            self.postVM.refreshPosts()
+                                            self.postOptModalVis.0 = false
+                                        case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
                                     }
@@ -179,7 +179,7 @@ struct ProfileView: View {
                             }
                         } else {
                             Button {
-                                reportPost = true
+                                self.reportPost = true
                             } label: {
                                 Text("이 게시글 신고하기")
                                     .foregroundColor(Color(0xF71E58))
@@ -187,18 +187,18 @@ struct ProfileView: View {
                             }
                             .confirmationDialog(
                                 "게시글을 신고할까요?",
-                                isPresented: $reportPost,
+                                isPresented: self.$reportPost,
                                 titleVisibility: .visible
                             ) {
                                 Button("신고하기", role: .destructive) {
-                                    postVM.reportPost(postId: postOptModalVis.1?.id ?? "unknown") { result in
+                                    self.postVM.reportPost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            postVM.refreshPosts()
-                                            postOptModalVis.0 = false
+                                            self.postVM.refreshPosts()
+                                            self.postOptModalVis.0 = false
                                             // TODO: 토스트 메시지로 신고가 접수 되었다고 알리기
                                             print("신고가 잘 접수 되었습니다.")
-                                        case .failure(let failure):
+                                        case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
                                     }
@@ -208,15 +208,15 @@ struct ProfileView: View {
                     }
                     .padding(.top, 40)
                 }
-                .opacity(deletePost || hidePost || reportPost ? 0 : 1)
+                .opacity(self.deletePost || self.hidePost || self.reportPost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
             }
-            
-            if toggleIsClicked {
+
+            if self.toggleIsClicked {
                 DropdownMenu {
                     Button {
-                        dismissAction.callAsFunction()
+                        self.dismissAction.callAsFunction()
                     } label: {
                         Text("친구피드")
                             .font(.pretendard(size: 16, weight: .bold))
@@ -241,13 +241,13 @@ struct ProfileView: View {
                         .frame(width: 28, height: 28)
                 }
             }
-            
+
             if !userProfileVM.isMe {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         blockFriend = true
                     } label: {
-                        Image("ellipsis")
+                        Image("more")
                     }
                     .confirmationDialog(
                         "\(userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
@@ -257,12 +257,12 @@ struct ProfileView: View {
                         Button("차단하기", role: .destructive) {
                             userProfileVM.blockedFriend(blockUserId: userProfileVM.user.id) { result in
                                 switch result {
-                                case .success(let success):
+                                case let .success(success):
                                     if !success {
                                         print("Toast Message로 알려주기")
                                     }
                                     userProfileVM.fetchUserProfile()
-                                case .failure(let failure):
+                                case let .failure(failure):
                                     print("\(failure) \(#file) \(#function)")
                                 }
                             }
@@ -276,7 +276,7 @@ struct ProfileView: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 28, height: 28)
-                        
+
                         Text("내 기록")
                             .font(.pretendard(size: 14, weight: .bold))
                     }
@@ -286,7 +286,7 @@ struct ProfileView: View {
             }
         }
         .onAppear {
-            userProfileVM.fetchUserProfile()
+            self.userProfileVM.fetchUserProfile()
         }
     }
 }

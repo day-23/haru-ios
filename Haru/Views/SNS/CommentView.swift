@@ -107,7 +107,7 @@ struct CommentView: View, KeyboardReadable {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .center, spacing: 0) {
                     HStack(spacing: 5) {
-                        Image(isMine ? "touch-edit" : "chat-bubble-empty")
+                        Image(isMine ? "sns-edit" : "sns-comment-empty")
                             .renderingMode(.template)
                             .resizable()
                             .frame(width: 28, height: 28)
@@ -153,7 +153,7 @@ struct CommentView: View, KeyboardReadable {
                                 Button {
                                     hideAllComment = true
                                 } label: {
-                                    Image("comment-bubble")
+                                    Image("sns-comment")
                                         .renderingMode(.template)
                                         .resizable()
                                         .frame(width: 28, height: 28)
@@ -174,7 +174,7 @@ struct CommentView: View, KeyboardReadable {
                                         )
                                     )
                                 } label: {
-                                    Image("option-button")
+                                    Image("slider")
                                         .resizable()
                                         .renderingMode(.template)
                                         .frame(width: 28, height: 28)
@@ -273,7 +273,7 @@ struct CommentView: View, KeyboardReadable {
                                 ProfileImgView(imageUrl: URL(string: profileImage))
                                     .frame(width: 62, height: 62)
                             } else {
-                                Image("default-profile-image")
+                                Image("background-main-splash")
                                     .resizable()
                                     .clipShape(Circle())
                                     .frame(width: 62, height: 62)

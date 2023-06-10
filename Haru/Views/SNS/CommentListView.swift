@@ -22,7 +22,7 @@ struct CommentListView: View {
                 HStack(alignment: .center, spacing: 0) {
                     Group {
                         HStack(spacing: 5) {
-                            Image("touch-edit")
+                            Image("sns-edit")
                                 .renderingMode(.template)
                                 .resizable()
                                 .frame(width: 28, height: 28)
@@ -72,7 +72,7 @@ struct CommentListView: View {
 
                     Group {
                         HStack(spacing: 10) {
-                            Image("chat-bubble-fill")
+                            Image("sns-comment-fill")
 
                             Text("\(commentVM.commentTotalCount[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0)")
                                 .font(.pretendard(size: 14, weight: .bold))
@@ -124,7 +124,7 @@ struct CommentListView: View {
                                 )
                             } label: {
                                 Image(comment.isPublic ?
-                                    "comment-bubble" : "comment-disable")
+                                    "sns-comment" : "sns-comment-disable")
                                     .resizable()
                                     .renderingMode(.template)
                                     .frame(width: 28, height: 28)
@@ -137,7 +137,7 @@ struct CommentListView: View {
                             Button {
                                 commentAlert = true
                             } label: {
-                                Image("ellipsis")
+                                Image("more")
                                     .resizable()
                                     .renderingMode(.template)
                                     .frame(width: 28, height: 28)

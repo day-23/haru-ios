@@ -9,33 +9,7 @@
 import Foundation
 
 struct Schedule: Identifiable, Codable {
-    let id: String
-    var content: String // 일정 제목
-    var memo: String
-    var isAllDay: Bool
-
-    var repeatStart: Date
-    var repeatEnd: Date
-
-    var repeatOption: RepeatOption?
-    var repeatValue: String?
-
-    var category: Category?
-
-    var alarms: [Alarm] // 알람이 설정되었는가? => !alarms.isEmpty
-
-    // MARK: - Dates
-
-    let createdAt: Date?
-    var updatedAt: Date?
-
-    // MARK: 반복 api를 위한 필드 (임의로 프론트에서 넣어주는 값들) 추후에 DTO를 새로 작성할 필요성 있음
-
-    var realRepeatStart: Date?
-    var realRepeatEnd: Date?
-
-    var prevRepeatEnd: Date?
-    var nextRepeatStart: Date?
+    // MARK: Lifecycle
 
     init(id: String, content: String, memo: String, isAllDay: Bool, repeatStart: Date, repeatEnd: Date, repeatOption: RepeatOption? = nil, repeatValue: String? = nil, category: Category? = nil, alarms: [Alarm], createdAt: Date?, updatedAt: Date? = nil, realRepeatStart: Date? = nil, realRepeatEnd: Date? = nil, prevRepeatEnd: Date? = nil, nextRepeatStart: Date? = nil) {
         self.id = id
@@ -92,7 +66,7 @@ struct Schedule: Identifiable, Codable {
         let id = id
         let content = content
         let repeatStart = repeatStart
-        if !alarms.isEmpty {
+        if !self.alarms.isEmpty {
             Task {
                 await AlarmHelper.createNotification(
                     identifier: id,
@@ -102,7 +76,7 @@ struct Schedule: Identifiable, Codable {
             }
 
             var repeatDate = repeatStart
-            if repeatOption != nil {
+            if self.repeatOption != nil {
                 if let repeatValue {
                     while repeatDate < .now {
                         do {
@@ -118,7 +92,7 @@ struct Schedule: Identifiable, Codable {
 
                     var count = 1
                     while count <= 30,
-                          repeatDate <= repeatEnd
+                          repeatDate <= self.repeatEnd
                     {
                         let date = repeatDate
                         Task {
@@ -144,6 +118,36 @@ struct Schedule: Identifiable, Codable {
             }
         }
     }
+
+    // MARK: Internal
+
+    let id: String
+    var content: String // 일정 제목
+    var memo: String
+    var isAllDay: Bool
+
+    var repeatStart: Date
+    var repeatEnd: Date
+
+    var repeatOption: RepeatOption?
+    var repeatValue: String?
+
+    var category: Category?
+
+    var alarms: [Alarm] // 알람이 설정되었는가? => !alarms.isEmpty
+
+    // MARK: - Dates
+
+    let createdAt: Date?
+    var updatedAt: Date?
+
+    // MARK: 반복 api를 위한 필드 (임의로 프론트에서 넣어주는 값들) 추후에 DTO를 새로 작성할 필요성 있음
+
+    var realRepeatStart: Date?
+    var realRepeatEnd: Date?
+
+    var prevRepeatEnd: Date?
+    var nextRepeatStart: Date?
 }
 
 // MARK: - extension
@@ -160,13 +164,13 @@ extension Schedule {
 
             switch repeatOption {
             case .everyWeek:
-                nextRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(day * 7))
+                nextRepeatEnd = self.repeatEnd.addingTimeInterval(TimeInterval(day * 7))
             case .everySecondWeek:
-                nextRepeatEnd = repeatEnd.addingTimeInterval(TimeInterval(day * 7 * 2))
+                nextRepeatEnd = self.repeatEnd.addingTimeInterval(TimeInterval(day * 7 * 2))
             case .everyMonth:
-                nextRepeatEnd = CalendarHelper.nextMonthDate(curDate: repeatEnd)
+                nextRepeatEnd = CalendarHelper.nextMonthDate(curDate: self.repeatEnd)
             case .everyYear:
-                nextRepeatEnd = CalendarHelper.nextYearDate(curDate: repeatEnd)
+                nextRepeatEnd = CalendarHelper.nextYearDate(curDate: self.repeatEnd)
             default:
                 return .none
             }
@@ -174,22 +178,22 @@ extension Schedule {
             let calendar = Calendar.current
             var dateComponents: DateComponents
 
-            dateComponents = calendar.dateComponents([.year, .month, .day], from: nextRepeatStart ?? repeatStart)
-            dateComponents.hour = repeatEnd.hour
-            dateComponents.minute = repeatEnd.minute
+            dateComponents = calendar.dateComponents([.year, .month, .day], from: self.nextRepeatStart ?? self.repeatStart)
+            dateComponents.hour = self.repeatEnd.hour
+            dateComponents.minute = self.repeatEnd.minute
 
-            nextRepeatEnd = calendar.date(from: dateComponents) ?? repeatEnd
+            nextRepeatEnd = calendar.date(from: dateComponents) ?? self.repeatEnd
         }
 
-        if repeatEnd <= realRepeatEnd ?? CalendarHelper.getInfiniteDate(),
-           realRepeatEnd ?? CalendarHelper.getInfiniteDate() < nextRepeatEnd
+        if self.repeatEnd <= self.realRepeatEnd ?? CalendarHelper.getInfiniteDate(),
+           self.realRepeatEnd ?? CalendarHelper.getInfiniteDate() < nextRepeatEnd
         {
-            if realRepeatStart == repeatStart {
+            if self.realRepeatStart == self.repeatStart {
                 return .none
             }
 
             return .back
-        } else if realRepeatStart == repeatStart {
+        } else if self.realRepeatStart == self.repeatStart {
             return .front
         } else {
             return .middle
@@ -410,7 +414,7 @@ extension Schedule {
             dateComponents.second = self.repeatStart.second
 
             guard let repeatStart = calendar.date(from: dateComponents) else {
-                print("[Error] scheduleId: \(id)에 문제가 있습니다. \(#fileID) \(#function)")
+                print("[Error] scheduleId: \(self.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 throw RepeatError.calculation
             }
 
@@ -424,7 +428,7 @@ extension Schedule {
             dateComponents.second = self.repeatStart.second
 
             guard let repeatStart = calendar.date(from: dateComponents) else {
-                print("[Error] scheduleId: \(id)에 문제가 있습니다. \(#fileID) \(#function)")
+                print("[Error] scheduleId: \(self.id)에 문제가 있습니다. \(#fileID) \(#function)")
                 throw RepeatError.calculation
             }
 

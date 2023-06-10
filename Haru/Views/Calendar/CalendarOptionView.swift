@@ -24,11 +24,13 @@ struct CalendarOptionView: View {
             ScrollView {
                 VStack(spacing: 15) {
                     HStack(alignment: .center, spacing: 14) {
-                        Group {
-                            Image("calendar")
+                        HStack(spacing: 0) {
+                            Image("calendar-schedule")
                                 .renderingMode(.template)
                                 .resizable()
-                                .frame(width: 20, height: 20)
+                                .frame(width: 28, height: 28)
+                                .padding(.trailing, 6)
+                            
                             Text("일정")
                                 .font(.pretendard(size: 16, weight: .bold))
                         }
@@ -41,8 +43,10 @@ struct CalendarOptionView: View {
                             CategoryFormView(calendarVM: calendarVM)
                             
                         } label: {
-                            Image("plus")
+                            Image("todo-add-sub-todo")
                                 .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x646464))
                                 .frame(width: 28, height: 28)
                         }
                     }
@@ -55,7 +59,8 @@ struct CalendarOptionView: View {
                                 Circle()
                                     .strokeBorder(calendarVM.allCategoryOff ? .gray2 : Color(calendarVM.categoryList[index].color))
                                     .background(Circle().foregroundColor(calendarVM.categoryList[index].isSelected ? calendarVM.allCategoryOff ? .gray2 : Color(calendarVM.categoryList[index].color) : .white))
-                                    .frame(width: 20, height: 20)
+                                    .frame(width: 18, height: 18)
+                                    .padding(.leading, 5)
                                 
                                 Text(calendarVM.categoryList[index].content)
                                     .font(.pretendard(size: 16, weight: .regular))
@@ -86,7 +91,7 @@ struct CalendarOptionView: View {
                                         categoryId: calendarVM.categoryList[index].id
                                     )
                                 } label: {
-                                    Image("edit-pencil")
+                                    Image("more")
                                         .renderingMode(.template)
                                         .resizable()
                                         .frame(width: 28, height: 28)
@@ -99,11 +104,12 @@ struct CalendarOptionView: View {
                     
                     Divider()
                     
-                    HStack(spacing: 14) {
-                        Image("checkMark")
+                    HStack(spacing: 0) {
+                        Image("calendar-todo")
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 20, height: 20)
+                            .frame(width: 28, height: 28)
+                            .padding(.trailing, 6)
                         
                         Text("할일")
                             .font(.pretendard(size: 16, weight: .bold))
@@ -125,7 +131,8 @@ struct CalendarOptionView: View {
                                             ? .gray2 : Color(0x191919)
                                     )
                                     .background(Circle().foregroundColor(.white))
-                                    .frame(width: 20, height: 20)
+                                    .frame(width: 18, height: 18)
+                                    .padding(.leading, 5)
                                 
                                 Text("미완료")
                                     .font(.pretendard(size: 16, weight: .regular))
@@ -143,22 +150,23 @@ struct CalendarOptionView: View {
                         .padding(.init(top: 0, leading: 20, bottom: 5, trailing: 30))
                         
                         HStack(spacing: 14) {
-                            Group {
-                                Image("checkMark")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(
-                                        calendarVM.compTodoOff || calendarVM.allTodoOff
-                                            ? .gray2 : .gradientStart1
-                                    )
-                                
+                            HStack(spacing: 0) {
+                                if calendarVM.compTodoOff || calendarVM.allTodoOff {
+                                    Color.gray2.mask {
+                                        Image("calendar-todo-option")
+                                    }
+                                    .frame(width: 28, height: 28)
+                                } else {
+                                    Image("calendar-todo-option")
+                                }
+
                                 Text("완료")
                                     .font(.pretendard(size: 16, weight: .regular))
                                     .foregroundColor(
                                         calendarVM.compTodoOff || calendarVM.allTodoOff
                                             ? .gray2 : Color(0x191919)
                                     )
+                                    .padding(.leading, 9)
                             }
                             .onTapGesture {
                                 calendarVM.compTodoOff.toggle()

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="406" height="649" viewBox="0 0 406 649">
+  <defs>
+    <radialGradient id="radial-gradient" cx="0.5" cy="0.5" r="0.57" gradientTransform="matrix(0.963, -0.27, 0.354, 1.26, -0.158, 0.005)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#aad7ff"/>
+      <stop offset="0.504" stop-color="#bed7ff"/>
+      <stop offset="1" stop-color="#d2d7ff"/>
+    </radialGradient>
+  </defs>
+  <g id="캘린더_오늘날짜모달_카테고리_선택" data-name="캘린더 오늘날짜모달, 카테고리 선택" transform="translate(0.05 0.488)">
+    <g id="구성_요소_56_4" data-name="구성 요소 56 – 4" transform="translate(-0.05 -0.488)">
+      <rect id="사각형_25767" data-name="사각형 25767" width="406" height="649" fill="url(#radial-gradient)"/>
+    </g>
+  </g>
+</svg>

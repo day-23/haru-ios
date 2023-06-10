@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="28" height="28" viewBox="0 0 28 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.183" y1="0.344" x2="0.903" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#d2d7ff"/>
+      <stop offset="1" stop-color="#aad7ff"/>
+    </linearGradient>
+  </defs>
+  <g id="그룹_21264" data-name="그룹 21264" transform="translate(-1240 -228)">
+    <g id="구성_요소_25_118" data-name="구성 요소 25 – 118" transform="translate(1240 228)">
+      <g id="그룹_20379" data-name="그룹 20379" transform="translate(-266 -2715)">
+        <path id="다각형_34" data-name="다각형 34" d="M9.63,3.065a1.5,1.5,0,0,1,2.739,0L13.958,6.62a1.5,1.5,0,0,0,1.173.875L18.96,8a1.5,1.5,0,0,1,.857,2.555L16.9,13.429a1.5,1.5,0,0,0-.422,1.337l.736,4.042a1.5,1.5,0,0,1-2.227,1.567L11.751,18.5a1.5,1.5,0,0,0-1.5,0L7.01,20.374a1.5,1.5,0,0,1-2.227-1.567l.736-4.042A1.5,1.5,0,0,0,5.1,13.429L2.183,10.557A1.5,1.5,0,0,1,3.04,8L6.869,7.5A1.5,1.5,0,0,0,8.042,6.62Z" transform="translate(269 2718)" fill="url(#linear-gradient)"/>
+      </g>
+      <rect id="사각형_25051" data-name="사각형 25051" width="28" height="28" fill="none" opacity="0.5"/>
+    </g>
+  </g>
+</svg>

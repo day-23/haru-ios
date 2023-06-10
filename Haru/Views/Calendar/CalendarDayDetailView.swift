@@ -45,7 +45,7 @@ struct CalendarDayDetailView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         HStack {
-                            Image("calendar")
+                            Image("calendar-schedule")
                             Text("일정")
                                 .font(.pretendard(size: 14, weight: .bold))
                                 .foregroundColor(.gradientStart1)
@@ -95,7 +95,7 @@ struct CalendarDayDetailView: View {
                         Divider()
                         
                         HStack {
-                            Image("checkMark")
+                            Image("calendar-todo")
                             Text("할일")
                                 .foregroundColor(.gradientStart1)
                                 .font(.pretendard(size: 14, weight: .bold))
@@ -129,6 +129,7 @@ struct CalendarDayDetailView: View {
                                 }
                             }
                             .tint(.mainBlack)
+                            .padding(.leading, 5)
                         }
                         
                         Spacer()
@@ -159,7 +160,7 @@ struct CalendarDayDetailView: View {
                             ).addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
                             content = ""
                         } label: {
-                            Image("plus-button")
+                            Image("calendar-add-button-small")
                                 .resizable()
                                 .frame(width: 40, height: 40)
                         }

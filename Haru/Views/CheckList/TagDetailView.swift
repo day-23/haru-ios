@@ -25,9 +25,9 @@ struct TagDetailView: View {
     @State private var backButtonTapped: Bool = false
 
     private var noChanges: Bool {
-        return (originalContent == content
+        return originalContent == content
             && originalOnAlarm == onAlarm
-            && originalIsSelected == isSelected)
+            && originalIsSelected == isSelected
     }
 
     init(
@@ -101,9 +101,9 @@ struct TagDetailView: View {
                 }
             } label: {
                 HStack(spacing: 10) {
-                    Text("태그 삭제하기")
+                    Text("태그 삭제")
                         .font(.pretendard(size: 20, weight: .regular))
-                    Image("trash")
+                    Image("todo-delete")
                         .renderingMode(.template)
                 }
                 .foregroundColor(Color(0xf71e58))
@@ -133,6 +133,12 @@ struct TagDetailView: View {
                         dismissAction.callAsFunction()
                     }
                 }
+            }
+
+            ToolbarItem(placement: .principal) {
+                Text("태그 수정")
+                    .font(.pretendard(size: 20, weight: .bold))
+                    .foregroundColor(Color(0x191919))
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -169,5 +175,6 @@ struct TagDetailView: View {
                 }
             }
         }
+        .padding(.top, 15)
     }
 }

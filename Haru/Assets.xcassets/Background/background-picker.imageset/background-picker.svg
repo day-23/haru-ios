@@ -1,0 +1,12 @@
+<svg id="시간선택" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="338" height="406" viewBox="0 0 338 406">
+  <defs>
+    <radialGradient id="radial-gradient" cx="0.5" cy="0.5" r="0.57" gradientTransform="matrix(0.963, -0.27, 0.354, 1.26, -0.158, 0.005)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#aad7ff"/>
+      <stop offset="0.504" stop-color="#bed7ff"/>
+      <stop offset="1" stop-color="#d2d7ff"/>
+    </radialGradient>
+  </defs>
+  <g id="그룹_21213" data-name="그룹 21213">
+    <rect id="사각형_25743" data-name="사각형 25743" width="338" height="406" fill="url(#radial-gradient)"/>
+  </g>
+</svg>

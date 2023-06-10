@@ -9,23 +9,23 @@ import SwiftUI
 
 struct CalendarDateView: View {
     @EnvironmentObject private var todoState: TodoState
-    
+
     @State private var isSchModalVisible: Bool = false
     @State private var isTodoModalVisible: Bool = false
     @State private var isDayModalVisible: Bool = false
-    
+
     @State private var isOptionModalVisible: Bool = false
-    
+
     @State var showAddButton: Bool = true
     @State var showSchButton: Bool = false
     @State var showTodoButton: Bool = false
 
     @StateObject var calendarVM: CalendarViewModel
     @StateObject var addViewModel: TodoAddViewModel
-    
+
     @State var width = UIScreen.main.bounds.width - 50
     @State var x = UIScreen.main.bounds.width
-    
+
     var body: some View {
         GeometryReader { _ in
             ZStack {
@@ -40,7 +40,7 @@ struct CalendarDateView: View {
                                 Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[1])월")
                                     .font(.pretendard(size: 28, weight: .bold))
                                 
-                                Image("toggle-datepicker")
+                                Image("header-date-picker")
                                     .resizable()
                                     .renderingMode(.template)
                                     .foregroundColor(Color(0x191919))
@@ -58,7 +58,7 @@ struct CalendarDateView: View {
                                         checkListVM: .init(todoState: StateObject(wrappedValue: self.todoState))
                                     )
                                 } label: {
-                                    Image("magnifyingglass")
+                                    Image("search")
                                         .renderingMode(.template)
                                         .resizable()
                                         .foregroundColor(Color(0x191919))
@@ -68,22 +68,16 @@ struct CalendarDateView: View {
                                 Button {
                                     self.calendarVM.monthOffest = 0
                                 } label: {
-                                    Text("\(Date().day)")
-                                        .font(.pretendard(size: 12, weight: .bold))
-                                        .foregroundColor(Color(0x2ca4ff))
-                                        .padding(.vertical, 3)
-                                        .padding(.horizontal, 6)
-                                        .background(
-                                            Circle()
-                                                .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x15afff)],
-                                                                       startPoint: .topLeading,
-                                                                       endPoint: .bottomTrailing),
-                                                        lineWidth: 2)
-                                        )
+                                    Image("time-table-date-circle")
+                                        .overlay {
+                                            Text("\(Date().day)")
+                                                .font(.pretendard(size: 14, weight: .bold))
+                                                .foregroundColor(Color(0x2ca4ff))
+                                        }
                                 }
                                 .tint(Color.gradientStart1)
                                 
-                                Image("option-button")
+                                Image("slider")
                                     .resizable()
                                     .renderingMode(.template)
                                     .foregroundColor(Color(0x191919))
@@ -112,7 +106,7 @@ struct CalendarDateView: View {
                                                 Color(0xf71e58) :
                                                 index == 6 ?
                                                 Color(0x1dafff) :
-                                                Color(0xacacac)
+                                                Color(0x646464)
                                         )
                                 }
                             } // HStack
@@ -180,7 +174,7 @@ struct CalendarDateView: View {
                                     self.isTodoModalVisible = true
                                     self.addViewModel.mode = .add
                                 } label: {
-                                    Image("calendar-todo-button")
+                                    Image("calendar-add-todo")
                                         .resizable()
                                         .frame(width: 56, height: 56)
                                         .clipShape(Circle())
@@ -196,7 +190,7 @@ struct CalendarDateView: View {
                                     self.calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
                                     self.isSchModalVisible = true
                                 } label: {
-                                    Image("schedule-button")
+                                    Image("calendar-add-schedule")
                                         .resizable()
                                         .frame(width: 56, height: 56)
                                         .clipShape(Circle())
@@ -216,7 +210,6 @@ struct CalendarDateView: View {
                                         .resizable()
                                         .frame(width: 56, height: 56)
                                         .clipShape(Circle())
-                                        .shadow(radius: 10, x: 5, y: 0)
                                 }
                             }
                         }
@@ -323,31 +316,31 @@ struct CalendarDateView: View {
                         .zIndex(2)
                 }
             } // ZStack
-            .onAppear {
-                UIApplication.shared.addTapGestureRecognizer()
+        }
+        .onAppear {
+            UIApplication.shared.addTapGestureRecognizer()
+        }
+        .onChange(of: self.isSchModalVisible) { _ in
+            if !self.isSchModalVisible {
+                self.calendarVM.selectionSet.removeAll()
             }
-            .onChange(of: self.isSchModalVisible) { _ in
-                if !self.isSchModalVisible {
-                    self.calendarVM.selectionSet.removeAll()
-                }
-            }
-            .onChange(of: self.calendarVM.startOnSunday) { newValue in
-                self.calendarVM.setStartOnSunday(newValue)
-            }
-            .onChange(of: self.isOptionModalVisible) { newValue in
-                if newValue == false {
-                    self.calendarVM.setAllCategoryList()
-                }
+        }
+        .onChange(of: self.calendarVM.startOnSunday) { newValue in
+            self.calendarVM.setStartOnSunday(newValue)
+        }
+        .onChange(of: self.isOptionModalVisible) { newValue in
+            if newValue == false {
+                self.calendarVM.setAllCategoryList()
             }
         }
     }
-    
+
     func showAddMenu() {
         self.showAddButton = false
         self.showSchButton = true
         self.showTodoButton = true
     }
-    
+
     func hideAddMenu() {
         self.showTodoButton = false
         self.showSchButton = false

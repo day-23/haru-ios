@@ -44,7 +44,7 @@ struct UserSearchView: View {
             }
         }, rightView: {
             HStack(spacing: 8) {
-                Image("magnifyingglass")
+                Image("search")
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 28, height: 28)

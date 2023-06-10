@@ -32,22 +32,18 @@ struct TimeTableTodoRow: View {
                             ? Color(0xf71e58)
                             : (index == 6
                                 ? Color(0x1dafff)
-                                : Color(0xacacac)
+                                : Color(0x646464)
                             )
                     )
                     .padding(.bottom, 7)
 
                 if dateFormatter.string(from: date) == dateFormatter.string(from: .now) {
-                    Circle()
-                        .stroke(LinearGradient(colors: [Color(0x9fa9ff), Color(0x1bafff), Color(0x15afff)],
-                                               startPoint: .top,
-                                               endPoint: .bottom),
-                                lineWidth: 2)
-                        .overlay(content: {
+                    Image("time-table-date-circle")
+                        .overlay {
                             Text("\(date.day)")
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(Color(0x1dafff))
-                        })
+                                .font(.pretendard(size: 14, weight: .regular))
+                                .foregroundColor(Color(0x2ca4ff))
+                        }
                 } else {
                     Text("\(date.day)")
                         .frame(maxWidth: .infinity, alignment: .center)

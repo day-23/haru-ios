@@ -37,7 +37,7 @@ struct ScheduleFormView: View {
                             isSchModalVisible = false
                         }
                     } label: {
-                        Image("cancel")
+                        Image("todo-cancel")
                             .resizable()
                             .colorMultiply(.mainBlack)
                             .frame(width: 28, height: 28)
@@ -74,8 +74,7 @@ struct ScheduleFormView: View {
                                     } label: {
                                         Circle()
                                             .fill(Color(scheduleFormVM.categoryList[selectIndex].color))
-                                            .padding(5)
-                                            .frame(width: 38, height: 38)
+                                            .frame(width: 28, height: 28)
                                     }
                                     .popup(isPresented: $showCategorySheet) {
                                         CategoryView(
@@ -106,10 +105,8 @@ struct ScheduleFormView: View {
                                     Button {
                                         showCategorySheet = true
                                     } label: {
-                                        Image("check-circle")
-                                            .renderingMode(.template)
-                                            .resizable()
-                                            .frame(width: 38, height: 38)
+                                        Circle()
+                                            .frame(width: 28, height: 28)
                                             .foregroundColor(.gray2)
                                     }
                                     .popup(isPresented: $showCategorySheet) {
@@ -155,9 +152,7 @@ struct ScheduleFormView: View {
                             })
                             .toggleStyle(CustomToggleStyle())
                         } icon: {
-                            Image(systemName: "clock")
-                                .resizable()
-                                .padding(6)
+                            Image("calendar-all-day")
                                 .frame(width: 28, height: 28)
                         }
                         .foregroundColor(scheduleFormVM.isAllDay ? .black : .gray2)
@@ -218,7 +213,7 @@ struct ScheduleFormView: View {
                             })
                             .toggleStyle(CustomToggleStyle())
                         } icon: {
-                            Image("alarm")
+                            Image("todo-alarm")
                                 .renderingMode(.template)
                                 .resizable()
                                 .frame(width: 28, height: 28)
@@ -242,7 +237,7 @@ struct ScheduleFormView: View {
                                 })
                                 .toggleStyle(CustomToggleStyle())
                             } icon: {
-                                Image("repeat")
+                                Image("todo-repeat")
                                     .renderingMode(.template)
                                     .resizable()
                                     .frame(width: 28, height: 28)
@@ -345,7 +340,7 @@ struct ScheduleFormView: View {
                                 Spacer()
                             }
                         } icon: {
-                            Image("memo")
+                            Image("todo-memo")
                                 .renderingMode(.template)
                                 .resizable()
                                 .frame(width: 28, height: 28)
@@ -381,7 +376,7 @@ struct ScheduleFormView: View {
                             Text("일정 삭제하기")
                                 .font(.pretendard(size: 20, weight: .medium))
                             
-                            Image("trash")
+                            Image("todo-delete")
                                 .renderingMode(.template)
                                 .frame(width: 28, height: 28)
                         }
@@ -407,7 +402,7 @@ struct ScheduleFormView: View {
                             Text("일정 삭제하기")
                                 .font(.pretendard(size: 20, weight: .medium))
                             
-                            Image("trash")
+                            Image("todo-delete")
                                 .renderingMode(.template)
                                 .frame(width: 28, height: 28)
                         }

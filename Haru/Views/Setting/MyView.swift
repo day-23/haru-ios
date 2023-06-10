@@ -19,10 +19,10 @@ struct MyView: View {
     @State private var totalItems: Int = 0
 
     private var completionRate: Double {
-        if totalItems == 0 {
+        if self.totalItems == 0 {
             return 0
         }
-        return Double(completed) / Double(totalItems)
+        return Double(self.completed) / Double(self.totalItems)
     }
 
     private let dateFormatter: DateFormatter = {
@@ -54,7 +54,7 @@ struct MyView: View {
             VStack(spacing: 0) {
                 HaruHeader {
                     NavigationLink {
-                        SettingView(isLoggedIn: $isLoggedIn)
+                        SettingView(isLoggedIn: self.$isLoggedIn, userProfileVM: self.userProfileVM)
                     } label: {
                         Image("setting")
                             .renderingMode(.template)
@@ -62,14 +62,13 @@ struct MyView: View {
                             .frame(width: 28, height: 28)
                     }
                 }
-                .padding(.bottom)
 
                 ScrollView {
                     VStack(spacing: 0) {
                         // --- 프로필 view
-                        ProfileInfoView(userProfileVM: userProfileVM)
+                        ProfileInfoView(userProfileVM: self.userProfileVM)
                             .onAppear {
-                                userProfileVM.fetchUserProfile()
+                                self.userProfileVM.fetchUserProfile()
                             }
 
                         Divider()
@@ -79,8 +78,8 @@ struct MyView: View {
                         // 오늘 나의 하루
                         VStack(spacing: 20) {
                             HStack(spacing: 0) {
-                                Text(dateFormatter.string(from: now))
-                                    .font(.pretendard(size: 14, weight: .bold))
+                                Text(self.dateFormatter.string(from: self.now))
+                                    .font(.pretendard(size: 20, weight: .bold))
                                     .foregroundColor(Color(0x191919))
 
                                 Spacer()
@@ -90,17 +89,18 @@ struct MyView: View {
                                         guard let prevMonth = Calendar.current.date(byAdding: .month, value: -1, to: now) else {
                                             return
                                         }
-                                        now = prevMonth
+                                        self.now = prevMonth
                                     } label: {
-                                        Image("back-button")
+                                        Image("todo-toggle")
                                             .renderingMode(.template)
                                             .resizable()
                                             .frame(width: 20, height: 20)
                                             .foregroundColor(Color(0x191919))
+                                            .rotationEffect(Angle(degrees: 180))
                                             .opacity(0.5)
                                     }
 
-                                    Text("\(now.month)월")
+                                    Text("\(self.now.month)월")
                                         .font(.pretendard(size: 14, weight: .regular))
                                         .foregroundColor(Color(0x646464))
 
@@ -108,22 +108,21 @@ struct MyView: View {
                                         guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: now) else {
                                             return
                                         }
-                                        now = nextMonth
+                                        self.now = nextMonth
                                     } label: {
-                                        Image("back-button")
+                                        Image("todo-toggle")
                                             .renderingMode(.template)
                                             .resizable()
                                             .frame(width: 20, height: 20)
                                             .foregroundColor(Color(0x191919))
                                             .opacity(0.5)
-                                            .rotationEffect(Angle(degrees: 180))
                                     }
                                 }
                             }
 
                             HStack(spacing: 0) {
                                 VStack(spacing: 4) {
-                                    Text("\(completed)")
+                                    Text("\(self.completed)")
                                         .font(.pretendard(size: 20, weight: .bold))
                                         .foregroundColor(Color(0x1dafff))
                                         .animation(.none)
@@ -133,7 +132,7 @@ struct MyView: View {
                                 }
                                 Spacer()
                                 VStack(spacing: 4) {
-                                    Text("\(totalItems)")
+                                    Text("\(self.totalItems)")
                                         .font(.pretendard(size: 20, weight: .bold))
                                         .foregroundColor(Color(0x191919))
                                         .animation(.none)
@@ -146,10 +145,10 @@ struct MyView: View {
                             .padding(.trailing, 81)
 
                             CircularProgressView(
-                                progress: completionRate
+                                progress: self.completionRate
                             )
                             .overlay {
-                                Text("\(Int(completionRate * 100))%")
+                                Text("\(Int(self.completionRate * 100))%")
                                     .font(.pretendard(size: 30, weight: .bold))
                                     .foregroundColor(Color(0x1dafff))
                                     .animation(.none)
@@ -166,11 +165,11 @@ struct MyView: View {
                         VStack(spacing: 20) {
                             Text("하루와 함께한 지 벌써")
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(.pretendard(size: 14, weight: .bold))
+                                .font(.pretendard(size: 20, weight: .bold))
                                 .foregroundColor(Color(0x191919))
 
                             HStack(spacing: 0) {
-                                Text("\(fromCreatedAt)")
+                                Text("\(self.fromCreatedAt)")
                                     .font(.pretendard(size: 20, weight: .bold))
                                     .foregroundColor(Color(0x1dafff))
                                 Text("  일 째")
@@ -180,7 +179,7 @@ struct MyView: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.bottom, 8)
 
-                            Image("haru-fighting")
+                            Image("setting-hagi-ruri")
                                 .resizable()
                                 .frame(width: 180, height: 125)
                         }
@@ -194,31 +193,31 @@ struct MyView: View {
             }
         }
         .onAppear {
-            todoService.fetchStatisticsByRange(
-                startDate: now.startOfMonth(),
-                endDate: now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
+            self.todoService.fetchStatisticsByRange(
+                startDate: self.now.startOfMonth(),
+                endDate: self.now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
             ) { result in
                 switch result {
-                case .success(let success):
+                case let .success(success):
                     withAnimation {
-                        completed = success.completed
-                        totalItems = success.totalItems
+                        self.completed = success.completed
+                        self.totalItems = success.totalItems
                     }
                 case .failure:
                     break
                 }
             }
         }
-        .onChange(of: now) { _ in
-            todoService.fetchStatisticsByRange(
-                startDate: now.startOfMonth(),
-                endDate: now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
+        .onChange(of: self.now) { _ in
+            self.todoService.fetchStatisticsByRange(
+                startDate: self.now.startOfMonth(),
+                endDate: self.now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
             ) { result in
                 switch result {
-                case .success(let success):
+                case let .success(success):
                     withAnimation {
-                        completed = success.completed
-                        totalItems = success.totalItems
+                        self.completed = success.completed
+                        self.totalItems = success.totalItems
                     }
                 case .failure:
                     break
@@ -239,7 +238,7 @@ struct CircularProgressView: View {
                     lineWidth: 10
                 )
             Circle()
-                .trim(from: 0, to: progress)
+                .trim(from: 0, to: self.progress)
                 .stroke(
                     Color(0x1dafff),
                     style: StrokeStyle(

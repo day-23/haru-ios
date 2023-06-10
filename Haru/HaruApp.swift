@@ -58,8 +58,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // 가벼운 백그라운드 작업 작성
-        AlarmHelper.createRegularNotification(regular: .morning)
-        AlarmHelper.createRegularNotification(regular: .evening)
+        if let morning = Global.shared.user?.morningAlarmTime {
+            AlarmHelper.createRegularNotification(regular: .morning, time: morning)
+        }
+        if let night = Global.shared.user?.nightAlarmTime {
+            AlarmHelper.createRegularNotification(regular: .evening, time: night)
+        }
 
         // setTaskCompleted는 무조건 호출되어야 함.
         task.setTaskCompleted(success: true)
