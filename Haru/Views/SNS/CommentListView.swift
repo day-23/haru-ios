@@ -96,7 +96,7 @@ struct CommentListView: View {
                                         .font(.pretendard(size: 14, weight: .bold))
                                         .foregroundColor(Color(0x191919))
 
-                                    Text("\(comment.createdAt.minute)분 전")
+                                    Text("\(comment.createdAt.relative())")
                                         .font(.pretendard(size: 10, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }

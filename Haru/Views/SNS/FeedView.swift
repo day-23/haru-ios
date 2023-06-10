@@ -48,7 +48,7 @@ struct FeedView: View {
                         }
                     }.disabled(!comeToRoot)
                     
-                    Text("1일 전")
+                    Text("\(post.createdAt.relative())")
                         .font(.pretendard(size: 10, weight: .regular))
                         .foregroundColor(Color(0x646464))
                     
