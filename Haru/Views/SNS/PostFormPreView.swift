@@ -28,7 +28,11 @@ struct PostFormPreView: View {
 
     let deviceSize = UIScreen.main.bounds.size
     var body: some View {
-        VStack {
+        ZStack(alignment: .bottom) {
+            if postFormVM.postOption == .writing {
+                bottomTemplateView()
+                    .zIndex(2)
+            }
             GeometryReader { _ in
                 LazyVStack(spacing: 0) {
                     Group {
@@ -123,11 +127,6 @@ struct PostFormPreView: View {
                             .padding(.top, 20)
 
                         Spacer()
-                    } else {
-                        Spacer()
-                            .overlay(alignment: .bottom) {
-                                bottomTemplateView()
-                            }
                     }
                 }
             }
@@ -185,6 +184,7 @@ struct PostFormPreView: View {
                 }
             }
         }
+        .edgesIgnoringSafeArea(.bottom)
         .onTapGesture {
             hideKeyboard()
         }

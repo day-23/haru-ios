@@ -175,6 +175,7 @@ struct CommentListView: View {
                 }
             }
         }
+        .animation(.none)
         .onAppear {
             commentVM.loadMoreComments()
         }
