@@ -36,6 +36,7 @@ final class UserProfileViewModel: ObservableObject {
 
     private let profileService: ProfileService = .init()
     private let friendService: FriendService = .init()
+    private let searchService: SearchService = .init()
 
     var option: FriendOption = .friendList
 
@@ -325,6 +326,29 @@ final class UserProfileViewModel: ObservableObject {
                 completion(.success(success))
             case .failure(let failure):
                 completion(.failure(failure))
+            }
+        }
+    }
+
+    func searchFriend(name: String) {
+        switch option {
+        case .friendList:
+            searchService.searchFriendWithName(name: name) { result in
+                switch result {
+                case .success(let success):
+                    print("\(success)")
+                case .failure(let failure):
+                    print("\(failure)")
+                }
+            }
+        case .requestFriendList:
+            searchService.searchReqFriendWithName(name: name) { result in
+                switch result {
+                case .success(let success):
+                    print("\(success)")
+                case .failure(let failure):
+                    print("\(failure)")
+                }
             }
         }
     }

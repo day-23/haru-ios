@@ -13,6 +13,7 @@ final class SearchService {
 
     private static let prodBaseURL = Constants.baseURL + "schedule/"
     private static let userBaseURL = Constants.baseURL + "post/"
+    private static let friendBaseURL = Constants.baseURL + "friends/"
 
     private static let formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -91,6 +92,76 @@ final class SearchService {
         AF.request(
             SearchService.userBaseURL + (Global.shared.user?.id ?? "unknown") + "/search/user/\(haruId)",
             method: .get,
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func searchFriendWithName(
+        name: String,
+        completion: @escaping (Result<[FriendUser], Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [FriendUser]
+            let pagination: Post.Pagination
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "name": name,
+        ]
+
+        AF.request(
+            SearchService.friendBaseURL + (Global.shared.user?.id ?? "unknown") + "/search/",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func searchReqFriendWithName(
+        name: String,
+        completion: @escaping (Result<[FriendUser], Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [FriendUser]
+            let pagination: Post.Pagination
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let parameters: Parameters = [
+            "name": name,
+        ]
+
+        AF.request(
+            SearchService.friendBaseURL + (Global.shared.user?.id ?? "unknown") + "/request/search/",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
             headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in

@@ -84,6 +84,9 @@ struct FriendView: View {
                     TextField("검색어를 입력하세요", text: $searchWord)
                         .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(Color(0xACACAC))
+                        .onSubmit {
+                            
+                        }
                 }
                 .padding(.all, 10)
                 .background(Color(0xF1F1F5))

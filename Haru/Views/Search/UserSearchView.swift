@@ -129,6 +129,9 @@ struct UserSearchView: View {
                 }
             }
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
     
     @ViewBuilder
@@ -143,12 +146,12 @@ struct UserSearchView: View {
                 HStack(spacing: 14) {
                     if let imageUrl = user.profileImage {
                         ProfileImgView(imageUrl: URL(string: imageUrl))
-                            .frame(width: 30, height: 30)
+                            .frame(width: 40, height: 40)
                     } else {
                         Image("default-profile-image")
                             .resizable()
                             .clipShape(Circle())
-                            .frame(width: 30, height: 30)
+                            .frame(width: 40, height: 40)
                     }
                     
                     Text(user.name)
