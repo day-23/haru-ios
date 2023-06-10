@@ -273,8 +273,7 @@ struct SNSView: View {
                 }
 
                 NavigationLink {
-                    // TODO: 검색 뷰 만들어지면 넣어주기
-                    Text("검색")
+                    UserSearchView()
                 } label: {
                     Image("magnifyingglass")
                         .renderingMode(.template)

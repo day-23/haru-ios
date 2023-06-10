@@ -6,12 +6,45 @@
 //
 
 import Foundation
+import UIKit
 
 final class SearchViewModel: ObservableObject {
     @Published var scheduleList: [Schedule] = []
     @Published var todoList: [Todo] = []
 
+    @Published var searchUser: User?
+
     private let searchService: SearchService = .init()
+    private let friendService: FriendService = .init()
+    private let profileService: ProfileService = .init()
+
+    // MARK: - 이미지 캐싱
+
+    func fetchProfileImage(
+        profileUrl: String,
+        completion: @escaping (PostImage) -> Void
+    ) {
+        DispatchQueue.global().async {
+            if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
+                completion(PostImage(url: profileUrl, uiImage: uiImage))
+            } else {
+                guard
+                    let encodeUrl = profileUrl.encodeUrl(),
+                    let url = URL(string: encodeUrl),
+                    let data = try? Data(contentsOf: url),
+                    let uiImage = UIImage(data: data)
+                else {
+                    print("[Error] \(profileUrl)이 잘못됨 \(#fileID) \(#function)")
+                    return
+                }
+
+                ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
+                completion(PostImage(url: profileUrl, uiImage: uiImage))
+            }
+        }
+    }
+
+    // MARK: - 할일과 일정 검색
 
     func searchTodoAndSchedule(
         searchContent: String,
@@ -124,4 +157,79 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
+
+    // MARK: - 사용자 검색
+
+    func searchUserWithHaruId(
+        haruId: String,
+        completion: @escaping () -> Void
+    ) {
+        searchService.searchUserWithHaruId(haruId: haruId) { result in
+            switch result {
+            case .success(let success):
+                self.searchUser = success
+            case .failure(let failure):
+                self.searchUser = nil
+                print("[Debug] \(haruId)를 사용하는 사용자는 없습니다.")
+                print("\(failure) \(#file) \(#function)")
+            }
+            completion()
+        }
+    }
+
+    func requestFriend(
+        acceptorId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        friendService.requestFriend(acceptorId: acceptorId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    func acceptRequestFriend(
+        requesterId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        friendService.acceptRequestFriend(requesterId: requesterId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    func cancelRequestFriend(
+        acceptorId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        friendService.cancelRequestFriend(acceptorId: acceptorId) { result in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let failure):
+                completion(.failure(failure))
+            }
+        }
+    }
+
+    // friendId: 삭제할 친구의 id
+    func deleteFriend(friendId: String, completion: @escaping () -> Void) {
+        friendService.deleteFriend(friendId: friendId) { result in
+            switch result {
+            case .success:
+                completion()
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func refreshFriendList() {}
 }

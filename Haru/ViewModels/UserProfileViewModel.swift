@@ -226,8 +226,6 @@ final class UserProfileViewModel: ObservableObject {
                 if self.friendListTotalPage == -1 {
                     self.friendListTotalPage = pageInfo.totalPages
                 }
-
-            // TODO: 친구 프로필 이미지 캐싱하기
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
