@@ -26,25 +26,42 @@ struct SNSView: View {
     @State var hidePost: Bool = false
     @State var reportPost: Bool = false
 
+    @State var isFriendFeed: Bool = true
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 self.HaruHeaderView()
 
-                FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis, comeToRoot: true)
+                if self.isFriendFeed {
+                    FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis, comeToRoot: true)
+                } else {
+                    LookAroundView()
+                }
             }
 
             if self.toggleIsClicked {
                 DropdownMenu {
-                    Text("친구피드")
-                        .font(.pretendard(size: 16, weight: .bold))
-                        .foregroundColor(Color(0x1dafff))
+                    Button {
+                        withAnimation {
+                            self.isFriendFeed = true
+                            self.toggleIsClicked = false
+                        }
+                    } label: {
+                        Text("친구피드")
+                            .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(self.isFriendFeed ? Color(0x1dafff) : Color(0x191919))
+                    }
                 } secondContent: {
-                    NavigationLink {
-                        LookAroundView()
+                    Button {
+                        withAnimation {
+                            self.isFriendFeed = false
+                            self.toggleIsClicked = false
+                        }
                     } label: {
                         Text("둘러보기")
                             .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(self.isFriendFeed ? Color(0x191919) : Color(0x1dafff))
                     }
                 }
             }
@@ -275,11 +292,5 @@ struct SNSView: View {
                 }
             }
         }
-    }
-}
-
-struct SNSView_Previews: PreviewProvider {
-    static var previews: some View {
-        SNSView()
     }
 }
