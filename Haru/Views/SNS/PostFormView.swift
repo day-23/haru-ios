@@ -24,10 +24,10 @@ struct PostFormView: View {
     var postAddMode: PostAddMode
 
     var body: some View {
-        VStack {
+        ScrollView {
             TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
                 .lineLimit(nil)
-                .frame(height: 400, alignment: .top)
+                .frame(alignment: .top)
                 .font(.pretendard(size: 24, weight: .regular))
                 .background(Color(0xfdfdfd))
                 .focused($isFocused)
@@ -36,8 +36,10 @@ struct PostFormView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 24)
-
-            Spacer()
+        }
+        .background(Color(0xfdfdfd))
+        .onTapGesture {
+            hideKeyboard()
         }
         .popupImagePicker(show: $openPhoto, mode: .multiple, always: true) { assets in
 

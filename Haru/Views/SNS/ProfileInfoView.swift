@@ -16,144 +16,183 @@ struct ProfileInfoView: View {
     @State var cancelFriend: Bool = false
     
     var body: some View {
-        HStack(alignment: .top, spacing: 20) {
-            ProfileImgView(profileImage: userProfileVM.profileImage)
-                .frame(width: 62, height: 62)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 4) {
-                    Text(userProfileVM.isPublic ? userProfileVM.user.name : "비공계 계정")
-                        .font(.pretendard(size: 20, weight: .bold))
-                    if !userProfileVM.isPublic {
-                        Image("setting-privacy-lock")
-                            .resizable()
-                            .frame(width: 20, height: 20)
+        VStack(spacing: 26) {
+            HStack(alignment: .center, spacing: 20) {
+                ProfileImgView(profileImage: userProfileVM.profileImage)
+                    .frame(width: 62, height: 62)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 4) {
+                        Text(userProfileVM.isPublic ? userProfileVM.user.name : "비공계 계정")
+                            .font(.pretendard(size: 20, weight: .bold))
+                        if !userProfileVM.isPublic {
+                            Image("setting-privacy-lock")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                        }
                     }
+                    Text(userProfileVM.user.introduction)
+                        .font(.pretendard(size: 14, weight: .regular))
                 }
-                Text(userProfileVM.user.introduction)
-                    .font(.pretendard(size: 14, weight: .regular))
-            }
-            
-            Spacer()
-            
-            VStack(spacing: 4) {
-                if userProfileVM.isMe {
-                    NavigationLink {
-                        // FIXME:
-                        ProfileFormView(
-                            userProfileVM: userProfileVM,
-                            name: userProfileVM.user.name,
-                            introduction: userProfileVM.user.introduction
-                        )
-                    } label: {
-                        Text("프로필 편집")
+                
+                Spacer()
+                
+                VStack(spacing: 4) {
+                    if userProfileVM.isMe {
+                        NavigationLink {
+                            // FIXME:
+                            ProfileFormView(
+                                userProfileVM: userProfileVM,
+                                name: userProfileVM.user.name,
+                                introduction: userProfileVM.user.introduction
+                            )
+                        } label: {
+                            Text("프로필 편집")
+                                .foregroundColor(Color(0x646464))
+                                .font(.pretendard(size: 16, weight: .regular))
+                                .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                                .background(Color(0xF1F1F5))
+                                .cornerRadius(10)
+                        }
+                        
+                        Text("프로필 공유")
                             .foregroundColor(Color(0x646464))
                             .font(.pretendard(size: 16, weight: .regular))
                             .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
                             .background(Color(0xF1F1F5))
                             .cornerRadius(10)
-                    }
-                    
-                    Text("프로필 공유")
-                        .foregroundColor(Color(0x646464))
-                        .font(.pretendard(size: 16, weight: .regular))
-                        .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                        .background(Color(0xF1F1F5))
-                        .cornerRadius(10)
-                    
-                } else {
-                    if userProfileVM.user.friendStatus == 0 {
-                        Button {
-                            userProfileVM.requestFriend(acceptorId: userProfileVM.user.id) { result in
-                                switch result {
-                                case .success(let success):
-                                    if !success {
-                                        print("Toast 메시지로 탈퇴한 사용자라고 알려주기")
-                                    } else {
+                        
+                    } else {
+                        if userProfileVM.user.friendStatus == 0 {
+                            Button {
+                                userProfileVM.requestFriend(acceptorId: userProfileVM.user.id) { result in
+                                    switch result {
+                                    case .success(let success):
+                                        if !success {
+                                            print("Toast 메시지로 탈퇴한 사용자라고 알려주기")
+                                        } else {
+                                            userProfileVM.fetchUserProfile()
+                                        }
+                                    case .failure(let failure):
+                                        print("[Debug] \(failure) \(#function) \(#file)")
+                                    }
+                                }
+                            } label: {
+                                Text("친구 신청")
+                                    .foregroundColor(.white)
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                                    .background(
+                                        Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)])
+                                    )
+                                    .cornerRadius(10)
+                            }
+                        } else if userProfileVM.user.friendStatus == 1 {
+                            Button {
+                                cancelFriend = true
+                            } label: {
+                                Text("신청 취소")
+                                    .foregroundColor(Color(0x646464))
+                                    .font(.pretendard(size: 16, weight: .regular))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color(0xF1F1F5))
+                                    .cornerRadius(10)
+                            }
+                            .confirmationDialog(
+                                "\(userProfileVM.user.name)님께 보낸 친구 신청을 취소할까요?",
+                                isPresented: $cancelFriend,
+                                titleVisibility: .visible
+                            ) {
+                                Button("삭제하기", role: .destructive) {
+                                    userProfileVM.deleteFriend(friendId: userProfileVM.user.id) {
                                         userProfileVM.fetchUserProfile()
                                     }
-                                case .failure(let failure):
-                                    print("[Debug] \(failure) \(#function) \(#file)")
                                 }
                             }
-                        } label: {
-                            Text("친구 신청")
-                                .foregroundColor(.white)
-                                .font(.pretendard(size: 16, weight: .bold))
-                                .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                                .background(
-                                    Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)])
-                                )
-                                .cornerRadius(10)
-                        }
-                    } else if userProfileVM.user.friendStatus == 1 {
-                        Button {} label: {
-                            Text("신청 취소")
-                                .foregroundColor(Color(0x646464))
-                                .font(.pretendard(size: 16, weight: .regular))
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color(0xF1F1F5))
-                                .cornerRadius(10)
-                        }
-                    } else {
-                        Button {
-                            deleteFriend = true
-                        } label: {
-                            Text("내 친구")
-                                .font(.pretendard(size: 16, weight: .regular))
-                                .foregroundColor(Color(0x646464))
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color(0xF1F1F5))
-                                .cornerRadius(10)
-                        }
-                        .confirmationDialog(
-                            "\(userProfileVM.user.name)님을 친구 목록에서 삭제할까요?",
-                            isPresented: $deleteFriend,
-                            titleVisibility: .visible
-                        ) {
-                            Button("삭제하기", role: .destructive) {
-                                userProfileVM.deleteFriend(friendId: userProfileVM.user.id) {
-                                    userProfileVM.fetchUserProfile()
+                        } else if userProfileVM.user.friendStatus == 3 {
+                            // TODO: friendStatus 하나 더 구분해서 수락 기능
+                            Button {
+                                userProfileVM.acceptRequestFriend(requesterId: userProfileVM.user.id) { result in
+                                    switch result {
+                                    case .success(let success):
+                                        if !success {
+                                            print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
+                                        }
+                                        
+                                        userProfileVM.fetchUserProfile()
+                                        
+                                    case .failure(let failure):
+                                        print("[Debug] \(failure) \(#file) \(#function)")
+                                    }
+                                }
+                            } label: {
+                                Text("수락")
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)])
+                                    )
+                                    .cornerRadius(10)
+                            }
+                        } else {
+                            Button {
+                                deleteFriend = true
+                            } label: {
+                                Text("내 친구")
+                                    .font(.pretendard(size: 16, weight: .regular))
+                                    .foregroundColor(Color(0x646464))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color(0xF1F1F5))
+                                    .cornerRadius(10)
+                            }
+                            .confirmationDialog(
+                                "\(userProfileVM.user.name)님을 친구 목록에서 삭제할까요?",
+                                isPresented: $deleteFriend,
+                                titleVisibility: .visible
+                            ) {
+                                Button("삭제하기", role: .destructive) {
+                                    userProfileVM.deleteFriend(friendId: userProfileVM.user.id) {
+                                        userProfileVM.fetchUserProfile()
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        .padding(.horizontal, 20)
-        
-        Spacer()
-            .frame(height: 20)
-        
-        HStack {
-            VStack(spacing: 4) {
-                Text("\(userProfileVM.user.postCount)")
-                    .font(.pretendard(size: 20, weight: .bold))
-                Text("하루")
-                    .font(.pretendard(size: 14, weight: .regular))
-            }
-            .foregroundColor(Color(0x191919))
-            .padding(.leading, 100)
+            .padding(.horizontal, 20)
             
-            Spacer()
-            
-            NavigationLink {
-                FriendView(userProfileVM: userProfileVM)
-            } label: {
+            HStack {
                 VStack(spacing: 4) {
-                    Text("\(userProfileVM.user.friendCount)")
+                    Text("\(userProfileVM.user.postCount)")
                         .font(.pretendard(size: 20, weight: .bold))
-                    HStack(alignment: .lastTextBaseline) {
-                        Text("친구")
-                            .font(.pretendard(size: 14, weight: .regular))
+                    Text("하루")
+                        .font(.pretendard(size: 14, weight: .regular))
+                }
+                .foregroundColor(Color(0x191919))
+                .padding(.leading, 100)
+                
+                Spacer()
+                
+                NavigationLink {
+                    FriendView(userProfileVM: userProfileVM)
+                } label: {
+                    VStack(spacing: 4) {
+                        Text("\(userProfileVM.user.friendCount)")
+                            .font(.pretendard(size: 20, weight: .bold))
+                        HStack(alignment: .lastTextBaseline) {
+                            Text("친구")
+                                .font(.pretendard(size: 14, weight: .regular))
+                        }
                     }
                 }
+                .foregroundColor(Color(0x191919))
+                .padding(.trailing, 100)
             }
-            .foregroundColor(Color(0x191919))
-            .padding(.trailing, 100)
         }
     }
 }

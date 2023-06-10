@@ -26,12 +26,17 @@ final class UserProfileViewModel: ObservableObject {
     @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
     @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
 
-    var friendCount: Int = 0
+    var friendCount: Int {
+        friendList.count
+    }
 
-    var reqFriendCount: Int = 0 // 현재 보고 있는 사용자의 친구 요청 수
+    var reqFriendCount: Int {
+        requestFriendList.count
+    } // 현재 보고 있는 사용자의 친구 요청 수
 
     private let profileService: ProfileService = .init()
     private let friendService: FriendService = .init()
+    private let searchService: SearchService = .init()
 
     var option: FriendOption = .friendList
 
@@ -63,6 +68,7 @@ final class UserProfileViewModel: ObservableObject {
     // MARK: - 페이지네이션
 
     func initLoad() {
+        clear()
         fetchFriend(userId: userId, page: page)
         fetchRequestFriend(userId: userId, page: page)
     }
@@ -218,12 +224,9 @@ final class UserProfileViewModel: ObservableObject {
 
                 self.friendList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.friendCount = pageInfo.totalItems
                 if self.friendListTotalPage == -1 {
                     self.friendListTotalPage = pageInfo.totalPages
                 }
-
-            // TODO: 친구 프로필 이미지 캐싱하기
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -248,7 +251,6 @@ final class UserProfileViewModel: ObservableObject {
 
                 self.requestFriendList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.reqFriendCount = pageInfo.totalItems
                 if self.reqFriListTotalPage == -1 {
                     self.reqFriListTotalPage = pageInfo.totalPages
                 }
@@ -324,6 +326,29 @@ final class UserProfileViewModel: ObservableObject {
                 completion(.success(success))
             case .failure(let failure):
                 completion(.failure(failure))
+            }
+        }
+    }
+
+    func searchFriend(name: String) {
+        switch option {
+        case .friendList:
+            searchService.searchFriendWithName(name: name) { result in
+                switch result {
+                case .success(let success):
+                    print("\(success)")
+                case .failure(let failure):
+                    print("\(failure)")
+                }
+            }
+        case .requestFriendList:
+            searchService.searchReqFriendWithName(name: name) { result in
+                switch result {
+                case .success(let success):
+                    print("\(success)")
+                case .failure(let failure):
+                    print("\(failure)")
+                }
             }
         }
     }

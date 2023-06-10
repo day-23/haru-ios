@@ -38,7 +38,7 @@ struct SNSView: View {
                 DropdownMenu {
                     Text("친구피드")
                         .font(.pretendard(size: 16, weight: .bold))
-                        .foregroundColor(Color(0x1DAFFF))
+                        .foregroundColor(Color(0x1dafff))
                 } secondContent: {
                     NavigationLink {
                         LookAroundView()
@@ -104,13 +104,13 @@ struct SNSView: View {
                             } label: {
                                 HStack {
                                     Text("게시글 삭제하기")
-                                        .foregroundColor(Color(0xF71E58))
+                                        .foregroundColor(Color(0xf71e58))
                                         .font(.pretendard(size: 20, weight: .regular))
 
                                     Image("trash")
                                         .resizable()
                                         .renderingMode(.template)
-                                        .foregroundColor(Color(0xF71E58))
+                                        .foregroundColor(Color(0xf71e58))
                                         .frame(width: 28, height: 28)
                                 }
                             }
@@ -136,7 +136,7 @@ struct SNSView: View {
                                 self.reportPost = true
                             } label: {
                                 Text("이 게시글 신고하기")
-                                    .foregroundColor(Color(0xF71E58))
+                                    .foregroundColor(Color(0xf71e58))
                                     .font(.pretendard(size: 20, weight: .regular))
                             }
                             .confirmationDialog(
@@ -253,33 +253,19 @@ struct SNSView: View {
                         myProfile: true
                     )
                 } label: {
-                    Text("내 기록")
-                        .font(.pretendard(size: 16, weight: .bold))
-                        .foregroundColor(Color(0x191919))
-                        .padding(.vertical, 5)
-                        .padding(.horizontal, 10)
-                        .background(
-                            LinearGradient(colors: [Color(0xFDFDFD)], startPoint: .leading, endPoint: .trailing)
-                        )
-                        .cornerRadius(10)
-                        .overlay(content: {
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(
-                                    LinearGradient(
-                                        colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 1
-                                )
+                    HStack(spacing: 5) {
+                        Image("my-history")
+                            .resizable()
+                            .frame(width: 28, height: 28)
 
-                        })
-                        .padding(.vertical, 1)
+                        Text("내 기록")
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .foregroundColor(Color(0x191919))
+                    }
                 }
 
                 NavigationLink {
-                    // TODO: 검색 뷰 만들어지면 넣어주기
-                    Text("검색")
+                    UserSearchView()
                 } label: {
                     Image("search")
                         .renderingMode(.template)

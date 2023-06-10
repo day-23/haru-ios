@@ -235,12 +235,19 @@ final class ScheduleFormViewModel: ObservableObject {
                 return
             }
 
-            let upperBound = range.upperBound - 1
+            var upperBound = range.upperBound - 1
             var index = (calendar.component(.day, from: nextEndDate) - 1) % upperBound
             while !pattern[index] {
+                index = (index + 1) % upperBound
+                let month = nextEndDate.month
                 nextStartDate = nextStartDate.addingTimeInterval(TimeInterval(day))
                 nextEndDate = nextEndDate.addingTimeInterval(TimeInterval(day))
-                index = (index + 1) % upperBound
+                if month != nextEndDate.month {
+                    guard let range = calendar.range(of: .day, in: .month, for: nextEndDate) else {
+                        return
+                    }
+                    upperBound = range.upperBound - 1
+                }
             }
             
             (repeatStart, repeatEnd) = (nextStartDate, nextEndDate)

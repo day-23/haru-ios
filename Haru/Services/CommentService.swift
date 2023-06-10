@@ -97,6 +97,44 @@ final class CommentService {
         }
     }
 
+    func updateCommentList(
+        targetPostId: String,
+        targetCommentIdList: [String],
+        xList: [Double],
+        yList: [Double],
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var commentIds: [String] = targetCommentIdList
+        var x: [Double] = xList
+        var y: [Double] = yList
+
+        let parameters: [String: Any] = [
+            "commentIds": commentIds,
+            "x": x,
+            "y": y,
+        ]
+
+        AF.request(
+            CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/comments/",
+            method: .patch,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        ).response { response in
+            switch response.result {
+            case .success:
+                completion(.success(true))
+            case let .failure(error):
+                print("[Debug] \(error) \(#fileID) \(#function)")
+                completion(.failure(error))
+            }
+        }
+    }
+
     func deleteComment(
         targetUserId: String,
         targetCommentId: String,

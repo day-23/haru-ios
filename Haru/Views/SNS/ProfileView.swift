@@ -30,20 +30,14 @@ struct ProfileView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                if self.myProfile {
-                    self.HaruHeaderView()
-                        .padding(.bottom, 16)
-                }
+                ProfileInfoView(userProfileVM: userProfileVM)
+                    .background(Color(0xFDFDFD))
+                    .padding(.top, 20)
 
                 Spacer()
-                    .frame(height: 14)
+                    .frame(height: 33)
 
-                ProfileInfoView(userProfileVM: self.userProfileVM)
-
-                Spacer()
-                    .frame(height: 28)
-
-                if self.userProfileVM.isPublic {
+                if userProfileVM.isPublic {
                     VStack(spacing: 0) {
                         HStack(spacing: 0) {
                             Text(self.userProfileVM.isMe ? "내 피드" : "피드")
@@ -99,8 +93,9 @@ struct ProfileView: View {
                     }
                 }
             }
+            .background(Color(0xFDFDFD))
 
-            if self.postOptModalVis.0 {
+            if postOptModalVis.0 {
                 Color.black.opacity(0.5)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
@@ -238,90 +233,60 @@ struct ProfileView: View {
         }
         .navigationBarBackButtonHidden()
         .toolbar {
-            if !self.myProfile {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        self.dismissAction.callAsFunction()
-                    } label: {
-                        Image("back-button")
-                            .frame(width: 28, height: 28)
-                    }
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismissAction.callAsFunction()
+                } label: {
+                    Image("back-button")
+                        .frame(width: 28, height: 28)
                 }
+            }
 
-                if !self.userProfileVM.isMe {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            self.blockFriend = true
-                        } label: {
-                            Image("more")
-                        }
-                        .confirmationDialog(
-                            "\(self.userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
-                            isPresented: self.$blockFriend,
-                            titleVisibility: .visible
-                        ) {
-                            Button("차단하기", role: .destructive) {
-                                self.userProfileVM.blockedFriend(blockUserId: self.userProfileVM.user.id) { result in
-                                    switch result {
-                                    case let .success(success):
-                                        if !success {
-                                            print("Toast Message로 알려주기")
-                                        }
-                                        self.userProfileVM.fetchUserProfile()
-                                    case let .failure(failure):
-                                        print("\(failure) \(#file) \(#function)")
+            if !userProfileVM.isMe {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        blockFriend = true
+                    } label: {
+                        Image("more")
+                    }
+                    .confirmationDialog(
+                        "\(userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
+                        isPresented: $blockFriend,
+                        titleVisibility: .visible
+                    ) {
+                        Button("차단하기", role: .destructive) {
+                            userProfileVM.blockedFriend(blockUserId: userProfileVM.user.id) { result in
+                                switch result {
+                                case let .success(success):
+                                    if !success {
+                                        print("Toast Message로 알려주기")
                                     }
+                                    userProfileVM.fetchUserProfile()
+                                case let .failure(failure):
+                                    print("\(failure) \(#file) \(#function)")
                                 }
                             }
                         }
                     }
                 }
+            } else {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack(spacing: 5) {
+                        Image("my-history")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 28, height: 28)
+
+                        Text("내 기록")
+                            .font(.pretendard(size: 14, weight: .bold))
+                    }
+                    .foregroundColor(Color(0x1DAFFF))
+                    .padding(.trailing, 8)
+                }
             }
         }
         .onAppear {
             self.userProfileVM.fetchUserProfile()
-        }
-    }
-
-    @ViewBuilder
-    func HaruHeaderView() -> some View {
-        HaruHeader(
-            toggleIsClicked: self.$toggleIsClicked
-        ) {
-            HStack(spacing: 10) {
-                Text("내 기록")
-                    .font(.pretendard(size: 16, weight: .bold))
-                    .foregroundColor(Color(0xFDFDFD))
-                    .padding(.vertical, 5)
-                    .padding(.horizontal, 10)
-                    .background(
-                        LinearGradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
-                    .cornerRadius(10)
-                    .overlay(content: {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(
-                                LinearGradient(
-                                    colors: [Color(0xD2D7FF), Color(0xAAD7FF)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1
-                            )
-
-                    })
-                    .padding(.vertical, 1)
-
-                NavigationLink {
-                    Text("검색")
-                } label: {
-                    Image("search")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundColor(Color(0x191919))
-                        .frame(width: 28, height: 28)
-                }
-            }
         }
     }
 }
