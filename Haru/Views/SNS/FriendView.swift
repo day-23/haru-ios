@@ -21,6 +21,10 @@ struct FriendView: View {
     @State private var refuseFriend: Bool = false
     @State private var cancelFriend: Bool = false
 
+    @FocusState var focus: Bool
+
+    @State var waitingResponse: Bool = false
+
     @State private var targetUser: FriendUser?
     var body: some View {
         ZStack {
@@ -84,8 +88,39 @@ struct FriendView: View {
                         .foregroundColor(Color(0xACACAC))
                     TextField("검색어를 입력하세요", text: self.$searchWord)
                         .font(.pretendard(size: 14, weight: .regular))
-                        .foregroundColor(Color(0xACACAC))
-                        .onSubmit {}
+                        .focused(self.$focus)
+                        .onSubmit {
+                            if self.searchWord != "" {
+                                self.waitingResponse = true
+                                self.userProfileVM.searchFriend(name: self.searchWord) {
+                                    self.waitingResponse = false
+                                }
+                            }
+                        }
+                        .disabled(self.waitingResponse)
+
+                    Spacer()
+
+                    if self.searchWord != "" {
+                        ZStack {
+                            Circle()
+                                .fill(Color(0x191919))
+                                .frame(width: 20, height: 20)
+                                .zIndex(1)
+
+                            Image("cancel")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 18, height: 18)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color(0xFDFDFD))
+                                .zIndex(2)
+                        }
+                        .onTapGesture {
+                            self.searchWord = ""
+                            self.userProfileVM.refreshFriendList()
+                        }
+                    }
                 }
                 .padding(.all, 10)
                 .background(Color(0xF1F1F5))
@@ -245,6 +280,9 @@ struct FriendView: View {
                 }
             }
         } // ZStack
+        .onTapGesture {
+            hideKeyboard()
+        }
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
