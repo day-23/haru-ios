@@ -11,6 +11,9 @@ struct CustomCalendar: View {
     @Binding var bindingDate: Date
     @State var curDate: Date = .init()
 
+    @State var monthOffSet: Int = 0
+    @State var prevOffSet: Int = 0
+
     var numberOfWeekInMonth: Int {
         CalendarHelper.numberOfWeeksInMonth(date: curDate)
     }
@@ -42,9 +45,7 @@ struct CustomCalendar: View {
                 Spacer()
 
                 Button {
-                    withAnimation {
-                        curDate = CalendarHelper.subOneMonth(date: curDate)
-                    }
+                    curDate = CalendarHelper.subOneMonth(date: curDate)
                 } label: {
                     Image("todo-toggle")
                         .renderingMode(.template)
@@ -54,9 +55,7 @@ struct CustomCalendar: View {
                 .padding(.trailing, 10)
 
                 Button {
-                    withAnimation {
-                        curDate = CalendarHelper.addOneMonth(date: curDate)
-                    }
+                    curDate = CalendarHelper.addOneMonth(date: curDate)
                 } label: {
                     Image("todo-toggle")
                         .renderingMode(.template)
@@ -80,7 +79,7 @@ struct CustomCalendar: View {
             )
             .cornerRadius(10, corners: [.topLeft, .topRight])
 
-            if !toggle {
+            if toggle {
                 Group {
                     let dateColumns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
                     LazyVGrid(columns: dateColumns, spacing: 0) {
@@ -90,84 +89,72 @@ struct CustomCalendar: View {
                                 .foregroundColor(Color(0xACACAC))
                         }
                     }
-                    .padding(.bottom, 20)
                     .padding(.top, 18)
+                    .padding(.bottom, 20)
 
-                    LazyVGrid(columns: dateColumns, spacing: 16) {
-                        ForEach(0 ..< numberOfWeekInMonth, id: \.self) { week in
-                            ForEach(0 ..< 7) { day in
-                                let dateValue = dateList[week * 7 + day]
-                                if !dateValue.isNextDate, !dateValue.isPrevDate {
-                                    Button {
-                                        curDate = dateValue.date
-                                    } label: {
-                                        Text("\(dateValue.day)")
-                                            .font(.pretendard(size: 16, weight: .regular))
-                                            .foregroundColor(
-                                                curDate.day == dateValue.day ? Color(0x1DAFFF) : Color(0xACACAC)
-                                            )
+                    TabView(selection: $monthOffSet) {
+                        ForEach(-20 ... 20, id: \.self) { _ in
+                            VStack {
+                                LazyVGrid(columns: dateColumns, spacing: 16) {
+                                    ForEach(0 ..< numberOfWeekInMonth, id: \.self) { week in
+                                        ForEach(0 ..< 7) { day in
+                                            let dateValue = dateList[week * 7 + day]
+                                            if !dateValue.isNextDate, !dateValue.isPrevDate {
+                                                Button {
+                                                    curDate = dateValue.date
+                                                } label: {
+                                                    Text("\(dateValue.day)")
+                                                        .font(.pretendard(size: 16, weight: .regular))
+                                                        .foregroundColor(
+                                                            curDate.day == dateValue.day ? Color(0x1DAFFF) : Color(0xACACAC)
+                                                        )
+                                                }
+                                            } else {
+                                                Text("\(dateValue.day)")
+                                                    .font(.pretendard(size: 16, weight: .regular))
+                                                    .opacity(0)
+                                            }
+                                        }
                                     }
-                                } else {
-                                    Text("\(dateValue.day)")
-                                        .font(.pretendard(size: 16, weight: .regular))
-                                        .opacity(0)
                                 }
+                                Spacer()
                             }
                         }
                     }
-                    .animation(.none)
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 }
                 .padding(.horizontal, 25)
             } else {
-                HStack(spacing: 6) {
-                    Picker("year", selection: $curDate) {
-                        ForEach(yearDates(), id: \.self) { date in
-                            Text("\(date.year)")
-                        }
-                    }
-                    .pickerStyle(.wheel)
-
-                    Picker("month", selection: $curDate) {
-                        ForEach(monthDates(), id: \.self) { date in
-                            Text("\(date.month)")
-                        }
-                    }
-                    .pickerStyle(.wheel)
-                }
+                Spacer()
+                DatePicker(
+                    "",
+                    selection: $curDate,
+                    displayedComponents: [.date]
+                )
+                .labelsHidden()
+                .datePickerStyle(.wheel)
             }
-            Spacer()
+            Spacer(minLength: 0)
         }
         .frame(minWidth: 300, maxWidth: 300, minHeight: 360, maxHeight: 360)
         .background(Color(0xFDFDFD))
         .cornerRadius(10)
         .shadow(radius: 20)
-
         .onAppear {
             curDate = bindingDate
         }
         .onChange(of: curDate) { _ in
             bindingDate = curDate
         }
-    }
+        .onChange(of: monthOffSet) { _ in
+            if monthOffSet > prevOffSet {
+                curDate = CalendarHelper.addOneMonth(date: curDate)
+            } else {
+                curDate = CalendarHelper.subOneMonth(date: curDate)
+            }
 
-    func yearDates() -> [Date] {
-        var result: [Date] = []
-        var date = CalendarHelper.stringToDate(dateString: "\(1980)-\(curDate.month)-\(curDate.day)")!
-        for _ in 0 ... 200 {
-            result.append(date)
-            date = CalendarHelper.addOneYear(date: date)
+            prevOffSet = monthOffSet
         }
-        return result
-    }
-
-    func monthDates() -> [Date] {
-        var result: [Date] = []
-        var date = CalendarHelper.stringToDate(dateString: "\(curDate.year)-01-01")!
-        for _ in 0 ... 11 {
-            result.append(date)
-            date = CalendarHelper.addOneMonth(date: date)
-        }
-        return result
     }
 }
 

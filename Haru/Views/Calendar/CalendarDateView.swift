@@ -42,13 +42,16 @@ struct CalendarDateView: View {
                                     .font(.pretendard(size: 28, weight: .bold))
                                 
                                 Button {
-                                    isDatePickerVisible.toggle()
+                                    withAnimation {
+                                        self.isDatePickerVisible.toggle()
+                                    }
                                 } label: {
                                     Image("header-date-picker")
                                         .resizable()
                                         .renderingMode(.template)
                                         .foregroundColor(Color(0x191919))
                                         .frame(width: 28, height: 28)
+                                        .rotationEffect(Angle(degrees: self.isDatePickerVisible ? 0 : -90))
                                 }
                             } // HStack
                             
@@ -143,6 +146,7 @@ struct CalendarDateView: View {
                                         CalendarWeekView(
                                             calendarVM: self.calendarVM,
                                             isDayModalVisible: self.$isDayModalVisible,
+                                            isDatePickerVisible: self.$isDatePickerVisible,
                                             cellHeight: proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks),
                                             cellWidth: proxy.size.width / 7
                                         )
@@ -164,11 +168,12 @@ struct CalendarDateView: View {
                 .onTapGesture {
                     withAnimation {
                         self.hideAddMenu()
+                        self.isDatePickerVisible = false
                     }
                 }
                 
-                if isDatePickerVisible {
-                    CustomCalendar(bindingDate: $calendarVM.curDate)
+                if self.isDatePickerVisible {
+                    CustomCalendar(bindingDate: self.$calendarVM.curDate)
                 }
                 
                 // 추가 버튼
@@ -355,9 +360,3 @@ struct CalendarDateView: View {
         self.showAddButton = true
     }
 }
-
-// struct CalendarDateView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CalendarDateView(calendarVM: CalendarViewModel())
-//    }
-// }
