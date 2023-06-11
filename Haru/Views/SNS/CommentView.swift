@@ -11,8 +11,6 @@ struct CommentView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismissAction
     let deviceSize = UIScreen.main.bounds.size
 
-    @Binding var commentModify: Bool
-
     var isTemplate: Bool = false
     var templateContent: String?
     var contentColor: String?
@@ -363,7 +361,11 @@ struct CommentView: View, KeyboardReadable {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isCommentWriting || isCommentEditing {
                     Button {
-                        confirmEditing = true
+                        if isCommentEditing {
+                            confirmEditing = true
+                        } else {
+                            createComment()
+                        }
                     } label: {
                         Image("confirm")
                             .resizable()
@@ -409,11 +411,7 @@ struct CommentView: View, KeyboardReadable {
             }
 
             Button("저장 하기") {
-                if isCommentWriting {
-                    createComment()
-                } else {
-                    updateComment()
-                }
+                updateComment()
             }
         }
     }
@@ -776,7 +774,6 @@ struct CommentView: View, KeyboardReadable {
                     isCommentWriting = false
 
                     fetchCommentList()
-                    commentModify = true
                 case .failure(let failure):
                     print("[Debug] \(failure)")
                     print("\(#fileID) \(#function)")
@@ -795,7 +792,6 @@ struct CommentView: View, KeyboardReadable {
                     isCommentWriting = false
 
                     fetchCommentList()
-                    commentModify = true
                 case .failure(let failure):
                     print("[Debug] \(failure)")
                     print("\(#fileID) \(#function)")
@@ -831,7 +827,6 @@ struct CommentView: View, KeyboardReadable {
                 isCommentEditing = false
 
                 fetchCommentList()
-                commentModify = true
             case .failure:
                 print("실패!")
             }

@@ -11,7 +11,7 @@ import UIKit
 final class CommentViewModel: ObservableObject {
     var userId: String // 게시물 작성자 id
     var postId: String // 게시물 id
-    var postImageIDList: [Post.Image.ID] // 게시물의 이미지
+    var postImageIDList: [Post.Image.ID] // 게시물의 이미지들
     var templateURL: String? //
     @Published var imagePageNum: Int
     
@@ -58,6 +58,23 @@ final class CommentViewModel: ObservableObject {
         }
         
         self.commentService = .init()
+    }
+    
+    func initLoad(isTemplate: Bool = false) {
+        if isTemplate {
+            loadMoreComments(isTemplate: isTemplate)
+            return
+        }
+        
+        for imageId in postImageIDList {
+            fetchTargetImageComment(
+                userId: userId,
+                postId: postId,
+                imageId: imageId,
+                page: 1,
+                lastCreatedAt: nil
+            )
+        }
     }
     
     func loadMoreComments(isTemplate: Bool = false) {

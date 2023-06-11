@@ -178,7 +178,7 @@ struct CommentListView: View {
         }
         .animation(.none)
         .onAppear {
-            commentVM.loadMoreComments(isTemplate: isTemplate)
+            commentVM.initLoad(isTemplate: isTemplate)
         }
         .navigationBarBackButtonHidden()
         .toolbar {

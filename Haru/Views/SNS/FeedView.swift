@@ -19,8 +19,6 @@ struct FeedView: View {
         post.user.id == Global.shared.user?.id
     }
     
-    @Binding var commentModify: Bool // 게시물의 댓글이 변경되었는지
-    
     var body: some View {
         let commentVM = CommentViewModel(
             userId: post.user.id,
@@ -76,8 +74,7 @@ struct FeedView: View {
                     templateMode: post.isTemplatePost != nil,
                     contentColor: post.isTemplatePost ?? "",
                     content: post.content,
-                    isMine: isMine,
-                    commentModify: $commentModify
+                    isMine: isMine
                 )
                 
                 HStack(spacing: 14) {
@@ -105,7 +102,6 @@ struct FeedView: View {
                     HStack(spacing: 10) {
                         NavigationLink {
                             CommentView(
-                                commentModify: $commentModify,
                                 isTemplate: post.isTemplatePost != nil,
                                 templateContent: post.content,
                                 contentColor: post.isTemplatePost ?? "",
