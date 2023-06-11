@@ -14,7 +14,7 @@ struct PopupImagePicker: View {
 
     @Environment(\.self) var env
 
-    @State var enable: Bool = false
+    @State var multiSelectEnable: Bool = false
 
     // MARK: Callbacks
 
@@ -32,7 +32,7 @@ struct PopupImagePicker: View {
                     }
                 } label: {
                     HStack(spacing: 10) {
-                        Text("갤러리")
+                        Text("앨범")
                             .font(.pretendard(size: 20, weight: .bold))
                         Image("todo-toggle")
                             .renderingMode(.template)
@@ -47,9 +47,14 @@ struct PopupImagePicker: View {
 
                 if mode == .multiple {
                     Button {
-                        enable.toggle()
+                        multiSelectEnable.toggle()
+                        if multiSelectEnable == false,
+                           imagePickerModel.selectedImages.count >= 1
+                        {
+                            imagePickerModel.selectedImages = [imagePickerModel.selectedImages[0]]
+                        }
                     } label: {
-                        Image(enable ? "sns-multiple-button" : "sns-multiple-button-disable")
+                        Image(multiSelectEnable ? "sns-multiple-button" : "sns-multiple-button-disable")
                     }
                 }
                 Image("sns-camera-disable")
@@ -101,13 +106,26 @@ struct PopupImagePicker: View {
     @ViewBuilder
     func GridContent(imageAsset: ImageAsset) -> some View {
         let size = (UIScreen.main.bounds.size.width - 6) / 3
+        let isSelected = imagePickerModel.selectedImages.contains { asset in
+            asset.id == imageAsset.id
+        }
         ZStack {
+            if isSelected {
+                Color.black.opacity(0.4)
+                    .padding(2)
+                    .zIndex(3)
+            }
+
             if let thumbnail = imageAsset.thumbnail {
                 Image(uiImage: thumbnail)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: size, height: size)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .border(
+                        width: isSelected ? 3 : 0,
+                        edges: [.top, .bottom, .leading, .trailing],
+                        color: Color(0x1afff)
+                    )
             } else {
                 ProgressView()
                     .frame(width: size, height: size, alignment: .center)
@@ -127,11 +145,13 @@ struct PopupImagePicker: View {
                     asset.id == imageAsset.id
                 }) {
                     Circle()
-                        .fill(.blue)
+                        .fill(Color(0x1dafff))
 
-                    Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
-                        .font(.caption2.bold())
-                        .foregroundColor(.white)
+                    if multiSelectEnable {
+                        Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
+                            .font(.caption2.bold())
+                            .foregroundColor(.white)
+                    }
                 }
             }
             .frame(width: 20, height: 20)
@@ -143,7 +163,7 @@ struct PopupImagePicker: View {
         .onTapGesture {
             // MARK: adding / Removing Asset
 
-            if mode == .multiple, !enable {
+            if imagePickerModel.selectedImages.count > 10 {
                 return
             }
 
@@ -161,8 +181,14 @@ struct PopupImagePicker: View {
                     // MARK: Add New
 
                     var newAsset = imageAsset
-                    newAsset.assetIndex = imagePickerModel.selectedImages.count
-                    imagePickerModel.selectedImages.append(newAsset)
+
+                    if multiSelectEnable {
+                        newAsset.assetIndex = imagePickerModel.selectedImages.count
+                        imagePickerModel.selectedImages.append(newAsset)
+                    } else {
+                        newAsset.assetIndex = 0
+                        imagePickerModel.selectedImages = [newAsset]
+                    }
                 }
             }
 
