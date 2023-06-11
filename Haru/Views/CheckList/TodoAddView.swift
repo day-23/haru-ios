@@ -90,7 +90,10 @@ struct TodoAddView: View {
 
                         ForEach(viewModel.subTodoList) { subTodo in
                             HStack {
-                                Image("dot")
+                                Image("todo-dot")
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0x191919))
+
                                 TextField("", text: .init(get: {
                                     subTodo.content
                                 }, set: {
