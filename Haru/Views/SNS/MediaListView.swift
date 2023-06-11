@@ -54,7 +54,6 @@ struct MediaListView: View {
             }
         }
         .onAppear {
-            print("미디어 뷰 appear")
             postVM.option = postVM.targetId == nil ? .media_all : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media_all : .target_media_hashtag
             postVM.fetchTargetHashTags()
 

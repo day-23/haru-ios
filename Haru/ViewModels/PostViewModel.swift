@@ -284,8 +284,6 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        print("[Debug] 모든 게시물 불러오기")
-        print("\(#fileID) \(#function)")
         postService.fetchFreindPosts(page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):

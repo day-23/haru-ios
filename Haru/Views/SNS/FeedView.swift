@@ -113,6 +113,7 @@ struct FeedView: View {
                                 userId: post.user.id,
                                 postImageList: post.images,
                                 imageList: postImageList,
+                                commentList: Array(repeating: [Post.Comment](), count: post.images.count),
                                 postPageNum: 0,
                                 isMine: isMine
                             )

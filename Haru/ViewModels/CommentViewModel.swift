@@ -23,7 +23,7 @@ final class CommentViewModel: ObservableObject {
             return 1
         }
         
-        return Int(ceil(Double(commentList.count) / 20.0)) + 1
+        return Int(ceil(Double(commentList.count) / 10.0)) + 1
     }
     
     var commentTotalPage: [Post.Image.ID: Int] = [:]

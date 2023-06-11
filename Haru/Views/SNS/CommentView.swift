@@ -21,17 +21,7 @@ struct CommentView: View, KeyboardReadable {
     var userId: String // 게시물을 작성한 사용자 id
     @State var postImageList: [Post.Image]
     var imageList: [PostImage?]
-    var commentList: [[Post.Comment]] { // [pageNum][commentIdx]
-        // TODO: 민재형이 서버에서 포스트의 이미지별 댓글 api 나오면 수정해주기
-
-        var result = Array(repeating: [Post.Comment](), count: postImageList.count)
-        for (idx, image) in postImageList.enumerated() {
-            result[idx].append(contentsOf: image.comments.compactMap {
-                Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
-            })
-        }
-        return result
-    }
+    @State var commentList: [[Post.Comment]]
 
     @State var postPageNum: Int = 0
 
@@ -40,8 +30,8 @@ struct CommentView: View, KeyboardReadable {
     // 없으면 nil
     var alreadyComment: [(Post.Comment, Int)?] {
         var result: [(Post.Comment, Int)?] = Array(repeating: nil, count: postImageList.count)
-        for (pageNum, image) in postImageList.enumerated() {
-            for (idx, comment) in image.comments.enumerated() {
+        for (pageNum, comments) in commentList.enumerated() {
+            for (idx, comment) in comments.enumerated() {
                 if comment.user.id == Global.shared.user?.id {
                     result[pageNum] = (
                         Post.Comment(
@@ -304,9 +294,7 @@ struct CommentView: View, KeyboardReadable {
                             .padding(.vertical, 30)
 
                         Button {
-                            print("이 코멘트 숨기기 api 연동")
-                            // TODO: completion에 넣어주기
-                            hideCommentModalVis = false
+                            updateCommentHide(target: target)
                         } label: {
                             Text("이 코멘트 숨기기")
                                 .font(.pretendard(size: 20, weight: .regular))
@@ -318,6 +306,9 @@ struct CommentView: View, KeyboardReadable {
                 .transition(.modal)
                 .zIndex(5)
             }
+        }
+        .onAppear {
+            fetchCommentList()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(isCommentEditing || isCommentDeleting || isCommentWriting ? Color(0x191919) : Color(0xFDFDFD))
@@ -398,23 +389,7 @@ struct CommentView: View, KeyboardReadable {
         {
             Button("삭제하기", role: .destructive) {
                 // TODO: 댓글 삭제하는 api 연동
-                if let target = delCommentTarget {
-                    commentService.deleteComment(
-                        targetUserId: target.user.id,
-                        targetCommentId: target.id
-                    ) { result in
-                        switch result {
-                        case .success(let success):
-                            if success {
-                                postImageList[postPageNum].comments = postImageList[postPageNum].comments.filter {
-                                    $0.id != delCommentTarget?.id
-                                }
-                            }
-                        case .failure(let failure):
-                            print("[Debug] \(failure)")
-                        }
-                    }
-                }
+                deleteComment()
             }
         }
         .confirmationDialog("코멘트 편집을 취소할까요? 편집 중인 내용은 초기화됩니다.",
@@ -764,6 +739,28 @@ struct CommentView: View, KeyboardReadable {
         .cornerRadius(10)
     }
 
+    func fetchCommentList() {
+        for (idx, postImage) in postImageList.enumerated() {
+            commentService.fetchImageComment(
+                targetPostId: postId,
+                targetPostImageId: postImage.id
+            ) { result in
+                switch result {
+                case .success(let success):
+                    self.commentList[idx] = success.compactMap {
+                        Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
+                    }
+                case .failure(let failure):
+                    print("[Debug] \(failure)")
+                    print("\(#file) \(#function)")
+                    self.commentList[idx] = postImage.comments.compactMap {
+                        Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
+                    }
+                }
+            }
+        }
+    }
+
     func createComment() {
         if !isTemplate {
             commentService.createComment(
@@ -772,14 +769,13 @@ struct CommentView: View, KeyboardReadable {
                 comment: Request.Comment(content: content, x: x, y: y)
             ) { result in
                 switch result {
-                case .success(let success):
+                case .success:
                     content = ""
                     x = nil
                     y = nil
                     isCommentWriting = false
 
-                    // TODO: 게시물 댓글 다시 불러오기
-                    postImageList[postPageNum].comments.append(success)
+                    fetchCommentList()
                     commentModify = true
                 case .failure(let failure):
                     print("[Debug] \(failure)")
@@ -792,14 +788,13 @@ struct CommentView: View, KeyboardReadable {
                 comment: Request.Comment(content: content, x: x, y: y)
             ) { result in
                 switch result {
-                case .success(let success):
+                case .success:
                     content = ""
                     x = nil
                     y = nil
                     isCommentWriting = false
 
-                    // TODO: 게시물 댓글 다시 불러오기
-                    postImageList[postPageNum].comments.append(success)
+                    fetchCommentList()
                     commentModify = true
                 case .failure(let failure):
                     print("[Debug] \(failure)")
@@ -828,7 +823,6 @@ struct CommentView: View, KeyboardReadable {
         ) { result in
             switch result {
             case .success:
-                // TODO: 게시물 이미지 댓글 다시 불러오기
                 xList = [:]
                 yList = [:]
                 startingXList = [:]
@@ -836,10 +830,44 @@ struct CommentView: View, KeyboardReadable {
                 draggingList = [:]
                 isCommentEditing = false
 
-                // TODO: 게시물 댓글 다시 불러오기
+                fetchCommentList()
                 commentModify = true
             case .failure:
                 print("실패!")
+            }
+        }
+    }
+
+    func updateCommentHide(target: Post.Comment) {
+        let request = Request.Comment(isPublic: false)
+
+        commentService.updateComment(
+            targetUserId: target.user.id,
+            targetCommentId: target.id,
+            comment: request
+        ) { result in
+            switch result {
+            case .success:
+                fetchCommentList()
+                hideCommentModalVis = false
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func deleteComment() {
+        if let target = delCommentTarget {
+            commentService.deleteComment(
+                targetUserId: target.user.id,
+                targetCommentId: target.id
+            ) { result in
+                switch result {
+                case .success:
+                    fetchCommentList()
+                case .failure(let failure):
+                    print("[Debug] \(failure)")
+                }
             }
         }
     }

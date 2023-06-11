@@ -18,7 +18,7 @@ struct FeedImage: View {
     var content: String?
     var isMine: Bool
     @State var postPageNum: Int = 0
-    
+
     @Binding var commentModify: Bool
 
     var body: some View {
@@ -58,6 +58,7 @@ struct FeedImage: View {
                                 userId: post.user.id,
                                 postImageList: post.images,
                                 imageList: imageList,
+                                commentList: Array(repeating: [Post.Comment](), count: post.images.count),
                                 postPageNum: postPageNum,
                                 isMine: isMine
                             )

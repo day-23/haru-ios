@@ -34,6 +34,35 @@ final class CommentService {
         encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
         return encoder
     }()
+    
+    func fetchImageComment(
+        targetPostId: String,
+        targetPostImageId: String,
+        completion: @escaping (Result<[Post.Comment], Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post.Comment]
+        }
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        AF.request(
+            CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/\(targetPostImageId)/comments/recent",
+            method: .get,
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 
     // 이미지 게시물에 댓글 작성
     func createComment(
@@ -203,7 +232,7 @@ final class CommentService {
         postId: String,
         imageId: String,
         page: Int,
-        limit: Int = 20,
+        limit: Int = 10,
         lastCreatedAt: Date? = nil,
         completion: @escaping (Result<([Post.Comment], Post.Pagination), Error>) -> Void
     ) {
@@ -252,7 +281,7 @@ final class CommentService {
         userId: String,
         postId: String,
         page: Int,
-        limit: Int = 20,
+        limit: Int = 10,
         lastCreatedAt: Date? = nil,
         completion: @escaping (Result<([Post.Comment], Post.Pagination), Error>) -> Void
     ) {
