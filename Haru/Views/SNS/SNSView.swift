@@ -104,7 +104,7 @@ struct SNSView: View {
                                     self.postVM.hidePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
+                                            self.postVM.reloadPosts()
                                             self.postOptModalVis.0 = false
                                         case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
@@ -141,7 +141,7 @@ struct SNSView: View {
                                     self.postVM.deletePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
+                                            self.postVM.reloadPosts()
                                             self.postOptModalVis.0 = false
                                         case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
@@ -166,7 +166,7 @@ struct SNSView: View {
                                     self.postVM.reportPost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
+                                            self.postVM.reloadPosts()
                                             self.postOptModalVis.0 = false
                                             // TODO: 토스트 메시지로 신고가 접수 되었다고 알리기
                                             print("신고가 잘 접수 되었습니다.")
@@ -241,10 +241,10 @@ struct SNSView: View {
             self.toggleIsClicked = false
         }
         .onChange(of: self.isActiveForDrawing) { _ in
-            self.postVM.refreshPosts()
+            self.postVM.reloadPosts()
         }
         .onChange(of: self.isActiveForWriting) { _ in
-            self.postVM.refreshPosts()
+            self.postVM.reloadPosts()
         }
     }
 

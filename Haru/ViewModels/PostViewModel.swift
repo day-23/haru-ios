@@ -130,7 +130,7 @@ final class PostViewModel: ObservableObject {
 
         case .target_media_all:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
-                if page >= mediaTotalPage {
+                if page > mediaTotalPage {
                     print("[Error] 더 이상 불러올 게시물이 없습니다")
                     print("\(#function) \(#fileID)")
                     return
@@ -189,6 +189,32 @@ final class PostViewModel: ObservableObject {
     func refreshPosts() {
         clear()
         loadMorePosts()
+    }
+
+    func reloadPosts() {
+        clear()
+        switch option {
+        case .main:
+            fetchFreindsPosts(page: page, lastCreatedAt: lastCreatedAt)
+
+        case .target_feed:
+            guard let targetId else { return }
+            fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
+            if selectedHashTag.id == Global.shared.hashTagAll.id {
+                fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
+            } else {
+                fetchTargetMediaHashTag(targetId: targetId, hashTagId: selectedHashTag.id, page: page, lastCreatedAt: lastCreatedAt)
+            }
+
+        case .target_media_all:
+            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        case .target_media_hashtag:
+            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        case .media_all:
+            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        case .media_hashtag:
+            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        }
     }
 
     // MARK: - UIImage로 변환 + 이미지 캐싱
@@ -280,7 +306,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPage = self.feedTotalPage == -1 ? pageInfo.totalPages : self.feedTotalPage
+                self.feedTotalPage = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -315,7 +341,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPage = self.feedTotalPage == -1 ? pageInfo.totalPages : self.feedTotalPage
+                self.feedTotalPage = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -358,9 +384,7 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
                 let pageInfo = success.1
-                if self.mediaTotalPage[Global.shared.hashTagAll.id] == nil {
-                    self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
-                }
+                self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -393,9 +417,7 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
                 let pageInfo = success.1
-                if self.mediaTotalPage[hashTagId] == nil {
-                    self.mediaTotalPage[hashTagId] = pageInfo.totalPages
-                }
+                self.mediaTotalPage[hashTagId] = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -420,9 +442,7 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
                 let pageInfo = success.1
-                if self.mediaTotalPage[Global.shared.hashTagAll.id] == nil {
-                    self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
-                }
+                self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -448,9 +468,8 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
                 let pageInfo = success.1
-                if self.mediaTotalPage[hashTagId] == nil {
-                    self.mediaTotalPage[hashTagId] = pageInfo.totalPages
-                }
+                self.mediaTotalPage[hashTagId] = pageInfo.totalPages
+
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }

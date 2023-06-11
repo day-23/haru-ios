@@ -45,7 +45,6 @@ struct MediaListView: View {
                                         Spacer()
                                         ProgressView()
                                             .onAppear {
-                                                print("더 불러오기1")
                                                 postVM.loadMorePosts()
                                             }
                                         Spacer()
@@ -67,7 +66,6 @@ struct MediaListView: View {
             postVM.fetchTargetHashTags()
 
             if postVM.mediaTotalPage[postVM.selectedHashTag.id] == nil {
-                print("더 불러오기2")
                 postVM.loadMorePosts()
             }
         }

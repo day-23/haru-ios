@@ -365,7 +365,6 @@ struct CommentView: View, KeyboardReadable {
                         if isCommentWriting {
                             createComment()
                         } else {
-                            print("hi")
                             updateComment()
                         }
                     } label: {

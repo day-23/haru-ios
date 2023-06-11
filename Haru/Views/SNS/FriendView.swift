@@ -189,7 +189,6 @@ struct FriendView: View {
                                     Spacer()
                                     ProgressView()
                                         .onAppear {
-                                            print("더 불러오기")
                                             self.userProfileVM.loadMoreFriendList()
                                         }
                                     Spacer()
@@ -203,7 +202,6 @@ struct FriendView: View {
                                     Spacer()
                                     ProgressView()
                                         .onAppear {
-                                            print("더 불러오기")
                                             self.userProfileVM.loadMoreFriendList()
                                         }
                                     Spacer()

@@ -33,7 +33,6 @@ struct FeedListView: View {
                         Spacer()
                         ProgressView()
                             .onAppear {
-                                print("더 불러오기3")
                                 postVM.loadMorePosts()
                             }
                         Spacer()

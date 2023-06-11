@@ -163,7 +163,6 @@ struct CommentListView: View {
                             Spacer()
                             ProgressView()
                                 .onAppear {
-                                    print("더 불러오기")
                                     commentVM.loadMoreComments()
                                 }
                             Spacer()
