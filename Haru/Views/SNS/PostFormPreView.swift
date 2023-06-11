@@ -17,6 +17,7 @@ struct PostFormPreView: View {
 
     // For pop up to root
     @Binding var shouldPopToRootView: Bool
+    @Binding var createPost: Bool
 
     @State var selectedTemplateIdx: Int = 0
     @State var blackSelected: Bool = true
@@ -82,8 +83,8 @@ struct PostFormPreView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
                                     .frame(
-                                        width: UIScreen.main.bounds.width,
-                                        height: UIScreen.main.bounds.height
+                                        width: deviceSize.width,
+                                        height: deviceSize.width
                                     )
                                     .clipped()
                             }
@@ -157,8 +158,8 @@ struct PostFormPreView: View {
                             postFormVM.createPost { result in
                                 switch result {
                                 case .success:
+                                    createPost = true
                                     shouldPopToRootView = false
-
                                 case .failure(let failure):
                                     waitingResponse = false
                                     print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -168,6 +169,7 @@ struct PostFormPreView: View {
                             postFormVM.createPost(templateIdx: selectedTemplateIdx) { result in
                                 switch result {
                                 case .success:
+                                    createPost = true
                                     shouldPopToRootView = false
                                 case .failure(let failure):
                                     waitingResponse = false

@@ -15,6 +15,7 @@ struct SNSView: View {
     // For pop up to root
     @State var isActiveForDrawing: Bool = false
     @State var isActiveForWriting: Bool = false
+    @State var createPost: Bool = false
 
     @State var postOptModalVis: (Bool, Post?) = (false, nil)
 
@@ -205,6 +206,7 @@ struct SNSView: View {
                                 postFormVM: PostFormViewModel(postOption: .drawing),
                                 openPhoto: true,
                                 rootIsActive: self.$isActiveForDrawing,
+                                createPost: self.$createPost,
                                 postAddMode: .drawing
                             ),
                             isActive: self.$isActiveForDrawing
@@ -220,6 +222,7 @@ struct SNSView: View {
                                 postFormVM: PostFormViewModel(postOption: .writing),
                                 openPhoto: false,
                                 rootIsActive: self.$isActiveForWriting,
+                                createPost: self.$createPost,
                                 postAddMode: .writing
                             ),
                             isActive: self.$isActiveForWriting
@@ -244,6 +247,7 @@ struct SNSView: View {
                 .padding(.bottom, 10)
             }
         }
+        .navigationBarBackButtonHidden()
         .onTapGesture {
             withAnimation {
                 self.hideAddMenu()
@@ -252,10 +256,7 @@ struct SNSView: View {
         .onAppear {
             self.toggleIsClicked = false
         }
-        .onChange(of: self.isActiveForDrawing) { _ in
-            self.postVM.reloadPosts()
-        }
-        .onChange(of: self.isActiveForWriting) { _ in
+        .onChange(of: self.createPost) { _ in
             self.postVM.reloadPosts()
         }
     }

@@ -62,7 +62,15 @@ struct FriendView: View {
                                 .frame(width: 175 * 2, height: 4)
 
                             Rectangle()
-                                .fill(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]))
+                                .fill(RadialGradient(
+                                    colors: [
+                                        Color(0xAAD7FF),
+                                        Color(0xD2D7FF)
+                                    ],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 90
+                                ))
                                 .frame(width: 175, height: 4)
                                 .offset(x: self.friendTab ? 0 : 175)
                         }

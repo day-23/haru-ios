@@ -19,6 +19,8 @@ struct PopupImagePicker: View {
     // MARK: Callbacks
 
     var mode: ImagePickerMode
+    @State var ratio: Double = 0.5
+
     var onEnd: () -> ()
     var onSelect: ([PHAsset]) -> ()
 
@@ -34,11 +36,45 @@ struct PopupImagePicker: View {
                     HStack(spacing: 10) {
                         Text("앨범")
                             .font(.pretendard(size: 20, weight: .bold))
-                        Image("todo-toggle")
-                            .renderingMode(.template)
-                            .resizable()
-                            .rotationEffect(.degrees(90))
-                            .frame(width: 20, height: 20)
+
+                        Button {
+                            if ratio == 0.9 {
+                                withAnimation {
+                                    ratio = 0.5
+                                }
+                            } else if ratio == 0.5 {
+                                withAnimation {
+                                    ratio = 0.15
+                                }
+                            }
+                        } label: {
+                            Image("todo-toggle")
+                                .renderingMode(.template)
+                                .resizable()
+                                .rotationEffect(.degrees(90))
+                                .frame(width: 20, height: 20)
+                        }
+
+                        if mode == .multiple {
+                            Button {
+                                if ratio == 0.5 {
+                                    withAnimation {
+                                        ratio = 0.9
+                                    }
+                                } else if ratio == 0.15 {
+                                    withAnimation {
+                                        ratio = 0.5
+                                    }
+                                }
+
+                            } label: {
+                                Image("todo-toggle")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .rotationEffect(.degrees(270))
+                                    .frame(width: 20, height: 20)
+                            }
+                        }
                     }
                 }
                 .foregroundColor(Color(0x191919))
@@ -64,6 +100,9 @@ struct PopupImagePicker: View {
             .padding(.top, 27)
             .padding(.horizontal, 24)
             .padding(.bottom, 20)
+            .contentShape(
+                Rectangle()
+            )
 
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: 3), spacing: 3) {
@@ -87,13 +126,13 @@ struct PopupImagePicker: View {
                 }
             }
         }
-        .frame(height: deviceSize.height * 0.5)
+        .frame(height: deviceSize.height * ratio)
         .frame(maxWidth: deviceSize.width)
         .background {
-            Rectangle()
-                .fill(LinearGradient(colors: [.gradientStart2, .gradientEnd2], startPoint: .leading, endPoint: .trailing))
-                .cornerRadius(20, corners: [.topLeft, .topRight])
+            Image("background-haru")
+                .resizable()
         }
+        .cornerRadius(20, corners: [.topLeft, .topRight])
 
         // MARK: Since its an Overlay View
 
@@ -124,7 +163,7 @@ struct PopupImagePicker: View {
                     .border(
                         width: isSelected ? 3 : 0,
                         edges: [.top, .bottom, .leading, .trailing],
-                        color: Color(0x1afff)
+                        color: Color(0x1AFFF)
                     )
             } else {
                 ProgressView()
@@ -145,7 +184,7 @@ struct PopupImagePicker: View {
                     asset.id == imageAsset.id
                 }) {
                     Circle()
-                        .fill(Color(0x1dafff))
+                        .fill(Color(0x1DAFFF))
 
                     if multiSelectEnable {
                         Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
