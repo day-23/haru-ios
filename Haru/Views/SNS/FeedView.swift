@@ -49,7 +49,7 @@ struct FeedView: View {
                     }.disabled(!comeToRoot)
                     
                     Text("\(post.createdAt.relative())")
-                        .font(.pretendard(size: 10, weight: .regular))
+                        .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(Color(0x646464))
                     
                     Spacer()
@@ -110,9 +110,17 @@ struct FeedView: View {
                                 isMine: isMine
                             )
                         } label: {
-                            Image(post.isCommented ? "sns-comment-fill" : "sns-comment-empty")
-                                .resizable()
-                                .frame(width: 28, height: 28)
+                            if post.isCommented {
+                                Image("sns-comment-fill")
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
+                            } else {
+                                Image("sns-comment-empty")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
+                                    .foregroundColor(Color(0xacacac))
+                            }
                         }
                         
                         if isMine {
@@ -133,7 +141,7 @@ struct FeedView: View {
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 28, height: 28)
-                                .foregroundColor(.gray2)
+                                .foregroundColor(Color(0x191919))
                         }
                     }
                 }

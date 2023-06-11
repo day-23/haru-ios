@@ -166,15 +166,14 @@ struct ProfileInfoView: View {
             }
             .padding(.horizontal, 20)
             
-            HStack {
+            HStack(spacing: 0) {
                 VStack(spacing: 4) {
                     Text("\(userProfileVM.user.postCount)")
                         .font(.pretendard(size: 20, weight: .bold))
                     Text("하루")
-                        .font(.pretendard(size: 14, weight: .regular))
+                        .font(.pretendard(size: 16, weight: .regular))
                 }
                 .foregroundColor(Color(0x191919))
-                .padding(.leading, 100)
                 
                 Spacer()
                 
@@ -186,13 +185,14 @@ struct ProfileInfoView: View {
                             .font(.pretendard(size: 20, weight: .bold))
                         HStack(alignment: .lastTextBaseline) {
                             Text("친구")
-                                .font(.pretendard(size: 14, weight: .regular))
+                                .font(.pretendard(size: 16, weight: .regular))
                         }
                     }
                 }
                 .foregroundColor(Color(0x191919))
-                .padding(.trailing, 100)
             }
+            .padding(.leading, 95)
+            .padding(.trailing, 92)
         }
     }
 }
