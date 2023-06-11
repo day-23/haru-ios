@@ -47,18 +47,18 @@ struct FeedImage: View {
                 ForEach(imageList.indices, id: \.self) { idx in
                     if let uiImage = imageList[idx]?.uiImage {
                         NavigationLink {
-                            if !templateMode {
-                                CommentView(
-                                    postId: post.id,
-                                    userId: post.user.id,
-                                    postImageList: post.images,
-                                    imageList: imageList,
-                                    postPageNum: postPageNum,
-                                    isMine: isMine
-                                )
-                            } else {
-                                CommentListView(commentVM: commentVM)
-                            }
+                            CommentView(
+                                isTemplate: templateMode,
+                                templateContent: content,
+                                contentColor: contentColor,
+                                postId: post.id,
+                                userId: post.user.id,
+                                postImageList: post.images,
+                                imageList: imageList,
+                                postPageNum: postPageNum,
+                                isMine: isMine
+                            )
+
                         } label: {
                             Image(uiImage: uiImage)
                                 .renderingMode(.original)

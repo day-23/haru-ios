@@ -11,6 +11,10 @@ struct CommentView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismissAction
     let deviceSize = UIScreen.main.bounds.size
 
+    var isTemplate: Bool = false
+    var templateContent: String?
+    var contentColor: String?
+
     var postId: String
     var userId: String // 게시물을 작성한 사용자 id
     @State var postImageList: [Post.Image]
@@ -668,6 +672,7 @@ struct CommentView: View, KeyboardReadable {
                                 .offset(
                                     y: comment.y > 50 ? -35 : 35
                                 )
+                                .zIndex(5)
                         }
                     }
                     .simultaneousGesture(
@@ -681,11 +686,23 @@ struct CommentView: View, KeyboardReadable {
     func postListView() -> some View {
         TabView(selection: $postPageNum) {
             ForEach(imageList.indices, id: \.self) { idx in
-                if let uiImage = imageList[idx]?.uiImage {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                } else {
-                    ProgressView()
+                ZStack {
+                    if isTemplate, let templateContent {
+                        Text("\(templateContent)")
+                            .lineLimit(nil)
+                            .font(.pretendard(size: 24, weight: .bold))
+                            .foregroundColor(Color(contentColor))
+                            .padding(.all, 20)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .zIndex(99)
+                    }
+
+                    if let uiImage = imageList[idx]?.uiImage {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                    } else {
+                        ProgressView()
+                    }
                 }
             }
         }
@@ -738,21 +755,41 @@ struct CommentView: View, KeyboardReadable {
     }
 
     func createComment() {
-        commentService.createComment(
-            targetPostId: postId,
-            targetPostImageId: postImageList[postPageNum].id,
-            comment: Request.Comment(content: content, x: x, y: y)
-        ) { result in
-            switch result {
-            case .success(let success):
-                content = ""
-                x = nil
-                y = nil
-                postImageList[postPageNum].comments.append(success)
-                isCommentWriting = false
-            case .failure(let failure):
-                print("[Debug] \(failure)")
-                print("\(#fileID) \(#function)")
+        if !isTemplate {
+            commentService.createComment(
+                targetPostId: postId,
+                targetPostImageId: postImageList[postPageNum].id,
+                comment: Request.Comment(content: content, x: x, y: y)
+            ) { result in
+                switch result {
+                case .success(let success):
+                    content = ""
+                    x = nil
+                    y = nil
+                    postImageList[postPageNum].comments.append(success)
+                    isCommentWriting = false
+                case .failure(let failure):
+                    print("[Debug] \(failure)")
+                    print("\(#fileID) \(#function)")
+                }
+            }
+        } else {
+            commentService.createCommentTemplate(
+                targetPostId: postId,
+                comment: Request.Comment(content: content, x: x, y: y)
+            ) { result in
+                switch result {
+                case .success(let success):
+                    content = ""
+                    x = nil
+                    y = nil
+                    isCommentWriting = false
+                    // TODO: 게시물 댓글 다시 불러오기
+                    postImageList[postPageNum].comments.append(success)
+                case .failure(let failure):
+                    print("[Debug] \(failure)")
+                    print("\(#fileID) \(#function)")
+                }
             }
         }
     }
