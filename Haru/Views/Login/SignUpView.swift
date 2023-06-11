@@ -35,7 +35,7 @@ struct SignUpView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 168.33, height: 84.74)
             )
-            .padding(.top, 55)
+            .padding(.top, 42)
             .padding(.bottom, 90)
 
             Group {
@@ -155,6 +155,8 @@ struct SignUpView: View {
             .padding(.leading, 36)
             .padding(.trailing, 33)
 
+            Spacer()
+
             Button {
                 isDuplicated = false
                 isBadNickname = false
@@ -203,7 +205,6 @@ struct SignUpView: View {
                     )
                     .cornerRadius(10)
             }
-            .padding(.top, 50)
             .padding(.bottom, 75)
         }
     }

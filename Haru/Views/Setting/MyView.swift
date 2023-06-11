@@ -127,7 +127,7 @@ struct MyView: View {
                                         .foregroundColor(Color(0x1dafff))
                                         .animation(.none)
                                     Text("완료한 일")
-                                        .font(.pretendard(size: 14, weight: .regular))
+                                        .font(.pretendard(size: 16, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }
                                 Spacer()
@@ -137,7 +137,7 @@ struct MyView: View {
                                         .foregroundColor(Color(0x191919))
                                         .animation(.none)
                                     Text("할 일")
-                                        .font(.pretendard(size: 14, weight: .regular))
+                                        .font(.pretendard(size: 16, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }
                             }
