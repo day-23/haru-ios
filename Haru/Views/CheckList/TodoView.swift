@@ -223,16 +223,19 @@ struct TodoView: View {
             .padding(.top, 4)
 
             Spacer()
-            StarButton(isClicked: todo.flag)
-                .onTapGesture {
-                    isFlagButtonActive = false
+            StarButton(
+                isClicked: todo.flag,
+                completed: todo.completed
+            )
+            .onTapGesture {
+                isFlagButtonActive = false
 
-                    checkListViewModel.updateFlag(todo: todo) { _ in
-                        updateAction()
-                        isFlagButtonActive = true
-                    }
+                checkListViewModel.updateFlag(todo: todo) { _ in
+                    updateAction()
+                    isFlagButtonActive = true
                 }
-                .disabled(!isFlagButtonActive)
+            }
+            .disabled(!isFlagButtonActive)
         }
         .frame(maxWidth: .infinity)
         .padding(.leading, todo.subTodos.isEmpty && !isMiniCalendar ? 34 : 14)
