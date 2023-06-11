@@ -33,7 +33,7 @@ final class PostViewModel: ObservableObject {
             return Int(ceil(Double(postList.count) / 5.0)) + 1
         case .target_feed:
             return Int(ceil(Double(postList.count) / 5.0)) + 1
-        case .target_media:
+        case .target_media_all:
             guard let mediaList = mediaList[Global.shared.hashTagAll.id] else {
                 return 1
             }
@@ -43,8 +43,13 @@ final class PostViewModel: ObservableObject {
                 return 1
             }
             return Int(ceil(Double(mediaList.count) / 12.0)) + 1
-        case .media:
+        case .media_all:
             guard let mediaList = mediaList[Global.shared.hashTagAll.id] else {
+                return 1
+            }
+            return Int(ceil(Double(mediaList.count) / 12.0)) + 1
+        case .media_hashtag:
+            guard let mediaList = mediaList[selectedHashTag.id] else {
                 return 1
             }
             return Int(ceil(Double(mediaList.count) / 12.0)) + 1
@@ -60,7 +65,7 @@ final class PostViewModel: ObservableObject {
             return postList.first?.createdAt
         case .target_feed:
             return postList.first?.createdAt
-        case .target_media:
+        case .target_media_all:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return nil
             }
@@ -70,7 +75,12 @@ final class PostViewModel: ObservableObject {
                 return nil
             }
             return mediaList.first?.createdAt
-        case .media:
+        case .media_all:
+            guard let mediaList = mediaList[selectedHashTag.id] else {
+                return nil
+            }
+            return mediaList.first?.createdAt
+        case .media_hashtag:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return nil
             }
@@ -78,7 +88,7 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    var targetId: String?
+    var targetId: String? // targetId가 nil이면 둘러보기 / 아니면 사용자 피드
 
     private let postService: PostService
 
@@ -111,14 +121,14 @@ final class PostViewModel: ObservableObject {
             }
 
             guard let targetId else {
-                print("[Debug] targetId가 잘못되었습니다.")
+                print("[Debug] targetId가 nil 입니다.")
                 print("\(#function) \(#fileID)")
                 return
             }
 
             fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
 
-        case .target_media:
+        case .target_media_all:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
                     print("[Error] 더 이상 불러올 게시물이 없습니다")
@@ -127,7 +137,12 @@ final class PostViewModel: ObservableObject {
                 }
             }
 
-            guard let targetId else { return }
+            guard let targetId else {
+                print("[Debug] targetId가 nil 입니다.")
+                print("\(#function) \(#fileID)")
+                return
+            }
+
             fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
 
         case .target_media_hashtag:
@@ -139,17 +154,67 @@ final class PostViewModel: ObservableObject {
                 }
             }
 
-            guard let targetId else { return }
+            guard let targetId else {
+                print("[Debug] targetId가 nil 입니다.")
+                print("\(#function) \(#fileID)")
+                return
+            }
+
             fetchTargetMediaHashTag(targetId: targetId, hashTagId: selectedHashTag.id, page: page, lastCreatedAt: lastCreatedAt)
 
-        case .media:
-            print("둘러보기")
+        case .media_all:
+            if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
+                if page > mediaTotalPage {
+                    print("[Error] 더 이상 불러올 게시물이 없습니다")
+                    print("\(#function) \(#fileID)")
+                    return
+                }
+            }
+
+            fetchMediaAll(page: page, lastCreatedAt: lastCreatedAt)
+
+        case .media_hashtag:
+            if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
+                if page > mediaTotalPage {
+                    print("[Error] 더 이상 불러올 게시물이 없습니다")
+                    print("\(#function) \(#fileID)")
+                    return
+                }
+            }
+
+            fetchMediaHashTag(hashTagId: selectedHashTag.id, page: page, lastCreatedAt: lastCreatedAt)
         }
     }
 
     func refreshPosts() {
-        clear(option: option)
+        clear()
         loadMorePosts()
+    }
+
+    func reloadPosts() {
+        clear()
+        switch option {
+        case .main:
+            fetchFreindsPosts(page: page, lastCreatedAt: lastCreatedAt)
+
+        case .target_feed:
+            guard let targetId else { return }
+            fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
+            if selectedHashTag.id == Global.shared.hashTagAll.id {
+                fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
+            } else {
+                fetchTargetMediaHashTag(targetId: targetId, hashTagId: selectedHashTag.id, page: page, lastCreatedAt: lastCreatedAt)
+            }
+
+        case .target_media_all:
+            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        case .target_media_hashtag:
+            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        case .media_all:
+            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        case .media_hashtag:
+            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        }
     }
 
     // MARK: - UIImage로 변환 + 이미지 캐싱
@@ -219,8 +284,6 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        print("[Debug] 모든 게시물 불러오기")
-        print("\(#fileID) \(#function)")
         postService.fetchFreindPosts(page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
@@ -241,7 +304,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPage = self.feedTotalPage == -1 ? pageInfo.totalPages : self.feedTotalPage
+                self.feedTotalPage = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -276,7 +339,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPage = self.feedTotalPage == -1 ? pageInfo.totalPages : self.feedTotalPage
+                self.feedTotalPage = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -284,8 +347,16 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    // TODO: 인기 미디어 전체보기 해야함
-    func fetchAllMedia(targetId: String) {}
+    func fetchPopularHashTags() {
+        postService.fetchPopularHashTags { result in
+            switch result {
+            case .success(let success):
+                self.hashTags.append(contentsOf: success)
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
 
     func fetchTargetMediaAll(
         targetId: String,
@@ -311,9 +382,7 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
                 let pageInfo = success.1
-                if self.mediaTotalPage[Global.shared.hashTagAll.id] == nil {
-                    self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
-                }
+                self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -346,9 +415,58 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
                 let pageInfo = success.1
-                if self.mediaTotalPage[hashTagId] == nil {
-                    self.mediaTotalPage[hashTagId] = pageInfo.totalPages
+                self.mediaTotalPage[hashTagId] = pageInfo.totalPages
+
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func fetchMediaAll(
+        page: Int,
+        lastCreatedAt: Date?)
+    {
+        postService.fetchAllMedia(page: page, lastCreatedAt: lastCreatedAt) { result in
+            switch result {
+            case .success(let success):
+                success.0.forEach { post in
+                    self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
+                    self.fetchPostImage(
+                        postId: post.id,
+                        postImageUrlList: post.images.map(\.url),
+                        isMedia: true)
                 }
+
+                self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
+                let pageInfo = success.1
+                self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
+
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func fetchMediaHashTag(
+        hashTagId: String,
+        page: Int,
+        lastCreatedAt: Date?)
+    {
+        postService.fetchMediaHashTag(hashTagId: hashTagId, page: page, lastCreatedAt: lastCreatedAt) { result in
+            switch result {
+            case .success(let success):
+                success.0.forEach { post in
+                    self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
+                    self.fetchPostImage(
+                        postId: post.id,
+                        postImageUrlList: post.images.map(\.url),
+                        isMedia: true)
+                }
+
+                self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
+                let pageInfo = success.1
+                self.mediaTotalPage[hashTagId] = pageInfo.totalPages
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -427,27 +545,20 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    func clear(option: PostOption) {
-        switch option {
-        case .main:
-            postList = []
-            postImageList = [:]
-
-        case .target_feed:
-            postList = []
-            postImageList = [:]
-
-        case .target_media:
-            mediaList = [:]
-            mediaImageList = [:]
-
-        case .target_media_hashtag:
-            mediaList = [:]
-            mediaImageList = [:]
-
-        case .media:
-            mediaList = [:]
-            mediaImageList = [:]
+    func disablePost(targetPostId: String) {
+        guard let index = (postList.firstIndex { post in
+            post.id == targetPostId
+        }) else {
+            return
         }
+
+        postList[index].disabled = true
+    }
+
+    func clear() {
+        postList = []
+        postImageList = [:]
+        mediaList = [:]
+        mediaImageList = [:]
     }
 }

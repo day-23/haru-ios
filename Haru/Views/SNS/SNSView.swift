@@ -15,6 +15,7 @@ struct SNSView: View {
     // For pop up to root
     @State var isActiveForDrawing: Bool = false
     @State var isActiveForWriting: Bool = false
+    @State var createPost: Bool = false
 
     @State var postOptModalVis: (Bool, Post?) = (false, nil)
 
@@ -26,25 +27,43 @@ struct SNSView: View {
     @State var hidePost: Bool = false
     @State var reportPost: Bool = false
 
+    @State var isFriendFeed: Bool = true
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 self.HaruHeaderView()
+                    .background(Color(0xfdfdfd))
 
-                FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis, comeToRoot: true)
+                if self.isFriendFeed {
+                    FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis, comeToRoot: true)
+                } else {
+                    LookAroundView()
+                }
             }
 
             if self.toggleIsClicked {
                 DropdownMenu {
-                    Text("친구피드")
-                        .font(.pretendard(size: 16, weight: .bold))
-                        .foregroundColor(Color(0x1dafff))
+                    Button {
+                        withAnimation {
+                            self.isFriendFeed = true
+                            self.toggleIsClicked = false
+                        }
+                    } label: {
+                        Text("친구피드")
+                            .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(self.isFriendFeed ? Color(0x1dafff) : Color(0x191919))
+                    }
                 } secondContent: {
-                    NavigationLink {
-                        LookAroundView()
+                    Button {
+                        withAnimation {
+                            self.isFriendFeed = false
+                            self.toggleIsClicked = false
+                        }
                     } label: {
                         Text("둘러보기")
                             .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(self.isFriendFeed ? Color(0x191919) : Color(0x1dafff))
                     }
                 }
             }
@@ -86,8 +105,12 @@ struct SNSView: View {
                                     self.postVM.hidePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
-                                            self.postOptModalVis.0 = false
+                                            withAnimation {
+                                                self.postVM.disablePost(
+                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                )
+                                                self.postOptModalVis.0 = false
+                                            }
                                         case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
@@ -123,8 +146,12 @@ struct SNSView: View {
                                     self.postVM.deletePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
-                                            self.postOptModalVis.0 = false
+                                            withAnimation {
+                                                self.postVM.disablePost(
+                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                )
+                                                self.postOptModalVis.0 = false
+                                            }
                                         case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
@@ -148,8 +175,12 @@ struct SNSView: View {
                                     self.postVM.reportPost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
-                                            self.postOptModalVis.0 = false
+                                            withAnimation {
+                                                self.postVM.disablePost(
+                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                )
+                                                self.postOptModalVis.0 = false
+                                            }
                                             // TODO: 토스트 메시지로 신고가 접수 되었다고 알리기
                                             print("신고가 잘 접수 되었습니다.")
                                         case let .failure(failure):
@@ -175,6 +206,7 @@ struct SNSView: View {
                                 postFormVM: PostFormViewModel(postOption: .drawing),
                                 openPhoto: true,
                                 rootIsActive: self.$isActiveForDrawing,
+                                createPost: self.$createPost,
                                 postAddMode: .drawing
                             ),
                             isActive: self.$isActiveForDrawing
@@ -190,6 +222,7 @@ struct SNSView: View {
                                 postFormVM: PostFormViewModel(postOption: .writing),
                                 openPhoto: false,
                                 rootIsActive: self.$isActiveForWriting,
+                                createPost: self.$createPost,
                                 postAddMode: .writing
                             ),
                             isActive: self.$isActiveForWriting
@@ -214,6 +247,7 @@ struct SNSView: View {
                 .padding(.bottom, 10)
             }
         }
+        .navigationBarBackButtonHidden()
         .onTapGesture {
             withAnimation {
                 self.hideAddMenu()
@@ -222,11 +256,8 @@ struct SNSView: View {
         .onAppear {
             self.toggleIsClicked = false
         }
-        .onChange(of: self.isActiveForDrawing) { _ in
-            self.postVM.refreshPosts()
-        }
-        .onChange(of: self.isActiveForWriting) { _ in
-            self.postVM.refreshPosts()
+        .onChange(of: self.createPost) { _ in
+            self.postVM.reloadPosts()
         }
     }
 
@@ -254,7 +285,7 @@ struct SNSView: View {
                     )
                 } label: {
                     HStack(spacing: 5) {
-                        Image("my-history")
+                        Image("sns-my-history")
                             .resizable()
                             .frame(width: 28, height: 28)
 
@@ -275,11 +306,5 @@ struct SNSView: View {
                 }
             }
         }
-    }
-}
-
-struct SNSView_Previews: PreviewProvider {
-    static var previews: some View {
-        SNSView()
     }
 }

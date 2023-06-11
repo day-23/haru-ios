@@ -11,19 +11,15 @@ struct CommentView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismissAction
     let deviceSize = UIScreen.main.bounds.size
 
+    var isTemplate: Bool = false
+    var templateContent: String?
+    var contentColor: String?
+
     var postId: String
     var userId: String // 게시물을 작성한 사용자 id
     @State var postImageList: [Post.Image]
     var imageList: [PostImage?]
-    var commentList: [[Post.Comment]] { // [pageNum][commentIdx]
-        var result = Array(repeating: [Post.Comment](), count: postImageList.count)
-        for (idx, image) in postImageList.enumerated() {
-            result[idx].append(contentsOf: image.comments.compactMap {
-                Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
-            })
-        }
-        return result
-    }
+    @State var commentList: [[Post.Comment]]
 
     @State var postPageNum: Int = 0
 
@@ -32,8 +28,8 @@ struct CommentView: View, KeyboardReadable {
     // 없으면 nil
     var alreadyComment: [(Post.Comment, Int)?] {
         var result: [(Post.Comment, Int)?] = Array(repeating: nil, count: postImageList.count)
-        for (pageNum, image) in postImageList.enumerated() {
-            for (idx, comment) in image.comments.enumerated() {
+        for (pageNum, comments) in commentList.enumerated() {
+            for (idx, comment) in comments.enumerated() {
                 if comment.user.id == Global.shared.user?.id {
                     result[pageNum] = (
                         Post.Comment(
@@ -62,6 +58,7 @@ struct CommentView: View, KeyboardReadable {
     @State var deleteWriting: Bool = false // 작성한 댓글 삭제하기
 
     @State var cancelEditing: Bool = false
+    @State var confirmEditing: Bool = false
 
     @State var textRect = CGRect()
 
@@ -143,7 +140,7 @@ struct CommentView: View, KeyboardReadable {
                                 Button {
                                     hideAllComment = false
                                 } label: {
-                                    Image("comment-disable")
+                                    Image("sns-comment-disable")
                                         .resizable()
                                         .renderingMode(.template)
                                         .foregroundColor(Color(0xCACACA))
@@ -171,7 +168,8 @@ struct CommentView: View, KeyboardReadable {
                                             },
                                             postId: postId,
                                             imagePageNum: postPageNum
-                                        )
+                                        ),
+                                        isTemplate: isTemplate
                                     )
                                 } label: {
                                     Image("slider")
@@ -294,9 +292,7 @@ struct CommentView: View, KeyboardReadable {
                             .padding(.vertical, 30)
 
                         Button {
-                            print("이 코멘트 숨기기 api 연동")
-                            // TODO: completion에 넣어주기
-                            hideCommentModalVis = false
+                            updateCommentHide(target: target)
                         } label: {
                             Text("이 코멘트 숨기기")
                                 .font(.pretendard(size: 20, weight: .regular))
@@ -308,6 +304,9 @@ struct CommentView: View, KeyboardReadable {
                 .transition(.modal)
                 .zIndex(5)
             }
+        }
+        .onAppear {
+            fetchCommentList()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(isCommentEditing || isCommentDeleting || isCommentWriting ? Color(0x191919) : Color(0xFDFDFD))
@@ -362,11 +361,10 @@ struct CommentView: View, KeyboardReadable {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isCommentWriting || isCommentEditing {
                     Button {
-                        if isCommentWriting {
-                            createComment()
+                        if isCommentEditing {
+                            confirmEditing = true
                         } else {
-                            print("hi")
-                            updateComment()
+                            createComment()
                         }
                     } label: {
                         Image("confirm")
@@ -393,23 +391,7 @@ struct CommentView: View, KeyboardReadable {
         {
             Button("삭제하기", role: .destructive) {
                 // TODO: 댓글 삭제하는 api 연동
-                if let target = delCommentTarget {
-                    commentService.deleteComment(
-                        targetUserId: target.user.id,
-                        targetCommentId: target.id
-                    ) { result in
-                        switch result {
-                        case .success(let success):
-                            if success {
-                                postImageList[postPageNum].comments = postImageList[postPageNum].comments.filter {
-                                    $0.id != delCommentTarget?.id
-                                }
-                            }
-                        case .failure(let failure):
-                            print("[Debug] \(failure)")
-                        }
-                    }
-                }
+                deleteComment()
             }
         }
         .confirmationDialog("코멘트 편집을 취소할까요? 편집 중인 내용은 초기화됩니다.",
@@ -417,12 +399,19 @@ struct CommentView: View, KeyboardReadable {
                             titleVisibility: .visible)
         {
             Button("편집 취소하기", role: .destructive) {
-                xList = [:]
-                yList = [:]
-                startingXList = [:]
-                startingYList = [:]
-                draggingList = [:]
-                isCommentEditing = false
+                clearEditing()
+            }
+        }
+        .confirmationDialog("수정사항을 저장할까요?",
+                            isPresented: $confirmEditing,
+                            titleVisibility: .visible)
+        {
+            Button("저장 안함", role: .destructive) {
+                clearEditing()
+            }
+
+            Button("저장 하기") {
+                updateComment()
             }
         }
     }
@@ -473,10 +462,7 @@ struct CommentView: View, KeyboardReadable {
                         } else {
                             cancelWriting = true
                         }
-                    } else {
-                        // TODO: 게시물 작성자가 남의 댓글 삭제할 수 있게
                     }
-
                     overDelete = false
                 }
 
@@ -669,6 +655,7 @@ struct CommentView: View, KeyboardReadable {
                                 .offset(
                                     y: comment.y > 50 ? -35 : 35
                                 )
+                                .zIndex(5)
                         }
                     }
                     .simultaneousGesture(
@@ -682,11 +669,23 @@ struct CommentView: View, KeyboardReadable {
     func postListView() -> some View {
         TabView(selection: $postPageNum) {
             ForEach(imageList.indices, id: \.self) { idx in
-                if let uiImage = imageList[idx]?.uiImage {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                } else {
-                    ProgressView()
+                ZStack {
+                    if isTemplate, let templateContent {
+                        Text("\(templateContent)")
+                            .lineLimit(nil)
+                            .font(.pretendard(size: 24, weight: .bold))
+                            .foregroundColor(Color(contentColor))
+                            .padding(.all, 20)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .zIndex(99)
+                    }
+
+                    if let uiImage = imageList[idx]?.uiImage {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                    } else {
+                        ProgressView()
+                    }
                 }
             }
         }
@@ -738,22 +737,65 @@ struct CommentView: View, KeyboardReadable {
         .cornerRadius(10)
     }
 
+    func fetchCommentList() {
+        for (idx, postImage) in postImageList.enumerated() {
+            commentService.fetchImageComment(
+                targetPostId: postId,
+                targetPostImageId: postImage.id
+            ) { result in
+                switch result {
+                case .success(let success):
+                    self.commentList[idx] = success.compactMap {
+                        Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
+                    }
+                case .failure(let failure):
+                    print("[Debug] \(failure)")
+                    print("\(#file) \(#function)")
+                    self.commentList[idx] = postImage.comments.compactMap {
+                        Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
+                    }
+                }
+            }
+        }
+    }
+
     func createComment() {
-        commentService.createComment(
-            targetPostId: postId,
-            targetPostImageId: postImageList[postPageNum].id,
-            comment: Request.Comment(content: content, x: x, y: y)
-        ) { result in
-            switch result {
-            case .success(let success):
-                content = ""
-                x = nil
-                y = nil
-                postImageList[postPageNum].comments.append(success)
-                isCommentWriting = false
-            case .failure(let failure):
-                print("[Debug] \(failure)")
-                print("\(#fileID) \(#function)")
+        if !isTemplate {
+            commentService.createComment(
+                targetPostId: postId,
+                targetPostImageId: postImageList[postPageNum].id,
+                comment: Request.Comment(content: content, x: x, y: y)
+            ) { result in
+                switch result {
+                case .success:
+                    content = ""
+                    x = nil
+                    y = nil
+                    isCommentWriting = false
+
+                    fetchCommentList()
+                case .failure(let failure):
+                    print("[Debug] \(failure)")
+                    print("\(#fileID) \(#function)")
+                }
+            }
+        } else {
+            commentService.createCommentTemplate(
+                targetPostId: postId,
+                comment: Request.Comment(content: content, x: x, y: y)
+            ) { result in
+                switch result {
+                case .success:
+                    content = ""
+                    x = nil
+                    y = nil
+                    isCommentWriting = false
+
+                    fetchCommentList()
+                case .failure(let failure):
+                    print("[Debug] \(failure)")
+                    print("\(#fileID) \(#function)")
+                }
             }
         }
     }
@@ -777,17 +819,61 @@ struct CommentView: View, KeyboardReadable {
         ) { result in
             switch result {
             case .success:
-                // TODO: 게시물 이미지 댓글 다시 불러오기
                 xList = [:]
                 yList = [:]
                 startingXList = [:]
                 startingYList = [:]
                 draggingList = [:]
                 isCommentEditing = false
+
+                fetchCommentList()
             case .failure:
                 print("실패!")
             }
         }
+    }
+
+    func updateCommentHide(target: Post.Comment) {
+        let request = Request.Comment(isPublic: false)
+
+        commentService.updateComment(
+            targetUserId: target.user.id,
+            targetCommentId: target.id,
+            comment: request
+        ) { result in
+            switch result {
+            case .success:
+                fetchCommentList()
+                hideCommentModalVis = false
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+
+    func deleteComment() {
+        if let target = delCommentTarget {
+            commentService.deleteComment(
+                targetUserId: target.user.id,
+                targetCommentId: target.id
+            ) { result in
+                switch result {
+                case .success:
+                    fetchCommentList()
+                case .failure(let failure):
+                    print("[Debug] \(failure)")
+                }
+            }
+        }
+    }
+
+    func clearEditing() {
+        xList = [:]
+        yList = [:]
+        startingXList = [:]
+        startingYList = [:]
+        draggingList = [:]
+        isCommentEditing = false
     }
 }
 

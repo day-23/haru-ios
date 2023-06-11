@@ -14,11 +14,13 @@ struct PopupImagePicker: View {
 
     @Environment(\.self) var env
 
-    @State var enable: Bool = false
+    @State var multiSelectEnable: Bool = false
 
     // MARK: Callbacks
 
     var mode: ImagePickerMode
+    @State var ratio: Double = 0.5
+
     var onEnd: () -> ()
     var onSelect: ([PHAsset]) -> ()
 
@@ -32,13 +34,47 @@ struct PopupImagePicker: View {
                     }
                 } label: {
                     HStack(spacing: 10) {
-                        Text("갤러리")
+                        Text("앨범")
                             .font(.pretendard(size: 20, weight: .bold))
-                        Image("todo-toggle")
-                            .renderingMode(.template)
-                            .resizable()
-                            .rotationEffect(.degrees(90))
-                            .frame(width: 20, height: 20)
+
+                        Button {
+                            if ratio == 0.9 {
+                                withAnimation {
+                                    ratio = 0.5
+                                }
+                            } else if ratio == 0.5 {
+                                withAnimation {
+                                    ratio = 0.15
+                                }
+                            }
+                        } label: {
+                            Image("todo-toggle")
+                                .renderingMode(.template)
+                                .resizable()
+                                .rotationEffect(.degrees(90))
+                                .frame(width: 20, height: 20)
+                        }
+
+                        if mode == .multiple {
+                            Button {
+                                if ratio == 0.5 {
+                                    withAnimation {
+                                        ratio = 0.9
+                                    }
+                                } else if ratio == 0.15 {
+                                    withAnimation {
+                                        ratio = 0.5
+                                    }
+                                }
+
+                            } label: {
+                                Image("todo-toggle")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .rotationEffect(.degrees(270))
+                                    .frame(width: 20, height: 20)
+                            }
+                        }
                     }
                 }
                 .foregroundColor(Color(0x191919))
@@ -47,9 +83,14 @@ struct PopupImagePicker: View {
 
                 if mode == .multiple {
                     Button {
-                        enable.toggle()
+                        multiSelectEnable.toggle()
+                        if multiSelectEnable == false,
+                           imagePickerModel.selectedImages.count >= 1
+                        {
+                            imagePickerModel.selectedImages = [imagePickerModel.selectedImages[0]]
+                        }
                     } label: {
-                        Image(enable ? "sns-multiple-button" : "sns-multiple-button-disable")
+                        Image(multiSelectEnable ? "sns-multiple-button" : "sns-multiple-button-disable")
                     }
                 }
                 Image("sns-camera-disable")
@@ -59,6 +100,9 @@ struct PopupImagePicker: View {
             .padding(.top, 27)
             .padding(.horizontal, 24)
             .padding(.bottom, 20)
+            .contentShape(
+                Rectangle()
+            )
 
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: 3), spacing: 3) {
@@ -82,13 +126,13 @@ struct PopupImagePicker: View {
                 }
             }
         }
-        .frame(height: deviceSize.height * 0.5)
+        .frame(height: deviceSize.height * ratio)
         .frame(maxWidth: deviceSize.width)
         .background {
-            Rectangle()
-                .fill(LinearGradient(colors: [.gradientStart2, .gradientEnd2], startPoint: .leading, endPoint: .trailing))
-                .cornerRadius(20, corners: [.topLeft, .topRight])
+            Image("background-haru")
+                .resizable()
         }
+        .cornerRadius(20, corners: [.topLeft, .topRight])
 
         // MARK: Since its an Overlay View
 
@@ -101,13 +145,26 @@ struct PopupImagePicker: View {
     @ViewBuilder
     func GridContent(imageAsset: ImageAsset) -> some View {
         let size = (UIScreen.main.bounds.size.width - 6) / 3
+        let isSelected = imagePickerModel.selectedImages.contains { asset in
+            asset.id == imageAsset.id
+        }
         ZStack {
+            if isSelected {
+                Color.black.opacity(0.4)
+                    .padding(2)
+                    .zIndex(3)
+            }
+
             if let thumbnail = imageAsset.thumbnail {
                 Image(uiImage: thumbnail)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: size, height: size)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .border(
+                        width: isSelected ? 3 : 0,
+                        edges: [.top, .bottom, .leading, .trailing],
+                        color: Color(0x1AFFF)
+                    )
             } else {
                 ProgressView()
                     .frame(width: size, height: size, alignment: .center)
@@ -127,11 +184,13 @@ struct PopupImagePicker: View {
                     asset.id == imageAsset.id
                 }) {
                     Circle()
-                        .fill(.blue)
+                        .fill(Color(0x1DAFFF))
 
-                    Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
-                        .font(.caption2.bold())
-                        .foregroundColor(.white)
+                    if multiSelectEnable {
+                        Text("\(imagePickerModel.selectedImages[index].assetIndex + 1)")
+                            .font(.caption2.bold())
+                            .foregroundColor(.white)
+                    }
                 }
             }
             .frame(width: 20, height: 20)
@@ -143,7 +202,7 @@ struct PopupImagePicker: View {
         .onTapGesture {
             // MARK: adding / Removing Asset
 
-            if mode == .multiple, !enable {
+            if imagePickerModel.selectedImages.count > 10 {
                 return
             }
 
@@ -161,8 +220,14 @@ struct PopupImagePicker: View {
                     // MARK: Add New
 
                     var newAsset = imageAsset
-                    newAsset.assetIndex = imagePickerModel.selectedImages.count
-                    imagePickerModel.selectedImages.append(newAsset)
+
+                    if multiSelectEnable {
+                        newAsset.assetIndex = imagePickerModel.selectedImages.count
+                        imagePickerModel.selectedImages.append(newAsset)
+                    } else {
+                        newAsset.assetIndex = 0
+                        imagePickerModel.selectedImages = [newAsset]
+                    }
                 }
             }
 

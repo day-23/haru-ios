@@ -34,7 +34,37 @@ final class CommentService {
         encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
         return encoder
     }()
+    
+    func fetchImageComment(
+        targetPostId: String,
+        targetPostImageId: String,
+        completion: @escaping (Result<[Post.Comment], Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post.Comment]
+        }
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        AF.request(
+            CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/\(targetPostImageId)/comments/recent",
+            method: .get,
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
 
+    // 이미지 게시물에 댓글 작성
     func createComment(
         targetPostId: String,
         targetPostImageId: String,
@@ -67,6 +97,39 @@ final class CommentService {
         }
     }
 
+    // 템플릿 게시물에 댓글 작성
+    func createCommentTemplate(
+        targetPostId: String,
+        comment: Request.Comment,
+        completion: @escaping (Result<Post.Comment, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: Post.Comment
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/",
+            method: .post,
+            parameters: comment,
+            encoder: JSONParameterEncoder(encoder: Self.encoder),
+            headers: headers
+        )
+        .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // 이미지 게시물의 댓글 수정 (ver.1에서는 기능 사용 안함)
     func updateComment(
         targetUserId: String,
         targetCommentId: String,
@@ -96,7 +159,7 @@ final class CommentService {
             }
         }
     }
-
+    
     func updateCommentList(
         targetPostId: String,
         targetCommentIdList: [String],
@@ -108,9 +171,9 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        var commentIds: [String] = targetCommentIdList
-        var x: [Double] = xList
-        var y: [Double] = yList
+        let commentIds: [String] = targetCommentIdList
+        let x: [Double] = xList
+        let y: [Double] = yList
 
         let parameters: [String: Any] = [
             "commentIds": commentIds,
@@ -169,7 +232,7 @@ final class CommentService {
         postId: String,
         imageId: String,
         page: Int,
-        limit: Int = 20,
+        limit: Int = 10,
         lastCreatedAt: Date? = nil,
         completion: @escaping (Result<([Post.Comment], Post.Pagination), Error>) -> Void
     ) {
@@ -200,6 +263,55 @@ final class CommentService {
 
         AF.request(
             CommentService.baseURL + userId + "/\(postId)/\(imageId)/comments/all",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data, response.pagination)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func fetchTargetTemplateComment(
+        userId: String,
+        postId: String,
+        page: Int,
+        limit: Int = 10,
+        lastCreatedAt: Date? = nil,
+        completion: @escaping (Result<([Post.Comment], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post.Comment]
+            let pagination: Post.Pagination
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var parameters: Parameters {
+            if let lastCreatedAt {
+                return [
+                    "page": page,
+                    "limit": limit,
+                    "lastCreatedAt": Self.iSO8601Formatter.string(from: lastCreatedAt),
+                ]
+            } else {
+                return [
+                    "page": page,
+                    "limit": limit,
+                ]
+            }
+        }
+
+        AF.request(
+            CommentService.baseURL + userId + "/\(postId)/comments/all",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,

@@ -11,7 +11,7 @@ import UIKit
 final class CommentViewModel: ObservableObject {
     var userId: String // 게시물 작성자 id
     var postId: String // 게시물 id
-    var postImageIDList: [Post.Image.ID] // 게시물의 이미지
+    var postImageIDList: [Post.Image.ID] // 게시물의 이미지들
     var templateURL: String? //
     @Published var imagePageNum: Int
     
@@ -23,7 +23,7 @@ final class CommentViewModel: ObservableObject {
             return 1
         }
         
-        return Int(ceil(Double(commentList.count) / 20.0)) + 1
+        return Int(ceil(Double(commentList.count) / 10.0)) + 1
     }
     
     var commentTotalPage: [Post.Image.ID: Int] = [:]
@@ -60,7 +60,24 @@ final class CommentViewModel: ObservableObject {
         self.commentService = .init()
     }
     
-    func loadMoreComments() {
+    func initLoad(isTemplate: Bool = false) {
+        if isTemplate {
+            loadMoreComments(isTemplate: isTemplate)
+            return
+        }
+        
+        for imageId in postImageIDList {
+            fetchTargetImageComment(
+                userId: userId,
+                postId: postId,
+                imageId: imageId,
+                page: 1,
+                lastCreatedAt: nil
+            )
+        }
+    }
+    
+    func loadMoreComments(isTemplate: Bool = false) {
         if let commentTotalPage = commentTotalPage[postImageIDList[imagePageNum]] {
             if page > commentTotalPage {
                 print("[Error] 더 이상 불러올 게시물이 없습니다")
@@ -68,14 +85,23 @@ final class CommentViewModel: ObservableObject {
                 return
             }
         }
-        
-        fetchTargetImageComment(
-            userId: userId,
-            postId: postId,
-            imageId: postImageIDList[imagePageNum],
-            page: page,
-            lastCreatedAt: lastCreatedAt
-        )
+        if !isTemplate {
+            fetchTargetImageComment(
+                userId: userId,
+                postId: postId,
+                imageId: postImageIDList[imagePageNum],
+                page: page,
+                lastCreatedAt: lastCreatedAt
+            )
+        } else {
+            fetchTargetTemplateComment(
+                userId: userId,
+                postId: postId,
+                imageId: postImageIDList[imagePageNum],
+                page: page,
+                lastCreatedAt: lastCreatedAt
+            )
+        }
     }
     
     // 프로필 이미지 캐싱
@@ -120,6 +146,45 @@ final class CommentViewModel: ObservableObject {
             userId: userId,
             postId: postId,
             imageId: imageId,
+            page: page,
+            lastCreatedAt: lastCreatedAt
+        ) { result in
+            switch result {
+            case .success(let success):
+                // 댓글을 단 사용자들의 프로필 이미지 캐싱
+                self.imageCommentUserProfileList[imageId] = (self.imageCommentUserProfileList[imageId] ?? []) + Array(repeating: nil, count: success.0.count)
+                
+                self.fetchProfileImage(
+                    imageId: imageId,
+                    imageUrlList: success.0.map { comment in
+                        comment.user.profileImage
+                    }
+                )
+            
+                self.imageCommentList[imageId] = (self.imageCommentList[imageId] ?? []) + success.0
+                
+                let pageInfo = success.1
+                
+                if self.commentTotalPage[imageId] == nil {
+                    self.commentTotalPage[imageId] = pageInfo.totalPages
+                    self.commentTotalCount[imageId] = pageInfo.totalItems
+                }
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    func fetchTargetTemplateComment(
+        userId: String,
+        postId: String,
+        imageId: String,
+        page: Int,
+        lastCreatedAt: Date?
+    ) {
+        commentService.fetchTargetTemplateComment(
+            userId: userId,
+            postId: postId,
             page: page,
             lastCreatedAt: lastCreatedAt
         ) { result in
