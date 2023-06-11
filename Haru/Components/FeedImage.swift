@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FeedImage: View {
-    var commentVM: CommentViewModel
+//    var commentVM: CommentViewModel
 
     var post: Post
     var imageList: [PostImage?]
@@ -18,6 +18,8 @@ struct FeedImage: View {
     var content: String?
     var isMine: Bool
     @State var postPageNum: Int = 0
+    
+    @Binding var commentModify: Bool
 
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
@@ -48,6 +50,7 @@ struct FeedImage: View {
                     if let uiImage = imageList[idx]?.uiImage {
                         NavigationLink {
                             CommentView(
+                                commentModify: $commentModify,
                                 isTemplate: templateMode,
                                 templateContent: content,
                                 contentColor: contentColor,

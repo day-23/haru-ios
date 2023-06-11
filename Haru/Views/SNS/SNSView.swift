@@ -272,7 +272,7 @@ struct SNSView: View {
                     )
                 } label: {
                     HStack(spacing: 5) {
-                        Image("my-history")
+                        Image("sns-my-history")
                             .resizable()
                             .frame(width: 28, height: 28)
 

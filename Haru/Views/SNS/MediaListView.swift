@@ -21,15 +21,7 @@ struct MediaListView: View {
                             LazyVGrid(columns: columns, spacing: 3) {
                                 ForEach(mediaList.indices, id: \.self) { idx in
                                     NavigationLink {
-                                        CommentView(
-                                            postId: mediaList[idx].id,
-                                            userId: mediaList[idx].user.id,
-                                            postImageList: mediaList[idx].images,
-                                            imageList: postVM.mediaImageList[mediaList[idx].id] ?? [],
-                                            postPageNum: 0,
-                                            hideAllComment: true,
-                                            isMine: mediaList[idx].user.id == Global.shared.user?.id
-                                        )
+                                        Text("피드 리스트로 가게 만들기")
 
                                     } label: {
                                         MediaView(uiImage: postVM.mediaImageList[mediaList[idx].id]?.first??.uiImage)
@@ -62,6 +54,7 @@ struct MediaListView: View {
             }
         }
         .onAppear {
+            print("미디어 뷰 appear")
             postVM.option = postVM.targetId == nil ? .media_all : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media_all : .target_media_hashtag
             postVM.fetchTargetHashTags()
 

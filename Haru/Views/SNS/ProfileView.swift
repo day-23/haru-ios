@@ -282,7 +282,7 @@ struct ProfileView: View {
             } else {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 5) {
-                        Image("my-history")
+                        Image("sns-my-history")
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 28, height: 28)

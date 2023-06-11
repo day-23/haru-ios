@@ -13,6 +13,8 @@ struct FeedListView: View {
 
     var comeToRoot: Bool = false
 
+    @State var commentModify: Bool = false
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 14) {
@@ -22,7 +24,8 @@ struct FeedListView: View {
                         postImageList: postVM.postImageList[post.id] ?? [],
                         postVM: postVM,
                         postOptModalVis: $postOptModalVis,
-                        comeToRoot: comeToRoot
+                        comeToRoot: comeToRoot,
+                        commentModify: $commentModify
                     )
                 }
                 if !postVM.postList.isEmpty &&
@@ -50,6 +53,11 @@ struct FeedListView: View {
 
             if postVM.feedTotalPage == -1 {
                 postVM.loadMorePosts()
+            }
+
+            // TODO: 바꿔야할 가능성 높음
+            if commentModify == true {
+                postVM.reloadPosts()
             }
         }
         .refreshable {

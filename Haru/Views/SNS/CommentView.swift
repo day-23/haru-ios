@@ -11,6 +11,8 @@ struct CommentView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismissAction
     let deviceSize = UIScreen.main.bounds.size
 
+    @Binding var commentModify: Bool
+
     var isTemplate: Bool = false
     var templateContent: String?
     var contentColor: String?
@@ -20,6 +22,8 @@ struct CommentView: View, KeyboardReadable {
     @State var postImageList: [Post.Image]
     var imageList: [PostImage?]
     var commentList: [[Post.Comment]] { // [pageNum][commentIdx]
+        // TODO: 민재형이 서버에서 포스트의 이미지별 댓글 api 나오면 수정해주기
+
         var result = Array(repeating: [Post.Comment](), count: postImageList.count)
         for (idx, image) in postImageList.enumerated() {
             result[idx].append(contentsOf: image.comments.compactMap {
@@ -766,8 +770,11 @@ struct CommentView: View, KeyboardReadable {
                     content = ""
                     x = nil
                     y = nil
-                    postImageList[postPageNum].comments.append(success)
                     isCommentWriting = false
+
+                    // TODO: 게시물 댓글 다시 불러오기
+                    postImageList[postPageNum].comments.append(success)
+                    commentModify = true
                 case .failure(let failure):
                     print("[Debug] \(failure)")
                     print("\(#fileID) \(#function)")
@@ -784,8 +791,10 @@ struct CommentView: View, KeyboardReadable {
                     x = nil
                     y = nil
                     isCommentWriting = false
+
                     // TODO: 게시물 댓글 다시 불러오기
                     postImageList[postPageNum].comments.append(success)
+                    commentModify = true
                 case .failure(let failure):
                     print("[Debug] \(failure)")
                     print("\(#fileID) \(#function)")
@@ -820,6 +829,9 @@ struct CommentView: View, KeyboardReadable {
                 startingYList = [:]
                 draggingList = [:]
                 isCommentEditing = false
+
+                // TODO: 게시물 댓글 다시 불러오기
+                commentModify = true
             case .failure:
                 print("실패!")
             }
