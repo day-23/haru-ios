@@ -56,7 +56,7 @@ private struct TabViewItem: View {
             }
 
             Text(content)
-                .font(.pretendard(size: 10, weight: .bold))
+                .font(.pretendard(size: 12, weight: .bold))
                 .foregroundColor(
                     isSelected
                         ? Color(0x1dafff)
