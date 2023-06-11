@@ -461,6 +461,7 @@ class CalendarHelper {
         }
     }
 
+    // date의 연,월,일에 date2의 시간,분,초로 만듦
     class func makeDate(
         date: Date,
         date2: Date
