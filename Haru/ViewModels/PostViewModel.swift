@@ -547,6 +547,16 @@ final class PostViewModel: ObservableObject {
         }
     }
 
+    func disablePost(targetPostId: String) {
+        guard let index = (postList.firstIndex { post in
+            post.id == targetPostId
+        }) else {
+            return
+        }
+
+        postList[index].disabled = true
+    }
+
     func clear() {
         postList = []
         postImageList = [:]

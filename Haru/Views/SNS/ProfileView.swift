@@ -142,7 +142,9 @@ struct ProfileView: View {
                                     self.postVM.hidePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.reloadPosts()
+                                            self.postVM.disablePost(
+                                                targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                            )
                                             self.postOptModalVis.0 = false
                                         case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
@@ -179,8 +181,12 @@ struct ProfileView: View {
                                     self.postVM.deletePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.reloadPosts()
-                                            self.postOptModalVis.0 = false
+                                            withAnimation {
+                                                self.postVM.disablePost(
+                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                )
+                                                self.postOptModalVis.0 = false
+                                            }
                                         case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
@@ -204,8 +210,12 @@ struct ProfileView: View {
                                     self.postVM.reportPost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.reloadPosts()
-                                            self.postOptModalVis.0 = false
+                                            withAnimation {
+                                                self.postVM.disablePost(
+                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                )
+                                                self.postOptModalVis.0 = false
+                                            }
                                             // TODO: 토스트 메시지로 신고가 접수 되었다고 알리기
                                             print("신고가 잘 접수 되었습니다.")
                                         case let .failure(failure):

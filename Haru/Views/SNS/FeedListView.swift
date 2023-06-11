@@ -19,14 +19,16 @@ struct FeedListView: View {
         ScrollView {
             LazyVStack(spacing: 14) {
                 ForEach(postVM.postList) { post in
-                    FeedView(
-                        post: post,
-                        postImageList: postVM.postImageList[post.id] ?? [],
-                        postVM: postVM,
-                        postOptModalVis: $postOptModalVis,
-                        comeToRoot: comeToRoot,
-                        commentModify: $commentModify
-                    )
+                    if !post.disabled {
+                        FeedView(
+                            post: post,
+                            postImageList: postVM.postImageList[post.id] ?? [],
+                            postVM: postVM,
+                            postOptModalVis: $postOptModalVis,
+                            comeToRoot: comeToRoot,
+                            commentModify: $commentModify
+                        )
+                    }
                 }
                 if !postVM.postList.isEmpty &&
                     postVM.page <= postVM.feedTotalPage &&
