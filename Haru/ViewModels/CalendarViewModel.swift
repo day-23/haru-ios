@@ -972,16 +972,15 @@ final class CalendarViewModel: ObservableObject {
     func repeatEverySecondWeek(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
         var result = [Schedule]()
         
-        guard let repeatValue = schedule.repeatValue else {
+        if schedule.repeatValue == nil {
             print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
             return result
         }
         
-        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        let (_, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
         
         let calendar = Calendar.current
         var dateComponents: DateComponents
-        let day = 60 * 60 * 24
         
         dateComponents = calendar.dateComponents([.year, .month, .day], from: schedule.repeatStart)
         dateComponents.hour = schedule.repeatEnd.hour
@@ -996,7 +995,7 @@ final class CalendarViewModel: ObservableObject {
         var prevRepeatEnd = Date()
         var nextRepeatStart = Date()
         
-        var resultSchedule = schedule
+        let resultSchedule = schedule
         
         while curRepStartDate <= endDate {
             do {
