@@ -32,6 +32,7 @@ struct SNSView: View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading, spacing: 0) {
                 self.HaruHeaderView()
+                    .background(Color(0xfdfdfd))
 
                 if self.isFriendFeed {
                     FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis, comeToRoot: true)

@@ -55,18 +55,17 @@ struct MediaListView: View {
                     }
                 }, header: {
                     HashTagView(postVM: postVM)
-                        .background(.white)
+                        .background(Color(0xfdfdfd))
                 })
             }
         }
         .onAppear {
-            postVM.option = postVM.targetId == nil ? .media : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media : .target_media_hashtag
+            postVM.option = postVM.targetId == nil ? .media_all : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media_all : .target_media_hashtag
             postVM.fetchTargetHashTags()
 
             if postVM.mediaTotalPage[postVM.selectedHashTag.id] == nil {
                 postVM.loadMorePosts()
             }
         }
-        .background(.white)
     }
 }

@@ -31,7 +31,7 @@ struct HaruHeader<
 
     var body: some View {
         ZStack {
-            Color.white
+            Color(0xfdfdfd)
                 .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 0) {

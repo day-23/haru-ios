@@ -42,7 +42,12 @@ struct HashTagView: View {
                             }
 
                             postVM.selectedHashTag = postVM.hashTags[idx]
-                            postVM.option = postVM.targetId == nil ? .media : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media : .target_media_hashtag
+
+                            if postVM.targetId == nil {
+                                postVM.option = postVM.selectedHashTag == Global.shared.hashTagAll ? .media_all : .media_hashtag
+                            } else {
+                                postVM.option = postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media_all : .target_media_hashtag
+                            }
 
                             if postVM.mediaTotalPage[postVM.hashTags[idx].id] == nil {
                                 postVM.loadMorePosts()

@@ -143,7 +143,7 @@ struct CommentView: View, KeyboardReadable {
                                 Button {
                                     hideAllComment = false
                                 } label: {
-                                    Image("comment-disable")
+                                    Image("sns-comment-disable")
                                         .resizable()
                                         .renderingMode(.template)
                                         .foregroundColor(Color(0xCACACA))
