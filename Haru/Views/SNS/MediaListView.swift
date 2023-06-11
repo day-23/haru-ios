@@ -37,12 +37,15 @@ struct MediaListView: View {
                                     .buttonStyle(.plain)
                                 }
 
-                                if !mediaList.isEmpty, postVM.page <= postVM.mediaTotalPage[postVM.selectedHashTag.id] ?? 0 {
+                                if !mediaList.isEmpty,
+                                   postVM.page <= postVM.mediaTotalPage[postVM.selectedHashTag.id] ?? 0,
+                                   postVM.option == .media_all || postVM.option == .media_hashtag
+                                {
                                     HStack {
                                         Spacer()
                                         ProgressView()
                                             .onAppear {
-                                                print("더 불러오기")
+                                                print("더 불러오기1")
                                                 postVM.loadMorePosts()
                                             }
                                         Spacer()
@@ -64,6 +67,7 @@ struct MediaListView: View {
             postVM.fetchTargetHashTags()
 
             if postVM.mediaTotalPage[postVM.selectedHashTag.id] == nil {
+                print("더 불러오기2")
                 postVM.loadMorePosts()
             }
         }

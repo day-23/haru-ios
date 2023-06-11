@@ -187,7 +187,7 @@ final class PostViewModel: ObservableObject {
     }
 
     func refreshPosts() {
-        clear(option: option)
+        clear()
         loadMorePosts()
     }
 
@@ -528,31 +528,10 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    func clear(option: PostOption) {
-        switch option {
-        case .main:
-            postList = []
-            postImageList = [:]
-
-        case .target_feed:
-            postList = []
-            postImageList = [:]
-
-        case .target_media_all:
-            mediaList = [:]
-            mediaImageList = [:]
-
-        case .target_media_hashtag:
-            mediaList = [:]
-            mediaImageList = [:]
-
-        case .media_all:
-            mediaList = [:]
-            mediaImageList = [:]
-
-        case .media_hashtag:
-            mediaList = [:]
-            mediaImageList = [:]
-        }
+    func clear() {
+        postList = []
+        postImageList = [:]
+        mediaList = [:]
+        mediaImageList = [:]
     }
 }

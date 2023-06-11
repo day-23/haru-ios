@@ -25,12 +25,15 @@ struct FeedListView: View {
                         comeToRoot: comeToRoot
                     )
                 }
-                if !postVM.postList.isEmpty, postVM.page <= postVM.feedTotalPage {
+                if !postVM.postList.isEmpty &&
+                    postVM.page <= postVM.feedTotalPage &&
+                    (postVM.option == .target_feed || postVM.option == .main)
+                {
                     HStack {
                         Spacer()
                         ProgressView()
                             .onAppear {
-                                print("더 불러오기")
+                                print("더 불러오기3")
                                 postVM.loadMorePosts()
                             }
                         Spacer()
