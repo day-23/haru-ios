@@ -14,6 +14,8 @@ struct CommentListView: View {
 
     @State private var commentAlert: Bool = false
 
+    var isTemplate: Bool = false
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
@@ -176,7 +178,7 @@ struct CommentListView: View {
         }
         .animation(.none)
         .onAppear {
-            commentVM.loadMoreComments()
+            commentVM.loadMoreComments(isTemplate: isTemplate)
         }
         .navigationBarBackButtonHidden()
         .toolbar {

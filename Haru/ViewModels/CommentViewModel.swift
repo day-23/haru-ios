@@ -60,7 +60,7 @@ final class CommentViewModel: ObservableObject {
         self.commentService = .init()
     }
     
-    func loadMoreComments() {
+    func loadMoreComments(isTemplate: Bool = false) {
         if let commentTotalPage = commentTotalPage[postImageIDList[imagePageNum]] {
             if page > commentTotalPage {
                 print("[Error] 더 이상 불러올 게시물이 없습니다")
@@ -68,14 +68,23 @@ final class CommentViewModel: ObservableObject {
                 return
             }
         }
-        
-        fetchTargetImageComment(
-            userId: userId,
-            postId: postId,
-            imageId: postImageIDList[imagePageNum],
-            page: page,
-            lastCreatedAt: lastCreatedAt
-        )
+        if !isTemplate {
+            fetchTargetImageComment(
+                userId: userId,
+                postId: postId,
+                imageId: postImageIDList[imagePageNum],
+                page: page,
+                lastCreatedAt: lastCreatedAt
+            )
+        } else {
+            fetchTargetTemplateComment(
+                userId: userId,
+                postId: postId,
+                imageId: postImageIDList[imagePageNum],
+                page: page,
+                lastCreatedAt: lastCreatedAt
+            )
+        }
     }
     
     // 프로필 이미지 캐싱
@@ -120,6 +129,45 @@ final class CommentViewModel: ObservableObject {
             userId: userId,
             postId: postId,
             imageId: imageId,
+            page: page,
+            lastCreatedAt: lastCreatedAt
+        ) { result in
+            switch result {
+            case .success(let success):
+                // 댓글을 단 사용자들의 프로필 이미지 캐싱
+                self.imageCommentUserProfileList[imageId] = (self.imageCommentUserProfileList[imageId] ?? []) + Array(repeating: nil, count: success.0.count)
+                
+                self.fetchProfileImage(
+                    imageId: imageId,
+                    imageUrlList: success.0.map { comment in
+                        comment.user.profileImage
+                    }
+                )
+            
+                self.imageCommentList[imageId] = (self.imageCommentList[imageId] ?? []) + success.0
+                
+                let pageInfo = success.1
+                
+                if self.commentTotalPage[imageId] == nil {
+                    self.commentTotalPage[imageId] = pageInfo.totalPages
+                    self.commentTotalCount[imageId] = pageInfo.totalItems
+                }
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
+    
+    func fetchTargetTemplateComment(
+        userId: String,
+        postId: String,
+        imageId: String,
+        page: Int,
+        lastCreatedAt: Date?
+    ) {
+        commentService.fetchTargetTemplateComment(
+            userId: userId,
+            postId: postId,
             page: page,
             lastCreatedAt: lastCreatedAt
         ) { result in

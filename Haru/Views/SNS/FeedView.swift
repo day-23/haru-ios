@@ -141,7 +141,8 @@ struct FeedView: View {
                     if isMine {
                         NavigationLink {
                             CommentListView(
-                                commentVM: commentVM
+                                commentVM: commentVM,
+                                isTemplate: post.isTemplatePost != nil
                             )
                         } label: {
                             Image("slider")

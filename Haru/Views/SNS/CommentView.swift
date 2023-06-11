@@ -70,6 +70,7 @@ struct CommentView: View, KeyboardReadable {
     @State var deleteWriting: Bool = false // 작성한 댓글 삭제하기
 
     @State var cancelEditing: Bool = false
+    @State var confirmEditing: Bool = false
 
     @State var textRect = CGRect()
 
@@ -179,7 +180,8 @@ struct CommentView: View, KeyboardReadable {
                                             },
                                             postId: postId,
                                             imagePageNum: postPageNum
-                                        )
+                                        ),
+                                        isTemplate: isTemplate
                                     )
                                 } label: {
                                     Image("slider")
@@ -370,11 +372,7 @@ struct CommentView: View, KeyboardReadable {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isCommentWriting || isCommentEditing {
                     Button {
-                        if isCommentWriting {
-                            createComment()
-                        } else {
-                            updateComment()
-                        }
+                        confirmEditing = true
                     } label: {
                         Image("confirm")
                             .resizable()
@@ -424,12 +422,23 @@ struct CommentView: View, KeyboardReadable {
                             titleVisibility: .visible)
         {
             Button("편집 취소하기", role: .destructive) {
-                xList = [:]
-                yList = [:]
-                startingXList = [:]
-                startingYList = [:]
-                draggingList = [:]
-                isCommentEditing = false
+                clearEditing()
+            }
+        }
+        .confirmationDialog("수정사항을 저장할까요?",
+                            isPresented: $confirmEditing,
+                            titleVisibility: .visible)
+        {
+            Button("저장 안함", role: .destructive) {
+                clearEditing()
+            }
+
+            Button("저장 하기") {
+                if isCommentWriting {
+                    createComment()
+                } else {
+                    updateComment()
+                }
             }
         }
     }
@@ -480,10 +489,7 @@ struct CommentView: View, KeyboardReadable {
                         } else {
                             cancelWriting = true
                         }
-                    } else {
-                        // TODO: 게시물 작성자가 남의 댓글 삭제할 수 있게
                     }
-
                     overDelete = false
                 }
 
@@ -836,6 +842,15 @@ struct CommentView: View, KeyboardReadable {
                 print("실패!")
             }
         }
+    }
+
+    func clearEditing() {
+        xList = [:]
+        yList = [:]
+        startingXList = [:]
+        startingYList = [:]
+        draggingList = [:]
+        isCommentEditing = false
     }
 }
 
