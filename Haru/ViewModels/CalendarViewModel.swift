@@ -28,6 +28,12 @@ final class CalendarViewModel: ObservableObject {
         }
     } // 진짜 월과의 차이
     
+    @Published var curDate: Date = .init() {
+        didSet {
+            setMonthOffSet(offset: (curDate.year - Date().year) * 12 + curDate.month - Date().month)
+        }
+    }
+    
     @Published var selectionSet: Set<DateValue> = [] // 드래그해서 선택된 날짜(들)
 
     @Published var dateList: [DateValue] = [] // 달력에 표시할 날짜들
@@ -78,6 +84,10 @@ final class CalendarViewModel: ObservableObject {
         dayList = CalendarHelper.getDays(startOnSunday)
         getCategoryList()
         getCurDateList(monthOffest, startOnSunday)
+    }
+    
+    func setMonthOffSet(offset: Int) {
+        monthOffest = offset
     }
     
     func getCurDateList(_ monthOffset: Int, _ startOnSunday: Bool) {
