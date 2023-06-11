@@ -144,6 +144,11 @@ struct CustomCalendar: View {
             curDate = bindingDate
         }
         .onChange(of: curDate) { _ in
+            if bindingDate.year == curDate.year,
+               bindingDate.month == curDate.month
+            {
+                return
+            }
             bindingDate = curDate
         }
         .onChange(of: monthOffSet) { _ in
