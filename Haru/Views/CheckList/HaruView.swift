@@ -17,6 +17,8 @@ struct HaruView: View {
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
 
+    @FocusState private var isTextFieldFocused: Bool
+
     let formatter: DateFormatter = {
         let formatter: DateFormatter = .init()
         formatter.dateFormat = "MMMM d\(Locale.current.language.languageCode?.identifier == "ko" ? "일" : "") EEEE"
@@ -152,6 +154,7 @@ struct HaruView: View {
                         .onSubmit {
                             self.addViewModel.addSimpleTodo()
                         }
+                        .focused(self.$isTextFieldFocused)
 
                     Button {
                         withAnimation {
@@ -187,8 +190,11 @@ struct HaruView: View {
 
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink {
-                    // TODO: 검색 뷰 만들어지면 넣어주기
-                    Text("검색")
+                    ProductivitySearchView(
+                        calendarVM: CalendarViewModel(),
+                        todoAddViewModel: self.addViewModel,
+                        checkListVM: self.viewModel
+                    )
                 } label: {
                     Image("search")
                         .renderingMode(.template)
@@ -214,6 +220,14 @@ struct HaruView: View {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 }
         )
+        .onChange(of: self.isTextFieldFocused) { _ in
+            if self.isModalVisible {
+                return
+            }
+            if !self.isTextFieldFocused {
+                self.addViewModel.content = ""
+            }
+        }
     }
 
     func changeOffset(_ value: CGPoint?) {

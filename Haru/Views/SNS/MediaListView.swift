@@ -21,7 +21,7 @@ struct MediaListView: View {
                             LazyVGrid(columns: columns, spacing: 3) {
                                 ForEach(mediaList.indices, id: \.self) { idx in
                                     NavigationLink {
-                                        Text("피드 리스트로 가게 만들기")
+                                        Text("피드 리스트")
 
                                     } label: {
                                         MediaView(uiImage: postVM.mediaImageList[mediaList[idx].id]?.first??.uiImage)

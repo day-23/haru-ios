@@ -522,22 +522,14 @@ final class TodoAddViewModel: ObservableObject {
             return
         }
 
-        withAnimation {
-            Global.shared.isLoading = true
-        }
         todoState.updateTodo(
             todoId: todo.id,
             todo: createTodoData()
         ) { result in
             switch result {
             case let .success(response):
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    withAnimation {
-                        Global.shared.isLoading = false
-                        self.updateAction(todo.id)
-                        completion(.success(response))
-                    }
-                }
+                self.updateAction(todo.id)
+                completion(.success(response))
             case let .failure(error):
                 completion(.failure(error))
             }

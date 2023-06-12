@@ -489,10 +489,12 @@ struct ScheduleFormView: View {
         
         let deleteButton: ActionSheet.Button = .default(Text("이 일정만 삭제")) {
             scheduleFormVM.deleteTargetSchedule()
+            dismissAction.callAsFunction()
         }
         
         let deleteAfterButton: ActionSheet.Button = .destructive(Text("이 일정부터 삭제")) {
             scheduleFormVM.deleteTargetSchedule(isAfter: true)
+            dismissAction.callAsFunction()
         }
         
         let deleteAllButton: ActionSheet.Button = .destructive(

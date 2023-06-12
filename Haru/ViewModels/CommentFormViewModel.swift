@@ -23,7 +23,7 @@ final class CommentFormViewModel: ObservableObject {
 
         commentService.createComment(targetPostId: targetPostId, targetPostImageId: targetPostImageId, comment: comment) { result in
             switch result {
-            case .success(let success):
+            case .success:
                 completion()
             case .failure(let failure):
                 print("[Debug] \(failure)")

@@ -15,6 +15,7 @@ struct CalendarDateView: View {
     @State private var isDayModalVisible: Bool = false
 
     @State private var isOptionModalVisible: Bool = false
+    @State private var isDatePickerVisible: Bool = false
 
     @State var showAddButton: Bool = true
     @State var showSchButton: Bool = false
@@ -40,18 +41,24 @@ struct CalendarDateView: View {
                                 Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[1])월")
                                     .font(.pretendard(size: 28, weight: .bold))
                                 
-                                Image("header-date-picker")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .foregroundColor(Color(0x191919))
-                                    .frame(width: 28, height: 28)
+                                Button {
+                                    withAnimation {
+                                        self.isDatePickerVisible.toggle()
+                                    }
+                                } label: {
+                                    Image("header-date-picker")
+                                        .resizable()
+                                        .renderingMode(.template)
+                                        .foregroundColor(Color(0x191919))
+                                        .frame(width: 28, height: 28)
+                                        .rotationEffect(Angle(degrees: self.isDatePickerVisible ? 0 : -90))
+                                }
                             } // HStack
                             
                             Spacer()
                             
                             HStack(spacing: 10) {
                                 NavigationLink {
-                                    // TODO: 검색 뷰 만들어지면 넣어주기
                                     ProductivitySearchView(
                                         calendarVM: self.calendarVM,
                                         todoAddViewModel: self.addViewModel,
@@ -139,6 +146,7 @@ struct CalendarDateView: View {
                                         CalendarWeekView(
                                             calendarVM: self.calendarVM,
                                             isDayModalVisible: self.$isDayModalVisible,
+                                            isDatePickerVisible: self.$isDatePickerVisible,
                                             cellHeight: proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks),
                                             cellWidth: proxy.size.width / 7
                                         )
@@ -160,7 +168,12 @@ struct CalendarDateView: View {
                 .onTapGesture {
                     withAnimation {
                         self.hideAddMenu()
+                        self.isDatePickerVisible = false
                     }
+                }
+                
+                if self.isDatePickerVisible {
+                    CustomCalendar(bindingDate: self.$calendarVM.curDate)
                 }
                 
                 // 추가 버튼
@@ -347,9 +360,3 @@ struct CalendarDateView: View {
         self.showAddButton = true
     }
 }
-
-// struct CalendarDateView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CalendarDateView(calendarVM: CalendarViewModel())
-//    }
-// }

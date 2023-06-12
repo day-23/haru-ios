@@ -32,24 +32,29 @@ struct AccountView: View {
                         .foregroundColor(Color(0x191919))
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Text(global.user?.email ?? "unknown@haru.com")
+                    Text(self.global.user?.email ?? "unknown@haru.com")
                         .font(.pretendard(size: 16, weight: .bold))
                         .foregroundColor(Color(0x191919))
                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Spacer()
                 }
+                .padding(.top, 20)
                 .padding(.leading, 29)
             }
-            .frame(height: 76)
+            .frame(height: 96)
             .padding(.bottom, 54)
 
             VStack(spacing: 14) {
-                AccountRow(content: "프로필", value: global.user?.user.name ?? "이름 없음") {
-                    // TODO: 프로필 View
+                AccountRow(content: "프로필", value: global.user?.user.name ?? "알 수 없음") {
+                    ProfileFormView(
+                        userProfileVM: userProfileVM,
+                        name: global.user?.user.name ?? "알 수 없음",
+                        introduction: global.user?.user.introduction ?? "알 수 없음"
+                    )
                 }
 
-                AccountRow(content: "하루 아이디", value: global.user?.haruId ?? "하루 아이디", isLink: false) {
-                    // TODO: 하루 아이디 변경 View?
-                }
+                AccountRow(content: "하루 아이디", value: global.user?.haruId ?? "하루 아이디", isLink: false) {}
             }
             .padding(.horizontal, 20)
 

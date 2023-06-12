@@ -98,5 +98,8 @@ struct CustomDatePicker: View {
                     }
             }
         }
+        .onAppear {
+            selection = selection.floorToNearestFiveMinutes()
+        }
     }
 }

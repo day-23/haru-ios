@@ -38,7 +38,7 @@ struct TodoAddView: View {
                             } label: {
                                 Image("todo-cancel")
                                     .renderingMode(.template)
-                                    .foregroundColor(Color(0x646464))
+                                    .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x646464))
                             }
 
                             Spacer()
@@ -60,7 +60,7 @@ struct TodoAddView: View {
                             } label: {
                                 Image("confirm")
                                     .renderingMode(.template)
-                                    .foregroundColor(self.viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x646464))
+                                    .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x646464))
                             }
                             .disabled(self.viewModel.isFieldEmpty || !self.isConfirmButtonActive)
                         }
@@ -90,7 +90,10 @@ struct TodoAddView: View {
 
                         ForEach(viewModel.subTodoList) { subTodo in
                             HStack {
-                                Image("dot")
+                                Image("todo-dot")
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0x191919))
+
                                 TextField("", text: .init(get: {
                                     subTodo.content
                                 }, set: {
@@ -493,9 +496,9 @@ struct TodoAddView: View {
                             } label: {
                                 Image("confirm")
                                     .renderingMode(.template)
-                                    .foregroundColor(self.viewModel.isPreviousStateEqual || self.viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x191919))
+                                    .foregroundColor(Color(0x191919))
                             }
-                            .disabled(self.viewModel.isPreviousStateEqual || self.viewModel.isFieldEmpty)
+                            .disabled(self.viewModel.isFieldEmpty)
                             .confirmationDialog(
                                 self.viewModel.todo?.repeatOption != nil
                                     ? "수정사항을 저장할까요? 반복되는 할 일 입니다."

@@ -55,13 +55,10 @@ struct SettingView: View {
                 Divider()
                     .padding(.horizontal, 20)
 
-                HStack(spacing: 0) {
-                    NavigationLink {} label: {
-                        Text("Version")
-                            .font(.pretendard(size: 14, weight: .regular))
-                            .foregroundColor(Color(0x646464))
-                    }
-                }.padding(.leading, 34)
+                Text("Version")
+                    .font(.pretendard(size: 14, weight: .regular))
+                    .foregroundColor(Color(0x646464))
+                    .padding(.leading, 34)
 
                 Divider()
                     .padding(.horizontal, 20)

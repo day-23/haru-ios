@@ -9,9 +9,10 @@ import SwiftUI
 
 struct StarButton: View {
     var isClicked: Bool
+    var completed: Bool = false
 
     var body: some View {
-        Image(self.isClicked ? "todo-star-fill" : "todo-star")
+        Image(self.isClicked ? "todo-star-fill\(completed ? "-transparent" : "")" : "todo-star\(completed ? "-transparent" : "")")
             .zIndex(1)
             .frame(width: 28, height: 28)
     }

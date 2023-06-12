@@ -79,7 +79,6 @@ struct CheckListView: View {
                 } label: {
                     HaruLinkView()
                 }
-                .padding(.bottom, 12)
 
                 // 체크 리스트
                 if !self.viewModel.isEmpty {
@@ -313,7 +312,7 @@ struct CheckListView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .background(.white)
+            .background(Color(0xfdfdfd))
 
             if self.isModalVisible {
                 Color.black.opacity(0.4)
@@ -402,6 +401,9 @@ struct CheckListView: View {
         .onChange(of: self.isTextFieldFocused, perform: { value in
             if self.isModalVisible {
                 return
+            }
+            if !self.isTextFieldFocused {
+                self.addViewModel.content = ""
             }
 
             withAnimation {

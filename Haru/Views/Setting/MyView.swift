@@ -51,6 +51,9 @@ struct MyView: View {
 
     var body: some View {
         ZStack {
+            Color(0xfdfdfd)
+                .edgesIgnoringSafeArea(.all)
+
             VStack(spacing: 0) {
                 HaruHeader {
                     NavigationLink {
@@ -121,28 +124,31 @@ struct MyView: View {
                             }
 
                             HStack(spacing: 0) {
+                                Spacer()
                                 VStack(spacing: 4) {
                                     Text("\(self.completed)")
                                         .font(.pretendard(size: 20, weight: .bold))
                                         .foregroundColor(Color(0x1dafff))
                                         .animation(.none)
                                     Text("완료한 일")
-                                        .font(.pretendard(size: 14, weight: .regular))
+                                        .font(.pretendard(size: 16, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }
-                                Spacer()
+                                .frame(width: 78, alignment: .center)
+                                Spacer(minLength: 96)
                                 VStack(spacing: 4) {
                                     Text("\(self.totalItems)")
                                         .font(.pretendard(size: 20, weight: .bold))
                                         .foregroundColor(Color(0x191919))
                                         .animation(.none)
                                     Text("할 일")
-                                        .font(.pretendard(size: 14, weight: .regular))
+                                        .font(.pretendard(size: 16, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }
+                                .frame(width: 78, alignment: .center)
+                                Spacer()
                             }
-                            .padding(.leading, 74)
-                            .padding(.trailing, 81)
+                            .padding(.trailing, 10)
 
                             CircularProgressView(
                                 progress: self.completionRate

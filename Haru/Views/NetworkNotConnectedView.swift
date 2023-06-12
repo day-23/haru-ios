@@ -18,7 +18,7 @@ struct NetworkNotConnectedView: View {
 
             Text("인터넷 연결을 확인해주세요.")
                 .font(.pretendard(size: 16, weight: .bold))
-                .foregroundColor(Color(0x1DAFFF))
+                .foregroundColor(Color(0x191919))
                 .padding(.vertical, 10)
                 .padding(.horizontal, 16)
                 .background(Color(0xFDFDFD, opacity: 0.5))

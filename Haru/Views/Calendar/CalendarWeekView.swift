@@ -11,6 +11,7 @@ struct CalendarWeekView: View {
     @StateObject var calendarVM: CalendarViewModel
 
     @Binding var isDayModalVisible: Bool
+    @Binding var isDatePickerVisible: Bool
 
     var cellHeight: CGFloat
     var cellWidth: CGFloat
@@ -28,7 +29,9 @@ struct CalendarWeekView: View {
                                         calendarVM.pivotDate = calendarVM.dateList[week * 7 + day].date
                                         calendarVM.getSelectedScheduleList()
                                         withAnimation {
-                                            isDayModalVisible = true
+                                            if !isDatePickerVisible {
+                                                isDayModalVisible = true
+                                            }
                                             Global.shared.isFaded = true
                                         }
                                     }

@@ -54,18 +54,27 @@ class CalendarHelper {
         return date.components(separatedBy: " ")
     }
 
+    class func extraDate(date: Date) -> [String] {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY M"
+
+        return formatter.string(from: date).components(separatedBy: " ")
+    }
+
     /**
      * 달력에 날짜를 표시해주기 위한 함수
      * ex) [1,2,3,...31] 요소의 데이터 타입은 DateValue
      */
-    class func extractDate(_ monthOffset: Int,
-                           _ startOnSunday: Bool) -> [DateValue]
-    {
+    class func extractDate(
+        _ monthOffset: Int,
+        _ startOnSunday: Bool,
+        curDate: Date? = nil
+    ) -> [DateValue] {
         let calendar = Calendar
             .current // 현재 사용하고 있는 달력이 무엇인지 확인 (default: 그레고리)
 
         // Getting Current Month Date ...
-        let currentMonth: Date = getCurrentMonth(monthOffset)
+        let currentMonth: Date = curDate == nil ? getCurrentMonth(monthOffset) : curDate!
 
         var days: [DateValue] = currentMonth.getAllDates()
             .compactMap { date -> DateValue in
@@ -161,6 +170,12 @@ class CalendarHelper {
 
     class func numberOfWeeksInMonth(_ count: Int) -> Int {
         Int(ceil(Double(count) / 7))
+    }
+
+    class func numberOfWeeksInMonth(date: Date) -> Int {
+        var localCalendar = Calendar.current
+        localCalendar.firstWeekday = 1
+        return localCalendar.range(of: .weekOfMonth, in: .month, for: date)?.count ?? 0
     }
 
     class func isSameDay(date1: Date, date2: Date) -> Bool {
@@ -461,6 +476,7 @@ class CalendarHelper {
         }
     }
 
+    // date의 연,월,일에 date2의 시간,분,초로 만듦
     class func makeDate(
         date: Date,
         date2: Date
@@ -489,5 +505,17 @@ class CalendarHelper {
         } else {
             return Date()
         }
+    }
+
+    class func addOneMonth(date: Date) -> Date {
+        calendar.date(byAdding: .month, value: 1, to: date) ?? Date()
+    }
+
+    class func subOneMonth(date: Date) -> Date {
+        calendar.date(byAdding: .month, value: -1, to: date) ?? Date()
+    }
+
+    class func addOneYear(date: Date) -> Date {
+        calendar.date(byAdding: .year, value: 1, to: date) ?? Date()
     }
 }

@@ -11,14 +11,17 @@ struct TermsOfUseView: View {
     @Environment(\.dismiss) var dismissAction
 
     var body: some View {
-        VStack(spacing: 19) {
+        VStack(spacing: 0) {
             SettingHeader(header: "이용 약관") {
                 dismissAction.callAsFunction()
             }
+            .padding(.bottom, 19)
 
             Divider()
 
             ScrollView {
+                Spacer(minLength: 19)
+
                 Text(#"""
                 제1조 목적
                 본 약관은 하루 애플리케이션(이하 ‘하루’)가 스마트 기기를 통해 제공하는 모든 애플리케이션, 기타 제반 서비스(이하 ‘서비스’)를 이용하는 사용자(이하 ‘이용자’)와 회사 간에 서비스의 이용에 관한 권리, 의무 및 책임 사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
