@@ -76,7 +76,7 @@ struct WithdrawalView: View {
 
                             Spacer()
                         }
-                        .padding(.top, 19)
+                        .padding(.top, 20)
                         .padding(.leading, 29)
                     }
                     .frame(height: 96)

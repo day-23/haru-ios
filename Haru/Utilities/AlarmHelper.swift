@@ -86,7 +86,7 @@ final class AlarmHelper {
                 return
             }
 
-            print("[Debug] \"\(body)\" \(date) 등록 완료 id: \(identifier)-\(date)")
+//            print("[Debug] \"\(body)\" \(date) 등록 완료 id: \(identifier)-\(date)")
         }
     }
 
