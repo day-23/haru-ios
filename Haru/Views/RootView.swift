@@ -12,14 +12,17 @@ struct RootView: View {
     @EnvironmentObject var global: Global
     @StateObject private var todoState: TodoState = .init()
     @State private var showSplash: Bool = true
+    @State private var showNetworkErrorMessage: Bool = false
 
     @State private var selection: Tab = .sns
 
     var body: some View {
         ZStack {
-            // MARK: - Splash View
-            
-            if global.isNetworkConnected {
+            if !global.isNetworkConnected, showSplash {
+                // 앱 실행시 네트워크가 연결되어 있지 않을 때
+                NetworkNotConnectedView()
+            } else {
+                // Splash 화면, 자동 로그인 시도
                 if showSplash {
                     SplashView(
                         isLoggedIn: $global.isLoggedIn
@@ -32,21 +35,30 @@ struct RootView: View {
                         }
                     }
                 } else {
+                    // Splash 이후
+                    
+                    // 정지된 계정
                     if let me = global.user,
                        me.isMaliciousUser
                     {
-                        Image("background-main")
+                        Image("background-main-splash")
                             .edgesIgnoringSafeArea(.all)
                             .overlay {
-                                Text("정지된 아이디입니다.")
-                                    .font(.pretendard(size: 20, weight: .bold))
-                                    .foregroundColor(Color(0xfdfdfd))
+                                Text("이용 제한된 계정입니다.")
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(Color(0x1DAFFF))
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 16)
+                                    .background(Color(0xFDFDFD, opacity: 0.5))
+                                    .cornerRadius(10)
+                                    .offset(y: UIScreen.main.bounds.height * 0.3)
                             }
                     } else if let me = global.user,
                               global.isLoggedIn,
                               !me.user.name.isEmpty,
                               !me.haruId.isEmpty
                     {
+                        // 로그인 성공
                         NavigationView {
                             ZStack {
                                 VStack(spacing: 0) {
@@ -158,16 +170,39 @@ struct RootView: View {
                               me.user.name.isEmpty,
                               me.haruId.isEmpty
                     {
-                        // 회원 가입
+                        // 첫 로그인으로 회원 가입
                         SignUpView()
                     } else {
+                        // 로그인 실패로 인한 로그인 화면
                         LoginView(
                             isLoggedIn: $global.isLoggedIn
                         )
                     }
+                    
+                    // 앱 실행 도중 네트워크 연결이 끊겼을 때
+                    if showNetworkErrorMessage {
+                        Text("인터넷 연결을 확인해주세요.")
+                            .font(.pretendard(size: 16, weight: .bold))
+                            .foregroundColor(Color(0x191919))
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 16)
+                            .background(Color(0xDBDBDB, opacity: 0.5))
+                            .cornerRadius(10)
+                            .offset(y: UIScreen.main.bounds.height * 0.3)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    withAnimation {
+                                        showNetworkErrorMessage = false
+                                    }
+                                }
+                            }
+                    }
                 }
-            } else {
-                NetworkNotConnectedView()
+            }
+        }
+        .onChange(of: global.isNetworkConnected) { value in
+            withAnimation {
+                showNetworkErrorMessage = !value
             }
         }
     }

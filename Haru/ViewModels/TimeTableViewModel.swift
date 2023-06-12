@@ -306,7 +306,7 @@ final class TimeTableViewModel: ObservableObject {
                       schedule.repeatStart > first || schedule.repeatEnd > first
                 {
                     schedules.append(
-                        ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1, at: at)
+                        ScheduleCell(id: "\(schedule.id)-\(schedule.repeatStart)", data: schedule, weight: 1, order: 1, at: at)
                     )
 
                     guard var start = schedule.repeatStart.indexOfWeek(),
@@ -354,25 +354,34 @@ final class TimeTableViewModel: ObservableObject {
                     }
                 }
             } else {
+                var components = Calendar.current.dateComponents([.year, .month, .day], from: schedule.repeatStart)
+                components.hour = repeatEnd.hour
+                components.minute = repeatEnd.minute
+
+                guard let newer = Calendar.current.date(from: components) else {
+                    return []
+                }
+
+                schedule.repeatEnd = newer
                 while schedule.repeatStart < first {
                     at = .middle
                     schedule.repeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                    schedule.repeatEnd = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
                 }
 
                 while schedule.repeatStart <= last,
-                      schedule.repeatStart <= schedule.repeatEnd
+                      schedule.repeatStart <= repeatEnd
                 {
-                    schedule.repeatEnd = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
-
                     schedules.append(
-                        ScheduleCell(id: schedule.id, data: schedule, weight: 1, order: 1, at: at)
+                        ScheduleCell(id: "\(schedule.id)-\(schedule.repeatStart)", data: schedule, weight: 1, order: 1, at: at)
                     )
 
                     at = .middle
                     schedule.repeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                    schedule.repeatEnd = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
                     let nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
                     if schedule.repeatStart.isEqual(other: repeatEnd)
-                        || schedule.repeatEnd > nextRepeatStart
+                        || repeatEnd > nextRepeatStart
                     {
                         at = .back
                     }

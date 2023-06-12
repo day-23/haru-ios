@@ -313,7 +313,7 @@ struct CheckListView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .background(.white)
+            .background(Color(0xfdfdfd))
 
             if self.isModalVisible {
                 Color.black.opacity(0.4)

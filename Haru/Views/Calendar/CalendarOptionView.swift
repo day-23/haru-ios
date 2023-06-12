@@ -111,7 +111,7 @@ struct CalendarOptionView: View {
                             .frame(width: 28, height: 28)
                             .padding(.trailing, 6)
                         
-                        Text("할일")
+                        Text("할 일")
                             .font(.pretendard(size: 16, weight: .bold))
                         Spacer()
                     }
@@ -152,10 +152,7 @@ struct CalendarOptionView: View {
                         HStack(spacing: 14) {
                             HStack(spacing: 0) {
                                 if calendarVM.compTodoOff || calendarVM.allTodoOff {
-                                    Color.gray2.mask {
-                                        Image("calendar-todo-option")
-                                    }
-                                    .frame(width: 28, height: 28)
+                                    Image("todo-circle-fill-gray")
                                 } else {
                                     Image("calendar-todo-option")
                                 }
