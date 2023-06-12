@@ -276,6 +276,4 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
-
-    func refreshFriendList() {}
 }

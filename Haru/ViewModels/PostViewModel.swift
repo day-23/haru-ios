@@ -317,8 +317,6 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        print("[Debug] 특정 사용자 게시물 불러오기 사용자 ID: \(targetId)")
-        print("\(#fileID) \(#function)")
         postService.fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
