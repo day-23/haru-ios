@@ -11,7 +11,7 @@ struct ListSectionView<Content>: View where Content: View {
     var checkListViewModel: CheckListViewModel
     var todoAddViewModel: TodoAddViewModel
     @Binding var todoList: [Todo]
-    var itemBackgroundColor: Color = .white
+    var itemBackgroundColor: Color = .init(0xfdfdfd)
     var emptyTextContent: String = "모든 할 일을 마쳤습니다!"
     let orderAction: () -> Void
     @ViewBuilder let header: () -> Content

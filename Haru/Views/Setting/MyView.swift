@@ -51,6 +51,9 @@ struct MyView: View {
 
     var body: some View {
         ZStack {
+            Color(0xfdfdfd)
+                .edgesIgnoringSafeArea(.all)
+
             VStack(spacing: 0) {
                 HaruHeader {
                     NavigationLink {
