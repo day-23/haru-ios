@@ -144,7 +144,7 @@ struct SignUpView: View {
                         } else if isLongNickname {
                             Text("닉네임이 8글자를 초과했습니다.")
                         } else if isBadNickname {
-                            Text("부적절한 이름입니다.")
+                            Text("사용이 불가능한 이름입니다.")
                         }
                     }
                     .font(.pretendard(size: 12, weight: .regular))
