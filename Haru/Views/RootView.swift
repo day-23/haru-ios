@@ -18,20 +18,20 @@ struct RootView: View {
     var body: some View {
         ZStack {
             // MARK: - Splash View
-
-            if showSplash {
-                SplashView(
-                    isLoggedIn: $global.isLoggedIn
-                )
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        withAnimation {
-                            showSplash = false
+            
+            if global.isNetworkConnected {
+                if showSplash {
+                    SplashView(
+                        isLoggedIn: $global.isLoggedIn
+                    )
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            withAnimation {
+                                showSplash = false
+                            }
                         }
                     }
-                }
-            } else {
-                if global.isNetworkConnected {
+                } else {
                     if let me = global.user,
                        me.isMaliciousUser
                     {
@@ -165,9 +165,9 @@ struct RootView: View {
                             isLoggedIn: $global.isLoggedIn
                         )
                     }
-                } else {
-                    NetworkNotConnectedView()
                 }
+            } else {
+                NetworkNotConnectedView()
             }
         }
     }

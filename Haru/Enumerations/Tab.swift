@@ -20,7 +20,7 @@ enum Tab: Int, CaseIterable {
         switch self {
         case .sns: return "기록"
         case .calendar: return "일정"
-        case .todo: return "할일"
+        case .todo: return "할 일"
         case .timetable: return "주간"
         case .my: return "마이"
         }
