@@ -18,7 +18,7 @@ struct ProfileImgView: View {
                 image
                     .resizable()
             } placeholder: {
-                Image("wifi-error")
+                Image("sns-default-profile-image-rectangle")
                     .resizable()
             }
             .clipShape(Circle())
@@ -29,7 +29,7 @@ struct ProfileImgView: View {
                     .resizable()
                     .clipShape(Circle())
             } else {
-                Image("background-main-splash")
+                Image("sns-default-profile-image-rectangle")
                     .resizable()
                     .clipShape(Circle())
             }

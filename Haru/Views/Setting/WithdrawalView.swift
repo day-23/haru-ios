@@ -37,13 +37,13 @@ struct WithdrawalView: View {
                                 image
                                     .resizable()
                             } placeholder: {
-                                Image("background-main")
+                                Image("sns-default-profile-image-rectangle")
                                     .resizable()
                             }
                             .clipShape(Circle())
                             .frame(width: 62, height: 62)
                         } else {
-                            Image("background-main")
+                            Image("sns-default-profile-image-rectangle")
                                 .resizable()
                                 .clipShape(Circle())
                                 .frame(width: 62, height: 62)

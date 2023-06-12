@@ -271,7 +271,7 @@ struct CommentView: View, KeyboardReadable {
                                 ProfileImgView(imageUrl: URL(string: profileImage))
                                     .frame(width: 62, height: 62)
                             } else {
-                                Image("background-main-splash")
+                                Image("sns-default-profile-image-rectangle")
                                     .resizable()
                                     .clipShape(Circle())
                                     .frame(width: 62, height: 62)
