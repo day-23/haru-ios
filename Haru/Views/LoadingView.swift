@@ -10,12 +10,14 @@ import SwiftUI
 final class WaterTimer: ObservableObject {
     @Published var index: Int
 
+    let end: Int = 9
+
     init(index: Int = 0) {
         self.index = index
 
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
             self.index += 1
-            self.index %= 8
+            self.index %= self.end
         }
     }
 }
@@ -39,7 +41,7 @@ struct LoadingView: View {
                         Image("loading-water-drop")
                             .offset(y: isDrop ? 200 : 0)
                             .animation(.spring(), value: isDrop)
-                            .opacity(waterTimer.index == 7 ? 1 : 0)
+                            .opacity(waterTimer.index == waterTimer.end - 1 ? 1 : 0)
 
                         Spacer()
                     }
@@ -60,7 +62,7 @@ struct LoadingView: View {
             Spacer()
         }
         .onChange(of: waterTimer.index) {
-            if $0 == 7 {
+            if $0 == waterTimer.end - 1 {
                 isDrop = true
             } else {
                 isDrop = false
