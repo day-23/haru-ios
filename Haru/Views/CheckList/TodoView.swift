@@ -63,7 +63,7 @@ struct TodoView: View {
 
     let formatterWithTime: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
+        formatter.dateFormat = "H:m"
         return formatter
     }()
 

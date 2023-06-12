@@ -150,7 +150,7 @@ public extension Date {
         let localized = formatter.date(from: localizedString)
         return localized
     }
-
+    
     internal func relative() -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
@@ -160,7 +160,6 @@ public extension Date {
         if diff < 60 {
             return "방금 전"
         }
-        
         return formatter.localizedString(for: self, relativeTo: Date.now)
     }
     
@@ -178,5 +177,22 @@ public extension Date {
         
         let roundedDate = calendar.date(bySetting: .minute, value: roundedMinutes, of: self) ?? Date()
         return roundedDate
+    }
+    
+    internal func floorToNearestFiveMinutes() -> Date {
+        var components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: self)
+        
+        guard let minute = components.minute else {
+            components.minute = 0
+            guard let date = Calendar.current.date(from: components) else {
+                return .now
+            }
+            return date
+        }
+        components.minute = minute / 5 * 5
+        guard let date = Calendar.current.date(from: components) else {
+            return .now
+        }
+        return date
     }
 }
