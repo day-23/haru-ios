@@ -120,7 +120,6 @@ struct HaruApp: App {
                     VStack {
                         if global.isLoading {
                             LoadingView()
-                                .offset(y: UIScreen.main.bounds.height * 0.3)
                                 .zIndex(2)
                         }
                     }
