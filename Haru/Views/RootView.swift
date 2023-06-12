@@ -35,12 +35,17 @@ struct RootView: View {
                     if let me = global.user,
                        me.isMaliciousUser
                     {
-                        Image("background-main")
+                        Image("background-main-splash")
                             .edgesIgnoringSafeArea(.all)
                             .overlay {
-                                Text("정지된 아이디입니다.")
-                                    .font(.pretendard(size: 20, weight: .bold))
-                                    .foregroundColor(Color(0xfdfdfd))
+                                Text("이용 제한된 계정입니다.")
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(Color(0x1DAFFF))
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 16)
+                                    .background(Color(0xFDFDFD, opacity: 0.5))
+                                    .cornerRadius(10)
+                                    .offset(y: UIScreen.main.bounds.height * 0.3)
                             }
                     } else if let me = global.user,
                               global.isLoggedIn,
