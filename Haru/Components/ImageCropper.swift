@@ -9,7 +9,7 @@ import Mantis
 import SwiftUI
 
 struct ImageCropper: UIViewControllerRepresentable {
-    @Binding var image: UIImage
+    @Binding var image: UIImage?
     @Binding var cropShapeType: Mantis.CropShapeType
     @Binding var presetFixedRatioType: Mantis.PresetFixedRatioType
     
@@ -48,7 +48,7 @@ extension ImageCropper {
         var config = Mantis.Config()
         config.cropViewConfig.showAttachedRotationControlView = false
         config.presetFixedRatioType = presetFixedRatioType
-        let cropViewController = Mantis.cropViewController(image: image, config: config)
+        let cropViewController = Mantis.cropViewController(image: image!, config: config)
         cropViewController.delegate = context.coordinator
 
         return cropViewController

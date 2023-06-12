@@ -12,8 +12,8 @@ final class PostFormViewModel: ObservableObject {
     var postOption: PostAddMode
 
     @Published var content: String = ""
-    @Published var imageList: [UIImage] = []
-    @Published var oriImageList: [UIImage] = []
+    @Published var imageList: [UIImage] = [] // 크롭된 이미지 리스트 (서버로 전송될 데이터)
+    var oriImageList: [UIImage] = [] // 원본 이미지 리스트
 
     @Published var tag: String = ""
     @Published var tagList: [Tag] = []

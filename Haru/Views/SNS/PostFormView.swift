@@ -29,6 +29,7 @@ struct PostFormView: View {
 
     @State var selectedImageNum: Int = 0
 
+    @State private var croppedImage: UIImage?
     @State private var showingCropper = false
     @State private var showingCropShapeList = false
     @State private var cropShapeType: Mantis.CropShapeType = .rect
@@ -74,6 +75,7 @@ struct PostFormView: View {
                     .padding(.top, 24)
 
                     Button("크롭 설정하기") {
+                        croppedImage = postFormVM.oriImageList[selectedImageNum]
                         presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
                         showingCropper = true
                     }.font(.title)
@@ -85,11 +87,15 @@ struct PostFormView: View {
             hideKeyboard()
         }
         .fullScreenCover(isPresented: $showingCropper, content: {
-            ImageCropper(image: $postFormVM.imageList[selectedImageNum],
+            ImageCropper(image: $croppedImage,
                          cropShapeType: $cropShapeType,
                          presetFixedRatioType: $presetFixedRatioType)
                 .onDisappear(perform: reset)
                 .ignoresSafeArea()
+        })
+        .onChange(of: croppedImage, perform: { _ in
+            guard let image = croppedImage else { return }
+            postFormVM.imageList[selectedImageNum] = image
         })
         .popupImagePicker(
             show: $openPhoto,
@@ -102,6 +108,7 @@ struct PostFormView: View {
             let manager = PHCachingImageManager.default()
             let options = PHImageRequestOptions()
             var result: [UIImage] = []
+            var oriResult: [UIImage] = []
             options.isSynchronous = true
             DispatchQueue.global(qos: .userInteractive).async {
                 assets.forEach { asset in
@@ -110,7 +117,7 @@ struct PostFormView: View {
 
                         // 보이는 화면과 이미지의 비율 계산
                         let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
-                                                 image.size.height / UIScreen.main.bounds.height)
+                                                 image.size.height / UIScreen.main.bounds.width)
 
                         let cropZone = CGRect(x: 0,
                                               y: 0,
@@ -126,14 +133,14 @@ struct PostFormView: View {
                         // 최종 uiimage 저장
                         let data = UIImage(cgImage: cutImageRef, scale: image.imageRendererFormat.scale, orientation: image.imageOrientation)
 
-                        DispatchQueue.main.async {
-                            result.append(data)
-                        }
+                        result.append(data)
+                        oriResult.append(image)
                     }
                 }
 
                 DispatchQueue.main.async {
                     postFormVM.imageList = result
+                    postFormVM.oriImageList = oriResult
                 }
             }
         }
