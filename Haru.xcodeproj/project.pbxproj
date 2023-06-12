@@ -142,6 +142,7 @@
 		6F360A132A13AA4C00D64BB6 /* HashTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F360A122A13AA4C00D64BB6 /* HashTag.swift */; };
 		6F360A152A15EC9C00D64BB6 /* MediaListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F360A142A15EC9C00D64BB6 /* MediaListView.swift */; };
 		6F360A172A15ECCB00D64BB6 /* HashTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F360A162A15ECCB00D64BB6 /* HashTagView.swift */; };
+		6F456FF92A37822E008F2E70 /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = 6F456FF82A37822E008F2E70 /* Mantis */; };
 		6F50BC342A0233A700AB7350 /* HaruHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F50BC332A0233A700AB7350 /* HaruHeader.swift */; };
 		6F54DF4929DC6B02002FAD7F /* ProfileInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF4829DC6B02002FAD7F /* ProfileInfoView.swift */; };
 		6F54DF4B29DC813D002FAD7F /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F54DF4A29DC813D002FAD7F /* MediaView.swift */; };
@@ -397,6 +398,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F456FF92A37822E008F2E70 /* Mantis in Frameworks */,
 				130667C829CEE35400AACEE6 /* PopupView in Frameworks */,
 				AE5085AA2A169A7200A373BC /* KakaoSDKShare in Frameworks */,
 				AE5085AC2A169A7200A373BC /* KakaoSDKStory in Frameworks */,
@@ -804,6 +806,7 @@
 				AE5085AD2A169A7200A373BC /* KakaoSDKTalk */,
 				AE5085AF2A169A7200A373BC /* KakaoSDKTemplate */,
 				AE5085B12A169A7200A373BC /* KakaoSDKUser */,
+				6F456FF82A37822E008F2E70 /* Mantis */,
 			);
 			productName = Haru;
 			productReference = 130666C829CEDF4A00AACEE6 /* Haru.app */;
@@ -838,6 +841,7 @@
 				130667C629CEE35400AACEE6 /* XCRemoteSwiftPackageReference "PopupView" */,
 				130667C929CEE38500AACEE6 /* XCRemoteSwiftPackageReference "SwiftUIPager" */,
 				AE5085A02A169A7200A373BC /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				6F456FF72A37822E008F2E70 /* XCRemoteSwiftPackageReference "Mantis" */,
 			);
 			productRefGroup = 130666C929CEDF4A00AACEE6 /* Products */;
 			projectDirPath = "";
@@ -1283,6 +1287,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		6F456FF72A37822E008F2E70 /* XCRemoteSwiftPackageReference "Mantis" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/guoyingtao/Mantis.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.10.0;
+			};
+		};
 		AE5085A02A169A7200A373BC /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
@@ -1308,6 +1320,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 130667C929CEE38500AACEE6 /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
 			productName = SwiftUIPager;
+		};
+		6F456FF82A37822E008F2E70 /* Mantis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6F456FF72A37822E008F2E70 /* XCRemoteSwiftPackageReference "Mantis" */;
+			productName = Mantis;
 		};
 		AE5085A12A169A7200A373BC /* KakaoSDK */ = {
 			isa = XCSwiftPackageProductDependency;
