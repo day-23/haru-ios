@@ -47,19 +47,20 @@ struct LoginView: View {
 
                     VStack(spacing: 18) {
                         // 카카오 로그인 이미지 품질 저하로 PSD 파일 변환 필요할 듯
-                        HStack(spacing: 6) {
-                            Image("kakao-login-logo")
-                            Text("카카오로 로그인하기")
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(.black)
-                        }
-                        .frame(width: 312, height: 44)
-                        .background(Color(0xfee500))
-                        .cornerRadius(12)
-                        .onTapGesture {
+                        Button {
                             authViewModel.handleKakaoLogin { isLoggedIn in
                                 self.isLoggedIn = isLoggedIn
                             }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image("kakao-login-logo")
+                                Text("카카오로 로그인하기")
+                                    .font(.pretendard(size: 14, weight: .bold))
+                                    .foregroundColor(.black)
+                            }
+                            .frame(width: 312, height: 44)
+                            .background(Color(0xfee500))
+                            .cornerRadius(12)
                         }
 
                         SignInWithAppleButton(isLoggedIn: $isLoggedIn)

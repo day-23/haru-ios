@@ -43,13 +43,15 @@ struct AccountView: View {
             .padding(.bottom, 54)
 
             VStack(spacing: 14) {
-                AccountRow(content: "프로필", value: global.user?.user.name ?? "이름 없음") {
-                    // TODO: 프로필 View
+                AccountRow(content: "프로필", value: global.user?.user.name ?? "알 수 없음") {
+                    ProfileFormView(
+                        userProfileVM: userProfileVM,
+                        name: global.user?.user.name ?? "알 수 없음",
+                        introduction: global.user?.user.introduction ?? "알 수 없음"
+                    )
                 }
 
-                AccountRow(content: "하루 아이디", value: global.user?.haruId ?? "하루 아이디", isLink: false) {
-                    // TODO: 하루 아이디 변경 View?
-                }
+                AccountRow(content: "하루 아이디", value: global.user?.haruId ?? "하루 아이디", isLink: false) {}
             }
             .padding(.horizontal, 20)
 
