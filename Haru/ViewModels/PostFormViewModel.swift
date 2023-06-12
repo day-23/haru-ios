@@ -13,6 +13,7 @@ final class PostFormViewModel: ObservableObject {
 
     @Published var content: String = ""
     @Published var imageList: [UIImage] = []
+    @Published var oriImageList: [UIImage] = []
 
     @Published var tag: String = ""
     @Published var tagList: [Tag] = []
