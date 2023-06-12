@@ -79,7 +79,6 @@ struct CheckListView: View {
                 } label: {
                     HaruLinkView()
                 }
-                .padding(.bottom, 12)
 
                 // 체크 리스트
                 if !self.viewModel.isEmpty {

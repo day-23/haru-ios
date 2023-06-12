@@ -32,14 +32,17 @@ struct AccountView: View {
                         .foregroundColor(Color(0x191919))
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Text(global.user?.email ?? "unknown@haru.com")
+                    Text(self.global.user?.email ?? "unknown@haru.com")
                         .font(.pretendard(size: 16, weight: .bold))
                         .foregroundColor(Color(0x191919))
                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Spacer()
                 }
+                .padding(.top, 20)
                 .padding(.leading, 29)
             }
-            .frame(height: 76)
+            .frame(height: 96)
             .padding(.bottom, 54)
 
             VStack(spacing: 14) {

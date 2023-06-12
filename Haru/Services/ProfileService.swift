@@ -258,4 +258,109 @@ struct ProfileService {
             }
         }
     }
+
+    // 아이디 중복 검사
+    func validateHaruId(
+        haruId: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: Parameters = [
+            "haruId": haruId,
+        ]
+
+        AF.request(
+            ProfileService.baseURL + "\(Global.shared.user?.id ?? "unknown")/profile/init/haruId",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        )
+        .responseDecodable(
+            of: Response.self, decoder: Self.decoder
+        ) { response in
+            switch response.result {
+            case .success:
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 409:
+                        completion(.failure(ProfileError.duplicated))
+                    default:
+                        break
+                    }
+                }
+                completion(.success(true))
+            case let .failure(error):
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 409:
+                        completion(.failure(ProfileError.duplicated))
+                    default:
+                        completion(.failure(error))
+                    }
+                } else {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+
+    func validateNickname(
+        nickname: String,
+        completion: @escaping (Result<Bool, Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        let params: Parameters = [
+            "name": nickname,
+        ]
+
+        AF.request(
+            ProfileService.baseURL + "\(Global.shared.user?.id ?? "unknown")/profile/init/name",
+            method: .patch,
+            parameters: params,
+            encoding: JSONEncoding.default,
+            headers: headers
+        )
+        .responseDecodable(
+            of: Response.self, decoder: Self.decoder
+        ) { response in
+            switch response.result {
+            case .success:
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(ProfileError.badname))
+                    default:
+                        break
+                    }
+                }
+                completion(.success(true))
+            case let .failure(error):
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(ProfileError.badname))
+                    default:
+                        completion(.failure(error))
+                    }
+                } else {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
 }

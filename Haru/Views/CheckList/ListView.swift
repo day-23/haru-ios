@@ -15,6 +15,9 @@ struct ListView<Content>: View where Content: View {
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
+                // 오늘 나의 하루와 12포인트만큼 간격 벌리기
+                Spacer(minLength: 12)
+
                 ZStack {
                     //  LazyVStack {
                     VStack {
@@ -37,7 +40,7 @@ struct ListView<Content>: View where Content: View {
                     offsetChanged(value)
                 }
             }
-            .onChange(of: checkListViewModel.todoListOffsetMap) { newValue in
+            .onChange(of: checkListViewModel.todoListOffsetMap) { _ in
                 guard let justAddedTodoId = checkListViewModel.justAddedTodoId
                 else { return }
                 withAnimation {

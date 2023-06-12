@@ -334,22 +334,22 @@ final class ScheduleFormViewModel: ObservableObject {
         successAction: @escaping () -> Void
     ) {
         let selectionList = selectionSet.sorted(by: <)
-        self.repeatStart = (selectionList.first?.date ?? Date()).roundToNearestFiveMinutes()
-        self.repeatEnd = (Calendar.current.date(
+        self.repeatStart = selectionList.first?.date ?? Date()
+        self.repeatEnd = Calendar.current.date(
             byAdding: .hour,
             value: 1,
             to: selectionList.last?.date ?? Date()
-        ) ?? Date()).roundToNearestFiveMinutes()
+        ) ?? Date()
         self.realRepeatEnd = Calendar.current.date(byAdding: .hour, value: 1, to: selectionList.last?.date ?? Date()) ?? Date()
         
         self.mode = .add
         
-        self.tmpRepeatStart = (selectionList.first?.date ?? Date()).roundToNearestFiveMinutes()
-        self.tmpRepeatEnd = (Calendar.current.date(
+        self.tmpRepeatStart = selectionList.first?.date ?? Date()
+        self.tmpRepeatEnd = Calendar.current.date(
             byAdding: .hour,
             value: 1,
             to: selectionList.last?.date ?? Date()
-        ) ?? Date()).roundToNearestFiveMinutes()
+        ) ?? Date()
         self.tmpRepeatOption = nil
         self.tmpRepeatValue = nil
         self.tmpIsSelectedRepeatEnd = false
