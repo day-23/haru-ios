@@ -34,7 +34,7 @@ final class CommentService {
         encoder.dateEncodingStrategy = Constants.dateEncodingStrategy
         return encoder
     }()
-    
+
     func fetchImageComment(
         targetPostId: String,
         targetPostImageId: String,
@@ -44,11 +44,11 @@ final class CommentService {
             let success: Bool
             let data: [Post.Comment]
         }
-        
+
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
-        
+
         AF.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/\(targetPostImageId)/comments/recent",
             method: .get,
@@ -159,7 +159,7 @@ final class CommentService {
             }
         }
     }
-    
+
     func updateCommentList(
         targetPostId: String,
         targetCommentIdList: [String],
@@ -276,7 +276,7 @@ final class CommentService {
             }
         }
     }
-    
+
     func fetchTargetTemplateComment(
         userId: String,
         postId: String,
