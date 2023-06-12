@@ -24,9 +24,10 @@ struct WithdrawalView: View {
             .padding(.bottom, 19)
 
             Divider()
-                .padding(.bottom, 20)
 
             ScrollView {
+                Spacer(minLength: 20)
+
                 VStack(spacing: 20) {
                     HStack(spacing: 20) {
                         if let profileImage = global.user?.user.profileImage,
@@ -36,7 +37,7 @@ struct WithdrawalView: View {
                                 image
                                     .resizable()
                             } placeholder: {
-                                Image("wifi-error")
+                                Image("background-main")
                                     .resizable()
                             }
                             .clipShape(Circle())

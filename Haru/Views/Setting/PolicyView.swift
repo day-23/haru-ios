@@ -11,14 +11,17 @@ struct PolicyView: View {
     @Environment(\.dismiss) var dismissAction
     
     var body: some View {
-        VStack(spacing: 19) {
+        VStack(spacing: 0) {
             SettingHeader(header: "개인정보 정책") {
                 dismissAction.callAsFunction()
             }
+            .padding(.bottom, 19)
 
             Divider()
             
             ScrollView {
+                Spacer(minLength: 19)
+                
                 Text("""
                 개인정보 정책
                 <하루>(이하 '하루')는 「개인정보 보호법」 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립·공개합니다. 이 개인정보처리방침은 2023년 6월 4일부터 적용됩니다.
