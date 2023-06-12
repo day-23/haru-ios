@@ -308,8 +308,6 @@ extension Schedule {
                 nextRepeatStart = CalendarHelper.nextMonthDate(curDate: nextRepeatStart)
                 index = nextRepeatStart.month - 1
             }
-        default:
-            throw RepeatError.invalid
         }
 
         return nextRepeatStart
@@ -380,9 +378,6 @@ extension Schedule {
                 prevRepeatEnd = CalendarHelper.prevMonthDate(curDate: prevRepeatEnd)
                 index = prevRepeatEnd.month - 1
             }
-
-        default:
-            throw RepeatError.invalid
         }
 
         return prevRepeatEnd
@@ -400,7 +395,7 @@ extension Schedule {
         var dateComponents: DateComponents
         let day = 60 * 60 * 24
 
-        var pivotDate = curRepeatStart
+        let pivotDate = curRepeatStart
 
         switch repeatOption {
         case .everyDay:
@@ -438,8 +433,6 @@ extension Schedule {
 
         case .everyYear:
             return CalendarHelper.nextYearDate(curDate: pivotDate)
-        default:
-            throw RepeatError.invalid
         }
     }
 }

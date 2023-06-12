@@ -53,7 +53,9 @@ final class SearchViewModel: ObservableObject {
         searchService.searchTodoAndSchedule(searchContent: searchContent) { result in
             switch result {
             case .success(let success):
-                self.scheduleList = success.0
+                self.scheduleList = success.0.reduce([Schedule]()) { partialResult, schedule in
+                    partialResult + [self.fittingSchedule(schedule: schedule)]
+                }
                 self.todoList = success.1
                 completion()
             case .failure(let failure):
@@ -73,12 +75,32 @@ final class SearchViewModel: ObservableObject {
             let day = 60 * 60 * 24
             var repeatStart = schedule.repeatStart
 
-            while repeatStart < Date() {
-                do {
-                    repeatStart = try schedule.nextSucRepeatStartDate(curRepeatStart: repeatStart)
-                } catch {
-                    print("[Error] nextRepeatStartDate의 계산 오류 \(#file) \(#function)")
-                    return schedule
+            var repeatEndStartDate = CalendarHelper.makeDate(date: schedule.repeatEnd, date2: repeatStart)
+
+            if repeatEndStartDate < Date() {
+                while repeatStart < repeatEndStartDate {
+                    var tmpRS: Date
+                    do {
+                        tmpRS = try schedule.nextSucRepeatStartDate(curRepeatStart: repeatStart)
+                    } catch {
+                        print("[Error] nextRepeatStartDate의 계산 오류 \(#file) \(#function)")
+                        return schedule
+                    }
+
+                    if tmpRS >= repeatEndStartDate {
+                        break
+                    }
+
+                    repeatStart = tmpRS
+                }
+            } else {
+                while repeatStart < Date() {
+                    do {
+                        repeatStart = try schedule.nextSucRepeatStartDate(curRepeatStart: repeatStart)
+                    } catch {
+                        print("[Error] nextRepeatStartDate의 계산 오류 \(#file) \(#function)")
+                        return schedule
+                    }
                 }
             }
 
@@ -130,13 +152,37 @@ final class SearchViewModel: ObservableObject {
         } else {
             var repeatStart = schedule.repeatStart
             var repeatEnd = CalendarHelper.makeDate(date: repeatStart, date2: schedule.repeatEnd)
-            while repeatStart < Date() {
-                do {
-                    repeatStart = try schedule.nextRepeatStartDate(curRepeatStart: repeatStart)
-                    repeatEnd = try schedule.nextRepeatStartDate(curRepeatStart: repeatEnd)
-                } catch {
-                    print("[Error] nextRepeatStartDate의 계산 오류 \(#file) \(#function)")
-                    return schedule
+
+            var repeatEndStartDate = CalendarHelper.makeDate(date: schedule.repeatEnd, date2: repeatStart)
+
+            if repeatEndStartDate < Date() {
+                while repeatStart < repeatEndStartDate {
+                    var tmpRS: Date
+                    var tmpRE: Date
+                    do {
+                        tmpRS = try schedule.nextRepeatStartDate(curRepeatStart: repeatStart)
+                        tmpRE = try schedule.nextRepeatStartDate(curRepeatStart: repeatEnd)
+                    } catch {
+                        print("[Error] nextRepeatStartDate의 계산 오류 \(#file) \(#function)")
+                        return schedule
+                    }
+                    if tmpRS >= repeatEndStartDate {
+                        break
+                    }
+
+                    repeatStart = tmpRS
+                    repeatEnd = tmpRE
+                }
+
+            } else {
+                while repeatStart < Date() {
+                    do {
+                        repeatStart = try schedule.nextRepeatStartDate(curRepeatStart: repeatStart)
+                        repeatEnd = try schedule.nextRepeatStartDate(curRepeatStart: repeatEnd)
+                    } catch {
+                        print("[Error] nextRepeatStartDate의 계산 오류 \(#file) \(#function)")
+                        return schedule
+                    }
                 }
             }
 

@@ -330,24 +330,51 @@ final class UserProfileViewModel: ObservableObject {
         }
     }
 
-    func searchFriend(name: String) {
+    func searchFriend(
+        name: String,
+        completion: @escaping () -> Void
+    ) {
         switch option {
         case .friendList:
             searchService.searchFriendWithName(name: name) { result in
                 switch result {
                 case .success(let success):
-                    print("\(success)")
+                    success.forEach { user in
+                        self.friProfileImageList[user.id] = nil
+                        if let profileUrl = user.profileImageUrl {
+                            self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                                DispatchQueue.main.async {
+                                    self.friProfileImageList[user.id] = profileImage
+                                }
+                            }
+                        }
+                    }
+                    self.friendList = success
+                    completion()
                 case .failure(let failure):
-                    print("\(failure)")
+                    print("[Debug] \(failure) \(#file) \(#function)")
+                    completion()
                 }
             }
         case .requestFriendList:
             searchService.searchReqFriendWithName(name: name) { result in
                 switch result {
                 case .success(let success):
-                    print("\(success)")
+                    success.forEach { user in
+                        self.reqFriProImageList[user.id] = nil
+                        if let profileUrl = user.profileImageUrl {
+                            self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
+                                DispatchQueue.main.async {
+                                    self.reqFriProImageList[user.id] = profileImage
+                                }
+                            }
+                        }
+                    }
+                    self.requestFriendList = success
+                    completion()
                 case .failure(let failure):
-                    print("\(failure)")
+                    print("[Debug] \(failure) \(#file) \(#function)")
+                    completion()
                 }
             }
         }

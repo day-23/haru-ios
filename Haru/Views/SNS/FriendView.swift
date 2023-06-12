@@ -21,6 +21,10 @@ struct FriendView: View {
     @State private var refuseFriend: Bool = false
     @State private var cancelFriend: Bool = false
 
+    @FocusState var focus: Bool
+
+    @State var waitingResponse: Bool = false
+
     @State private var targetUser: FriendUser?
     var body: some View {
         ZStack {
@@ -58,7 +62,15 @@ struct FriendView: View {
                                 .frame(width: 175 * 2, height: 4)
 
                             Rectangle()
-                                .fill(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]))
+                                .fill(RadialGradient(
+                                    colors: [
+                                        Color(0xAAD7FF),
+                                        Color(0xD2D7FF)
+                                    ],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 90
+                                ))
                                 .frame(width: 175, height: 4)
                                 .offset(x: self.friendTab ? 0 : 175)
                         }
@@ -84,8 +96,39 @@ struct FriendView: View {
                         .foregroundColor(Color(0xACACAC))
                     TextField("검색어를 입력하세요", text: self.$searchWord)
                         .font(.pretendard(size: 14, weight: .regular))
-                        .foregroundColor(Color(0xACACAC))
-                        .onSubmit {}
+                        .focused(self.$focus)
+                        .onSubmit {
+                            if self.searchWord != "" {
+                                self.waitingResponse = true
+                                self.userProfileVM.searchFriend(name: self.searchWord) {
+                                    self.waitingResponse = false
+                                }
+                            }
+                        }
+                        .disabled(self.waitingResponse)
+
+                    Spacer()
+
+                    if self.searchWord != "" {
+                        ZStack {
+                            Circle()
+                                .fill(Color(0x191919))
+                                .frame(width: 20, height: 20)
+                                .zIndex(1)
+
+                            Image("cancel")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 18, height: 18)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color(0xFDFDFD))
+                                .zIndex(2)
+                        }
+                        .onTapGesture {
+                            self.searchWord = ""
+                            self.userProfileVM.refreshFriendList()
+                        }
+                    }
                 }
                 .padding(.all, 10)
                 .background(Color(0xF1F1F5))
@@ -154,7 +197,6 @@ struct FriendView: View {
                                     Spacer()
                                     ProgressView()
                                         .onAppear {
-                                            print("더 불러오기")
                                             self.userProfileVM.loadMoreFriendList()
                                         }
                                     Spacer()
@@ -168,7 +210,6 @@ struct FriendView: View {
                                     Spacer()
                                     ProgressView()
                                         .onAppear {
-                                            print("더 불러오기")
                                             self.userProfileVM.loadMoreFriendList()
                                         }
                                     Spacer()
@@ -245,6 +286,9 @@ struct FriendView: View {
                 }
             }
         } // ZStack
+        .onTapGesture {
+            hideKeyboard()
+        }
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -285,7 +329,7 @@ struct FriendView: View {
                 Button {
                     // TODO: 친구 차단하기 및 숨기기 기능
                 } label: {
-                    Image("ellipsis")
+                    Image("more")
                         .resizable()
                         .frame(width: 28, height: 28)
                 }

@@ -48,8 +48,8 @@ struct FeedView: View {
                         }
                     }.disabled(!comeToRoot)
                     
-                    Text("1일 전")
-                        .font(.pretendard(size: 10, weight: .regular))
+                    Text("\(post.createdAt.relative())")
+                        .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(Color(0x646464))
                     
                     Spacer()
@@ -68,7 +68,6 @@ struct FeedView: View {
                 .padding(.horizontal, 20)
                 
                 FeedImage(
-                    commentVM: commentVM,
                     post: post,
                     imageList: postImageList,
                     imageCount: post.images.count,
@@ -103,16 +102,29 @@ struct FeedView: View {
                     HStack(spacing: 10) {
                         NavigationLink {
                             CommentView(
+                                isTemplate: post.isTemplatePost != nil,
+                                templateContent: post.content,
+                                contentColor: post.isTemplatePost ?? "",
                                 postId: post.id,
                                 userId: post.user.id,
                                 postImageList: post.images,
                                 imageList: postImageList,
+                                commentList: Array(repeating: [Post.Comment](), count: post.images.count),
+                                postPageNum: 0,
                                 isMine: isMine
                             )
                         } label: {
-                            Image(post.isCommented ? "sns-comment-fill" : "sns-comment-empty")
-                                .resizable()
-                                .frame(width: 28, height: 28)
+                            if post.isCommented {
+                                Image("sns-comment-fill")
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
+                            } else {
+                                Image("sns-comment-empty")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
+                                    .foregroundColor(Color(0xacacac))
+                            }
                         }
                         
                         if isMine {
@@ -126,14 +138,15 @@ struct FeedView: View {
                     if isMine {
                         NavigationLink {
                             CommentListView(
-                                commentVM: commentVM
+                                commentVM: commentVM,
+                                isTemplate: post.isTemplatePost != nil
                             )
                         } label: {
                             Image("slider")
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 28, height: 28)
-                                .foregroundColor(.gray2)
+                                .foregroundColor(Color(0x191919))
                         }
                     }
                 }

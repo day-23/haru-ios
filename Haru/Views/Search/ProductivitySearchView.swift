@@ -107,7 +107,6 @@ struct ProductivitySearchView: View {
     @ViewBuilder
     func scheduleItemList() -> some View {
         ForEach(self.searchVM.scheduleList, id: \.id) { schedule in
-            let schedule = self.searchVM.fittingSchedule(schedule: schedule)
             HStack(alignment: .center) {
                 Circle()
                     .fill(Color(schedule.category?.color))

@@ -28,6 +28,12 @@ final class CalendarViewModel: ObservableObject {
         }
     } // 진짜 월과의 차이
     
+    @Published var curDate: Date = .init() {
+        didSet {
+            setMonthOffSet(offset: (curDate.year - Date().year) * 12 + curDate.month - Date().month)
+        }
+    }
+    
     @Published var selectionSet: Set<DateValue> = [] // 드래그해서 선택된 날짜(들)
 
     @Published var dateList: [DateValue] = [] // 달력에 표시할 날짜들
@@ -78,6 +84,10 @@ final class CalendarViewModel: ObservableObject {
         dayList = CalendarHelper.getDays(startOnSunday)
         getCategoryList()
         getCurDateList(monthOffest, startOnSunday)
+    }
+    
+    func setMonthOffSet(offset: Int) {
+        monthOffest = offset
     }
     
     func getCurDateList(_ monthOffset: Int, _ startOnSunday: Bool) {
@@ -972,16 +982,15 @@ final class CalendarViewModel: ObservableObject {
     func repeatEverySecondWeek(firstDate: Date, lastDate: Date, schedule: Schedule) -> [Schedule] {
         var result = [Schedule]()
         
-        guard let repeatValue = schedule.repeatValue else {
+        if schedule.repeatValue == nil {
             print("[Error] scheduleId: \(schedule.id)에 repeatValue에 이상이 있습니다. \(#fileID) \(#function)")
             return result
         }
         
-        let (startDate, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
+        let (_, endDate) = CalendarHelper.fittingStartEndDate(firstDate: firstDate, repeatStart: schedule.repeatStart, lastDate: lastDate, repeatEnd: schedule.repeatEnd)
         
         let calendar = Calendar.current
         var dateComponents: DateComponents
-        let day = 60 * 60 * 24
         
         dateComponents = calendar.dateComponents([.year, .month, .day], from: schedule.repeatStart)
         dateComponents.hour = schedule.repeatEnd.hour
@@ -996,7 +1005,7 @@ final class CalendarViewModel: ObservableObject {
         var prevRepeatEnd = Date()
         var nextRepeatStart = Date()
         
-        var resultSchedule = schedule
+        let resultSchedule = schedule
         
         while curRepStartDate <= endDate {
             do {

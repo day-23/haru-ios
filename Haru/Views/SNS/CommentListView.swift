@@ -14,6 +14,8 @@ struct CommentListView: View {
 
     @State private var commentAlert: Bool = false
 
+    var isTemplate: Bool = false
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
@@ -35,6 +37,16 @@ struct CommentListView: View {
 
                     Spacer(minLength: 0)
 
+                    Image("sns-comment-fill")
+                        .overlay(content: {
+                            Text("\(commentVM.commentTotalCount[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0)")
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x646464))
+                                .offset(x: 30)
+                        })
+                        .padding(.trailing, 38)
+                }
+                .overlay(content: {
                     Group {
                         HStack(spacing: 20) {
                             Image("todo-toggle")
@@ -67,22 +79,9 @@ struct CommentListView: View {
                                 .disabled(commentVM.imagePageNum == commentVM.postImageIDList.count - 1)
                         }
                     }
-
-                    Spacer(minLength: 0)
-
-                    Group {
-                        HStack(spacing: 10) {
-                            Image("sns-comment-fill")
-
-                            Text("\(commentVM.commentTotalCount[commentVM.postImageIDList[commentVM.imagePageNum]] ?? 0)")
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(Color(0x646464))
-                        }
-                    }
-                }
+                })
                 .padding(.top, 10)
                 .padding(.horizontal, 20)
-                .padding(.trailing, 15)
 
                 if let commentList = commentVM.imageCommentList[commentVM.postImageIDList[commentVM.imagePageNum]] {
                     ForEach(commentList.indices, id: \.self) { idx in
@@ -99,7 +98,7 @@ struct CommentListView: View {
                                         .font(.pretendard(size: 14, weight: .bold))
                                         .foregroundColor(Color(0x191919))
 
-                                    Text("\(comment.createdAt.minute)분 전")
+                                    Text("\(comment.createdAt.relative())")
                                         .font(.pretendard(size: 10, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }
@@ -166,7 +165,6 @@ struct CommentListView: View {
                             Spacer()
                             ProgressView()
                                 .onAppear {
-                                    print("더 불러오기")
                                     commentVM.loadMoreComments()
                                 }
                             Spacer()
@@ -178,8 +176,9 @@ struct CommentListView: View {
                 }
             }
         }
+        .animation(.none)
         .onAppear {
-            commentVM.loadMoreComments()
+            commentVM.initLoad(isTemplate: isTemplate)
         }
         .navigationBarBackButtonHidden()
         .toolbar {

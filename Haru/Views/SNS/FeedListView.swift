@@ -17,20 +17,24 @@ struct FeedListView: View {
         ScrollView {
             LazyVStack(spacing: 14) {
                 ForEach(postVM.postList) { post in
-                    FeedView(
-                        post: post,
-                        postImageList: postVM.postImageList[post.id] ?? [],
-                        postVM: postVM,
-                        postOptModalVis: $postOptModalVis,
-                        comeToRoot: comeToRoot
-                    )
+                    if !post.disabled {
+                        FeedView(
+                            post: post,
+                            postImageList: postVM.postImageList[post.id] ?? [],
+                            postVM: postVM,
+                            postOptModalVis: $postOptModalVis,
+                            comeToRoot: comeToRoot
+                        )
+                    }
                 }
-                if !postVM.postList.isEmpty, postVM.page <= postVM.feedTotalPage {
+                if !postVM.postList.isEmpty &&
+                    postVM.page <= postVM.feedTotalPage &&
+                    (postVM.option == .target_feed || postVM.option == .main)
+                {
                     HStack {
                         Spacer()
                         ProgressView()
                             .onAppear {
-                                print("더 불러오기")
                                 postVM.loadMorePosts()
                             }
                         Spacer()

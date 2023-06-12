@@ -45,6 +45,7 @@ struct ProfileView: View {
                                 .font(.pretendard(size: 14, weight: .bold))
                                 .foregroundColor(self.isFeedSelected ? Color(0x1DAFFF) : Color(0xACACAC))
                                 .onTapGesture {
+                                    postVM.option = .target_feed
                                     withAnimation {
                                         self.isFeedSelected = true
                                     }
@@ -55,6 +56,7 @@ struct ProfileView: View {
                                 .font(.pretendard(size: 14, weight: .bold))
                                 .foregroundColor(self.isFeedSelected ? Color(0xACACAC) : Color(0x1DAFFF))
                                 .onTapGesture {
+                                    postVM.option = .target_media_all
                                     withAnimation {
                                         self.isFeedSelected = false
                                     }
@@ -68,7 +70,15 @@ struct ProfileView: View {
                                 .frame(width: 175 * 2, height: 4)
 
                             Rectangle()
-                                .fill(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]))
+                                .fill(RadialGradient(
+                                    colors: [
+                                        Color(0xAAD7FF),
+                                        Color(0xD2D7FF)
+                                    ],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 90
+                                ))
                                 .frame(width: 175, height: 4)
                                 .offset(x: self.isFeedSelected ? 0 : 175)
                         }
@@ -132,7 +142,9 @@ struct ProfileView: View {
                                     self.postVM.hidePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
+                                            self.postVM.disablePost(
+                                                targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                            )
                                             self.postOptModalVis.0 = false
                                         case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
@@ -169,8 +181,12 @@ struct ProfileView: View {
                                     self.postVM.deletePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
-                                            self.postOptModalVis.0 = false
+                                            withAnimation {
+                                                self.postVM.disablePost(
+                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                )
+                                                self.postOptModalVis.0 = false
+                                            }
                                         case let .failure(failure):
                                             print("[Debug] \(failure) \(#file) \(#function)")
                                         }
@@ -194,8 +210,12 @@ struct ProfileView: View {
                                     self.postVM.reportPost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
                                         switch result {
                                         case .success:
-                                            self.postVM.refreshPosts()
-                                            self.postOptModalVis.0 = false
+                                            withAnimation {
+                                                self.postVM.disablePost(
+                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                )
+                                                self.postOptModalVis.0 = false
+                                            }
                                             // TODO: 토스트 메시지로 신고가 접수 되었다고 알리기
                                             print("신고가 잘 접수 되었습니다.")
                                         case let .failure(failure):
@@ -272,7 +292,7 @@ struct ProfileView: View {
             } else {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 5) {
-                        Image("my-history")
+                        Image("sns-my-history")
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 28, height: 28)

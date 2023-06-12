@@ -20,33 +20,58 @@ struct PostFormView: View {
 
     // For pop up to root
     @Binding var rootIsActive: Bool
+    @Binding var createPost: Bool
 
     var postAddMode: PostAddMode
 
+    let deviceSize = UIScreen.main.bounds.size
+
     var body: some View {
         ScrollView {
-            TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
-                .lineLimit(nil)
-                .frame(alignment: .top)
-                .font(.pretendard(size: 24, weight: .regular))
-                .background(Color(0xfdfdfd))
-                .focused($isFocused)
-                .onTapGesture {
-                    isFocused = true
+            if postAddMode == .writing {
+                TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
+                    .lineLimit(nil)
+                    .frame(alignment: .top)
+                    .font(.pretendard(size: 24, weight: .regular))
+                    .background(Color(0xfdfdfd))
+                    .focused($isFocused)
+                    .onTapGesture {
+                        isFocused = true
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 24)
+            } else {
+                TabView {
+                    ForEach(postFormVM.imageList.indices, id: \.self) { idx in
+                        Image(uiImage: postFormVM.imageList[idx])
+                            .renderingMode(.original)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(
+                                width: deviceSize.width,
+                                height: deviceSize.width
+                            )
+                            .clipped()
+                    }
                 }
-                .padding(.horizontal, 20)
+                .tabViewStyle(.page)
+                .indexViewStyle(.page(backgroundDisplayMode: .always))
+                .frame(width: deviceSize.width, height: deviceSize.width)
                 .padding(.top, 24)
+            }
         }
         .background(Color(0xfdfdfd))
         .onTapGesture {
             hideKeyboard()
         }
-        .popupImagePicker(show: $openPhoto, mode: .multiple, always: true) { assets in
+        .popupImagePicker(
+            show: $openPhoto,
+            mode: .multiple,
+            always: true
+        ) { assets in
 
             // MARK: Do Your Operation With PHAsset
 
-            // I'm Simply Extracting Image
-            // .init() Means Exact Size of the Image
             let manager = PHCachingImageManager.default()
             let options = PHImageRequestOptions()
             var result: [UIImage] = []
@@ -95,7 +120,19 @@ struct PostFormView: View {
 
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink {
-                    PostFormPreView(postFormVM: postFormVM, shouldPopToRootView: $rootIsActive)
+                    if postAddMode == .writing {
+                        PostFormPreView(
+                            postFormVM: postFormVM,
+                            shouldPopToRootView: $rootIsActive,
+                            createPost: $createPost
+                        )
+                    } else {
+                        PostFormDrawingView(
+                            postFormVM: postFormVM,
+                            rootIsActive: $rootIsActive,
+                            createPost: $createPost
+                        )
+                    }
                 } label: {
                     Image("todo-toggle")
                         .renderingMode(.template)

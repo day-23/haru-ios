@@ -154,6 +154,13 @@ public extension Date {
     internal func relative() -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
+        formatter.locale = Locale(identifier: "ko_KR")
+        
+        let diff = Date.now.timeIntervalSinceReferenceDate - self.timeIntervalSinceReferenceDate
+        if diff < 60 {
+            return "방금 전"
+        }
+        
         return formatter.localizedString(for: self, relativeTo: Date.now)
     }
     

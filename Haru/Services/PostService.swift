@@ -134,6 +134,7 @@ final class PostService {
         }
     }
 
+    // 둘러보기 전체 게시물 불러오기
     func fetchAllMedia(
         page: Int,
         limit: Int = 12,
@@ -167,6 +168,55 @@ final class PostService {
 
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/all",
+            method: .get,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success((response.data, response.pagination)))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    // 둘러보기 해시태그 게시물 불러오기
+    func fetchMediaHashTag(
+        hashTagId: String,
+        page: Int,
+        limit: Int = 12,
+        lastCreatedAt: Date?,
+        completion: @escaping (Result<([Post], Post.Pagination), Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [Post]
+            let pagination: Post.Pagination
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        var parameters: Parameters {
+            if let lastCreatedAt {
+                return [
+                    "page": page,
+                    "limit": limit,
+                    "lastCreatedAt": Self.iSO8601Formatter.string(from: lastCreatedAt),
+                ]
+            } else {
+                return [
+                    "page": page,
+                    "limit": limit,
+                ]
+            }
+        }
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/hashtag/\(hashTagId)/",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
@@ -517,10 +567,34 @@ final class PostService {
         }
     }
 
-    func fetchPopularHashTags() {
-        // TODO:
+    // 인기 해시태그 불러오기
+    func fetchPopularHashTags(
+        completion: @escaping (Result<[HashTag], Error>) -> Void
+    ) {
+        struct Response: Codable {
+            let success: Bool
+            let data: [HashTag]
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+        ]
+
+        AF.request(
+            PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/hashtags/",
+            method: .get,
+            headers: headers
+        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+            switch response.result {
+            case let .success(response):
+                completion(.success(response.data))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
     }
 
+    // 사용자 해시태그 불러오기
     func fetchTargetHashTags(
         targetId: String,
         completion: @escaping (Result<[HashTag], Error>) -> Void

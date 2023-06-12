@@ -17,6 +17,7 @@ struct PostFormPreView: View {
 
     // For pop up to root
     @Binding var shouldPopToRootView: Bool
+    @Binding var createPost: Bool
 
     @State var selectedTemplateIdx: Int = 0
     @State var blackSelected: Bool = true
@@ -28,7 +29,11 @@ struct PostFormPreView: View {
 
     let deviceSize = UIScreen.main.bounds.size
     var body: some View {
-        VStack {
+        ZStack(alignment: .bottom) {
+            if postFormVM.postOption == .writing {
+                bottomTemplateView()
+                    .zIndex(2)
+            }
             GeometryReader { _ in
                 LazyVStack(spacing: 0) {
                     Group {
@@ -78,8 +83,8 @@ struct PostFormPreView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
                                     .frame(
-                                        width: UIScreen.main.bounds.width,
-                                        height: UIScreen.main.bounds.height
+                                        width: deviceSize.width,
+                                        height: deviceSize.width
                                     )
                                     .clipped()
                             }
@@ -123,11 +128,6 @@ struct PostFormPreView: View {
                             .padding(.top, 20)
 
                         Spacer()
-                    } else {
-                        Spacer()
-                            .overlay(alignment: .bottom) {
-                                bottomTemplateView()
-                            }
                     }
                 }
             }
@@ -158,8 +158,8 @@ struct PostFormPreView: View {
                             postFormVM.createPost { result in
                                 switch result {
                                 case .success:
+                                    createPost = true
                                     shouldPopToRootView = false
-
                                 case .failure(let failure):
                                     waitingResponse = false
                                     print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -169,6 +169,7 @@ struct PostFormPreView: View {
                             postFormVM.createPost(templateIdx: selectedTemplateIdx) { result in
                                 switch result {
                                 case .success:
+                                    createPost = true
                                     shouldPopToRootView = false
                                 case .failure(let failure):
                                     waitingResponse = false
@@ -185,6 +186,7 @@ struct PostFormPreView: View {
                 }
             }
         }
+        .edgesIgnoringSafeArea(.bottom)
         .onTapGesture {
             hideKeyboard()
         }
