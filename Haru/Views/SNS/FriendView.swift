@@ -218,7 +218,7 @@ struct FriendView: View {
                         }
                     }
                 } // Scroll
-                .animation(.none)
+                .animation(nil, value: UUID())
                 .onAppear {
                     print("init")
                     self.userProfileVM.initLoad()
