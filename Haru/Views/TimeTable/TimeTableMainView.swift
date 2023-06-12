@@ -175,6 +175,22 @@ struct TimeTableMainView: View {
                 }
                 .transition(.modal)
                 .zIndex(2)
+            } else if self.isDateButtonClicked {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        CustomCalendar(bindingDate: self.$timeTableViewModel.currentDate)
+                        Spacer()
+                    }
+                    Spacer()
+                }
+                .background(
+                    Color.white.opacity(0.001)
+                        .onTapGesture {
+                            self.isDateButtonClicked = false
+                        }
+                )
             } else {
                 if isPopupVisible.wrappedValue {
                     ZStack {
@@ -198,18 +214,6 @@ struct TimeTableMainView: View {
                             .padding(.trailing, 20)
                             .padding(.bottom, 10)
                     }
-                }
-            }
-
-            if self.isDateButtonClicked {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        CustomCalendar(bindingDate: self.$timeTableViewModel.currentDate)
-                        Spacer()
-                    }
-                    Spacer()
                 }
             }
         }
