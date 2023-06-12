@@ -10,6 +10,7 @@ import SwiftUI
 struct CustomCalendar: View {
     @Binding var bindingDate: Date
     @State var curDate: Date = .init()
+    var comeTo: ComeTo
 
     @State var monthOffSet: Int = 0
     @State var prevOffSet: Int = 0
@@ -144,11 +145,13 @@ struct CustomCalendar: View {
             curDate = bindingDate
         }
         .onChange(of: curDate) { _ in
-            if bindingDate.year == curDate.year,
+            if comeTo == .calendar,
+               bindingDate.year == curDate.year,
                bindingDate.month == curDate.month
             {
                 return
             }
+
             bindingDate = curDate
         }
         .onChange(of: monthOffSet) { _ in
@@ -160,11 +163,5 @@ struct CustomCalendar: View {
 
             prevOffSet = monthOffSet
         }
-    }
-}
-
-struct CustomCalendar_Previews: PreviewProvider {
-    static var previews: some View {
-        CustomCalendar(bindingDate: .constant(CalendarHelper.stringToDate(dateString: "2021-1-31")!))
     }
 }

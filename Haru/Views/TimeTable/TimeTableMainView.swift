@@ -180,7 +180,10 @@ struct TimeTableMainView: View {
                     Spacer()
                     HStack {
                         Spacer()
-                        CustomCalendar(bindingDate: self.$timeTableViewModel.currentDate)
+                        CustomCalendar(
+                            bindingDate: self.$timeTableViewModel.currentDate,
+                            comeTo: .timetable
+                        )
                         Spacer()
                     }
                     Spacer()

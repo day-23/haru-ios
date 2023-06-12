@@ -173,7 +173,10 @@ struct CalendarDateView: View {
                 }
                 
                 if self.isDatePickerVisible {
-                    CustomCalendar(bindingDate: self.$calendarVM.curDate)
+                    CustomCalendar(
+                        bindingDate: self.$calendarVM.curDate,
+                        comeTo: .calendar
+                    )
                 }
                 
                 // 추가 버튼
