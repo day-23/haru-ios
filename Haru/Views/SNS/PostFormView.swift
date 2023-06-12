@@ -117,7 +117,7 @@ struct PostFormView: View {
 
                         // 보이는 화면과 이미지의 비율 계산
                         let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
-                                                 image.size.height / UIScreen.main.bounds.width)
+                                                 image.size.height / UIScreen.main.bounds.height)
 
                         let cropZone = CGRect(x: 0,
                                               y: 0,
