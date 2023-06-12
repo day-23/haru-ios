@@ -68,17 +68,17 @@ struct TimeTableMainView: View {
                                 )
                             )
                     }
-                    .popover(
-                        isPresented: self.$isDateButtonClicked,
-                        arrowDirection: .up
-                    ) {
-                        DatePicker(
-                            "",
-                            selection: self.$timeTableViewModel.currentDate,
-                            displayedComponents: .date
-                        )
-                        .datePickerStyle(.graphical)
-                    }
+//                    .popover(
+//                        isPresented: self.$isDateButtonClicked,
+//                        arrowDirection: .up
+//                    ) {
+//                        DatePicker(
+//                            "",
+//                            selection: self.$timeTableViewModel.currentDate,
+//                            displayedComponents: .date
+//                        )
+//                        .datePickerStyle(.graphical)
+//                    }
 
                     Spacer()
 
@@ -198,6 +198,18 @@ struct TimeTableMainView: View {
                             .padding(.trailing, 20)
                             .padding(.bottom, 10)
                     }
+                }
+            }
+
+            if self.isDateButtonClicked {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        CustomCalendar(bindingDate: self.$timeTableViewModel.currentDate)
+                        Spacer()
+                    }
+                    Spacer()
                 }
             }
         }
