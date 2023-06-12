@@ -124,6 +124,7 @@ struct MyView: View {
                             }
 
                             HStack(spacing: 0) {
+                                Spacer()
                                 VStack(spacing: 4) {
                                     Text("\(self.completed)")
                                         .font(.pretendard(size: 20, weight: .bold))
@@ -133,7 +134,8 @@ struct MyView: View {
                                         .font(.pretendard(size: 16, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }
-                                Spacer()
+                                .frame(width: 78, alignment: .center)
+                                Spacer(minLength: 96)
                                 VStack(spacing: 4) {
                                     Text("\(self.totalItems)")
                                         .font(.pretendard(size: 20, weight: .bold))
@@ -143,9 +145,10 @@ struct MyView: View {
                                         .font(.pretendard(size: 16, weight: .regular))
                                         .foregroundColor(Color(0x191919))
                                 }
+                                .frame(width: 78, alignment: .center)
+                                Spacer()
                             }
-                            .padding(.leading, 74)
-                            .padding(.trailing, 81)
+                            .padding(.trailing, 10)
 
                             CircularProgressView(
                                 progress: self.completionRate

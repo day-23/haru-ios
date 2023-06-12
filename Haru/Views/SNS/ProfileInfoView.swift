@@ -167,15 +167,18 @@ struct ProfileInfoView: View {
             .padding(.horizontal, 20)
             
             HStack(spacing: 0) {
+                Spacer()
+                
                 VStack(spacing: 4) {
                     Text("\(userProfileVM.user.postCount)")
                         .font(.pretendard(size: 20, weight: .bold))
                     Text("하루")
                         .font(.pretendard(size: 16, weight: .regular))
                 }
+                .frame(width: 78)
                 .foregroundColor(Color(0x191919))
                 
-                Spacer()
+                Spacer(minLength: 96)
                 
                 NavigationLink {
                     FriendView(userProfileVM: userProfileVM)
@@ -183,16 +186,15 @@ struct ProfileInfoView: View {
                     VStack(spacing: 4) {
                         Text("\(userProfileVM.user.friendCount)")
                             .font(.pretendard(size: 20, weight: .bold))
-                        HStack(alignment: .lastTextBaseline) {
-                            Text("친구")
-                                .font(.pretendard(size: 16, weight: .regular))
-                        }
+                        Text("친구")
+                            .font(.pretendard(size: 16, weight: .regular))
                     }
                 }
+                .frame(width: 78)
                 .foregroundColor(Color(0x191919))
+                
+                Spacer()
             }
-            .padding(.leading, 95)
-            .padding(.trailing, 92)
         }
     }
 }
