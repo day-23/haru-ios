@@ -14,16 +14,19 @@ struct SignUpView: View {
     @State private var nickname: String = ""
     @State private var haruId: String = ""
 
-    @State private var isSubmitButtonClicked: Bool = false
     @State private var isValidId: Bool = false
+    @State private var isValidNickname: Bool = false
 
-    @State private var isInvalidInput: Bool = false
     @State private var isDuplicated: Bool = false
     @State private var isLongNickname: Bool = false
     @State private var isBadNickname: Bool = false
     @State private var isInvalidId: Bool = false // 영어 소문자, 숫자로만 이루어졌는가?
+    @State private var isInvalidNickname: Bool = false
 
     @FocusState private var isIdFieldFocused: Bool
+    @FocusState private var isNicknameFieldFocused: Bool
+    @State private var hasIdFieldFocusAtLeastOnce: Bool = false
+    @State private var hasNicknameFieldFocusAtLeastOnce: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -66,7 +69,6 @@ struct SignUpView: View {
                                     }
 
                                     isValidId = false
-                                    isSubmitButtonClicked = false
                                     let regex = /^[a-z0-9]*$/
                                     if haruId.wholeMatch(of: regex) != nil {
                                         isInvalidId = false
@@ -75,6 +77,15 @@ struct SignUpView: View {
                                     }
                                 }
                                 .onChange(of: isIdFieldFocused) { _ in
+                                    if isIdFieldFocused && !hasIdFieldFocusAtLeastOnce {
+                                        hasIdFieldFocusAtLeastOnce = true
+                                    }
+
+                                    if haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                        isValidId = false
+                                        return
+                                    }
+
                                     if !isIdFieldFocused {
                                         profileService.validateHaruId(
                                             haruId: haruId
@@ -94,7 +105,7 @@ struct SignUpView: View {
                                     }
                                 }
 
-                            if (isInvalidInput && haruId.isEmpty) || isDuplicated || isInvalidId {
+                            if (hasIdFieldFocusAtLeastOnce && haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) || isDuplicated || isInvalidId {
                                 Image("cancel")
                                     .renderingMode(.template)
                                     .foregroundColor(Color(0xF71E58))
@@ -111,12 +122,10 @@ struct SignUpView: View {
                         .padding(.trailing, -13)
 
                     VStack(alignment: .leading, spacing: 0) {
-                        if isInvalidInput {
-                            if haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                Text("반드시 입력해야 합니다.")
-                                    .font(.pretendard(size: 12, weight: .regular))
-                                    .foregroundColor(Color(0xF71E58))
-                            }
+                        if hasIdFieldFocusAtLeastOnce && haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("반드시 입력해야 합니다.")
+                                .font(.pretendard(size: 12, weight: .regular))
+                                .foregroundColor(Color(0xF71E58))
                         } else if isDuplicated {
                             Text("중복된 아이디입니다.")
                                 .font(.pretendard(size: 12, weight: .regular))
@@ -150,28 +159,57 @@ struct SignUpView: View {
                             TextField("", text: $nickname)
                                 .font(.pretendard(size: 24, weight: .regular))
                                 .foregroundColor(Color(0x191919))
+                                .focused($isNicknameFieldFocused)
                                 .placeholder(when: nickname.isEmpty) {
                                     Text("최대 8글자를 입력해 주세요")
                                         .font(.pretendard(size: 24, weight: .regular))
                                         .foregroundColor(Color(0xACACAC))
                                 }
                                 .onChange(of: nickname) { newValue in
+                                    if isBadNickname {
+                                        isBadNickname = false
+                                    }
+
+                                    isValidNickname = false
                                     if newValue.count > 8 {
                                         isLongNickname = true
                                         nickname = String(newValue[newValue.startIndex ..< newValue.index(newValue.endIndex, offsetBy: -1)])
                                     }
                                 }
+                                .onChange(of: isNicknameFieldFocused) { _ in
+                                    if isNicknameFieldFocused && !hasNicknameFieldFocusAtLeastOnce {
+                                        hasNicknameFieldFocusAtLeastOnce = true
+                                    }
 
-                            if !((isInvalidInput && haruId.isEmpty) || isDuplicated || isInvalidId) {
-                                if (isInvalidInput && nickname.isEmpty) || isLongNickname || isBadNickname {
-                                    Image("cancel")
-                                        .renderingMode(.template)
-                                        .foregroundColor(Color(0xF71E58))
-                                } else if isSubmitButtonClicked {
-                                    Image("confirm")
-                                        .renderingMode(.template)
-                                        .foregroundColor(Color(0x1DAFFF))
+                                    if nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                        isValidNickname = false
+                                    }
+
+                                    if !isNicknameFieldFocused {
+                                        profileService.validateNickname(nickname: nickname) { result in
+                                            switch result {
+                                            case .success:
+                                                isValidNickname = true
+                                            case .failure(let error):
+                                                switch error {
+                                                case ProfileService.ProfileError.badname:
+                                                    isBadNickname = true
+                                                default:
+                                                    break
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
+
+                            if (hasNicknameFieldFocusAtLeastOnce && nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) || isLongNickname || isBadNickname {
+                                Image("cancel")
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0xF71E58))
+                            } else if isValidNickname {
+                                Image("confirm")
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0x1DAFFF))
                             }
                         }
                     }
@@ -181,19 +219,15 @@ struct SignUpView: View {
                         .padding(.trailing, -13)
 
                     VStack(alignment: .leading, spacing: 0) {
-                        if !((isInvalidInput && haruId.isEmpty) || isDuplicated || isInvalidId) {
-                            if isInvalidInput {
-                                if nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                    Text("반드시 입력해야 합니다.")
-                                }
-                            } else if isLongNickname {
-                                Text("닉네임이 8글자를 초과했습니다.")
-                            } else if isBadNickname {
-                                Text("사용이 불가능한 닉네임입니다.")
-                            } else if isSubmitButtonClicked {
-                                Text("사용 가능한 닉네임입니다.")
-                                    .foregroundColor(Color(0x1DAFFF))
-                            }
+                        if hasNicknameFieldFocusAtLeastOnce && nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("반드시 입력해야 합니다.")
+                        } else if isLongNickname {
+                            Text("닉네임이 8글자를 초과했습니다.")
+                        } else if isBadNickname {
+                            Text("사용이 불가능한 닉네임입니다.")
+                        } else if isValidNickname {
+                            Text("사용 가능한 닉네임입니다.")
+                                .foregroundColor(Color(0x1DAFFF))
                         }
                     }
                     .font(.pretendard(size: 12, weight: .regular))
@@ -207,14 +241,20 @@ struct SignUpView: View {
             Spacer()
 
             Button {
-                isDuplicated = false
-                isBadNickname = false
-                isLongNickname = false
-                isInvalidInput = false
-                isInvalidId = false
+                if haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    || nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                {
+                    if haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        isInvalidId = true
+                    }
 
-                if haruId.isEmpty || nickname.isEmpty {
-                    isInvalidInput = true
+                    if nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        isInvalidNickname = true
+                    }
+                    return
+                }
+
+                if !isValidId || !isValidNickname {
                     return
                 }
 
@@ -224,7 +264,6 @@ struct SignUpView: View {
                         name: nickname,
                         haruId: haruId
                     ) { result in
-                        isSubmitButtonClicked = true
                         switch result {
                         case .success(let response):
                             Global.shared.user = response
@@ -256,6 +295,12 @@ struct SignUpView: View {
                     .cornerRadius(10)
             }
             .padding(.bottom, 75)
+            .ignoresSafeArea(.keyboard)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            isIdFieldFocused = false
+            isNicknameFieldFocused = false
         }
     }
 }
