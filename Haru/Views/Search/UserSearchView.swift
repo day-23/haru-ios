@@ -78,6 +78,7 @@ struct UserSearchView: View {
                 guard let user = targetUser else {
                     return
                 }
+                waitingResponse = true
                 searchVM.cancelRequestFriend(acceptorId: user.id) { result in
                     switch result {
                     case .success(let success):
@@ -85,12 +86,16 @@ struct UserSearchView: View {
                             print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                         }
                         
-                        searchVM.refreshFriendList()
+                        searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                            waitingResponse = false
+                        }
                     case .failure(let failure):
                         print("[Debug] \(failure) \(#file) \(#function)")
+                        waitingResponse = false
                     }
                 }
             }
+            .disabled(waitingResponse)
         }
         .confirmationDialog(
             "\(targetUser?.name ?? "")님을 친구 목록에서 삭제할까요?",
@@ -101,10 +106,14 @@ struct UserSearchView: View {
                 guard let user = targetUser else {
                     return
                 }
+                waitingResponse = true
                 searchVM.deleteFriend(friendId: user.id) {
-                    searchVM.refreshFriendList()
+                    searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                        waitingResponse = false
+                    }
                 }
             }
+            .disabled(waitingResponse)
         }
         .confirmationDialog(
             "\(targetUser?.name ?? "")님의 친구 신청을 거절할까요?",
@@ -115,6 +124,7 @@ struct UserSearchView: View {
                 guard let user = targetUser else {
                     return
                 }
+                waitingResponse = true
                 searchVM.cancelRequestFriend(acceptorId: user.id) { result in
                     switch result {
                     case .success(let success):
@@ -122,12 +132,16 @@ struct UserSearchView: View {
                             print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                         }
                         
-                        searchVM.refreshFriendList()
+                        searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                            waitingResponse = false
+                        }
                     case .failure(let failure):
                         print("[Debug] \(failure) \(#file) \(#function)")
+                        waitingResponse = false
                     }
                 }
             }
+            .disabled(waitingResponse)
         }
         .onTapGesture {
             hideKeyboard()
@@ -165,16 +179,19 @@ struct UserSearchView: View {
             if user.friendStatus == 0 {
                 if user.id != Global.shared.user?.id {
                     Button {
+                        waitingResponse = true
                         searchVM.requestFriend(acceptorId: user.id) { result in
                             switch result {
                             case .success(let success):
                                 if !success {
                                     print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                                 }
-                                
-                                searchVM.refreshFriendList()
+                                searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                                    waitingResponse = false
+                                }
                             case .failure(let failure):
                                 print("[Debug] \(failure) \(#file) \(#function)")
+                                waitingResponse = false
                             }
                         }
                     } label: {
@@ -188,6 +205,7 @@ struct UserSearchView: View {
                             )
                             .cornerRadius(10)
                     }
+                    .disabled(waitingResponse)
                 } else {
                     Text("나")
                         .font(.pretendard(size: 16, weight: .regular))
@@ -226,6 +244,7 @@ struct UserSearchView: View {
             } else {
                 HStack(spacing: 10) {
                     Button {
+                        waitingResponse = true
                         searchVM.acceptRequestFriend(requesterId: user.id) { result in
                             switch result {
                             case .success(let success):
@@ -233,10 +252,13 @@ struct UserSearchView: View {
                                     print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                                 }
                                 
-                                searchVM.refreshFriendList()
+                                searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                                    waitingResponse = false
+                                }
                                 
                             case .failure(let failure):
                                 print("[Debug] \(failure) \(#file) \(#function)")
+                                waitingResponse = false
                             }
                         }
                     } label: {
@@ -250,6 +272,7 @@ struct UserSearchView: View {
                             )
                             .cornerRadius(10)
                     }
+                    .disabled(waitingResponse)
                     
                     Button {
                         targetUser = user

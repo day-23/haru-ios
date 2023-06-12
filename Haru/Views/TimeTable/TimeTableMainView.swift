@@ -68,17 +68,17 @@ struct TimeTableMainView: View {
                                 )
                             )
                     }
-                    .popover(
-                        isPresented: self.$isDateButtonClicked,
-                        arrowDirection: .up
-                    ) {
-                        DatePicker(
-                            "",
-                            selection: self.$timeTableViewModel.currentDate,
-                            displayedComponents: .date
-                        )
-                        .datePickerStyle(.graphical)
-                    }
+//                    .popover(
+//                        isPresented: self.$isDateButtonClicked,
+//                        arrowDirection: .up
+//                    ) {
+//                        DatePicker(
+//                            "",
+//                            selection: self.$timeTableViewModel.currentDate,
+//                            displayedComponents: .date
+//                        )
+//                        .datePickerStyle(.graphical)
+//                    }
 
                     Spacer()
 
@@ -175,6 +175,25 @@ struct TimeTableMainView: View {
                 }
                 .transition(.modal)
                 .zIndex(2)
+            } else if self.isDateButtonClicked {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        CustomCalendar(
+                            bindingDate: self.$timeTableViewModel.currentDate,
+                            comeTo: .timetable
+                        )
+                        Spacer()
+                    }
+                    Spacer()
+                }
+                .background(
+                    Color.white.opacity(0.001)
+                        .onTapGesture {
+                            self.isDateButtonClicked = false
+                        }
+                )
             } else {
                 if isPopupVisible.wrappedValue {
                     ZStack {

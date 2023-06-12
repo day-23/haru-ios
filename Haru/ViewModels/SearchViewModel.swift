@@ -75,7 +75,7 @@ final class SearchViewModel: ObservableObject {
             let day = 60 * 60 * 24
             var repeatStart = schedule.repeatStart
 
-            var repeatEndStartDate = CalendarHelper.makeDate(date: schedule.repeatEnd, date2: repeatStart)
+            let repeatEndStartDate = CalendarHelper.makeDate(date: schedule.repeatEnd, date2: repeatStart)
 
             if repeatEndStartDate < Date() {
                 while repeatStart < repeatEndStartDate {
@@ -153,7 +153,7 @@ final class SearchViewModel: ObservableObject {
             var repeatStart = schedule.repeatStart
             var repeatEnd = CalendarHelper.makeDate(date: repeatStart, date2: schedule.repeatEnd)
 
-            var repeatEndStartDate = CalendarHelper.makeDate(date: schedule.repeatEnd, date2: repeatStart)
+            let repeatEndStartDate = CalendarHelper.makeDate(date: schedule.repeatEnd, date2: repeatStart)
 
             if repeatEndStartDate < Date() {
                 while repeatStart < repeatEndStartDate {
@@ -276,6 +276,4 @@ final class SearchViewModel: ObservableObject {
             }
         }
     }
-
-    func refreshFriendList() {}
 }

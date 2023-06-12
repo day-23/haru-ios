@@ -176,7 +176,7 @@ struct CommentListView: View {
                 }
             }
         }
-        .animation(.none)
+        .animation(nil, value: UUID())
         .onAppear {
             commentVM.initLoad(isTemplate: isTemplate)
         }

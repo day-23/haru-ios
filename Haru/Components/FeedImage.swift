@@ -59,15 +59,14 @@ struct FeedImage: View {
                             )
 
                         } label: {
-                            Image(uiImage: uiImage)
-                                .renderingMode(.original)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(
-                                    width: UIScreen.main.bounds.width,
-                                    height: UIScreen.main.bounds.height
-                                )
-                                .clipped()
+                            GeometryReader { geo in
+                                Image(uiImage: uiImage)
+                                    .renderingMode(.original)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: geo.size.width, height: geo.size.height)
+                                    .clipped()
+                            }
                         }
                         .buttonStyle(.plain)
                         .disabled(

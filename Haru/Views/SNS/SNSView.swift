@@ -257,7 +257,10 @@ struct SNSView: View {
             self.toggleIsClicked = false
         }
         .onChange(of: self.createPost) { _ in
-            self.postVM.reloadPosts()
+            if self.createPost == true {
+                self.postVM.reloadPosts()
+                self.createPost = false
+            }
         }
     }
 

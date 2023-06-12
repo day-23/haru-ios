@@ -5,6 +5,7 @@
 //  Created by 이준호 on 2023/05/04.
 //
 
+import Mantis
 import Photos
 import SwiftUI
 
@@ -26,6 +27,19 @@ struct PostFormView: View {
 
     let deviceSize = UIScreen.main.bounds.size
 
+    @State var selectedImageNum: Int = 0
+
+    @State private var croppedImage: UIImage?
+    @State private var showingCropper = false
+    @State private var showingCropShapeList = false
+    @State private var cropShapeType: Mantis.CropShapeType = .rect
+    @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
+
+//    @State private var showImagePicker = false
+//    @State private var showCamera = false
+//    @State private var showSourceTypeSelection = false
+//    @State private var sourceType: UIImagePickerController.SourceType?
+
     var body: some View {
         ScrollView {
             if postAddMode == .writing {
@@ -41,29 +55,48 @@ struct PostFormView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 24)
             } else {
-                TabView {
-                    ForEach(postFormVM.imageList.indices, id: \.self) { idx in
-                        Image(uiImage: postFormVM.imageList[idx])
-                            .renderingMode(.original)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(
-                                width: deviceSize.width,
-                                height: deviceSize.width
-                            )
-                            .clipped()
+                VStack {
+                    TabView(selection: $selectedImageNum) {
+                        ForEach(postFormVM.imageList.indices, id: \.self) { idx in
+                            Image(uiImage: postFormVM.imageList[idx])
+                                .renderingMode(.original)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(
+                                    width: deviceSize.width,
+                                    height: deviceSize.width
+                                )
+                                .clipped()
+                        }
                     }
+                    .tabViewStyle(.page)
+                    .indexViewStyle(.page(backgroundDisplayMode: .always))
+                    .frame(width: deviceSize.width, height: deviceSize.width)
+                    .padding(.top, 24)
+
+                    Button("크롭 설정하기") {
+                        croppedImage = postFormVM.oriImageList[selectedImageNum]
+                        presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
+                        showingCropper = true
+                    }.font(.title)
                 }
-                .tabViewStyle(.page)
-                .indexViewStyle(.page(backgroundDisplayMode: .always))
-                .frame(width: deviceSize.width, height: deviceSize.width)
-                .padding(.top, 24)
             }
         }
         .background(Color(0xfdfdfd))
         .onTapGesture {
             hideKeyboard()
         }
+        .fullScreenCover(isPresented: $showingCropper, content: {
+            ImageCropper(image: $croppedImage,
+                         cropShapeType: $cropShapeType,
+                         presetFixedRatioType: $presetFixedRatioType)
+                .onDisappear(perform: reset)
+                .ignoresSafeArea()
+        })
+        .onChange(of: croppedImage, perform: { _ in
+            guard let image = croppedImage else { return }
+            postFormVM.imageList[selectedImageNum] = image
+        })
         .popupImagePicker(
             show: $openPhoto,
             mode: .multiple,
@@ -75,19 +108,39 @@ struct PostFormView: View {
             let manager = PHCachingImageManager.default()
             let options = PHImageRequestOptions()
             var result: [UIImage] = []
+            var oriResult: [UIImage] = []
             options.isSynchronous = true
             DispatchQueue.global(qos: .userInteractive).async {
                 assets.forEach { asset in
                     manager.requestImage(for: asset, targetSize: .init(), contentMode: .aspectFit, options: options) { image, _ in
                         guard let image else { return }
-                        DispatchQueue.main.async {
-                            result.append(image)
+
+                        // 보이는 화면과 이미지의 비율 계산
+                        let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
+                                                 image.size.height / UIScreen.main.bounds.height)
+
+                        let cropZone = CGRect(x: 0,
+                                              y: 0,
+                                              width: UIScreen.main.bounds.width * imageViewScale,
+                                              height: UIScreen.main.bounds.width * imageViewScale)
+
+                        // 이미지 자르기
+                        guard let cutImageRef: CGImage = image.cgImage?.cropping(to: cropZone)
+                        else {
+                            return
                         }
+
+                        // 최종 uiimage 저장
+                        let data = UIImage(cgImage: cutImageRef, scale: image.imageRendererFormat.scale, orientation: image.imageOrientation)
+
+                        result.append(data)
+                        oriResult.append(image)
                     }
                 }
 
                 DispatchQueue.main.async {
                     postFormVM.imageList = result
+                    postFormVM.oriImageList = oriResult
                 }
             }
         }
@@ -141,5 +194,10 @@ struct PostFormView: View {
                 .disabled(postAddMode == .drawing ? postFormVM.imageList.isEmpty : postFormVM.content == "")
             }
         }
+    }
+
+    func reset() {
+        cropShapeType = .rect
+        presetFixedRatioType = .canUseMultiplePresetFixedRatio()
     }
 }

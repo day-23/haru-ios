@@ -202,7 +202,7 @@ struct PopupImagePicker: View {
         .onTapGesture {
             // MARK: adding / Removing Asset
 
-            if imagePickerModel.selectedImages.count > 10 {
+            if imagePickerModel.selectedImages.count >= 10 {
                 return
             }
 
