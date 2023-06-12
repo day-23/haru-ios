@@ -130,7 +130,6 @@
 		6F0649442A2A4DDE001C88B3 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0649432A2A4DDE001C88B3 /* SearchService.swift */; };
 		6F0649462A2A4FBE001C88B3 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0649452A2A4FBE001C88B3 /* SearchViewModel.swift */; };
 		6F0649482A2A6BA5001C88B3 /* StringHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0649472A2A6BA5001C88B3 /* StringHelper.swift */; };
-		6F06494A2A2A76D2001C88B3 /* SearchTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0649492A2A76D2001C88B3 /* SearchTodoView.swift */; };
 		6F0B0F772A0E9FE00003F313 /* CommentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0B0F762A0E9FE00003F313 /* CommentService.swift */; };
 		6F0B0F792A0EABC00003F313 /* CommentFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0B0F782A0EABC00003F313 /* CommentFormViewModel.swift */; };
 		6F1082C72A0E43FF00CB89DB /* PostImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1082C62A0E43FF00CB89DB /* PostImage.swift */; };
@@ -326,7 +325,6 @@
 		6F0649432A2A4DDE001C88B3 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		6F0649452A2A4FBE001C88B3 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		6F0649472A2A6BA5001C88B3 /* StringHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringHelper.swift; sourceTree = "<group>"; };
-		6F0649492A2A76D2001C88B3 /* SearchTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTodoView.swift; sourceTree = "<group>"; };
 		6F0B0F762A0E9FE00003F313 /* CommentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentService.swift; sourceTree = "<group>"; };
 		6F0B0F782A0EABC00003F313 /* CommentFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentFormViewModel.swift; sourceTree = "<group>"; };
 		6F1082C62A0E43FF00CB89DB /* PostImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImage.swift; sourceTree = "<group>"; };
@@ -745,7 +743,6 @@
 			isa = PBXGroup;
 			children = (
 				6F9C74102A2A490100C04788 /* ProductivitySearchView.swift */,
-				6F0649492A2A76D2001C88B3 /* SearchTodoView.swift */,
 				6F8113492A341EF5006613AD /* UserSearchView.swift */,
 			);
 			path = Search;
@@ -1022,7 +1019,6 @@
 				6F9AE8652A21F26D00BD5269 /* UIApplication.swift in Sources */,
 				1306677B29CEE19C00AACEE6 /* HaruLinkView.swift in Sources */,
 				1306670F29CEE13200AACEE6 /* Request.swift in Sources */,
-				6F06494A2A2A76D2001C88B3 /* SearchTodoView.swift in Sources */,
 				6F54DF5729DD7C33002FAD7F /* FeedView.swift in Sources */,
 				6F0B0F772A0E9FE00003F313 /* CommentService.swift in Sources */,
 				1306670A29CEE13200AACEE6 /* tagWithTodo.swift in Sources */,

@@ -403,6 +403,9 @@ struct CheckListView: View {
             if self.isModalVisible {
                 return
             }
+            if !self.isTextFieldFocused {
+                self.addViewModel.content = ""
+            }
 
             withAnimation {
                 Global.shared.isTabViewActive = !value
