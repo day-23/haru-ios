@@ -161,7 +161,7 @@ struct ProductivitySearchView: View {
                         )
                     }
             } label: {
-                SearchTodoView(
+                TodoView(
                     checkListViewModel: self.checkListVM,
                     todo: todo,
                     at: todo.at,

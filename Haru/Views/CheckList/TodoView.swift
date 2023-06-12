@@ -13,6 +13,7 @@ struct TodoView: View {
     var backgroundColor: Color = .white
     var at: RepeatAt = .front
     var isMiniCalendar: Bool = false
+    var contentWords: [(String, Bool)]? = nil
     var completeAction: () -> Void = {}
     var updateAction: () -> Void = {}
 
@@ -160,11 +161,18 @@ struct TodoView: View {
                 .disabled(!isCompletionButtonActive)
 
             VStack(alignment: .leading, spacing: 0) {
-                Text(todo.content)
-                    .multilineTextAlignment(.leading)
-                    .font(.pretendard(size: 16, weight: .bold))
-                    .strikethrough(todo.completed)
-                    .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
+                if contentWords != nil {
+                    contentWordsView()
+                        .multilineTextAlignment(.leading)
+                        .font(.pretendard(size: 16, weight: .bold))
+                        .strikethrough(todo.completed)
+                } else {
+                    Text(todo.content)
+                        .multilineTextAlignment(.leading)
+                        .font(.pretendard(size: 16, weight: .bold))
+                        .strikethrough(todo.completed)
+                        .foregroundColor(!todo.completed ? Color(0x191919) : Color(0xacacac))
+                }
 
                 if showExtraInfo {
                     HStack(spacing: 0) {
@@ -251,5 +259,16 @@ struct TodoView: View {
                 .frame(height: 0)
             }
         })
+    }
+
+    @ViewBuilder func contentWordsView() -> some View {
+        if let contentWords {
+            contentWords.reduce(Text("")) { res, content in
+                res + Text("\(content.0)")
+                    .foregroundColor(content.1 ? Color(0x1dafff) : Color(0x191919))
+            }
+        } else {
+            Text("")
+        }
     }
 }
