@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct FeedView: View {
-    var post: Post
+    @State var post: Post
     var postImageList: [PostImage?]
 
     @StateObject var postVM: PostViewModel
     @Binding var postOptModalVis: (Bool, Post?)
 
-    var comeToRoot: Bool = false
     var isMine: Bool {
         post.user.id == Global.shared.user?.id
     }
@@ -46,7 +45,11 @@ struct FeedView: View {
                                 .font(.pretendard(size: 14, weight: .bold))
                                 .foregroundColor(.mainBlack)
                         }
-                    }.disabled(!comeToRoot)
+                    }.disabled(
+                        postVM.option == .target_feed ||
+                            postVM.option == .target_media_all ||
+                            postVM.option == .target_media_hashtag
+                    )
                     
                     Text("\(post.createdAt.relative())")
                         .font(.pretendard(size: 14, weight: .regular))
@@ -80,7 +83,15 @@ struct FeedView: View {
                 HStack(spacing: 14) {
                     HStack(spacing: 9) {
                         Button {
-                            postVM.likeThisPost(targetPostId: post.id)
+                            postVM.likeThisPost(targetPostId: post.id) {
+                                if post.isLiked {
+                                    post.likedCount -= 1
+                                    post.isLiked = false
+                                } else {
+                                    post.likedCount += 1
+                                    post.isLiked = true
+                                }
+                            }
                         } label: {
                             Image(post.isLiked ? "sns-heart-fill" : "sns-heart")
                                 .resizable()

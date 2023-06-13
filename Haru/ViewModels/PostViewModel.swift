@@ -521,22 +521,14 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    func likeThisPost(targetPostId: String) {
+    func likeThisPost(
+        targetPostId: String,
+        completion: @escaping () -> Void)
+    {
         postService.likeThisPost(targetPostId: targetPostId) { result in
             switch result {
             case .success:
-                for (idx, post) in self.postList.enumerated() {
-                    if post.id != targetPostId {
-                        continue
-                    }
-                    if post.isLiked {
-                        self.postList[idx].likedCount -= 1
-                        self.postList[idx].isLiked = false
-                    } else {
-                        self.postList[idx].likedCount += 1
-                        self.postList[idx].isLiked = true
-                    }
-                }
+                completion()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
