@@ -51,7 +51,6 @@ struct RootView: View {
                                     .padding(.horizontal, 16)
                                     .background(Color(0xFDFDFD, opacity: 0.5))
                                     .cornerRadius(10)
-                                    .offset(y: UIScreen.main.bounds.height * 0.3)
                             }
                     } else if let me = global.user,
                               global.isLoggedIn,
