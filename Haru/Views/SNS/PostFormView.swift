@@ -84,7 +84,11 @@ struct PostFormView: View {
         }
         .background(Color(0xfdfdfd))
         .onTapGesture {
-            hideKeyboard()
+            if isFocused {
+                hideKeyboard()
+            } else {
+                isFocused = true
+            }
         }
         .fullScreenCover(isPresented: $showingCropper, content: {
             ImageCropper(image: $croppedImage,
