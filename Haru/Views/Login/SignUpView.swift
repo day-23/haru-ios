@@ -28,6 +28,8 @@ struct SignUpView: View {
     @State private var hasIdFieldFocusAtLeastOnce: Bool = false
     @State private var hasNicknameFieldFocusAtLeastOnce: Bool = false
 
+    @State private var isChangedByLengthOver = false
+
     var body: some View {
         VStack(spacing: 0) {
             LinearGradient(
@@ -172,8 +174,15 @@ struct SignUpView: View {
 
                                     isValidNickname = false
                                     if newValue.count > 8 {
+                                        isChangedByLengthOver = true
                                         isLongNickname = true
                                         nickname = String(newValue[newValue.startIndex ..< newValue.index(newValue.endIndex, offsetBy: -1)])
+                                    } else {
+                                        if isChangedByLengthOver {
+                                            isChangedByLengthOver = false
+                                        } else {
+                                            isLongNickname = false
+                                        }
                                     }
                                 }
                                 .onChange(of: isNicknameFieldFocused) { _ in
@@ -221,10 +230,10 @@ struct SignUpView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         if hasNicknameFieldFocusAtLeastOnce && nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             Text("반드시 입력해야 합니다.")
-                        } else if isLongNickname {
-                            Text("닉네임이 8글자를 초과했습니다.")
                         } else if isBadNickname {
                             Text("사용이 불가능한 닉네임입니다.")
+                        } else if isLongNickname {
+                            Text("닉네임이 8글자를 초과했습니다.")
                         } else if isValidNickname {
                             Text("사용 가능한 닉네임입니다.")
                                 .foregroundColor(Color(0x1DAFFF))
