@@ -33,7 +33,11 @@ struct PostFormDrawingView: View {
         }
         .background(Color(0xfdfdfd))
         .onTapGesture {
-            hideKeyboard()
+            if isFocused {
+                hideKeyboard()
+            } else {
+                isFocused = true
+            }
         }
         .navigationBarBackButtonHidden()
         .toolbar {

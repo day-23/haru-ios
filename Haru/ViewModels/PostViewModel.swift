@@ -23,7 +23,8 @@ final class PostViewModel: ObservableObject {
 
     // MARK: postVM 공용 필드
 
-    @Published var profileImage: PostImage?
+    // TODO: 프로필 이미지들로 받기
+    @Published var profileImageList: [Post.ID: PostImage?] = [:]
 
     var option: PostOption
 
@@ -253,11 +254,11 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    func fetchProfileImage(profileUrl: String) {
+    func fetchProfileImage(postId: String, profileUrl: String) {
         DispatchQueue.global().async {
             if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
                 DispatchQueue.main.async {
-                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
+                    self.profileImageList[postId] = PostImage(url: profileUrl, uiImage: uiImage)
                 }
             } else {
                 guard
@@ -272,7 +273,7 @@ final class PostViewModel: ObservableObject {
 
                 ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
                 DispatchQueue.main.async {
-                    self.profileImage = PostImage(url: profileUrl, uiImage: uiImage)
+                    self.profileImageList[postId] = PostImage(url: profileUrl, uiImage: uiImage)
                 }
             }
         }
@@ -291,7 +292,7 @@ final class PostViewModel: ObservableObject {
                 success.0.forEach { post in
                     // 프로필 이미지 캐싱
                     if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(profileUrl: profileUrl)
+                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
                     }
                     // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
                     self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
@@ -324,7 +325,7 @@ final class PostViewModel: ObservableObject {
                 success.0.forEach { post in
                     // 프로필 이미지 캐싱
                     if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(profileUrl: profileUrl)
+                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
                     }
                     // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
                     self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
@@ -368,7 +369,7 @@ final class PostViewModel: ObservableObject {
                 success.0.forEach { post in
                     // 프로필 이미지 캐싱
                     if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(profileUrl: profileUrl)
+                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
                     }
                     // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
                     self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
@@ -401,7 +402,7 @@ final class PostViewModel: ObservableObject {
                 success.0.forEach { post in
                     // 프로필 이미지 캐싱
                     if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(profileUrl: profileUrl)
+                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
                     }
                     // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
                     self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
@@ -429,6 +430,11 @@ final class PostViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 success.0.forEach { post in
+                    // 프로필 이미지 캐싱
+                    if let profileUrl = post.user.profileImage {
+                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
+                    }
+
                     self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
                     self.fetchPostImage(
                         postId: post.id,
@@ -455,6 +461,11 @@ final class PostViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 success.0.forEach { post in
+                    // 프로필 이미지 캐싱
+                    if let profileUrl = post.user.profileImage {
+                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
+                    }
+
                     self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
                     self.fetchPostImage(
                         postId: post.id,
@@ -521,22 +532,14 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    func likeThisPost(targetPostId: String) {
+    func likeThisPost(
+        targetPostId: String,
+        completion: @escaping () -> Void)
+    {
         postService.likeThisPost(targetPostId: targetPostId) { result in
             switch result {
             case .success:
-                for (idx, post) in self.postList.enumerated() {
-                    if post.id != targetPostId {
-                        continue
-                    }
-                    if post.isLiked {
-                        self.postList[idx].likedCount -= 1
-                        self.postList[idx].isLiked = false
-                    } else {
-                        self.postList[idx].likedCount += 1
-                        self.postList[idx].isLiked = true
-                    }
-                }
+                completion()
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }

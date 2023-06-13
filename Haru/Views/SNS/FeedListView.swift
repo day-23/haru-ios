@@ -22,8 +22,7 @@ struct FeedListView: View {
                             post: post,
                             postImageList: postVM.postImageList[post.id] ?? [],
                             postVM: postVM,
-                            postOptModalVis: $postOptModalVis,
-                            comeToRoot: comeToRoot
+                            postOptModalVis: $postOptModalVis
                         )
                     }
                 }
