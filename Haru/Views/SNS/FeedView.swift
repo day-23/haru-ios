@@ -38,7 +38,7 @@ struct FeedView: View {
                         )
                     } label: {
                         HStack {
-                            ProfileImgView(profileImage: postVM.profileImage)
+                            ProfileImgView(profileImage: postVM.profileImageList[post.id] ?? nil)
                                 .frame(width: 30, height: 30)
                             
                             Text("\(post.user.name)")
