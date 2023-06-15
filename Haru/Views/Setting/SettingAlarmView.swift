@@ -26,12 +26,18 @@ struct SettingAlarmView: View {
                 global.user?.morningAlarmTime = nil
             }
 
-            userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
-                switch result {
-                case .success:
-                    AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
-                case .failure:
-                    break
+            if global.user?.morningAlarmTime != nil {
+                userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
+                    switch result {
+                    case .success:
+                        AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
+                    case .failure:
+                        break
+                    }
+                }
+            } else {
+                Task {
+                    await AlarmHelper.removeRegularNotification(regular: .morning)
                 }
             }
         }
@@ -45,12 +51,19 @@ struct SettingAlarmView: View {
             return time
         } set: {
             global.user?.morningAlarmTime = $0
-            userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
-                switch result {
-                case .success:
-                    AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
-                case .failure:
-                    break
+
+            if global.user?.morningAlarmTime != nil {
+                userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
+                    switch result {
+                    case .success:
+                        AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
+                    case .failure:
+                        break
+                    }
+                }
+            } else {
+                Task {
+                    await AlarmHelper.removeRegularNotification(regular: .morning)
                 }
             }
         }
@@ -66,12 +79,19 @@ struct SettingAlarmView: View {
             } else {
                 global.user?.nightAlarmTime = nil
             }
-            userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
-                switch result {
-                case .success:
-                    AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
-                case .failure:
-                    break
+
+            if global.user?.nightAlarmTime != nil {
+                userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
+                    switch result {
+                    case .success:
+                        AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
+                    case .failure:
+                        break
+                    }
+                }
+            } else {
+                Task {
+                    await AlarmHelper.removeRegularNotification(regular: .evening)
                 }
             }
         }
@@ -85,12 +105,19 @@ struct SettingAlarmView: View {
             return time
         } set: {
             global.user?.nightAlarmTime = $0
-            userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
-                switch result {
-                case .success:
-                    AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
-                case .failure:
-                    break
+
+            if global.user?.nightAlarmTime != nil {
+                userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
+                    switch result {
+                    case .success:
+                        AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
+                    case .failure:
+                        break
+                    }
+                }
+            } else {
+                Task {
+                    await AlarmHelper.removeRegularNotification(regular: .evening)
                 }
             }
         }

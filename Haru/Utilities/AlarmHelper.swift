@@ -62,6 +62,10 @@ final class AlarmHelper {
         }
     }
 
+    static func removeRegularNotification(regular: Regular) async {
+        await removeNotification(identifier: regular.rawValue)
+    }
+
     static func createNotification(
         identifier: String,
         body: String,
