@@ -80,8 +80,8 @@ struct FeedView: View {
                     isMine: isMine
                 )
                 
-                HStack(spacing: 14) {
-                    HStack(spacing: 9) {
+                HStack(spacing: 10) {
+                    HStack(spacing: 5) {
                         Button {
                             postVM.likeThisPost(targetPostId: post.id) {
                                 if post.isLiked {
@@ -107,10 +107,11 @@ struct FeedView: View {
                         if isMine {
                             Text("\(post.likedCount)")
                                 .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x191919))
                         }
                     }
                     
-                    HStack(spacing: 10) {
+                    HStack(spacing: 5) {
                         NavigationLink {
                             CommentView(
                                 isTemplate: post.isTemplatePost != nil,
@@ -141,6 +142,7 @@ struct FeedView: View {
                         if isMine {
                             Text("\(post.commentCount)")
                                 .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x191919))
                         }
                     }
                     
