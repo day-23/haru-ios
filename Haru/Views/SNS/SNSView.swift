@@ -79,7 +79,9 @@ struct SNSView: View {
                         }
                     }
 
-                Modal(isActive: self.$postOptModalVis.0, ratio: 0.1) {
+                Modal(isActive: self.$postOptModalVis.0,
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.25 : 0.1)
+                {
                     VStack(spacing: 20) {
                         if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {} label: {

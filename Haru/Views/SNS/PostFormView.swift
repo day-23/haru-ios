@@ -57,16 +57,18 @@ struct PostFormView: View {
             } else {
                 VStack {
                     ZStack {
-                        Text("\(selectedImageNum + 1)/\(postFormVM.imageList.count)")
-                            .font(.pretendard(size: 12, weight: .regular))
-                            .foregroundColor(Color(0xfdfdfd))
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 14)
-                            .background(Color(0x191919).opacity(0.5))
-                            .cornerRadius(15)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                            .offset(x: -10, y: 10)
-                            .zIndex(2)
+                        if !postFormVM.imageList.isEmpty {
+                            Text("\(selectedImageNum + 1)/\(postFormVM.imageList.count)")
+                                .font(.pretendard(size: 12, weight: .regular))
+                                .foregroundColor(Color(0xfdfdfd))
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 14)
+                                .background(Color(0x191919).opacity(0.5))
+                                .cornerRadius(15)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                                .offset(x: -10, y: 10)
+                                .zIndex(2)
+                        }
 
                         TabView(selection: $selectedImageNum) {
                             ForEach(postFormVM.imageList.indices, id: \.self) { idx in

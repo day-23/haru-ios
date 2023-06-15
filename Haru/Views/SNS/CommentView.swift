@@ -288,10 +288,13 @@ struct CommentView: View, KeyboardReadable {
                     .onTapGesture {
                         withAnimation {
                             hideCommentModalVis = false
+                            hideCommentTarget = nil
                         }
                     }
 
-                Modal(isActive: $hideCommentModalVis, ratio: 0.3) {
+                Modal(isActive: $hideCommentModalVis,
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.35 : 0.3)
+                {
                     VStack(spacing: 0) {
                         HStack(alignment: .center, spacing: 0) {
                             if let profileImage = target.user.profileImage {
@@ -670,8 +673,8 @@ struct CommentView: View, KeyboardReadable {
 
                 Text("\(comment.content)")
                     .font(.pretendard(
-                        size: hideCommentTarget?.id == comment.id ? 11 : 14,
-                        weight: hideCommentTarget?.id == comment.id ? .bold : .regular
+                        size: hideCommentTarget?.id == comment.id && overHide ? 11 : 14,
+                        weight: hideCommentTarget?.id == comment.id && overHide ? .bold : .regular
                     ))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
