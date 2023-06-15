@@ -104,12 +104,13 @@ struct CommentView: View, KeyboardReadable {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .center, spacing: 0) {
                     HStack(spacing: 5) {
-                        Image(isMine ? "sns-edit" : "sns-comment-empty")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 28, height: 28)
-
                         if alreadyComment[postPageNum] == nil {
+                            Image(isMine ?
+                                "sns-edit" : "sns-comment-empty")
+                                .renderingMode(.template)
+                                .resizable()
+                                .frame(width: 28, height: 28)
+
                             Text(
                                 isMine ?
                                     isCommentEditing ? "편집중" : "편집하기"
@@ -117,11 +118,31 @@ struct CommentView: View, KeyboardReadable {
                                     "작성하기"
                             )
                             .font(.pretendard(size: 14, weight: .bold))
+
+                        } else {
+                            Image("sns-comment-fill")
+                                .resizable()
+                                .frame(width: 28, height: 28)
+
+                            Text("내 코멘트")
+                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x1DAFFF))
                         }
                     }
                     .onTapGesture {
                         if isMine {
                             isCommentEditing = true
+                        } else if alreadyComment[postPageNum] == nil {
+                            x = UIScreen.main.bounds.size.width / 2
+                            y = UIScreen.main.bounds.size.width / 2
+                            startingX = UIScreen.main.bounds.size.width / 2
+                            startingY = UIScreen.main.bounds.size.width / 2
+                            isCommentWriting = true
+                            isFocused = true
+                        } else {
+                            delCommentTarget = alreadyComment[postPageNum]?.0
+                            isCommentDeleting = true
+                            deleteWriting = true
                         }
                     }
                     .foregroundColor(
@@ -140,21 +161,23 @@ struct CommentView: View, KeyboardReadable {
                                 Button {
                                     hideAllComment = false
                                 } label: {
-                                    Image("sns-comment-disable")
+                                    Image("todo-tag-hidden")
+
                                         .resizable()
                                         .renderingMode(.template)
-                                        .foregroundColor(Color(0xCACACA))
+                                        .foregroundColor(Color(0x1CAFFF))
                                         .frame(width: 28, height: 28)
                                 }
                             } else {
                                 Button {
                                     hideAllComment = true
                                 } label: {
-                                    Image("sns-comment")
-                                        .renderingMode(.template)
+                                    Image("todo-tag-visible")
                                         .resizable()
+                                        .renderingMode(.template)
+                                        .foregroundColor(Color(0x646464))
+
                                         .frame(width: 28, height: 28)
-                                        .foregroundColor(Color(0x1CAFFF))
                                 }
                             }
 
@@ -489,30 +512,22 @@ struct CommentView: View, KeyboardReadable {
 
                 commentListView()
 
-                if isCommentWriting {
-                    ZStack {
-                        Circle()
-                            .frame(width: overDelete ? 90 : 80, height: overDelete ? 90 : 80)
-                            .foregroundColor(overDelete ? Color(0xF71E58) : .gray2)
-
-                        if alreadyComment[postPageNum] == nil {
-                            Image("cancel")
+                Group {
+                    if isCommentWriting {
+                        if overDelete {
+                            Image("sns-drag-cancel")
                                 .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 38, height: 38)
-                                .foregroundColor(.white)
+                                .frame(width: 90, height: 90)
+                                .zIndex(5)
                         } else {
-                            Image("sns-feed-delete-button")
+                            Image("sns-drag-cancel-default")
                                 .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 38, height: 38)
-                                .foregroundColor(.white)
+                                .frame(width: 90, height: 90)
+                                .zIndex(5)
                         }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                    .offset(y: 80 + 30)
-                    .zIndex(2)
+                    } else if isCommentEditing {}
                 }
+                .offset(y: deviceSize.width / 2 + 80)
             }
             .onTapGesture { location in
                 if isCommentWriting || isCommentDeleting || isCommentEditing {
