@@ -6,52 +6,61 @@
 //
 
 import SwiftUI
+import SwiftUIPager
 
 struct CalendarDayDetailView: View {
     @StateObject var calendarVM: CalendarViewModel
     @StateObject var todoAddViewModel: TodoAddViewModel
     @StateObject var checkListVM: CheckListViewModel
+    @StateObject var page: Page
     var row: Int
     
     @State private var content: String = ""
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
-                Text("\(calendarVM.pivotDateList[row].getDateFormatString("M월 dd일 E요일"))")
-                    .foregroundColor(.white)
-                    .font(.pretendard(size: 20, weight: .bold))
+                Text("\(calendarVM.pivotDateList[row].getDateFormatString("dd일 E요일"))")
+                    .foregroundColor(Color(0xFDFDFD))
+                    .font(.pretendard(size: 24, weight: .bold))
+                
                 Spacer()
+                
                 Group {
                     Button {
-                        print("날짜 하루 낮추기")
+                        withAnimation {
+                            page.update(.new(index: page.index - 1))
+                        }
                     } label: {
                         Image(systemName: "chevron.left")
                     }
                     Button {
-                        print("날짜 하루 낮추기")
+                        withAnimation {
+                            page.update(.new(index: page.index + 1))
+                        }
                     } label: {
                         Image(systemName: "chevron.right")
                     }
                 }
-                .tint(.white)
+                .tint(Color(0xFDFDFD))
             }
-            .padding()
-            .background(.gradation2)
-            
-            Spacer()
+            .padding(.horizontal, 24)
+            .padding(.top, 25)
+            .padding(.bottom, 15)
             
             ZStack {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        HStack {
-                            Image("calendar-schedule")
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack(spacing: 12) {
+                            Image("calendar-mini-calendar")
                             Text("일정")
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(.gradientStart1)
+                                .font(.pretendard(size: 16, weight: .bold))
+                                .foregroundColor(Color(0x1DAFFF))
                             Spacer()
                         }
                         .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                        .padding(.bottom, 6)
                         
                         ForEach(calendarVM.scheduleList[row].indices, id: \.self) { index in
                             let schedule = calendarVM.scheduleList[row][index]
@@ -67,11 +76,11 @@ struct CalendarDayDetailView: View {
                                     isSchModalVisible: .constant(false)
                                 )
                             } label: {
-                                HStack(spacing: 20) {
+                                HStack(spacing: 12) {
                                     Circle()
                                         .fill(Color(schedule.category?.color))
-                                        .frame(width: 14, height: 14)
-                                    VStack(alignment: .leading) {
+                                        .frame(width: 18, height: 18)
+                                    VStack(alignment: .leading, spacing: 3) {
                                         Text("\(schedule.content)")
                                             .font(.pretendard(size: 16, weight: .bold))
                                         Text(schedule.isAllDay ? "하루 종일" :
@@ -86,22 +95,26 @@ struct CalendarDayDetailView: View {
                                         .font(.pretendard(size: 12, weight: .regular))
                                     }
                                 }
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, 19)
                             }
                             .disabled(schedule.category == Global.shared.holidayCategory)
                             .foregroundColor(Color(0x191919))
+                            .padding(.top, 11)
                         }
                         
                         Divider()
+                            .padding(.top, 17)
+                            .padding(.bottom, 10)
                         
-                        HStack {
-                            Image("calendar-todo")
+                        HStack(spacing: 12) {
+                            Image("calendar-mini-todo")
                             Text("할일")
-                                .foregroundColor(.gradientStart1)
-                                .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x1DAFFF))
+                                .font(.pretendard(size: 16, weight: .bold))
                             Spacer()
                         }
                         .padding(.horizontal, 20)
+                        .padding(.bottom, 4)
                         
                         ForEach(calendarVM.todoList[row].indices, id: \.self) { index in
                             NavigationLink {
@@ -118,6 +131,7 @@ struct CalendarDayDetailView: View {
                                 TodoView(
                                     checkListViewModel: checkListVM,
                                     todo: calendarVM.todoList[row][index],
+                                    backgroundColor: Color(0xFDFDFD),
                                     at: calendarVM.todoList[row][index].at,
                                     isMiniCalendar: true
                                 ) {
@@ -129,11 +143,12 @@ struct CalendarDayDetailView: View {
                                 }
                             }
                             .tint(.mainBlack)
-                            .padding(.leading, 5)
+                            .padding(.leading, 1)
+                            .padding(.top, 11)
                         }
                         
                         Spacer()
-                            .frame(height: 30)
+                            .frame(height: 47)
                     }
                 } // ScrollView
                 
@@ -142,11 +157,11 @@ struct CalendarDayDetailView: View {
                     
                     HStack {
                         TextField("\(calendarVM.pivotDateList[row].month)월 \(calendarVM.pivotDateList[row].day)일 일정 추가", text: $content)
-                            .font(.pretendard(size: 14, weight: .light))
-                            .frame(height: 20)
-                            .padding(10)
+                            .font(.pretendard(size: 14, weight: .regular))
+                            .foregroundColor(Color(0x191919))
+                            .padding(.vertical, 10)
                             .padding(.horizontal, 12)
-                            .background(.gray4)
+                            .background(Color(0xF1F1F5))
                             .cornerRadius(8)
                         
                         Button {
@@ -162,17 +177,18 @@ struct CalendarDayDetailView: View {
                         } label: {
                             Image("calendar-add-button-small")
                                 .resizable()
-                                .frame(width: 40, height: 40)
+                                .frame(width: 28, height: 28)
                         }
                     }
                     .padding(.horizontal, 12)
+                    .padding(.trailing, 4)
                 }
+                .padding(.bottom, 10)
             }
-            
-            Rectangle()
-                .fill(.gradation2)
-                .frame(height: 30)
+            .background(Color(0xFDFDFD))
         }
-        .background(.white)
+        .background(
+            Image("calendar-card-background")
+        )
     }
 }
