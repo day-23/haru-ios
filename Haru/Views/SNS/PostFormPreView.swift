@@ -72,7 +72,7 @@ struct PostFormPreView: View {
                                 .foregroundColor(postFormVM.tagList.isEmpty ? Color(0xacacac) : .black)
                         }
                         .padding(.horizontal, 20)
-                        .padding(.bottom, 65)
+                        .padding(.bottom, 40)
                     }
 
                     if postFormVM.postOption == .drawing {

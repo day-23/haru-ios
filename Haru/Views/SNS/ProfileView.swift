@@ -116,7 +116,9 @@ struct ProfileView: View {
                         }
                     }
 
-                Modal(isActive: self.$postOptModalVis.0, ratio: 0.1) {
+                Modal(isActive: self.$postOptModalVis.0,
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.25 : 0.1)
+                {
                     VStack(spacing: 20) {
                         if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {} label: {
@@ -242,7 +244,8 @@ struct ProfileView: View {
                         }
                     }
 
-                Modal(isActive: self.$blockModalVis, ratio: 0.3) {
+                Modal(isActive: self.$blockModalVis,
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.4 : 0.3) {
                     VStack(spacing: 0) {
                         ProfileImgView(profileImage: userProfileVM.profileImage)
                             .frame(width: 70, height: 70)
