@@ -103,175 +103,178 @@ struct CommentView: View, KeyboardReadable {
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 5) {
-                HStack(alignment: .center, spacing: 0) {
-                    HStack(spacing: 5) {
-                        if alreadyComment[postPageNum] == nil {
-                            Image(isMine ?
-                                "sns-edit" : "sns-comment-empty")
-                                .renderingMode(.template)
-                                .resizable()
-                                .frame(width: 28, height: 28)
+                if !keyboardUp {
+                    HStack(alignment: .center, spacing: 0) {
+                        HStack(spacing: 5) {
+                            if alreadyComment[postPageNum] == nil {
+                                Image(isMine ?
+                                    "sns-edit" : "sns-comment-empty")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
 
-                            Text(
-                                isMine ?
-                                    isCommentEditing ? "편집중" : "편집하기"
-                                    :
-                                    "작성하기"
-                            )
-                            .font(.pretendard(size: 14, weight: .bold))
-
-                        } else {
-                            Image("sns-comment-fill")
-                                .resizable()
-                                .frame(width: 28, height: 28)
-
-                            Text("내 코멘트")
+                                Text(
+                                    isMine ?
+                                        isCommentEditing ? "편집중" : "편집하기"
+                                        :
+                                        "작성하기"
+                                )
                                 .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(Color(0x1DAFFF))
-                        }
-                    }
-                    .onTapGesture {
-                        if isMine {
-                            isCommentEditing = true
-                        } else if alreadyComment[postPageNum] == nil {
-                            x = UIScreen.main.bounds.size.width / 2
-                            y = UIScreen.main.bounds.size.width / 2
-                            startingX = UIScreen.main.bounds.size.width / 2
-                            startingY = UIScreen.main.bounds.size.width / 2
-                            isCommentWriting = true
-                            isFocused = true
-                        } else {
-                            delCommentTarget = alreadyComment[postPageNum]?.0
-                            isCommentDeleting = true
-                            deleteWriting = true
-                        }
-                    }
-                    .foregroundColor(
-                        isMine ?
-                            isCommentEditing ? Color(0x1DAFFF) : Color(0x646464)
-                            :
-                            alreadyComment[postPageNum] == nil ? Color(0x646464) : Color(0x1DAFFF)
-                    )
-                    .opacity(isCommentWriting || isCommentDeleting ? 0 : 1)
 
-                    Spacer(minLength: 0)
-
-                    Group {
-                        HStack(spacing: 10) {
-                            if hideAllComment {
-                                Button {
-                                    hideAllComment = false
-                                } label: {
-                                    Image("todo-tag-hidden")
-
-                                        .resizable()
-                                        .renderingMode(.template)
-                                        .foregroundColor(Color(0x1CAFFF))
-                                        .frame(width: 28, height: 28)
-                                }
                             } else {
-                                Button {
-                                    hideAllComment = true
-                                } label: {
-                                    Image("todo-tag-visible")
-                                        .resizable()
-                                        .renderingMode(.template)
-                                        .foregroundColor(Color(0x646464))
+                                Image("sns-comment-fill")
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
 
-                                        .frame(width: 28, height: 28)
-                                }
+                                Text("내 코멘트")
+                                    .font(.pretendard(size: 14, weight: .bold))
+                                    .foregroundColor(Color(0x1DAFFF))
                             }
-
+                        }
+                        .onTapGesture {
                             if isMine {
-                                NavigationLink {
-                                    CommentListView(
-                                        commentVM: CommentViewModel(
-                                            userId: userId,
-                                            postImageIDList: postImageList.map { image in
-                                                image.id
-                                            },
-                                            postId: postId,
-                                            imagePageNum: postPageNum
-                                        ),
-                                        isTemplate: isTemplate
-                                    )
+                                isCommentEditing = true
+                            } else if alreadyComment[postPageNum] == nil {
+                                x = UIScreen.main.bounds.size.width / 2
+                                y = UIScreen.main.bounds.size.width / 2
+                                startingX = UIScreen.main.bounds.size.width / 2
+                                startingY = UIScreen.main.bounds.size.width / 2
+                                isCommentWriting = true
+                                isFocused = true
+                            } else {
+                                delCommentTarget = alreadyComment[postPageNum]?.0
+                                isCommentDeleting = true
+                                deleteWriting = true
+                            }
+                        }
+                        .foregroundColor(
+                            isMine ?
+                                isCommentEditing ? Color(0x1DAFFF) : Color(0x646464)
+                                :
+                                alreadyComment[postPageNum] == nil ? Color(0x646464) : Color(0x1DAFFF)
+                        )
+                        .opacity(isCommentWriting || isCommentDeleting ? 0 : 1)
+
+                        Spacer(minLength: 0)
+
+                        Group {
+                            HStack(spacing: 10) {
+                                if hideAllComment {
+                                    Button {
+                                        hideAllComment = false
+                                    } label: {
+                                        Image("todo-tag-hidden")
+
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .foregroundColor(Color(0x1CAFFF))
+                                            .frame(width: 28, height: 28)
+                                    }
+                                } else {
+                                    Button {
+                                        hideAllComment = true
+                                    } label: {
+                                        Image("todo-tag-visible")
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .foregroundColor(Color(0x646464))
+
+                                            .frame(width: 28, height: 28)
+                                    }
+                                }
+
+                                if isMine {
+                                    NavigationLink {
+                                        CommentListView(
+                                            commentVM: CommentViewModel(
+                                                userId: userId,
+                                                postImageIDList: postImageList.map { image in
+                                                    image.id
+                                                },
+                                                postId: postId,
+                                                imagePageNum: postPageNum
+                                            ),
+                                            isTemplate: isTemplate
+                                        )
+                                    } label: {
+                                        Image("slider")
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .frame(width: 28, height: 28)
+                                            .foregroundColor(Color(0x646464))
+                                    }
+                                }
+                            }
+                            .opacity(isCommentEditing || (isCommentWriting || isCommentDeleting) ? 0 : 1)
+                        }
+                    }
+                    .overlay {
+                        if isCommentEditing {
+                            Group {
+                                Button {
+                                    cancelEditing = true
                                 } label: {
-                                    Image("slider")
-                                        .resizable()
-                                        .renderingMode(.template)
-                                        .frame(width: 28, height: 28)
-                                        .foregroundColor(Color(0x646464))
+                                    HStack(spacing: 5) {
+                                        Image("sns-reset-button")
+                                            .resizable()
+                                            .frame(width: 28, height: 28)
+
+                                        Text("초기화")
+                                            .font(.pretendard(size: 14, weight: .bold))
+                                            .foregroundColor(Color(0xFDFDFD))
+                                    }
                                 }
                             }
-                        }
-                        .opacity(isCommentEditing || (isCommentWriting || isCommentDeleting) ? 0 : 1)
-                    }
-                }
-                .overlay {
-                    if isCommentEditing {
-                        Group {
-                            Button {
-                                cancelEditing = true
-                            } label: {
-                                HStack(spacing: 5) {
-                                    Image("sns-reset-button")
+                        } else if !isCommentWriting && !isCommentDeleting {
+                            Group {
+                                HStack(spacing: 20) {
+                                    Image("todo-toggle")
                                         .resizable()
-                                        .frame(width: 28, height: 28)
+                                        .frame(width: 20, height: 20)
+                                        .rotationEffect(Angle(degrees: -180))
+                                        .onTapGesture {
+                                            withAnimation {
+                                                postPageNum -= 1
+                                            }
+                                        }
+                                        .disabled(postPageNum == 0)
 
-                                    Text("초기화")
-                                        .font(.pretendard(size: 14, weight: .bold))
+                                    Text("\(postPageNum + 1)/\(postImageList.count)")
+                                        .font(.pretendard(size: 12, weight: .regular))
                                         .foregroundColor(Color(0xFDFDFD))
+                                        .padding(.horizontal, 14)
+                                        .padding(.vertical, 6)
+                                        .background(Color(0x646464))
+                                        .cornerRadius(15)
+
+                                    Image("todo-toggle")
+                                        .resizable()
+                                        .frame(width: 20, height: 20)
+                                        .onTapGesture {
+                                            withAnimation {
+                                                postPageNum += 1
+                                            }
+                                        }
+                                        .disabled(postPageNum == postImageList.count - 1)
                                 }
                             }
                         }
-                    } else if !isCommentWriting && !isCommentDeleting {
-                        Group {
-                            HStack(spacing: 20) {
-                                Image("todo-toggle")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .rotationEffect(Angle(degrees: -180))
-                                    .onTapGesture {
-                                        withAnimation {
-                                            postPageNum -= 1
-                                        }
-                                    }
-                                    .disabled(postPageNum == 0)
-
-                                Text("\(postPageNum + 1)/\(postImageList.count)")
-                                    .font(.pretendard(size: 12, weight: .regular))
-                                    .foregroundColor(Color(0xFDFDFD))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 6)
-                                    .background(Color(0x646464))
-                                    .cornerRadius(15)
-
-                                Image("todo-toggle")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            postPageNum += 1
-                                        }
-                                    }
-                                    .disabled(postPageNum == postImageList.count - 1)
-                            }
-                        }
                     }
-                }
-
-                if keyboardUp {
-                    Text(content == "" ? "댓글을 입력해주세요" : content)
-                        .lineLimit(4)
-                        .font(.pretendard(size: 14, weight: .bold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color(0xFDFDFD))
-                        .cornerRadius(9)
+                } else {
+                    HStack {
+                        Text(content == "" ? "댓글을 입력해주세요" : content)
+                            .lineLimit(4)
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color(0xFDFDFD))
+                            .cornerRadius(9)
+                        Spacer()
+                    }
                 }
             }
             .padding(.horizontal, 20)
-            .offset(y: -230)
+            .offset(y: -(deviceSize.width / 2 + 20))
 
             mainContent(deviceSize: deviceSize)
                 .zIndex(3)
