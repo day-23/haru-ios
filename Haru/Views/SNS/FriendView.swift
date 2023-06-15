@@ -28,7 +28,7 @@ struct FriendView: View {
     @State private var targetUser: FriendUser?
     var body: some View {
         ZStack {
-            VStack(spacing: 15) {
+            VStack(spacing: 10) {
                 VStack(spacing: 0) {
                     if self.userProfileVM.isMe {
                         HStack(spacing: 0) {
@@ -76,7 +76,15 @@ struct FriendView: View {
                         }
                     } else {
                         Rectangle()
-                            .fill(Gradient(colors: [Color(0xD2D7FF), Color(0xAAD7FF)]))
+                            .fill(RadialGradient(
+                                colors: [
+                                    Color(0xAAD7FF),
+                                    Color(0xD2D7FF)
+                                ],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 180
+                            ))
                             .frame(width: 175 * 2, height: 4)
                             .overlay {
                                 Text("친구 목록 \(self.userProfileVM.friendCount)")
@@ -84,60 +92,64 @@ struct FriendView: View {
                                     .foregroundColor(Color(0x1DAFFF))
                                     .offset(y: -24)
                             }
-                            .padding(.top, 24)
+                            .padding(.top, 44)
+                            .padding(.bottom, 10)
                     }
                 }
 
-                HStack {
-                    Image("search")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: 28, height: 28)
-                        .foregroundColor(Color(0xACACAC))
-                    TextField("검색어를 입력하세요", text: self.$searchWord)
-                        .font(.pretendard(size: 14, weight: .regular))
-                        .focused(self.$focus)
-                        .onSubmit {
-                            if self.searchWord != "" {
-                                self.waitingResponse = true
-                                self.userProfileVM.searchFriend(name: self.searchWord) {
-                                    self.waitingResponse = false
+                if self.userProfileVM.isMe {
+                    HStack {
+                        Image("search")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(Color(0xACACAC))
+                        TextField("검색어를 입력하세요", text: self.$searchWord)
+                            .font(.pretendard(size: 14, weight: .regular))
+                            .focused(self.$focus)
+                            .onSubmit {
+                                if self.searchWord != "" {
+                                    self.waitingResponse = true
+                                    self.userProfileVM.searchFriend(name: self.searchWord) {
+                                        self.waitingResponse = false
+                                    }
                                 }
                             }
-                        }
-                        .disabled(self.waitingResponse)
+                            .disabled(self.waitingResponse)
 
-                    Spacer()
+                        Spacer()
 
-                    if self.searchWord != "" {
-                        ZStack {
-                            Circle()
-                                .fill(Color(0x191919))
-                                .frame(width: 20, height: 20)
-                                .zIndex(1)
+                        if self.searchWord != "" {
+                            ZStack {
+                                Circle()
+                                    .fill(Color(0x191919))
+                                    .frame(width: 20, height: 20)
+                                    .zIndex(1)
 
-                            Image("cancel")
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 18, height: 18)
-                                .fontWeight(.bold)
-                                .foregroundColor(Color(0xFDFDFD))
-                                .zIndex(2)
-                        }
-                        .onTapGesture {
-                            self.searchWord = ""
-                            self.userProfileVM.refreshFriendList()
+                                Image("cancel")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .frame(width: 18, height: 18)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(Color(0xFDFDFD))
+                                    .zIndex(2)
+                            }
+                            .onTapGesture {
+                                self.searchWord = ""
+                                self.userProfileVM.refreshFriendList()
+                            }
                         }
                     }
+                    .padding(.vertical, 3)
+                    .padding(.horizontal, 10)
+                    .background(Color(0xF1F1F5))
+                    .cornerRadius(10)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 10)
                 }
-                .padding(.vertical, 3)
-                .padding(.horizontal, 10)
-                .background(Color(0xF1F1F5))
-                .cornerRadius(10)
-                .padding(.horizontal, 20)
 
                 ScrollView {
-                    LazyVStack(spacing: 30) {
+                    LazyVStack(spacing: 20) {
                         ForEach(self.friendTab ?
                             self.userProfileVM.friendList.indices : self.userProfileVM.requestFriendList.indices, id: \.self)
                         { idx in
@@ -154,22 +166,22 @@ struct FriendView: View {
                                         case .friendList:
                                             if let profileImage = userProfileVM.friProfileImageList[user.id] {
                                                 ProfileImgView(profileImage: profileImage)
-                                                    .frame(width: 30, height: 30)
+                                                    .frame(width: 40, height: 40)
                                             } else {
                                                 Image("sns-default-profile-image-rectangle")
                                                     .resizable()
                                                     .clipShape(Circle())
-                                                    .frame(width: 30, height: 30)
+                                                    .frame(width: 40, height: 40)
                                             }
                                         case .requestFriendList:
                                             if let profileImage = userProfileVM.reqFriProImageList[user.id] {
                                                 ProfileImgView(profileImage: profileImage)
-                                                    .frame(width: 30, height: 30)
+                                                    .frame(width: 40, height: 40)
                                             } else {
                                                 Image("sns-default-profile-image-rectangle")
                                                     .resizable()
                                                     .clipShape(Circle())
-                                                    .frame(width: 30, height: 30)
+                                                    .frame(width: 40, height: 40)
                                             }
                                         }
 
