@@ -28,39 +28,79 @@ struct TimeTableTodoView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
-                TimeTableTodoRow(
-                    index: index,
-                    date: timeTableViewModel.thisWeek[index],
-                    todoList: $timeTableViewModel.todoListByDate[index],
-                    timeTableViewModel: timeTableViewModel,
-                    todoAddViewModel: todoAddViewModel
-                )
-                .background(
-                    dateFormatter.string(from: .now) == dateFormatter.string(from: timeTableViewModel.thisWeek[index])
-                        ? RadialGradient(
-                            gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)]),
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: 200
-                        ).opacity(0.5)
-                        : RadialGradient(
-                            colors: [.white],
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: 150
-                        ).opacity(0.5)
-                )
-                .onDrop(of: [.text], delegate: TodoDropDelegate(
-                    index: index,
-                    timeTableViewModel: timeTableViewModel
-                ))
+        if !UIDevice.current.name.contains("SE") {
+            VStack(spacing: 0) {
+                ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                    TimeTableTodoRow(
+                        index: index,
+                        date: timeTableViewModel.thisWeek[index],
+                        todoList: $timeTableViewModel.todoListByDate[index],
+                        timeTableViewModel: timeTableViewModel,
+                        todoAddViewModel: todoAddViewModel
+                    )
+                    .background(
+                        dateFormatter.string(from: .now) == dateFormatter.string(from: timeTableViewModel.thisWeek[index])
+                            ? RadialGradient(
+                                gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)]),
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 200
+                            ).opacity(0.5)
+                            : RadialGradient(
+                                colors: [.white],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 150
+                            ).opacity(0.5)
+                    )
+                    .onDrop(of: [.text], delegate: TodoDropDelegate(
+                        index: index,
+                        timeTableViewModel: timeTableViewModel
+                    ))
+                }
+                Spacer()
             }
-            Spacer()
-        }
-        .onAppear {
-            timeTableViewModel.fetchTodoList()
+            .onAppear {
+                timeTableViewModel.fetchTodoList()
+            }
+        } else {
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
+                        TimeTableTodoRow(
+                            index: index,
+                            date: timeTableViewModel.thisWeek[index],
+                            todoList: $timeTableViewModel.todoListByDate[index],
+                            timeTableViewModel: timeTableViewModel,
+                            todoAddViewModel: todoAddViewModel
+                        )
+                        .background(
+                            dateFormatter.string(from: .now) == dateFormatter.string(from: timeTableViewModel.thisWeek[index])
+                                ? RadialGradient(
+                                    gradient: Gradient(colors: [Color(0xAAD7FF), Color(0xD2D7FF)]),
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 200
+                                ).opacity(0.5)
+                                : RadialGradient(
+                                    colors: [.white],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 150
+                                ).opacity(0.5)
+                        )
+                        .onDrop(of: [.text], delegate: TodoDropDelegate(
+                            index: index,
+                            timeTableViewModel: timeTableViewModel
+                        ))
+                        .frame(idealHeight: 72)
+                    }
+                    Spacer(minLength: 70)
+                }
+                .onAppear {
+                    timeTableViewModel.fetchTodoList()
+                }
+            }
         }
     }
 }
@@ -86,5 +126,42 @@ struct TodoDropDelegate: DropDelegate {
             index: index
         )
         return true
+    }
+}
+
+struct OverflowContentViewModifier: ViewModifier {
+    @State private var contentOverflow: Bool = false
+
+    func body(content: Content) -> some View {
+        GeometryReader { geometry in
+            content
+                .background(
+                    GeometryReader { contentGeometry in
+                        Color.clear.onAppear {
+                            contentOverflow = contentGeometry.size.height > geometry.size.height
+                        }
+                    }
+                )
+                .wrappedInScrollView(when: contentOverflow)
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func wrappedInScrollView(when condition: Bool) -> some View {
+        if condition {
+            ScrollView {
+                self
+            }
+        } else {
+            self
+        }
+    }
+}
+
+extension View {
+    func scrollOnOverflow() -> some View {
+        modifier(OverflowContentViewModifier())
     }
 }

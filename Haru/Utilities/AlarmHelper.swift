@@ -46,7 +46,7 @@ final class AlarmHelper {
                 var dateComponents = DateComponents()
                 dateComponents.hour = time.hour
                 dateComponents.minute = 0
-                let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+                let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
                 let request = UNNotificationRequest(identifier: regular.rawValue, content: content, trigger: trigger)
                 UNUserNotificationCenter.current().add(request) { error in
                     if let error = error {
@@ -60,6 +60,10 @@ final class AlarmHelper {
                 break
             }
         }
+    }
+
+    static func removeRegularNotification(regular: Regular) async {
+        await removeNotification(identifier: regular.rawValue)
     }
 
     static func createNotification(
