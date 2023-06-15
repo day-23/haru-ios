@@ -65,7 +65,7 @@ struct ScheduleFormView: View {
                 VStack(spacing: 15) {
                     // 일정 입력
                     Group {
-                        HStack {
+                        HStack(spacing: 0) {
                             TextField("", text: $scheduleFormVM.content)
                                 .placeholder(when: scheduleFormVM.content.isEmpty, placeholder: {
                                     Text("일정을 입력하세요")
@@ -152,7 +152,7 @@ struct ScheduleFormView: View {
                             .padding(.trailing, !isSchModalVisible ? -10 : 0)
                         }
                         .padding(.leading, 34)
-                        .padding(.trailing, 24)
+                        .padding(.trailing, scheduleFormVM.mode == .edit ? 34 : 24)
                         
                         Divider()
                     }
@@ -383,6 +383,7 @@ struct ScheduleFormView: View {
                 } // ScrollView
                 .padding(.top, 33)
             }
+            .padding(.top, scheduleFormVM.mode == .edit ? -10 : 0)
             if scheduleFormVM.mode == .edit {
                 Spacer()
                 if scheduleFormVM.overWeek {
@@ -391,7 +392,7 @@ struct ScheduleFormView: View {
                         actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
                     } label: {
                         HStack {
-                            Text("일정 삭제하기")
+                            Text("일정 삭제")
                                 .font(.pretendard(size: 20, weight: .medium))
                             
                             Image("todo-delete")
@@ -568,7 +569,7 @@ struct ScheduleFormView: View {
     func getEditActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "수정사항을 저장할까요? 반복되는 일정입니다." : "수정사항을 저장할까요?")
         
-        let editButton: ActionSheet.Button = .default(Text("이 일정만 편집")) {
+        let editButton: ActionSheet.Button = .default(Text("이 일정만 수정")) {
             scheduleFormVM.isSelectedRepeat = false
             scheduleFormVM.updateTargetSchedule()
         }
