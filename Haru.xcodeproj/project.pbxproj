@@ -383,7 +383,6 @@
 		6FCD09B42A1E532D003F7AB8 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		6FD912C729D5F4DD00B4545F /* SlideOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideOptionView.swift; sourceTree = "<group>"; };
 		6FD912CB29D6D1DF00B4545F /* AlarmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmView.swift; sourceTree = "<group>"; };
-		6FDD752D2A18869700360FED /* env.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = env.xcconfig; sourceTree = "<group>"; };
 		6FE8908129DC5D4600A6B35C /* SNSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNSView.swift; sourceTree = "<group>"; };
 		6FE8908329DC5F2500A6B35C /* ProfileImgView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImgView.swift; sourceTree = "<group>"; };
 		6FE967912A3609AB002EC3C5 /* PostFormDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFormDrawingView.swift; sourceTree = "<group>"; };
@@ -395,6 +394,7 @@
 		AE5085BC2A16C9C200A373BC /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
 		AE5085BE2A17663B00A373BC /* Haru.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Haru.entitlements; sourceTree = "<group>"; };
 		AE5085BF2A176B2B00A373BC /* SignInWithAppleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleButton.swift; sourceTree = "<group>"; };
+		AEB8561B2A38B2FF0071BBB7 /* env.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = env.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -489,7 +489,7 @@
 				13A57DC02A1359430010A481 /* State */,
 				130666F929CEE0AC00AACEE6 /* Constants.swift */,
 				130666F729CEE0AC00AACEE6 /* Global.swift */,
-				6FDD752D2A18869700360FED /* env.xcconfig */,
+				AEB8561B2A38B2FF0071BBB7 /* env.xcconfig */,
 			);
 			path = Global;
 			sourceTree = "<group>";
@@ -1179,7 +1179,6 @@
 		};
 		130666D729CEDF4B00AACEE6 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6FDD752D2A18869700360FED /* env.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1214,7 +1213,6 @@
 		};
 		130666D829CEDF4B00AACEE6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6FDD752D2A18869700360FED /* env.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
