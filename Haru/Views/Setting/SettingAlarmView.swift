@@ -26,7 +26,14 @@ struct SettingAlarmView: View {
                 global.user?.morningAlarmTime = nil
             }
 
-            userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { _ in }
+            userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
+                switch result {
+                case .success:
+                    AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
+                case .failure:
+                    break
+                }
+            }
         }
 
         let morningAlarmTime: Binding<Date> = .init {
@@ -38,7 +45,14 @@ struct SettingAlarmView: View {
             return time
         } set: {
             global.user?.morningAlarmTime = $0
-            userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { _ in }
+            userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
+                switch result {
+                case .success:
+                    AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
+                case .failure:
+                    break
+                }
+            }
         }
 
         let isNightAlarmOn: Binding<Bool> = .init {
@@ -52,7 +66,14 @@ struct SettingAlarmView: View {
             } else {
                 global.user?.nightAlarmTime = nil
             }
-            userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { _ in }
+            userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
+                switch result {
+                case .success:
+                    AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
+                case .failure:
+                    break
+                }
+            }
         }
 
         let nightAlarmTime: Binding<Date> = .init {
@@ -64,7 +85,14 @@ struct SettingAlarmView: View {
             return time
         } set: {
             global.user?.nightAlarmTime = $0
-            userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { _ in }
+            userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
+                switch result {
+                case .success:
+                    AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
+                case .failure:
+                    break
+                }
+            }
         }
 
         return VStack(spacing: 0) {
