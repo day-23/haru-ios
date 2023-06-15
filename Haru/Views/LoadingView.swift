@@ -27,45 +27,47 @@ struct LoadingView: View {
     @State private var isDrop = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        ZStack {
+            Color(0x191919, opacity: 0.5)
+                .edgesIgnoringSafeArea(.all)
 
-            ZStack {
+            VStack(spacing: 0) {
+                Spacer()
+
                 Image("loading-water-\(waterTimer.index)")
-            }
-            .frame(height: 122)
 
-            Spacer(minLength: 180)
-                .overlay {
-                    VStack {
-                        Image("loading-water-drop")
-                            .offset(y: isDrop ? 200 : 0)
-                            .animation(.spring(), value: isDrop)
-                            .opacity(waterTimer.index == waterTimer.end - 1 ? 1 : 0)
+                Spacer(minLength: 180)
+                    .overlay {
+                        VStack {
+                            Image("loading-water-drop")
+                                .offset(y: isDrop ? 160 : 0)
+                                .animation(.spring(), value: isDrop)
+                                .opacity(waterTimer.index == waterTimer.end - 1 ? 1 : 0)
 
-                        Spacer()
+                            Spacer()
+                        }
                     }
+
+                Image("loading-rock")
+
+                Spacer(minLength: 73)
+
+                Text("로딩 중입니다")
+                    .font(.pretendard(size: 16, weight: .bold))
+                    .foregroundColor(Color(0xfdfdfd))
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 16)
+                    .background(Color(0xdbdbdb, opacity: 0.5))
+                    .cornerRadius(10)
+
+                Spacer()
+            }
+            .onChange(of: waterTimer.index) {
+                if $0 == waterTimer.end - 1 {
+                    isDrop = true
+                } else {
+                    isDrop = false
                 }
-
-            Image("loading-rock")
-
-            Spacer(minLength: 73)
-
-            Text("로딩 중입니다")
-                .font(.pretendard(size: 16, weight: .bold))
-                .foregroundColor(Color(0x1DAFFF))
-                .padding(.vertical, 10)
-                .padding(.horizontal, 16)
-                .background(Color(0xDBDBDB))
-                .cornerRadius(10)
-
-            Spacer()
-        }
-        .onChange(of: waterTimer.index) {
-            if $0 == waterTimer.end - 1 {
-                isDrop = true
-            } else {
-                isDrop = false
             }
         }
     }
