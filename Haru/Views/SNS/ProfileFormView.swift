@@ -34,9 +34,17 @@ struct ProfileFormView: View {
                     } else {
                         ProfileImgView(profileImage: userProfileVM.profileImage)
                             .frame(width: 94, height: 94)
+                            .clipShape(Circle())
                     }
-                    Image("camera")
-                        .frame(width: 30, height: 30)
+                    Image("sns-edit-pencil")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(Color.white)
+                        .frame(width: 20, height: 20)
+                        .background(
+                            Image("sns-edit-circle")
+                        )
+                        .offset(x: -5)
                 }
                 .onTapGesture {
                     openPhoto = true
@@ -54,12 +62,8 @@ struct ProfileFormView: View {
                                 .frame(width: 50, alignment: .leading)
                             TextField("이름을 입력하세요.", text: $name)
                                 .font(.pretendard(size: 14, weight: .bold))
-                            Spacer()
-                            Image("edit-pencil")
-                                .renderingMode(.template)
-                                .resizable()
-                                .frame(width: 28, height: 28)
                         }
+                        .padding(.horizontal, 15)
                         Divider()
                         HStack(spacing: 20) {
                             Text("자기소개")
@@ -67,19 +71,18 @@ struct ProfileFormView: View {
                                 .foregroundColor(Color(0x646464))
                             TextField("자기소개를 입력하세요.", text: $introduction)
                                 .font(.pretendard(size: 14, weight: .bold))
-                            Spacer()
-                            Image("edit-pencil")
-                                .renderingMode(.template)
-                                .resizable()
-                                .frame(width: 28, height: 28)
                         }
-                        Divider()
+                        .padding(.horizontal, 15)
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 35)
 
                 Spacer()
             }
+        }
+        .background(Color(0xfdfdfd))
+        .onTapGesture {
+            hideKeyboard()
         }
         .navigationBarBackButtonHidden()
         .toolbar {

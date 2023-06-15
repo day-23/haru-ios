@@ -33,6 +33,7 @@ struct ProfileInfoView: View {
                     }
                     Text(userProfileVM.user.introduction)
                         .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(Color(0x191919))
                 }
                 
                 Spacer()
@@ -161,7 +162,7 @@ struct ProfileInfoView: View {
             HStack(spacing: 0) {
                 Spacer()
                 
-                VStack(spacing: 4) {
+                VStack(spacing: 3) {
                     Text("\(userProfileVM.user.postCount)")
                         .font(.pretendard(size: 20, weight: .bold))
                     Text("하루")
