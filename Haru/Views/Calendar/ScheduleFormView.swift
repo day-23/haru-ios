@@ -66,6 +66,15 @@ struct ScheduleFormView: View {
                         HStack {
                             TextField("일정 입력", text: $scheduleFormVM.content)
                                 .font(Font.system(size: 24, weight: .medium))
+                                .onChange(of: scheduleFormVM.content) { value in
+                                    if value.count > 50 {
+                                        scheduleFormVM.content = String(
+                                            value[
+                                                value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
+                                            ]
+                                        )
+                                    }
+                                }
                                 
                             Group {
                                 if let selectIndex = scheduleFormVM.selectionCategory {
