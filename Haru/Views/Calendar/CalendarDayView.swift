@@ -38,7 +38,6 @@ struct CalendarDayView: View {
             .frame(width: 310, height: 480)
             .cornerRadius(10)
         }
-        .swipeInteractionArea(.allAvailable)
         .itemAspectRatio(0.8)
         .itemSpacing(30)
         .padding(8)
@@ -73,6 +72,6 @@ struct CalendarDayView: View {
 
             prevPageIndex = page.index
         }
-        .frame(height: 480, alignment: .center)
+        .frame(height: 480)
     }
 }

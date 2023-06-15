@@ -32,14 +32,19 @@ struct CalendarDayDetailView: View {
                             page.update(.new(index: page.index - 1))
                         }
                     } label: {
-                        Image(systemName: "chevron.left")
+                        Image("calendar-next-button")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .rotationEffect(Angle(degrees: 180))
                     }
                     Button {
                         withAnimation {
                             page.update(.new(index: page.index + 1))
                         }
                     } label: {
-                        Image(systemName: "chevron.right")
+                        Image("calendar-next-button")
+                            .resizable()
+                            .frame(width: 20, height: 20)
                     }
                 }
                 .tint(Color(0xFDFDFD))
@@ -49,7 +54,7 @@ struct CalendarDayDetailView: View {
             .padding(.bottom, 15)
             
             ZStack {
-                ScrollView {
+                ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 12) {
                             Image("calendar-mini-calendar")
