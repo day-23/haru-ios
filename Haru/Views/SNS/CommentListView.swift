@@ -169,10 +169,17 @@ struct CommentListView: View {
                                 }
                             Spacer()
                         }
+                    } else if commentList.isEmpty {
+                        Text("작성된 댓글이 아직 없습니다.")
+                            .font(.pretendard(size: 16, weight: .regular))
+                            .foregroundColor(Color(0x646464))
+                            .padding(.top, UIScreen.main.bounds.size.height / 2 - 150)
                     }
                 } else {
                     Text("작성된 댓글이 아직 없습니다.")
-                        .padding(.top, 20)
+                        .font(.pretendard(size: 16, weight: .regular))
+                        .foregroundColor(Color(0x646464))
+                        .padding(.top, UIScreen.main.bounds.size.height / 2 - 150)
                 }
             }
         }

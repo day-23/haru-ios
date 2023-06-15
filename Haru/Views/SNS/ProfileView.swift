@@ -91,7 +91,7 @@ struct ProfileView: View {
                     }
                 } else {
                     VStack(spacing: 0) {
-                        Image("bg-picture-1")
+                        Image("sns-private-background")
                             .resizable()
                             .frame(width: 160, height: 190)
                             .padding(.top, 68)
@@ -165,7 +165,7 @@ struct ProfileView: View {
                                         .foregroundColor(Color(0xF71E58))
                                         .font(.pretendard(size: 20, weight: .regular))
 
-                                    Image("trash")
+                                    Image("sns-feed-delete-button")
                                         .resizable()
                                         .renderingMode(.template)
                                         .foregroundColor(Color(0xF71E58))

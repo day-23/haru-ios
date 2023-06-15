@@ -15,7 +15,7 @@ struct LookAroundView: View {
         }
         .background(Color(0xfdfdfd))
         .onAppear {
-            postVM.fetchTargetHashTags()
+            postVM.fetchPopularHashTags()
         }
     }
 }

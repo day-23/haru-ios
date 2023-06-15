@@ -131,7 +131,7 @@ struct SNSView: View {
                                         .foregroundColor(Color(0xf71e58))
                                         .font(.pretendard(size: 20, weight: .regular))
 
-                                    Image("trash")
+                                    Image("sns-feed-delete-button")
                                         .resizable()
                                         .renderingMode(.template)
                                         .foregroundColor(Color(0xf71e58))

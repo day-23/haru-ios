@@ -502,7 +502,7 @@ struct CommentView: View, KeyboardReadable {
                                 .frame(width: 38, height: 38)
                                 .foregroundColor(.white)
                         } else {
-                            Image("trash")
+                            Image("sns-feed-delete-button")
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 38, height: 38)

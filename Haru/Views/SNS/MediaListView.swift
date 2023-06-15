@@ -12,7 +12,7 @@ struct MediaListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(pinnedViews: .sectionHeaders) {
+            LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
                 Section(content: {
                     let columns = Array(repeating: GridItem(.flexible(), spacing: 3), count: 3)
 
@@ -66,6 +66,7 @@ struct MediaListView: View {
                 }, header: {
                     HashTagView(postVM: postVM)
                         .background(Color(0xfdfdfd))
+                        .padding(.bottom, 4)
                 })
             }
         }
