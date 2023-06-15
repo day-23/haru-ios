@@ -28,52 +28,52 @@ struct PopupImagePicker: View {
         let deviceSize = UIScreen.main.bounds.size
         VStack(spacing: 0) {
             HStack {
-                Button {
-                    if mode == .single {
-                        onEnd()
-                    }
-                } label: {
-                    HStack(spacing: 10) {
-                        Text("앨범")
-                            .font(.pretendard(size: 20, weight: .bold))
+                HStack(spacing: 10) {
+                    Text("앨범")
+                        .font(.pretendard(size: 20, weight: .bold))
 
+                    Button {
+                        if mode == .single {
+                            withAnimation {
+                                onEnd()
+                            }
+                        }
+
+                        if ratio == 0.9 {
+                            withAnimation {
+                                ratio = 0.5
+                            }
+                        } else if ratio == 0.5 {
+                            withAnimation {
+                                ratio = 0.15
+                            }
+                        }
+                    } label: {
+                        Image("todo-toggle")
+                            .renderingMode(.template)
+                            .resizable()
+                            .rotationEffect(.degrees(90))
+                            .frame(width: 20, height: 20)
+                    }
+
+                    if mode == .multiple {
                         Button {
-                            if ratio == 0.9 {
+                            if ratio == 0.5 {
+                                withAnimation {
+                                    ratio = 0.9
+                                }
+                            } else if ratio == 0.15 {
                                 withAnimation {
                                     ratio = 0.5
                                 }
-                            } else if ratio == 0.5 {
-                                withAnimation {
-                                    ratio = 0.15
-                                }
                             }
+
                         } label: {
                             Image("todo-toggle")
                                 .renderingMode(.template)
                                 .resizable()
-                                .rotationEffect(.degrees(90))
+                                .rotationEffect(.degrees(270))
                                 .frame(width: 20, height: 20)
-                        }
-
-                        if mode == .multiple {
-                            Button {
-                                if ratio == 0.5 {
-                                    withAnimation {
-                                        ratio = 0.9
-                                    }
-                                } else if ratio == 0.15 {
-                                    withAnimation {
-                                        ratio = 0.5
-                                    }
-                                }
-
-                            } label: {
-                                Image("todo-toggle")
-                                    .renderingMode(.template)
-                                    .resizable()
-                                    .rotationEffect(.degrees(270))
-                                    .frame(width: 20, height: 20)
-                            }
                         }
                     }
                 }
@@ -97,9 +97,9 @@ struct PopupImagePicker: View {
                     .resizable()
                     .frame(width: 30, height: 30)
             }
-            .padding(.top, 27)
+            .padding(.top, 25)
             .padding(.horizontal, 24)
-            .padding(.bottom, 20)
+            .padding(.bottom, 18)
             .contentShape(
                 Rectangle()
             )

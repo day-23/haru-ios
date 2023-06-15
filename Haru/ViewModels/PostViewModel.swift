@@ -346,17 +346,6 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    func fetchPopularHashTags() {
-        postService.fetchPopularHashTags { result in
-            switch result {
-            case .success(let success):
-                self.hashTags.append(contentsOf: success)
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
-            }
-        }
-    }
-
     func fetchTargetMediaAll(
         targetId: String,
         page: Int,
@@ -519,6 +508,17 @@ final class PostViewModel: ObservableObject {
     }
 
     // MARK: - 게시물 이외
+
+    func fetchPopularHashTags() {
+        postService.fetchPopularHashTags { result in
+            switch result {
+            case .success(let success):
+                self.hashTags = [Global.shared.hashTagAll] + success
+            case .failure(let failure):
+                print("[Debug] \(failure) \(#fileID) \(#function)")
+            }
+        }
+    }
 
     func fetchTargetHashTags() {
         guard let targetId else { return }

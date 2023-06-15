@@ -45,10 +45,9 @@ struct PostFormDrawingView: View {
                 Button {
                     dismissAction.callAsFunction()
                 } label: {
-                    Image("todo-toggle")
+                    Image("back-button")
                         .renderingMode(.template)
-                        .rotationEffect(Angle(degrees: 180))
-                        .foregroundColor(Color(0x191919))
+                        .foregroundColor(Color(0x1dafff))
                 }
             }
 
@@ -67,9 +66,10 @@ struct PostFormDrawingView: View {
                     )
 
                 } label: {
-                    Image("todo-toggle")
+                    Image("back-button")
                         .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
+                        .foregroundColor(Color(0x1dafff))
+                        .rotationEffect(Angle(degrees: 180))
                 }
                 .disabled(postFormVM.content == "")
             }

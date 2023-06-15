@@ -171,7 +171,9 @@ extension View {
                     } onSelect: { assets in
                         onSelect(assets)
                         if !always {
-                            show.wrappedValue = false
+                            withAnimation {
+                                show.wrappedValue = false
+                            }
                         }
                     }
                     .transition(transition)
