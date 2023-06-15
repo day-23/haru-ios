@@ -48,7 +48,19 @@ struct MediaListView: View {
                                 }
                             }
                         } else {
-                            Text("아직 게시물이 존재하지 않습니다.")
+                            VStack(spacing: 15) {
+                                Spacer()
+
+                                Image("sns-empty-feedlist")
+                                    .resizable()
+                                    .frame(width: 180, height: 125)
+
+                                Text("게시물을 작성해보세요.")
+                                    .font(.pretendard(size: 16, weight: .regular))
+                                    .foregroundColor(Color(0x646464))
+
+                                Spacer()
+                            }
                         }
                     }
                 }, header: {

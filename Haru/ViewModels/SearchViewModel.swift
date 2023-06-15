@@ -48,7 +48,7 @@ final class SearchViewModel: ObservableObject {
 
     func searchTodoAndSchedule(
         searchContent: String,
-        completion: @escaping () -> Void
+        completion: @escaping (Bool) -> Void
     ) {
         searchService.searchTodoAndSchedule(searchContent: searchContent) { result in
             switch result {
@@ -57,8 +57,9 @@ final class SearchViewModel: ObservableObject {
                     partialResult + [self.fittingSchedule(schedule: schedule)]
                 }
                 self.todoList = success.1
-                completion()
+                completion(success.0.isEmpty && success.1.isEmpty ? false : true)
             case .failure(let failure):
+                completion(false)
                 print("[Debug] \(failure) \(#file) \(#function)")
             }
         }
@@ -208,18 +209,19 @@ final class SearchViewModel: ObservableObject {
 
     func searchUserWithHaruId(
         haruId: String,
-        completion: @escaping () -> Void
+        completion: @escaping (Bool) -> Void
     ) {
         searchService.searchUserWithHaruId(haruId: haruId) { result in
             switch result {
             case .success(let success):
                 self.searchUser = success
+                completion(true)
             case .failure(let failure):
                 self.searchUser = nil
+                completion(false)
                 print("[Debug] \(haruId)를 사용하는 사용자는 없습니다.")
                 print("\(failure) \(#file) \(#function)")
             }
-            completion()
         }
     }
 

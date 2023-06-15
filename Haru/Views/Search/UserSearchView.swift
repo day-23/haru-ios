@@ -20,6 +20,8 @@ struct UserSearchView: View {
     @State private var refuseFriend: Bool = false
     @State private var cancelFriend: Bool = false
     
+    @State private var searchSuccess: Bool?
+    
     @StateObject var searchVM: SearchViewModel = .init()
     
     var body: some View {
@@ -28,7 +30,41 @@ struct UserSearchView: View {
                 if let user = searchVM.searchUser {
                     searchUserView(user: user)
                 } else {
-                    Text("그런 사용자는 없습니다.")
+                    if let searchSuccess, !searchSuccess {
+                        VStack(spacing: 0) {
+                            Image("sns-wrong-search")
+                                .resizable()
+                                .frame(width: 125, height: 205)
+                                
+                            Text("해당하는 하루 아이디를 가지는")
+                                .font(.pretendard(size: 16, weight: .regular))
+                                .foregroundColor(Color(0x646464))
+                                .padding(.top, 50)
+                                
+                            Text("친구를 찾을 수 없어요.")
+                                .font(.pretendard(size: 16, weight: .regular))
+                                .foregroundColor(Color(0x646464))
+                                .padding(.top, 10)
+                        }
+                        .padding(.top, 100)
+                    } else {
+                        VStack(spacing: 0) {
+                            Image("sns-empty-search")
+                                .resizable()
+                                .frame(width: 165, height: 145)
+                                
+                            Text("하루 아이디 검색을 통해")
+                                .font(.pretendard(size: 16, weight: .regular))
+                                .foregroundColor(Color(0x646464))
+                                .padding(.top, 50)
+                                
+                            Text("친구를 찾을 수 있어요.")
+                                .font(.pretendard(size: 16, weight: .regular))
+                                .foregroundColor(Color(0x646464))
+                                .padding(.top, 10)
+                        }
+                        .padding(.top, 150)
+                    }
                 }
             }
         }
@@ -56,7 +92,8 @@ struct UserSearchView: View {
                     .onSubmit {
                         if searchUserHaruId != "" {
                             waitingResponse = true
-                            searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                            searchVM.searchUserWithHaruId(haruId: searchUserHaruId) { success in
+                                searchSuccess = success
                                 waitingResponse = false
                             }
                         }
@@ -86,7 +123,8 @@ struct UserSearchView: View {
                             print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                         }
                         
-                        searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                        searchVM.searchUserWithHaruId(haruId: searchUserHaruId) { success in
+                            searchSuccess = success
                             waitingResponse = false
                         }
                     case .failure(let failure):
@@ -108,7 +146,8 @@ struct UserSearchView: View {
                 }
                 waitingResponse = true
                 searchVM.deleteFriend(friendId: user.id) {
-                    searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                    searchVM.searchUserWithHaruId(haruId: searchUserHaruId) { success in
+                        searchSuccess = success
                         waitingResponse = false
                     }
                 }
@@ -132,7 +171,8 @@ struct UserSearchView: View {
                             print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                         }
                         
-                        searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                        searchVM.searchUserWithHaruId(haruId: searchUserHaruId) { success in
+                            searchSuccess = success
                             waitingResponse = false
                         }
                     case .failure(let failure):
@@ -162,7 +202,7 @@ struct UserSearchView: View {
                         ProfileImgView(imageUrl: URL(string: imageUrl))
                             .frame(width: 40, height: 40)
                     } else {
-                        Image("default-profile-image")
+                        Image("sns-default-profile-image-circle")
                             .resizable()
                             .clipShape(Circle())
                             .frame(width: 40, height: 40)
@@ -186,7 +226,8 @@ struct UserSearchView: View {
                                 if !success {
                                     print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                                 }
-                                searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                                searchVM.searchUserWithHaruId(haruId: searchUserHaruId) { success in
+                                    searchSuccess = success
                                     waitingResponse = false
                                 }
                             case .failure(let failure):
@@ -252,7 +293,8 @@ struct UserSearchView: View {
                                     print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                                 }
                                 
-                                searchVM.searchUserWithHaruId(haruId: searchUserHaruId) {
+                                searchVM.searchUserWithHaruId(haruId: searchUserHaruId) { success in
+                                    searchSuccess = success
                                     waitingResponse = false
                                 }
                                 

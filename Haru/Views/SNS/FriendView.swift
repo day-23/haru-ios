@@ -130,9 +130,10 @@ struct FriendView: View {
                         }
                     }
                 }
-                .padding(.all, 10)
+                .padding(.vertical, 3)
+                .padding(.horizontal, 10)
                 .background(Color(0xF1F1F5))
-                .cornerRadius(15)
+                .cornerRadius(10)
                 .padding(.horizontal, 20)
 
                 ScrollView {
