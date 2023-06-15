@@ -54,14 +54,6 @@ struct ProfileInfoView: View {
                                 .background(Color(0xF1F1F5))
                                 .cornerRadius(10)
                         }
-                        
-                        Text("프로필 공유")
-                            .foregroundColor(Color(0x646464))
-                            .font(.pretendard(size: 16, weight: .regular))
-                            .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                            .background(Color(0xF1F1F5))
-                            .cornerRadius(10)
-                        
                     } else {
                         if userProfileVM.user.friendStatus == 0 {
                             Button {

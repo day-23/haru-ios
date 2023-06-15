@@ -66,6 +66,6 @@ struct HaruHeader<
             .padding(.leading, 25)
             .padding(.trailing, 20)
         }
-        .frame(height: 52)
+        .frame(height: 48)
     }
 }

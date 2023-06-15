@@ -278,14 +278,14 @@ struct SNSView: View {
     @ViewBuilder
     func HaruHeaderView() -> some View {
         HaruHeader(toggleIsClicked: self.$toggleIsClicked) {
-            HStack(spacing: 10) {
-                NavigationLink {
-                    ProfileView(
-                        postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
-                        userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown"),
-                        myProfile: true
-                    )
-                } label: {
+            NavigationLink {
+                ProfileView(
+                    postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
+                    userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown"),
+                    myProfile: true
+                )
+            } label: {
+                if self.isFriendFeed {
                     HStack(spacing: 5) {
                         Image("sns-my-history")
                             .resizable()
@@ -295,16 +295,16 @@ struct SNSView: View {
                             .font(.pretendard(size: 14, weight: .bold))
                             .foregroundColor(Color(0x191919))
                     }
-                }
-
-                NavigationLink {
-                    UserSearchView()
-                } label: {
-                    Image("search")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundColor(Color(0x191919))
-                        .frame(width: 28, height: 28)
+                } else {
+                    NavigationLink {
+                        UserSearchView()
+                    } label: {
+                        Image("search")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
                 }
             }
         }
