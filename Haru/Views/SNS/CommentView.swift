@@ -93,6 +93,7 @@ struct CommentView: View, KeyboardReadable {
     @State var startingYList: [String: CGFloat] = [:]
 
     @State var overHide: Bool = false
+    @State var overWarning: Bool = false
 
     var isMine: Bool // 해당 게시물이 내 게시물인지 남의 게시물인지
 
@@ -213,7 +214,7 @@ struct CommentView: View, KeyboardReadable {
                                 cancelEditing = true
                             } label: {
                                 HStack(spacing: 5) {
-                                    Image("comment-reset")
+                                    Image("sns-reset-button")
                                         .resizable()
                                         .frame(width: 28, height: 28)
 
@@ -525,7 +526,19 @@ struct CommentView: View, KeyboardReadable {
                                 .frame(width: 90, height: 90)
                                 .zIndex(5)
                         }
-                    } else if isCommentEditing {}
+                    } else if isCommentEditing {
+                        if overHide {
+                            Image("sns-drag-hide")
+                                .resizable()
+                                .frame(width: 90, height: 90)
+                                .zIndex(5)
+                        } else {
+                            Image("sns-drag-hide-default")
+                                .resizable()
+                                .frame(width: 90, height: 90)
+                                .zIndex(5)
+                        }
+                    }
                 }
                 .offset(y: deviceSize.width / 2 + 80)
             }
@@ -600,14 +613,16 @@ struct CommentView: View, KeyboardReadable {
 
                 let drag = DragGesture()
                     .onChanged { value in
-                        // 삭제 버튼 근처인 경우
+                        // 숨김 버튼 근처인 경우
                         if value.location.x >= sz / 2 - 45,
                            value.location.x <= sz / 2 + 45,
                            value.location.y >= sz + 25,
                            value.location.y <= sz + 120
                         {
+                            hideCommentTarget = comment
                             overHide = true
                         } else {
+                            hideCommentTarget = nil
                             overHide = false
                         }
 
@@ -622,20 +637,26 @@ struct CommentView: View, KeyboardReadable {
                         {
                             return
                         } else {
+                            if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz {
+                                overWarning = true
+                            } else {
+                                overWarning = false
+                            }
                             xList[comment.id] = value.location.x
                             yList[comment.id] = value.location.y
                         }
                     }
                     .onEnded { value in
                         if overHide {
-                            print("\(comment.content)를 숨기기")
-                            // TODO: 댓글 숨기기 API 연동
+                            hideCommentTarget = comment
+                            hideCommentModalVis = true
                             overHide = false
                         }
 
-                        if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz - 5 {
+                        if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz {
                             xList[comment.id] = startingXList[comment.id] ?? 190
                             yList[comment.id] = startingYList[comment.id] ?? 190
+                            overWarning = false
                         }
                         withAnimation {
                             draggingList[comment.id] = false
@@ -645,7 +666,10 @@ struct CommentView: View, KeyboardReadable {
                 let combined = longPress.sequenced(before: drag)
 
                 Text("\(comment.content)")
-                    .font(.pretendard(size: 14, weight: .regular))
+                    .font(.pretendard(
+                        size: hideCommentTarget?.id == comment.id ? 11 : 14,
+                        weight: hideCommentTarget?.id == comment.id ? .bold : .regular
+                    ))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(Color(0xFDFDFD))
@@ -660,9 +684,10 @@ struct CommentView: View, KeyboardReadable {
                     )
                     .foregroundColor(
                         isCommentDeleting && alreadyComment[postPageNum]?.0.id == comment.id ?
-                            Color(0x1AFFF) : Color(0x191919)
+                            Color(0x1DAFFF) :
+                            hideCommentTarget?.id == comment.id ? Color(0x1DAFFF) : Color(0x191919)
                     )
-                    .zIndex(2)
+                    .zIndex(6)
                     .overlay {
                         if isMine, showUserProfile, !isCommentEditing {
                             userProfileInfoView(comment: comment)
@@ -698,6 +723,11 @@ struct CommentView: View, KeyboardReadable {
                     if let uiImage = imageList[idx]?.uiImage {
                         Image(uiImage: uiImage)
                             .resizable()
+                            .border(
+                                width: 2,
+                                edges: [.top, .bottom, .leading, .trailing],
+                                color: overWarning ? .red : .clear
+                            )
                     } else {
                         ProgressView()
                     }
@@ -860,6 +890,7 @@ struct CommentView: View, KeyboardReadable {
             case .success:
                 fetchCommentList()
                 hideCommentModalVis = false
+                hideCommentTarget = nil
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
