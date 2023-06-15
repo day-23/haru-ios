@@ -48,7 +48,7 @@ struct FeedListView: View {
                             .font(.pretendard(size: 16, weight: .regular))
                             .foregroundColor(Color(0x646464))
                     }
-                    .padding(.top, UIScreen.main.bounds.size.height / 2 - 250)
+                    .padding(.top, UIScreen.main.bounds.size.height / 2 - 2e50)
                 }
             }
             .padding(.top, 14)

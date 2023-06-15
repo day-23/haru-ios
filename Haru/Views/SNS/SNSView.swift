@@ -197,9 +197,7 @@ struct SNSView: View {
                 .opacity(self.deletePost || self.hidePost || self.reportPost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
-            }
-
-            if !self.postOptModalVis.0 {
+            } else if self.isFriendFeed {
                 VStack {
                     if self.showDrowButton {
                         NavigationLink(
