@@ -18,6 +18,7 @@ struct ProfileView: View {
     @StateObject var userProfileVM: UserProfileViewModel
 
     @State var postOptModalVis: (Bool, Post?) = (false, nil)
+    @State var blockModalVis: Bool = false
 
     @State var blockFriend: Bool = false
 
@@ -231,6 +232,63 @@ struct ProfileView: View {
                 .opacity(self.deletePost || self.hidePost || self.reportPost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
+            } else if blockModalVis {
+                Color.black.opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            self.blockModalVis = false
+                        }
+                    }
+
+                Modal(isActive: self.$blockModalVis, ratio: 0.3) {
+                    VStack(spacing: 0) {
+                        ProfileImgView(profileImage: userProfileVM.profileImage)
+                            .frame(width: 70, height: 70)
+                            .padding(.bottom, 12)
+
+                        Text("\(userProfileVM.user.name)")
+                            .font(.pretendard(size: 20, weight: .bold))
+                            .foregroundColor(Color(0x191919))
+
+                        Divider()
+                            .padding(.top, 34)
+                            .padding(.bottom, 20)
+
+                        Button {
+                            withAnimation {
+                                blockFriend = true
+                            }
+                        } label: {
+                            Text("이 이용자 차단하기")
+                                .font(.pretendard(size: 20, weight: .regular))
+                                .foregroundColor(Color(0xF71E58))
+                        }.confirmationDialog(
+                            "\(userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
+                            isPresented: $blockFriend,
+                            titleVisibility: .visible
+                        ) {
+                            Button("차단하기", role: .destructive) {
+                                userProfileVM.blockedFriend(blockUserId: userProfileVM.user.id) { result in
+                                    switch result {
+                                    case let .success(success):
+                                        if !success {
+                                            print("Toast Message로 알려주기")
+                                        }
+                                        userProfileVM.fetchUserProfile()
+                                    case let .failure(failure):
+                                        print("\(failure) \(#file) \(#function)")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.top, 25)
+                }
+                .opacity(self.blockFriend ? 0 : 1)
+                .transition(.modal)
+                .zIndex(2)
             }
 
             if self.toggleIsClicked {
@@ -265,28 +323,11 @@ struct ProfileView: View {
             if !userProfileVM.isMe {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        blockFriend = true
+                        withAnimation {
+                            blockModalVis = true
+                        }
                     } label: {
                         Image("more")
-                    }
-                    .confirmationDialog(
-                        "\(userProfileVM.user.name)님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
-                        isPresented: $blockFriend,
-                        titleVisibility: .visible
-                    ) {
-                        Button("차단하기", role: .destructive) {
-                            userProfileVM.blockedFriend(blockUserId: userProfileVM.user.id) { result in
-                                switch result {
-                                case let .success(success):
-                                    if !success {
-                                        print("Toast Message로 알려주기")
-                                    }
-                                    userProfileVM.fetchUserProfile()
-                                case let .failure(failure):
-                                    print("\(failure) \(#file) \(#function)")
-                                }
-                            }
-                        }
                     }
                 }
             } else {
