@@ -67,18 +67,17 @@ struct PostFormView: View {
                                     height: deviceSize.width
                                 )
                                 .clipped()
+                                .onTapGesture {
+                                    croppedImage = postFormVM.oriImageList[selectedImageNum]
+                                    presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
+                                    showingCropper = true
+                                }
                         }
                     }
                     .tabViewStyle(.page)
                     .indexViewStyle(.page(backgroundDisplayMode: .always))
                     .frame(width: deviceSize.width, height: deviceSize.width)
                     .padding(.top, 24)
-
-                    Button("크롭 설정하기") {
-                        croppedImage = postFormVM.oriImageList[selectedImageNum]
-                        presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
-                        showingCropper = true
-                    }.font(.title)
                 }
             }
         }
@@ -191,9 +190,10 @@ struct PostFormView: View {
                         )
                     }
                 } label: {
-                    Image("todo-toggle")
+                    Image("back-button")
                         .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
+                        .foregroundColor(Color(0x1dafff))
+                        .rotationEffect(Angle(degrees: 180))
                 }
                 .disabled(postAddMode == .drawing ? postFormVM.imageList.isEmpty : postFormVM.content == "")
             }

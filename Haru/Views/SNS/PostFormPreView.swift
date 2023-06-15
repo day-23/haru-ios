@@ -138,9 +138,9 @@ struct PostFormPreView: View {
                     Button {
                         dismissAction.callAsFunction()
                     } label: {
-                        Image("cancel")
+                        Image("back-button")
                             .renderingMode(.template)
-                            .foregroundColor(Color(0x191919))
+                            .foregroundColor(Color(0x1dafff))
                     }
                 }
 
@@ -166,15 +166,22 @@ struct PostFormPreView: View {
                                 }
                             }
                         case .writing:
-                            postFormVM.createPost(templateIdx: selectedTemplateIdx) { result in
-                                switch result {
-                                case .success:
-                                    createPost = true
-                                    shouldPopToRootView = false
-                                case .failure(let failure):
-                                    waitingResponse = false
-                                    print("[Debug] \(failure) \(#fileID) \(#function)")
+                            if postFormVM.templateIdList.count > selectedTemplateIdx,
+                               postFormVM.templateList[selectedTemplateIdx] != nil
+                            {
+                                postFormVM.createPost(templateIdx: selectedTemplateIdx) { result in
+                                    switch result {
+                                    case .success:
+                                        createPost = true
+                                        shouldPopToRootView = false
+                                    case .failure(let failure):
+                                        waitingResponse = false
+                                        print("[Debug] \(failure) \(#fileID) \(#function)")
+                                    }
                                 }
+                            } else {
+                                // TODO: 토스트 메세지로 템플릿 이미지를 못불러왔다고 알려주기
+                                print("문제 있음")
                             }
                         }
                     } label: {
