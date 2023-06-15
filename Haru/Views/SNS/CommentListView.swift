@@ -51,6 +51,8 @@ struct CommentListView: View {
                         HStack(spacing: 20) {
                             Image("todo-toggle")
                                 .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x646464))
                                 .frame(width: 20, height: 20)
                                 .rotationEffect(Angle(degrees: -180))
                                 .onTapGesture {
@@ -65,11 +67,13 @@ struct CommentListView: View {
                                 .foregroundColor(Color(0xfdfdfd))
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 6)
-                                .background(Color(0xdbdbdb))
+                                .background(Color(0x8b8b8b))
                                 .cornerRadius(15)
 
                             Image("todo-toggle")
                                 .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x646464))
                                 .frame(width: 20, height: 20)
                                 .onTapGesture {
                                     withAnimation {
@@ -129,7 +133,7 @@ struct CommentListView: View {
                                     .frame(width: 28, height: 28)
                                     .padding(.trailing, 10)
                                     .foregroundColor(comment.isPublic ?
-                                        Color(0x1dafff) : Color(0xdbdbdb)
+                                        Color(0x1dafff) : Color(0xacacac)
                                     )
                             }
 
