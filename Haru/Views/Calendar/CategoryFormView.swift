@@ -89,7 +89,7 @@ struct CategoryFormView: View {
                         }
                     } label: {
                         HStack(spacing: 10) {
-                            Text("카테고리 삭제하기")
+                            Text("카테고리 삭제")
                                 .font(.pretendard(size: 20, weight: .regular))
                                 .foregroundColor(Color(0xf71e58))
                             Image("todo-delete")

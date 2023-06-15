@@ -38,8 +38,9 @@ struct ScheduleFormView: View {
                         }
                     } label: {
                         Image("todo-cancel")
+                            .renderingMode(.template)
                             .resizable()
-                            .colorMultiply(.mainBlack)
+                            .foregroundColor(isClear() ? Color(0xacacac) : Color(0x191919))
                             .frame(width: 28, height: 28)
                     }
                     
@@ -57,15 +58,22 @@ struct ScheduleFormView: View {
                     }
                     .disabled(scheduleFormVM.buttonDisable)
                 }
-                .padding(.horizontal, 37)
+                .padding(.leading, 37)
+                .padding(.trailing, 30)
             }
             ScrollView {
                 VStack(spacing: 15) {
                     // 일정 입력
                     Group {
                         HStack {
-                            TextField("일정 입력", text: $scheduleFormVM.content)
-                                .font(Font.system(size: 24, weight: .medium))
+                            TextField("", text: $scheduleFormVM.content)
+                                .placeholder(when: scheduleFormVM.content.isEmpty, placeholder: {
+                                    Text("일정을 입력하세요")
+                                        .font(.pretendard(size: 24, weight: .regular))
+                                        .foregroundColor(Color(0xacacac))
+                                })
+                                .font(Font.system(size: 24, weight: .bold))
+                                .foregroundColor(Color(0x191919))
                                 .onChange(of: scheduleFormVM.content) { value in
                                     if value.count > 50 {
                                         scheduleFormVM.content = String(
@@ -143,7 +151,8 @@ struct ScheduleFormView: View {
                             }
                             .padding(.trailing, !isSchModalVisible ? -10 : 0)
                         }
-                        .padding(.horizontal, 25)
+                        .padding(.leading, 34)
+                        .padding(.trailing, 24)
                         
                         Divider()
                     }
@@ -205,7 +214,7 @@ struct ScheduleFormView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 50)
                         
                         Divider()
                     }
@@ -476,6 +485,14 @@ struct ScheduleFormView: View {
                 }
             }
         }
+    }
+    
+    func isClear() -> Bool {
+        scheduleFormVM.content == "" &&
+            scheduleFormVM.selectionCategory == nil &&
+            scheduleFormVM.isSelectedAlarm == false &&
+            scheduleFormVM.isSelectedRepeat == false &&
+            scheduleFormVM.memo == ""
     }
     
     func getRepeatOption() -> [RepeatOption] {
