@@ -44,5 +44,7 @@ final class Global: ObservableObject {
         [Color(0xFF892E), Color(0xFFAB4C), Color(0xFFD166), Color(0xFFDE2E), Color(0xCFE855), Color(0xB9D32E)],
 
         [Color(0x105C08), Color(0x39972E), Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0)],
+
+        [Color(0x105C08), Color(0x39972E), Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0)]
     ]
 }

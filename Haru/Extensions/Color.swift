@@ -88,6 +88,8 @@ extension Color {
 
     var fontColor: Color {
         switch self {
+        case Color(0x2E2E2E), Color(0x656565), Color(0x818181):
+            fallthrough
         case Color(0xFF0959), Color(0xFF509C), Color(0xFF5AB6):
             fallthrough
         case Color(0xB237BB), Color(0xC93DEB), Color(0xB34CED):
@@ -97,8 +99,14 @@ extension Color {
         case Color(0xC22E2E):
             fallthrough
         case Color(0x105C08), Color(0x39972E):
+            fallthrough
+        case Color(0x105C08), Color(0x39972E):
+            fallthrough
+        case Color(0xF71E58): // 공휴일
             return Color(0xFDFDFD)
 
+        case Color(0x9D9D9D), Color(0xB9B9B9), Color(0xD5D5D5):
+            fallthrough
         case Color(0xFE7DCD), Color(0xFFAAE5), Color(0xFFBDFB):
             fallthrough
         case Color(0x9D5BE3), Color(0xBB93F8), Color(0xC6B2FF):
@@ -110,10 +118,11 @@ extension Color {
         case Color(0xFF892E), Color(0xFFAB4C), Color(0xFFD166), Color(0xFFDE2E), Color(0xCFE855), Color(0xB9D32E):
             fallthrough
         case Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0):
-            return Color(0x191919)
-
+            fallthrough
+        case Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0):
+            fallthrough
         default:
-            return .black
+            return Color(0x191919)
         }
     }
 }
