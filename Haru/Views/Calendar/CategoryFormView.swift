@@ -138,7 +138,7 @@ struct CategoryFormView: View {
     @ViewBuilder
     func colorPicker() -> some View {
         VStack(spacing: 30) {
-            ForEach(0 ... 5, id: \.self) { row in
+            ForEach(0 ... 6, id: \.self) { row in
                 HStack(spacing: 20) {
                     ForEach(colors[row].indices, id: \.self) { col in
                         ZStack {
