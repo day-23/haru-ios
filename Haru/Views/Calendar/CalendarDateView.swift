@@ -31,140 +31,133 @@ struct CalendarDateView: View {
         ZStack {
             GeometryReader { _ in
                 VStack(spacing: 0) {
-                    VStack(spacing: 0) {
-                        HStack(spacing: 0) {
-                            HStack(spacing: 6) {
-                                Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[0])년")
-                                    .font(.pretendard(size: 28, weight: .bold))
-                                    .padding(.trailing, 4)
+                    HStack(spacing: 0) {
+                        HStack(spacing: 6) {
+                            Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[0])년")
+                                .font(.pretendard(size: 28, weight: .bold))
+                                .padding(.trailing, 4)
                                     
-                                Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[1])월")
-                                    .font(.pretendard(size: 28, weight: .bold))
+                            Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[1])월")
+                                .font(.pretendard(size: 28, weight: .bold))
                                     
-                                Button {
-                                    withAnimation {
-                                        self.isDatePickerVisible.toggle()
-                                    }
-                                } label: {
-                                    Image("header-date-picker")
-                                        .resizable()
-                                        .renderingMode(.template)
-                                        .foregroundColor(Color(0x191919))
-                                        .frame(width: 28, height: 28)
-                                        .rotationEffect(Angle(degrees: self.isDatePickerVisible ? 0 : -90))
+                            Button {
+                                withAnimation {
+                                    self.isDatePickerVisible.toggle()
                                 }
-                            } // HStack
-                                
-                            Spacer()
-                                
-                            HStack(spacing: 10) {
-                                NavigationLink {
-                                    ProductivitySearchView(
-                                        calendarVM: self.calendarVM,
-                                        todoAddViewModel: self.addViewModel,
-                                        checkListVM: .init(todoState: StateObject(wrappedValue: self.todoState))
-                                    )
-                                } label: {
-                                    Image("search")
-                                        .renderingMode(.template)
-                                        .resizable()
-                                        .foregroundColor(Color(0x191919))
-                                        .frame(width: 28, height: 28)
-                                }
-                                    
-                                Button {
-                                    self.calendarVM.monthOffest = 0
-                                } label: {
-                                    Image("time-table-date-circle")
-                                        .overlay {
-                                            Text("\(Date().day)")
-                                                .font(.pretendard(size: 14, weight: .bold))
-                                                .foregroundColor(Color(0x2ca4ff))
-                                        }
-                                }
-                                .tint(Color.gradientStart1)
-                                    
-                                Image("slider")
+                            } label: {
+                                Image("header-date-picker")
                                     .resizable()
                                     .renderingMode(.template)
                                     .foregroundColor(Color(0x191919))
                                     .frame(width: 28, height: 28)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            self.isOptionModalVisible = true
-                                            Global.shared.isFaded = true
-                                            self.x = 0
-                                        }
-                                    }
+                                    .rotationEffect(Angle(degrees: self.isDatePickerVisible ? 0 : -90))
                             }
                         } // HStack
-                        .padding(.leading, 33)
-                        .padding(.trailing, 20)
-                            
-                        Group {
-                            // Day View ...
-                            HStack(spacing: 0) {
-                                ForEach(self.calendarVM.dayList.indices, id: \.self) { index in
-                                    Text(self.calendarVM.dayList[index])
-                                        .font(.pretendard(size: 14, weight: .regular))
-                                        .frame(maxWidth: .infinity)
-                                        .foregroundColor(
-                                            index == 0 ?
-                                                Color(0xf71e58) :
-                                                index == 6 ?
-                                                Color(0x1dafff) :
-                                                Color(0x646464)
-                                        )
-                                }
-                            } // HStack
-                            .padding(.top, 14)
-                            .padding(.bottom, 3)
                                 
-                            TabView(selection: self.$calendarVM.monthOffest) {
-                                ForEach(-10 ... 100, id: \.self) { _ in
-                                    GeometryReader { proxy in
+                        Spacer()
+                                
+                        HStack(spacing: 10) {
+                            NavigationLink {
+                                ProductivitySearchView(
+                                    calendarVM: self.calendarVM,
+                                    todoAddViewModel: self.addViewModel,
+                                    checkListVM: .init(todoState: StateObject(wrappedValue: self.todoState))
+                                )
+                            } label: {
+                                Image("search")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .foregroundColor(Color(0x191919))
+                                    .frame(width: 28, height: 28)
+                            }
+                                    
+                            Button {
+                                self.calendarVM.monthOffest = 0
+                            } label: {
+                                Image("time-table-date-circle")
+                                    .overlay {
+                                        Text("\(Date().day)")
+                                            .font(.pretendard(size: 14, weight: .bold))
+                                            .foregroundColor(Color(0x2ca4ff))
+                                    }
+                            }
+                            .tint(Color.gradientStart1)
+                                    
+                            Image("slider")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x191919))
+                                .frame(width: 28, height: 28)
+                                .onTapGesture {
+                                    withAnimation {
+                                        self.isOptionModalVisible = true
+                                        Global.shared.isFaded = true
+                                        self.x = 0
+                                    }
+                                }
+                        }
+                    } // HStack
+                    .padding(.leading, 33)
+                    .padding(.trailing, 20)
+                            
+                    Group {
+                        // Day View ...
+                        HStack(spacing: 0) {
+                            ForEach(self.calendarVM.dayList.indices, id: \.self) { index in
+                                Text(self.calendarVM.dayList[index])
+                                    .font(.pretendard(size: 14, weight: .regular))
+                                    .frame(maxWidth: .infinity)
+                                    .foregroundColor(
+                                        index == 0 ?
+                                            Color(0xf71e58) :
+                                            index == 6 ?
+                                            Color(0x1dafff) :
+                                            Color(0x646464)
+                                    )
+                            }
+                        } // HStack
+                        .padding(.top, 14)
+                        .padding(.bottom, 3)
+                                
+                        TabView(selection: self.$calendarVM.monthOffest) {
+                            ForEach(-10 ... 100, id: \.self) { _ in
+                                GeometryReader { proxy in
                                             
-                                        let longPress = LongPressGesture(minimumDuration: 0.3)
-                                            .onEnded { _ in
-                                                self.calendarVM.firstSelected = true
-                                            }
+                                    let longPress = LongPressGesture(minimumDuration: 0.3)
+                                        .onEnded { _ in
+                                            self.calendarVM.firstSelected = true
+                                        }
                                             
-                                        let drag = DragGesture()
-                                            .onChanged { value in
-                                                self.calendarVM.addSelectedItems(
-                                                    from: value,
-                                                    proxy.size.width / 7,
-                                                    proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks)
-                                                )
-                                            }
-                                            .onEnded { _ in
-                                                self.isSchModalVisible = true
-                                            }
+                                    let drag = DragGesture()
+                                        .onChanged { value in
+                                            self.calendarVM.addSelectedItems(
+                                                from: value,
+                                                proxy.size.width / 7,
+                                                proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks)
+                                            )
+                                        }
+                                        .onEnded { _ in
+                                            self.isSchModalVisible = true
+                                        }
                                             
-                                        let combined = longPress.sequenced(before: drag)
+                                    let combined = longPress.sequenced(before: drag)
                                             
-                                        CalendarWeekView(
-                                            calendarVM: self.calendarVM,
-                                            isDayModalVisible: self.$isDayModalVisible,
-                                            isDatePickerVisible: self.$isDatePickerVisible,
-                                            cellHeight: proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks),
-                                            cellWidth: proxy.size.width / 7
-                                        )
-                                        .gesture(combined)
-                                    } // GeometryReader
-                                } // ForEach
-                            } // TabView
-                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                        } // Group
-                        .padding(.horizontal, 20)
-                        Spacer().frame(height: 20)
-                    } // VStack
-                }
-                .onAppear {
-                    self.calendarVM.dayList = CalendarHelper.getDays(self.calendarVM.startOnSunday)
-                    self.calendarVM.getCategoryList()
-                    self.calendarVM.getCurDateList(self.calendarVM.monthOffest, self.calendarVM.startOnSunday)
-                }
+                                    CalendarWeekView(
+                                        calendarVM: self.calendarVM,
+                                        isDayModalVisible: self.$isDayModalVisible,
+                                        isDatePickerVisible: self.$isDatePickerVisible,
+                                        cellHeight: proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks),
+                                        cellWidth: proxy.size.width / 7
+                                    )
+                                    .gesture(combined)
+                                } // GeometryReader
+                            } // ForEach
+                        } // TabView
+                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    } // Group
+                    .padding(.horizontal, 20)
+                    Spacer().frame(height: 20)
+                } // VStack
                 .onTapGesture {
                     withAnimation {
                         self.hideAddMenu()
@@ -301,7 +294,7 @@ struct CalendarDateView: View {
                 if self.isOptionModalVisible {
                     Color.black.opacity(0.4)
                         .edgesIgnoringSafeArea(.all)
-                        .zIndex(1)
+                        .zIndex(2)
                         .onTapGesture {
                             withAnimation {
                                 self.x = UIScreen.main.bounds.width
@@ -330,12 +323,15 @@ struct CalendarDateView: View {
                             }
                         }
                     })
-                    .zIndex(2)
+                    .zIndex(3)
             }
         } // ZStack
         
         .onAppear {
             UIApplication.shared.addTapGestureRecognizer()
+            self.calendarVM.dayList = CalendarHelper.getDays(self.calendarVM.startOnSunday)
+            self.calendarVM.getCategoryList()
+            self.calendarVM.getCurDateList(self.calendarVM.monthOffest, self.calendarVM.startOnSunday)
         }
         .onChange(of: self.isSchModalVisible) { _ in
             if !self.isSchModalVisible {
