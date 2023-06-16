@@ -184,6 +184,7 @@ struct UserService {
             ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
                 switch response.result {
                 case .success(let data):
+                    Global.shared.user = nil
                     Global.shared.isLoggedIn = false
                     KeychainService.logout()
                     AlarmHelper.removeAllNotification()
@@ -225,6 +226,7 @@ struct UserService {
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):
+                Global.shared.user = nil
                 Global.shared.isLoggedIn = false
                 KeychainService.logout()
                 AlarmHelper.removeAllNotification()

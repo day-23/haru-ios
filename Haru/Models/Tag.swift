@@ -32,7 +32,7 @@ struct Tag: Codable, Identifiable, Equatable {
     }
 
     static func ==(lhs: Self, rhs: Self) -> Bool {
-        return (lhs.id == rhs.id)
+        return lhs.id == rhs.id && lhs.content == rhs.content
     }
 
     // MARK: - Dates Properties
