@@ -238,7 +238,7 @@ struct CalendarOptionView: View {
                                 .foregroundColor(calendarVM.allOff ? Color(0x1dafff) : Color(0x646464))
                         }
                     }
-                    .padding(.bottom, 40)
+                    .padding(.bottom, UIScreen.main.bounds.height < 800 ? 20 : 40)
                 }
             }
             .background(Color(0xfdfdfd))
