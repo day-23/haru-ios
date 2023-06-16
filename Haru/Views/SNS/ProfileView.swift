@@ -30,81 +30,66 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                ProfileInfoView(userProfileVM: userProfileVM)
-                    .background(Color(0xFDFDFD))
-                    .padding(.top, 20)
+            ScrollView {
+                VStack(spacing: 0) {
+                    ProfileInfoView(userProfileVM: userProfileVM)
+                        .background(Color.white)
+                        .padding(.top, 20)
 
-                Spacer()
-                    .frame(height: 33)
+                    Spacer()
+                        .frame(height: 23)
+                }
+                .background(Color.white)
 
-                if userProfileVM.isPublic {
-                    VStack(spacing: 0) {
-                        HStack(spacing: 0) {
-                            Text(self.userProfileVM.isMe ? "내 피드" : "피드")
-                                .frame(width: 175)
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(self.isFeedSelected ? Color(0x1DAFFF) : Color(0xACACAC))
-                                .onTapGesture {
-                                    postVM.option = .target_feed
-                                    withAnimation {
-                                        self.isFeedSelected = true
-                                    }
+                if self.isFeedSelected {
+                    LazyVStack(pinnedViews: [.sectionHeaders]) {
+                        Section(header: headerView()) {
+                            if userProfileVM.isPublic {
+                                FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
+                                    .background(Color.white)
+                                    .animation(.none, value: UUID().uuidString)
+
+                            } else {
+                                VStack(spacing: 0) {
+                                    Image("sns-private-background")
+                                        .resizable()
+                                        .frame(width: 160, height: 190)
+                                        .padding(.top, 68)
+                                        .padding(.bottom, 55)
+                                    Text("비공개 계정입니다.")
+                                        .padding(.bottom, 5)
+                                    Text("수락된 친구만 게시글을 볼 수 있어요.")
+                                    Spacer()
                                 }
-
-                            Text("미디어")
-                                .frame(width: 175)
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(self.isFeedSelected ? Color(0xACACAC) : Color(0x1DAFFF))
-                                .onTapGesture {
-                                    postVM.option = .target_media_all
-                                    withAnimation {
-                                        self.isFeedSelected = false
-                                    }
-                                }
+                            }
                         }
-                        .padding(.bottom, 10)
-
-                        ZStack(alignment: .leading) {
-                            Rectangle()
-                                .fill(.clear)
-                                .frame(width: 175 * 2, height: 4)
-
-                            Rectangle()
-                                .fill(RadialGradient(
-                                    colors: [
-                                        Color(0xAAD7FF),
-                                        Color(0xD2D7FF)
-                                    ],
-                                    center: .center,
-                                    startRadius: 0,
-                                    endRadius: 90
-                                ))
-                                .frame(width: 175, height: 4)
-                                .offset(x: self.isFeedSelected ? 0 : 175)
-                        }
-                    }
-
-                    if self.isFeedSelected {
-                        FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
-                    } else {
-                        MediaListView(postVM: self.postVM)
                     }
                 } else {
-                    VStack(spacing: 0) {
-                        Image("sns-private-background")
-                            .resizable()
-                            .frame(width: 160, height: 190)
-                            .padding(.top, 68)
-                            .padding(.bottom, 55)
-                        Text("비공개 계정입니다.")
-                            .padding(.bottom, 5)
-                        Text("수락된 친구만 게시글을 볼 수 있어요.")
-                        Spacer()
+                    LazyVStack(pinnedViews: [.sectionHeaders]) {
+                        Section(header: headerView()) {
+                            if userProfileVM.isPublic {
+                                MediaListView(postVM: self.postVM, scrollable: true)
+                                    .background(Color.white)
+                                    .animation(.none, value: UUID().uuidString)
+                            } else {
+                                VStack(spacing: 0) {
+                                    Image("sns-private-background")
+                                        .resizable()
+                                        .frame(width: 160, height: 190)
+                                        .padding(.top, 68)
+                                        .padding(.bottom, 55)
+                                    Text("비공개 계정입니다.")
+                                        .padding(.bottom, 5)
+                                    Text("수락된 친구만 게시글을 볼 수 있어요.")
+                                    Spacer()
+                                }
+                            }
+                        }
                     }
                 }
             }
-            .background(Color(0xFDFDFD))
+            .background(Color.white)
+            .clipped()
 
             if postOptModalVis.0 {
                 Color.black.opacity(0.5)
@@ -245,7 +230,8 @@ struct ProfileView: View {
                     }
 
                 Modal(isActive: self.$blockModalVis,
-                      ratio: UIScreen.main.bounds.height < 800 ? 0.4 : 0.3) {
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.4 : 0.3)
+                {
                     VStack(spacing: 0) {
                         ProfileImgView(profileImage: userProfileVM.profileImage)
                             .frame(width: 70, height: 70)
@@ -349,8 +335,64 @@ struct ProfileView: View {
                 }
             }
         }
+        .toolbarBackground(Color.white)
         .onAppear {
             self.userProfileVM.fetchUserProfile()
+        }
+    }
+
+    @ViewBuilder
+    func headerView() -> some View {
+        if userProfileVM.isPublic {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    Text(self.userProfileVM.isMe ? "내 피드" : "피드")
+                        .frame(width: 175)
+                        .font(.pretendard(size: 14, weight: .bold))
+                        .foregroundColor(self.isFeedSelected ? Color(0x1DAFFF) : Color(0xACACAC))
+                        .onTapGesture {
+                            postVM.option = .target_feed
+                            withAnimation {
+                                self.isFeedSelected = true
+                            }
+                        }
+
+                    Text("미디어")
+                        .frame(width: 175)
+                        .font(.pretendard(size: 14, weight: .bold))
+                        .foregroundColor(self.isFeedSelected ? Color(0xACACAC) : Color(0x1DAFFF))
+                        .onTapGesture {
+                            postVM.option = .target_media_all
+                            withAnimation {
+                                self.isFeedSelected = false
+                            }
+                        }
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.white)
+                .padding(.top, 10)
+                .padding(.bottom, 10)
+
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(width: 175 * 2, height: 4)
+
+                    Rectangle()
+                        .fill(RadialGradient(
+                            colors: [
+                                Color(0xAAD7FF),
+                                Color(0xD2D7FF)
+                            ],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 90
+                        ))
+                        .frame(width: 175, height: 4)
+                        .offset(x: self.isFeedSelected ? 0 : 175)
+                }
+            }
+            .background(Color.white)
         }
     }
 }
