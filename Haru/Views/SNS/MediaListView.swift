@@ -12,7 +12,7 @@ struct MediaListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(pinnedViews: .sectionHeaders) {
+            LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
                 Section(content: {
                     let columns = Array(repeating: GridItem(.flexible(), spacing: 3), count: 3)
 
@@ -48,12 +48,25 @@ struct MediaListView: View {
                                 }
                             }
                         } else {
-                            Text("아직 게시물이 존재하지 않습니다.")
+                            VStack(spacing: 15) {
+                                Spacer()
+
+                                Image("sns-empty-feedlist")
+                                    .resizable()
+                                    .frame(width: 180, height: 125)
+
+                                Text("게시물을 작성해보세요.")
+                                    .font(.pretendard(size: 16, weight: .regular))
+                                    .foregroundColor(Color(0x646464))
+
+                                Spacer()
+                            }
                         }
                     }
                 }, header: {
                     HashTagView(postVM: postVM)
                         .background(Color(0xfdfdfd))
+                        .padding(.bottom, 4)
                 })
             }
         }

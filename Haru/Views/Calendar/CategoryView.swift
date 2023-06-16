@@ -17,16 +17,18 @@ struct CategoryView: View {
         VStack {
             HStack {
                 Text("카테고리 선택")
-                    .foregroundColor(.white)
-                    .font(.pretendard(size: 20, weight: .bold))
+                    .foregroundColor(Color(0xfdfdfd))
+                    .font(.pretendard(size: 24, weight: .bold))
                 Spacer()
             }
-            .padding(.vertical, 28)
+            .background(
+                Image("background-picker")
+            )
+            .padding(.top, 25)
             .padding(.horizontal, 24)
-            .background(.gradation2)
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 10) {
                     Group {
                         ForEach(Array(scheduleFormVM.categoryList.enumerated()),
                                 id: \.offset)
@@ -34,15 +36,17 @@ struct CategoryView: View {
                             if category != Global.shared.holidayCategory,
                                index != 0
                             {
-                                HStack(spacing: 20) {
+                                HStack(spacing: 14) {
                                     Circle()
                                         .strokeBorder(Color(scheduleFormVM.categoryList[index].color))
                                         .background(Circle().foregroundColor(selectedIdx == index ? Color(scheduleFormVM.categoryList[index].color) : .white))
-                                        .frame(width: 20, height: 20)
+                                        .frame(width: 18, height: 18)
 
                                     Text("\(category.content)")
-                                        .font(.pretendard(size: 14, weight: .medium))
-                                        .foregroundColor(selectedIdx == index ? .black : .gray1)
+                                        .font(.pretendard(size: 16, weight: .regular))
+                                        .foregroundColor(
+                                            selectedIdx == index ? Color(0x191919) : Color(0xacacac)
+                                        )
                                     Spacer()
                                 }
                                 .contentShape(Rectangle())
@@ -56,14 +60,16 @@ struct CategoryView: View {
                             }
                         }
                     }
+                    .padding(.top, 15)
                     .padding(.leading, 20)
                 }
             }
-
-            Spacer()
-            Rectangle()
-                .fill(.gradation2)
-                .frame(height: 25)
+            .padding(.bottom, 10)
+            .background(Color(0xfdfdfd))
         }
+        .frame(width: 300, height: 480)
+        .cornerRadius(10)
+        .padding(.horizontal, 30)
+        .shadow(radius: 2.0)
     }
 }

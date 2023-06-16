@@ -56,30 +56,44 @@ struct PostFormView: View {
                     .padding(.top, 24)
             } else {
                 VStack {
-                    TabView(selection: $selectedImageNum) {
-                        ForEach(postFormVM.imageList.indices, id: \.self) { idx in
-                            Image(uiImage: postFormVM.imageList[idx])
-                                .renderingMode(.original)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(
-                                    width: deviceSize.width,
-                                    height: deviceSize.width
-                                )
-                                .clipped()
+                    ZStack {
+                        if !postFormVM.imageList.isEmpty {
+                            Text("\(selectedImageNum + 1)/\(postFormVM.imageList.count)")
+                                .font(.pretendard(size: 12, weight: .regular))
+                                .foregroundColor(Color(0xfdfdfd))
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 14)
+                                .background(Color(0x191919).opacity(0.5))
+                                .cornerRadius(15)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                                .offset(x: -10, y: 10)
+                                .zIndex(2)
                         }
-                    }
-                    .tabViewStyle(.page)
-                    .indexViewStyle(.page(backgroundDisplayMode: .always))
-                    .frame(width: deviceSize.width, height: deviceSize.width)
-                    .padding(.top, 24)
 
-                    Button("크롭 설정하기") {
-                        croppedImage = postFormVM.oriImageList[selectedImageNum]
-                        presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
-                        showingCropper = true
-                    }.font(.title)
+                        TabView(selection: $selectedImageNum) {
+                            ForEach(postFormVM.imageList.indices, id: \.self) { idx in
+                                Image(uiImage: postFormVM.imageList[idx])
+                                    .renderingMode(.original)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(
+                                        width: deviceSize.width,
+                                        height: deviceSize.width
+                                    )
+                                    .clipped()
+                                    .onTapGesture {
+                                        croppedImage = postFormVM.oriImageList[selectedImageNum]
+                                        presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
+                                        showingCropper = true
+                                    }
+                            }
+                        }
+                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                        .zIndex(1)
+                        .frame(width: deviceSize.width, height: deviceSize.width)
+                    }
                 }
+                .padding(.top, 15)
             }
         }
         .background(Color(0xfdfdfd))
@@ -191,9 +205,10 @@ struct PostFormView: View {
                         )
                     }
                 } label: {
-                    Image("todo-toggle")
+                    Image("back-button")
                         .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
+                        .foregroundColor(Color(0x1dafff))
+                        .rotationEffect(Angle(degrees: 180))
                 }
                 .disabled(postAddMode == .drawing ? postFormVM.imageList.isEmpty : postFormVM.content == "")
             }

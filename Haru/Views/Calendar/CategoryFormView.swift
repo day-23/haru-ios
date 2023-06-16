@@ -13,7 +13,7 @@ struct CategoryFormView: View {
     @State var content: String = ""
     @State var color: Color?
     @State var selectedIdx: Int = -1
-    @State var isToggle: Bool = false
+    @State var isToggle: Bool = true
     
     var disable: Bool {
         content == "" || selectedIdx == -1
@@ -26,76 +26,81 @@ struct CategoryFormView: View {
     var categoryId: String?
 
     var body: some View {
-        VStack(spacing: 20) {
-            HStack {
-                TextField("카테고리 입력", text: $content)
-                    .font(.pretendard(size: 24, weight: .medium))
-                    .onChange(of: content) { _ in
-                        if content.count > 8 {
-                            content = String(content[content.startIndex ..< content.index(content.endIndex, offsetBy: -1)])
+        GeometryReader { _ in
+            VStack(spacing: 0) {
+                HStack {
+                    TextField("", text: $content)
+                        .placeholder(when: content.isEmpty) {
+                            Text("카테고리 이름을 입력하세요.")
+                                .font(.pretendard(size: 24, weight: .regular))
+                                .foregroundColor(Color(0xacacac))
+                        }
+                        .font(.pretendard(size: 24, weight: .bold))
+                        .foregroundColor(Color(0x191919))
+                        .onChange(of: content) { _ in
+                            if content.count > 8 {
+                                content = String(content[content.startIndex ..< content.index(content.endIndex, offsetBy: -1)])
+                            }
+                        }
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 30)
+                
+                Divider()
+                    .padding(.top, 24)
+                    .padding(.bottom, 12)
+                
+                HStack {
+                    Text("캘린더에 카테고리 표시")
+                        .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(!isToggle ? Color(0x646464) : Color(0x191919))
+                    Spacer()
+                    Toggle("", isOn: $isToggle.animation())
+                        .toggleStyle(CustomToggleStyle())
+                        .frame(width: 38, height: 18)
+                }
+                .padding(.horizontal, 30)
+                .background(.white)
+                
+                Divider()
+                    .padding(.vertical, 12)
+                
+                HStack {
+                    Text("색상 선택")
+                        .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(selectedIdx == -1 ? Color(0x646464) : Color(0x191919))
+                    Spacer()
+                }
+                .padding(.horizontal, 30)
+                .background(.white)
+                
+                colorPicker()
+                
+                Spacer()
+                
+                if mode == .edit {
+                    Button {
+                        if let categoryId {
+                            calendarVM.deleteCategory(categoryId: categoryId) {
+                                calendarVM.getCategoryList()
+                                dismissAction.callAsFunction()
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 10) {
+                            Text("카테고리 삭제")
+                                .font(.pretendard(size: 20, weight: .regular))
+                                .foregroundColor(Color(0xf71e58))
+                            Image("todo-delete")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0xf71e58))
+                                .frame(width: 28, height: 28)
                         }
                     }
-                    
-                Spacer()
-                
-                if content != "" {
-                    Image("edit-pencil")
-                        .resizable()
-                        .frame(width: 28, height: 28)
                 }
             }
-            .padding(.horizontal, 30)
-            Divider()
-            HStack {
-                Text("이벤트 알림")
-                    .font(.pretendard(size: 14, weight: .regular))
-                    .foregroundColor(!isToggle ? Color(0x646464) : Color(0x191919))
-                Spacer()
-                Toggle("", isOn: $isToggle.animation())
-                    .toggleStyle(CustomToggleStyle())
-                    .frame(width: 38, height: 18)
-            }
-            .padding(.horizontal, 30)
-            .background(.white)
-                
-            Divider()
-            HStack {
-                Text("색상 선택")
-                    .font(.pretendard(size: 14, weight: .regular))
-                    .foregroundColor(selectedIdx == -1 ? Color(0x646464) : Color(0x191919))
-                Spacer()
-            }
-            .padding(.horizontal, 30)
-            .background(.white)
-                
-            colorPicker()
-                    
-            Spacer()
-            
-            if mode == .edit {
-                Button {
-                    if let categoryId {
-                        calendarVM.deleteCategory(categoryId: categoryId) {
-                            calendarVM.getCategoryList()
-                            dismissAction.callAsFunction()
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 10) {
-                        Text("카테고리 삭제하기")
-                            .font(.pretendard(size: 20, weight: .regular))
-                            .foregroundColor(Color(0xf71e58))
-                        Image("todo-delete")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(Color(0xf71e58))
-                            .frame(width: 28, height: 28)
-                    }
-                }
-            }
-        }
-        .onAppear {
-            print(selectedIdx)
         }
         .padding(.top, 25)
         .padding(.bottom, 40)
@@ -127,7 +132,7 @@ struct CategoryFormView: View {
                     Image("confirm")
                         .resizable()
                         .renderingMode(.template)
-                        .foregroundColor(disable ? Color(0x646464) : Color(0x191919))
+                        .foregroundColor(Color(0x191919))
                         .frame(width: 28, height: 28)
                 }
                 .disabled(disable)
@@ -137,9 +142,9 @@ struct CategoryFormView: View {
     
     @ViewBuilder
     func colorPicker() -> some View {
-        VStack(spacing: 30) {
+        VStack(spacing: UIScreen.main.bounds.height < 800 ? 16 : 26) {
             ForEach(0 ... 6, id: \.self) { row in
-                HStack(spacing: 20) {
+                HStack(spacing: UIScreen.main.bounds.height < 800 ? 10 : 16) {
                     ForEach(colors[row].indices, id: \.self) { col in
                         ZStack {
                             Image("calendar-picked-circle")
@@ -160,7 +165,7 @@ struct CategoryFormView: View {
                 .padding(.horizontal, 40)
             }
         }
-        .padding(.top, 20)
+        .padding(.top, 12)
     }
     
     func selectColor() {

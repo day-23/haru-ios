@@ -81,6 +81,10 @@ final class ScheduleFormViewModel: ObservableObject {
             } else {
                 isWarning = false
             }
+            
+            if repeatEnd - newValue < 60 * 30 {
+                repeatEnd = newValue.addingTimeInterval(TimeInterval(60 * 30))
+            }
         }
     }
 
@@ -90,6 +94,10 @@ final class ScheduleFormViewModel: ObservableObject {
                 isWarning = true
             } else {
                 isWarning = false
+            }
+            
+            if newValue - repeatStart < 60 * 30 {
+                repeatStart = newValue.addingTimeInterval(-TimeInterval(60 * 30))
             }
             
             if newValue > realRepeatEnd {

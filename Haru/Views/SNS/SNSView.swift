@@ -31,12 +31,13 @@ struct SNSView: View {
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(spacing: 0) {
                 self.HaruHeaderView()
                     .background(Color(0xfdfdfd))
 
                 if self.isFriendFeed {
                     FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis, comeToRoot: true)
+                        .background(Color(0xfdfdfd))
                 } else {
                     LookAroundView()
                 }
@@ -78,7 +79,9 @@ struct SNSView: View {
                         }
                     }
 
-                Modal(isActive: self.$postOptModalVis.0, ratio: 0.1) {
+                Modal(isActive: self.$postOptModalVis.0,
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.25 : 0.1)
+                {
                     VStack(spacing: 20) {
                         if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {} label: {
@@ -130,7 +133,7 @@ struct SNSView: View {
                                         .foregroundColor(Color(0xf71e58))
                                         .font(.pretendard(size: 20, weight: .regular))
 
-                                    Image("trash")
+                                    Image("sns-feed-delete-button")
                                         .resizable()
                                         .renderingMode(.template)
                                         .foregroundColor(Color(0xf71e58))
@@ -196,9 +199,7 @@ struct SNSView: View {
                 .opacity(self.deletePost || self.hidePost || self.reportPost ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
-            }
-
-            if !self.postOptModalVis.0 {
+            } else if self.isFriendFeed {
                 VStack {
                     if self.showDrowButton {
                         NavigationLink(
@@ -279,14 +280,14 @@ struct SNSView: View {
     @ViewBuilder
     func HaruHeaderView() -> some View {
         HaruHeader(toggleIsClicked: self.$toggleIsClicked) {
-            HStack(spacing: 10) {
-                NavigationLink {
-                    ProfileView(
-                        postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
-                        userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown"),
-                        myProfile: true
-                    )
-                } label: {
+            NavigationLink {
+                ProfileView(
+                    postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
+                    userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown"),
+                    myProfile: true
+                )
+            } label: {
+                if self.isFriendFeed {
                     HStack(spacing: 5) {
                         Image("sns-my-history")
                             .resizable()
@@ -296,16 +297,16 @@ struct SNSView: View {
                             .font(.pretendard(size: 14, weight: .bold))
                             .foregroundColor(Color(0x191919))
                     }
-                }
-
-                NavigationLink {
-                    UserSearchView()
-                } label: {
-                    Image("search")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundColor(Color(0x191919))
-                        .frame(width: 28, height: 28)
+                } else {
+                    NavigationLink {
+                        UserSearchView()
+                    } label: {
+                        Image("search")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
                 }
             }
         }

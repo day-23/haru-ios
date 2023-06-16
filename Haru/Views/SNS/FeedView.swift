@@ -29,8 +29,8 @@ struct FeedView: View {
         )
         
         return ZStack {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 10) {
                     NavigationLink {
                         ProfileView(
                             postVM: PostViewModel(targetId: post.user.id, option: .target_feed),
@@ -79,9 +79,11 @@ struct FeedView: View {
                     content: post.content,
                     isMine: isMine
                 )
+                .padding(.top, 14)
+                .padding(.bottom, 10)
                 
-                HStack(spacing: 14) {
-                    HStack(spacing: 9) {
+                HStack(spacing: 10) {
+                    HStack(spacing: 5) {
                         Button {
                             postVM.likeThisPost(targetPostId: post.id) {
                                 if post.isLiked {
@@ -107,10 +109,11 @@ struct FeedView: View {
                         if isMine {
                             Text("\(post.likedCount)")
                                 .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x191919))
                         }
                     }
                     
-                    HStack(spacing: 10) {
+                    HStack(spacing: 5) {
                         NavigationLink {
                             CommentView(
                                 isTemplate: post.isTemplatePost != nil,
@@ -141,6 +144,7 @@ struct FeedView: View {
                         if isMine {
                             Text("\(post.commentCount)")
                                 .font(.pretendard(size: 14, weight: .bold))
+                                .foregroundColor(Color(0x191919))
                         }
                     }
                     
@@ -167,9 +171,13 @@ struct FeedView: View {
                     Text(content)
                         .lineLimit(nil)
                         .font(.pretendard(size: 14, weight: .regular))
+                        .foregroundColor(Color(0x191919))
                         .padding(.horizontal, 20)
+                        .padding(.top, 10)
                 }
+                
                 Divider()
+                    .padding(.top, 15)
             }
         }
     }

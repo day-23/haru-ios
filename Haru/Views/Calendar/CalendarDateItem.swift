@@ -30,7 +30,7 @@ struct CalendarDateItem: View {
                 .background(
                     Image("calendar-date-circle")
                         .resizable()
-                        .frame(width: 20, height: 20)
+                        .frame(width: 24, height: 24)
                         .opacity(isSameDay ? 1 : 0)
                 )
             Spacer()
@@ -40,9 +40,3 @@ struct CalendarDateItem: View {
         .opacity(!value.isNextDate && !value.isPrevDate && !selectionSet.contains(value) ? 1 : 0.3)
     }
 }
-
-// struct CalendarDateItem_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CalendarDateItem(selectionSet: .constant([DateValue(day: 8, date: Date())]), value: DateValue(day: 7, date: Date()), cellHeight: 100, cellWidhth: UIScreen.main.bounds.width / 7)
-//    }
-// }

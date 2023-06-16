@@ -36,19 +36,23 @@ struct HaruHeader<
 
             VStack(spacing: 0) {
                 HStack {
-                    Image("logo")
-
                     if self.toggleOn {
                         Button {
                             withAnimation {
                                 self.toggleIsClicked.toggle()
                             }
                         } label: {
-                            Image("todo-toggle")
-                                .renderingMode(.template)
-                                .foregroundColor(Color(0x646464))
-                                .rotationEffect(.degrees(self.toggleIsClicked ? 90 : 0))
+                            HStack {
+                                Image("logo")
+
+                                Image("todo-toggle")
+                                    .renderingMode(.template)
+                                    .foregroundColor(Color(0x646464))
+                                    .rotationEffect(.degrees(self.toggleIsClicked ? 90 : 0))
+                            }
                         }
+                    } else {
+                        Image("logo")
                     }
 
                     Spacer()
@@ -62,6 +66,6 @@ struct HaruHeader<
             .padding(.leading, 25)
             .padding(.trailing, 20)
         }
-        .frame(height: 52)
+        .frame(height: 48)
     }
 }

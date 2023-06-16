@@ -93,6 +93,7 @@ struct CommentView: View, KeyboardReadable {
     @State var startingYList: [String: CGFloat] = [:]
 
     @State var overHide: Bool = false
+    @State var overWarning: Bool = false
 
     var isMine: Bool // 해당 게시물이 내 게시물인지 남의 게시물인지
 
@@ -102,152 +103,178 @@ struct CommentView: View, KeyboardReadable {
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 5) {
-                HStack(alignment: .center, spacing: 0) {
-                    HStack(spacing: 5) {
-                        Image(isMine ? "sns-edit" : "sns-comment-empty")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 28, height: 28)
+                if !keyboardUp {
+                    HStack(alignment: .center, spacing: 0) {
+                        HStack(spacing: 5) {
+                            if alreadyComment[postPageNum] == nil {
+                                Image(isMine ?
+                                    "sns-edit" : "sns-comment-empty")
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
 
-                        if alreadyComment[postPageNum] == nil {
-                            Text(
-                                isMine ?
-                                    isCommentEditing ? "편집중" : "편집하기"
-                                    :
-                                    "작성하기"
-                            )
-                            .font(.pretendard(size: 14, weight: .bold))
-                        }
-                    }
-                    .onTapGesture {
-                        if isMine {
-                            isCommentEditing = true
-                        }
-                    }
-                    .foregroundColor(
-                        isMine ?
-                            isCommentEditing ? Color(0x1DAFFF) : Color(0x646464)
-                            :
-                            alreadyComment[postPageNum] == nil ? Color(0x646464) : Color(0x1DAFFF)
-                    )
-                    .opacity(isCommentWriting || isCommentDeleting ? 0 : 1)
+                                Text(
+                                    isMine ?
+                                        isCommentEditing ? "편집중" : "편집하기"
+                                        :
+                                        "작성하기"
+                                )
+                                .font(.pretendard(size: 14, weight: .bold))
 
-                    Spacer(minLength: 0)
-
-                    Group {
-                        HStack(spacing: 10) {
-                            if hideAllComment {
-                                Button {
-                                    hideAllComment = false
-                                } label: {
-                                    Image("sns-comment-disable")
-                                        .resizable()
-                                        .renderingMode(.template)
-                                        .foregroundColor(Color(0xCACACA))
-                                        .frame(width: 28, height: 28)
-                                }
                             } else {
-                                Button {
-                                    hideAllComment = true
-                                } label: {
-                                    Image("sns-comment")
-                                        .renderingMode(.template)
-                                        .resizable()
-                                        .frame(width: 28, height: 28)
-                                        .foregroundColor(Color(0x1CAFFF))
-                                }
-                            }
+                                Image("sns-comment-fill")
+                                    .resizable()
+                                    .frame(width: 28, height: 28)
 
+                                Text("내 코멘트")
+                                    .font(.pretendard(size: 14, weight: .bold))
+                                    .foregroundColor(Color(0x1DAFFF))
+                            }
+                        }
+                        .onTapGesture {
                             if isMine {
-                                NavigationLink {
-                                    CommentListView(
-                                        commentVM: CommentViewModel(
-                                            userId: userId,
-                                            postImageIDList: postImageList.map { image in
-                                                image.id
-                                            },
-                                            postId: postId,
-                                            imagePageNum: postPageNum
-                                        ),
-                                        isTemplate: isTemplate
-                                    )
+                                isCommentEditing = true
+                            } else if alreadyComment[postPageNum] == nil {
+                                x = UIScreen.main.bounds.size.width / 2
+                                y = UIScreen.main.bounds.size.width / 2
+                                startingX = UIScreen.main.bounds.size.width / 2
+                                startingY = UIScreen.main.bounds.size.width / 2
+                                isCommentWriting = true
+                                isFocused = true
+                            } else {
+                                delCommentTarget = alreadyComment[postPageNum]?.0
+                                isCommentDeleting = true
+                                deleteWriting = true
+                            }
+                        }
+                        .foregroundColor(
+                            isMine ?
+                                isCommentEditing ? Color(0x1DAFFF) : Color(0x646464)
+                                :
+                                alreadyComment[postPageNum] == nil ? Color(0x646464) : Color(0x1DAFFF)
+                        )
+                        .opacity(isCommentWriting || isCommentDeleting ? 0 : 1)
+
+                        Spacer(minLength: 0)
+
+                        Group {
+                            HStack(spacing: 10) {
+                                if hideAllComment {
+                                    Button {
+                                        hideAllComment = false
+                                    } label: {
+                                        Image("todo-tag-hidden")
+
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .foregroundColor(Color(0x1CAFFF))
+                                            .frame(width: 28, height: 28)
+                                    }
+                                } else {
+                                    Button {
+                                        hideAllComment = true
+                                    } label: {
+                                        Image("todo-tag-visible")
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .foregroundColor(Color(0x646464))
+
+                                            .frame(width: 28, height: 28)
+                                    }
+                                }
+
+                                if isMine {
+                                    NavigationLink {
+                                        CommentListView(
+                                            commentVM: CommentViewModel(
+                                                userId: userId,
+                                                postImageIDList: postImageList.map { image in
+                                                    image.id
+                                                },
+                                                postId: postId,
+                                                imagePageNum: postPageNum
+                                            ),
+                                            isTemplate: isTemplate
+                                        )
+                                    } label: {
+                                        Image("slider")
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .frame(width: 28, height: 28)
+                                            .foregroundColor(Color(0x646464))
+                                    }
+                                }
+                            }
+                            .opacity(isCommentEditing || (isCommentWriting || isCommentDeleting) ? 0 : 1)
+                        }
+                    }
+                    .overlay {
+                        if isCommentEditing {
+                            Group {
+                                Button {
+                                    cancelEditing = true
                                 } label: {
-                                    Image("slider")
-                                        .resizable()
-                                        .renderingMode(.template)
-                                        .frame(width: 28, height: 28)
-                                        .foregroundColor(Color(0x646464))
+                                    HStack(spacing: 5) {
+                                        Image("sns-reset-button")
+                                            .resizable()
+                                            .frame(width: 28, height: 28)
+
+                                        Text("초기화")
+                                            .font(.pretendard(size: 14, weight: .bold))
+                                            .foregroundColor(Color(0xFDFDFD))
+                                    }
                                 }
                             }
-                        }
-                        .opacity(isCommentEditing || (isCommentWriting || isCommentDeleting) ? 0 : 1)
-                    }
-                }
-                .overlay {
-                    if isCommentEditing {
-                        Group {
-                            Button {
-                                cancelEditing = true
-                            } label: {
-                                HStack(spacing: 5) {
-                                    Image("comment-reset")
+                        } else if !isCommentWriting && !isCommentDeleting {
+                            Group {
+                                HStack(spacing: 20) {
+                                    Image("todo-toggle")
                                         .resizable()
-                                        .frame(width: 28, height: 28)
+                                        .frame(width: 20, height: 20)
+                                        .rotationEffect(Angle(degrees: -180))
+                                        .onTapGesture {
+                                            withAnimation {
+                                                postPageNum -= 1
+                                            }
+                                        }
+                                        .disabled(postPageNum == 0)
 
-                                    Text("초기화")
-                                        .font(.pretendard(size: 14, weight: .bold))
+                                    Text("\(postPageNum + 1)/\(postImageList.count)")
+                                        .font(.pretendard(size: 12, weight: .regular))
                                         .foregroundColor(Color(0xFDFDFD))
+                                        .padding(.horizontal, 14)
+                                        .padding(.vertical, 6)
+                                        .background(Color(0x646464))
+                                        .cornerRadius(15)
+
+                                    Image("todo-toggle")
+                                        .resizable()
+                                        .frame(width: 20, height: 20)
+                                        .onTapGesture {
+                                            withAnimation {
+                                                postPageNum += 1
+                                            }
+                                        }
+                                        .disabled(postPageNum == postImageList.count - 1)
                                 }
                             }
                         }
-                    } else if !isCommentWriting && !isCommentDeleting {
-                        Group {
-                            HStack(spacing: 20) {
-                                Image("todo-toggle")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .rotationEffect(Angle(degrees: -180))
-                                    .onTapGesture {
-                                        withAnimation {
-                                            postPageNum -= 1
-                                        }
-                                    }
-                                    .disabled(postPageNum == 0)
-
-                                Text("\(postPageNum + 1)/\(postImageList.count)")
-                                    .font(.pretendard(size: 12, weight: .regular))
-                                    .foregroundColor(Color(0xFDFDFD))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 6)
-                                    .background(Color(0x646464))
-                                    .cornerRadius(15)
-
-                                Image("todo-toggle")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            postPageNum += 1
-                                        }
-                                    }
-                                    .disabled(postPageNum == postImageList.count - 1)
-                            }
-                        }
                     }
-                }
-
-                if keyboardUp {
-                    Text(content == "" ? "댓글을 입력해주세요" : content)
-                        .lineLimit(4)
-                        .font(.pretendard(size: 14, weight: .bold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color(0xFDFDFD))
-                        .cornerRadius(9)
+                } else {
+                    HStack {
+                        Text(content == "" ? "댓글을 입력해주세요" : content)
+                            .lineLimit(4)
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color(0xFDFDFD))
+                            .cornerRadius(9)
+                        Spacer()
+                    }
                 }
             }
             .padding(.horizontal, 20)
-            .offset(y: -230)
+            .offset(y: -(deviceSize.width / 2 + 20))
 
             mainContent(deviceSize: deviceSize)
                 .zIndex(3)
@@ -261,10 +288,13 @@ struct CommentView: View, KeyboardReadable {
                     .onTapGesture {
                         withAnimation {
                             hideCommentModalVis = false
+                            hideCommentTarget = nil
                         }
                     }
 
-                Modal(isActive: $hideCommentModalVis, ratio: 0.3) {
+                Modal(isActive: $hideCommentModalVis,
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.35 : 0.3)
+                {
                     VStack(spacing: 0) {
                         HStack(alignment: .center, spacing: 0) {
                             if let profileImage = target.user.profileImage {
@@ -489,30 +519,34 @@ struct CommentView: View, KeyboardReadable {
 
                 commentListView()
 
-                if isCommentWriting {
-                    ZStack {
-                        Circle()
-                            .frame(width: overDelete ? 90 : 80, height: overDelete ? 90 : 80)
-                            .foregroundColor(overDelete ? Color(0xF71E58) : .gray2)
-
-                        if alreadyComment[postPageNum] == nil {
-                            Image("cancel")
+                Group {
+                    if isCommentWriting {
+                        if overDelete {
+                            Image("sns-drag-cancel")
                                 .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 38, height: 38)
-                                .foregroundColor(.white)
+                                .frame(width: 90, height: 90)
+                                .zIndex(5)
                         } else {
-                            Image("trash")
+                            Image("sns-drag-cancel-default")
                                 .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 38, height: 38)
-                                .foregroundColor(.white)
+                                .frame(width: 90, height: 90)
+                                .zIndex(5)
+                        }
+                    } else if isCommentEditing {
+                        if overHide {
+                            Image("sns-drag-hide")
+                                .resizable()
+                                .frame(width: 90, height: 90)
+                                .zIndex(5)
+                        } else {
+                            Image("sns-drag-hide-default")
+                                .resizable()
+                                .frame(width: 90, height: 90)
+                                .zIndex(5)
                         }
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                    .offset(y: 80 + 30)
-                    .zIndex(2)
                 }
+                .offset(y: deviceSize.width / 2 + 80)
             }
             .onTapGesture { location in
                 if isCommentWriting || isCommentDeleting || isCommentEditing {
@@ -585,14 +619,16 @@ struct CommentView: View, KeyboardReadable {
 
                 let drag = DragGesture()
                     .onChanged { value in
-                        // 삭제 버튼 근처인 경우
+                        // 숨김 버튼 근처인 경우
                         if value.location.x >= sz / 2 - 45,
                            value.location.x <= sz / 2 + 45,
                            value.location.y >= sz + 25,
                            value.location.y <= sz + 120
                         {
+                            hideCommentTarget = comment
                             overHide = true
                         } else {
+                            hideCommentTarget = nil
                             overHide = false
                         }
 
@@ -607,20 +643,26 @@ struct CommentView: View, KeyboardReadable {
                         {
                             return
                         } else {
+                            if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz {
+                                overWarning = true
+                            } else {
+                                overWarning = false
+                            }
                             xList[comment.id] = value.location.x
                             yList[comment.id] = value.location.y
                         }
                     }
                     .onEnded { value in
                         if overHide {
-                            print("\(comment.content)를 숨기기")
-                            // TODO: 댓글 숨기기 API 연동
+                            hideCommentTarget = comment
+                            hideCommentModalVis = true
                             overHide = false
                         }
 
-                        if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz - 5 {
+                        if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz {
                             xList[comment.id] = startingXList[comment.id] ?? 190
                             yList[comment.id] = startingYList[comment.id] ?? 190
+                            overWarning = false
                         }
                         withAnimation {
                             draggingList[comment.id] = false
@@ -630,7 +672,10 @@ struct CommentView: View, KeyboardReadable {
                 let combined = longPress.sequenced(before: drag)
 
                 Text("\(comment.content)")
-                    .font(.pretendard(size: 14, weight: .regular))
+                    .font(.pretendard(
+                        size: hideCommentTarget?.id == comment.id && overHide ? 11 : 14,
+                        weight: hideCommentTarget?.id == comment.id && overHide ? .bold : .regular
+                    ))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(Color(0xFDFDFD))
@@ -645,9 +690,10 @@ struct CommentView: View, KeyboardReadable {
                     )
                     .foregroundColor(
                         isCommentDeleting && alreadyComment[postPageNum]?.0.id == comment.id ?
-                            Color(0x1AFFF) : Color(0x191919)
+                            Color(0x1DAFFF) :
+                            hideCommentTarget?.id == comment.id ? Color(0x1DAFFF) : Color(0x191919)
                     )
-                    .zIndex(2)
+                    .zIndex(6)
                     .overlay {
                         if isMine, showUserProfile, !isCommentEditing {
                             userProfileInfoView(comment: comment)
@@ -683,6 +729,11 @@ struct CommentView: View, KeyboardReadable {
                     if let uiImage = imageList[idx]?.uiImage {
                         Image(uiImage: uiImage)
                             .resizable()
+                            .border(
+                                width: 2,
+                                edges: [.top, .bottom, .leading, .trailing],
+                                color: overWarning ? .red : .clear
+                            )
                     } else {
                         ProgressView()
                     }
@@ -845,6 +896,7 @@ struct CommentView: View, KeyboardReadable {
             case .success:
                 fetchCommentList()
                 hideCommentModalVis = false
+                hideCommentTarget = nil
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }

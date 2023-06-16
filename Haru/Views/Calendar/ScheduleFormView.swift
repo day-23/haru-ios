@@ -16,6 +16,7 @@ struct ScheduleFormView: View {
 
     @State private var showCategorySheet: Bool = false
     @State private var showingPopup: Bool = false
+    @State private var backButtonToggle: Bool = false
 
     @State private var selectedIdx: Int?
     
@@ -38,8 +39,9 @@ struct ScheduleFormView: View {
                         }
                     } label: {
                         Image("todo-cancel")
+                            .renderingMode(.template)
                             .resizable()
-                            .colorMultiply(.mainBlack)
+                            .foregroundColor(isClear() ? Color(0xacacac) : Color(0x191919))
                             .frame(width: 28, height: 28)
                     }
                     
@@ -57,15 +59,22 @@ struct ScheduleFormView: View {
                     }
                     .disabled(scheduleFormVM.buttonDisable)
                 }
-                .padding(.horizontal, 37)
+                .padding(.leading, 37)
+                .padding(.trailing, 30)
             }
             ScrollView {
-                VStack(spacing: 15) {
+                VStack(spacing: 8) {
                     // 일정 입력
                     Group {
-                        HStack {
-                            TextField("일정 입력", text: $scheduleFormVM.content)
-                                .font(Font.system(size: 24, weight: .medium))
+                        HStack(spacing: 0) {
+                            TextField("", text: $scheduleFormVM.content)
+                                .placeholder(when: scheduleFormVM.content.isEmpty, placeholder: {
+                                    Text("일정을 입력하세요")
+                                        .font(.pretendard(size: 24, weight: .regular))
+                                        .foregroundColor(Color(0xacacac))
+                                })
+                                .font(Font.system(size: 24, weight: .bold))
+                                .foregroundColor(Color(0x191919))
                                 .onChange(of: scheduleFormVM.content) { value in
                                     if value.count > 50 {
                                         scheduleFormVM.content = String(
@@ -91,11 +100,6 @@ struct ScheduleFormView: View {
                                             selectedIdx: $selectedIdx,
                                             showCategorySheet: $showCategorySheet
                                         )
-                                        .background(Color.white)
-                                        .frame(height: 450)
-                                        .cornerRadius(20)
-                                        .padding(.horizontal, 30)
-                                        .shadow(radius: 2.0)
                                         .onAppear {
                                             selectedIdx = scheduleFormVM.selectionCategory
                                         }
@@ -124,11 +128,6 @@ struct ScheduleFormView: View {
                                             selectedIdx: $selectedIdx,
                                             showCategorySheet: $showCategorySheet
                                         )
-                                        .background(Color.white)
-                                        .frame(height: 450)
-                                        .cornerRadius(20)
-                                        .padding(.horizontal, 30)
-                                        .shadow(radius: 2.0)
                                     } customize: {
                                         $0
                                             .animation(.spring())
@@ -143,7 +142,8 @@ struct ScheduleFormView: View {
                             }
                             .padding(.trailing, !isSchModalVisible ? -10 : 0)
                         }
-                        .padding(.horizontal, 25)
+                        .padding(.leading, 34)
+                        .padding(.trailing, scheduleFormVM.mode == .edit ? 34 : 24)
                         
                         Divider()
                     }
@@ -205,7 +205,7 @@ struct ScheduleFormView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 50)
                         
                         Divider()
                     }
@@ -374,6 +374,7 @@ struct ScheduleFormView: View {
                 } // ScrollView
                 .padding(.top, 33)
             }
+            .padding(.top, scheduleFormVM.mode == .edit ? -10 : 0)
             if scheduleFormVM.mode == .edit {
                 Spacer()
                 if scheduleFormVM.overWeek {
@@ -382,7 +383,7 @@ struct ScheduleFormView: View {
                         actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
                     } label: {
                         HStack {
-                            Text("일정 삭제하기")
+                            Text("일정 삭제")
                                 .font(.pretendard(size: 20, weight: .medium))
                             
                             Image("todo-delete")
@@ -427,10 +428,20 @@ struct ScheduleFormView: View {
             if scheduleFormVM.mode == .edit {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        dismissAction.callAsFunction()
+                        backButtonToggle = true
+                        
                     } label: {
                         Image("back-button")
                             .frame(width: 28, height: 28)
+                    }
+                    .confirmationDialog(
+                        "현재 화면에서 나갈까요? 수정 사항은 저장되지 않습니다.",
+                        isPresented: $backButtonToggle,
+                        titleVisibility: .visible
+                    ) {
+                        Button("나가기", role: .destructive) {
+                            dismissAction.callAsFunction()
+                        }
                     }
                 }
             }
@@ -478,6 +489,14 @@ struct ScheduleFormView: View {
         }
     }
     
+    func isClear() -> Bool {
+        scheduleFormVM.content == "" &&
+            scheduleFormVM.selectionCategory == nil &&
+            scheduleFormVM.isSelectedAlarm == false &&
+            scheduleFormVM.isSelectedRepeat == false &&
+            scheduleFormVM.memo == ""
+    }
+    
     func getRepeatOption() -> [RepeatOption] {
         // 조건에 따라 필터링
         if scheduleFormVM.overMonth {
@@ -496,7 +515,7 @@ struct ScheduleFormView: View {
     func getDeleteActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "이 일정을 삭제할까요? 반복되는 일정입니다." : "이 일정을 삭제할까요?")
         
-        let deleteButton: ActionSheet.Button = .default(Text("이 일정만 삭제")) {
+        let deleteButton: ActionSheet.Button = .destructive(Text("이 일정만 삭제")) {
             scheduleFormVM.deleteTargetSchedule()
             dismissAction.callAsFunction()
         }
@@ -551,7 +570,7 @@ struct ScheduleFormView: View {
     func getEditActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "수정사항을 저장할까요? 반복되는 일정입니다." : "수정사항을 저장할까요?")
         
-        let editButton: ActionSheet.Button = .default(Text("이 일정만 편집")) {
+        let editButton: ActionSheet.Button = .default(Text("이 일정만 수정")) {
             scheduleFormVM.isSelectedRepeat = false
             scheduleFormVM.updateTargetSchedule()
         }
@@ -571,6 +590,7 @@ struct ScheduleFormView: View {
 
         switch actionSheetOption {
         case .isRepeat:
+            // 반복 종료일 건드리는 경우
             if scheduleFormVM.tmpIsSelectedRepeatEnd != scheduleFormVM.isSelectedRepeatEnd ||
                 (scheduleFormVM.tmpIsSelectedRepeatEnd &&
                     scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd)
@@ -588,7 +608,9 @@ struct ScheduleFormView: View {
                                        message: nil,
                                        buttons: [editAfterButton, cancleButton])
                 }
-            } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption ||
+            }
+            // 반복 옵션 건드리는 경우
+            else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption ||
                 scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
                 if (scheduleFormVM.from == .calendar
@@ -602,7 +624,7 @@ struct ScheduleFormView: View {
                 } else {
                     return ActionSheet(title: title,
                                        message: nil,
-                                       buttons: [editAfterButton, editAllButton, cancleButton])
+                                       buttons: [editAfterButton, cancleButton])
                 }
             } else {
                 if (scheduleFormVM.from == .calendar && scheduleFormVM.oriSchedule?.at == .front)

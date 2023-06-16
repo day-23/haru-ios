@@ -20,47 +20,74 @@ struct ProductivitySearchView: View {
 
     @FocusState var focus: Bool
     @State var waitingResponse: Bool = false
+    @State var searchSuccess: Bool?
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 14) {
-                Group {
-                    HStack(spacing: 6) {
-                        Image("calendar-schedule")
-                            .resizable()
-                            .frame(width: 28, height: 28)
+            if let searchSuccess {
+                if searchSuccess {
+                    VStack(spacing: 14) {
+                        Group {
+                            HStack(spacing: 6) {
+                                Image("calendar-mini-calendar")
 
-                        Text("일정")
-                            .font(.pretendard(size: 16, weight: .bold))
-                            .foregroundColor(Color(0x1DAFFF))
+                                Text("일정")
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(Color(0x1DAFFF))
 
-                        Spacer()
+                                Spacer()
+                            }
+                            .padding(.leading, 40)
+
+                            self.scheduleItemList()
+                                .padding(.leading, 34)
+                        }
+                        .padding(.trailing, 20)
+
+                        Divider()
+
+                        Group {
+                            HStack(spacing: 6) {
+                                Image("calendar-mini-todo")
+
+                                Text("할일")
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(Color(0x1DAFFF))
+
+                                Spacer()
+                            }
+                            .padding(.leading, 40)
+
+                            self.todoItemList()
+                                .padding(.leading, 35)
+                        }
+                        .padding(.trailing, 20)
                     }
-
-                    self.scheduleItemList()
-                }
-                .padding(.leading, 40)
-                .padding(.trailing, 20)
-
-                Divider()
-
-                Group {
-                    HStack(spacing: 6) {
-                        Image("calendar-todo")
+                } else {
+                    VStack(spacing: 0) {
+                        Image("sns-empty-search")
                             .resizable()
-                            .frame(width: 28, height: 28)
+                            .frame(width: 165, height: 146)
+                            .padding(.bottom, 54)
 
-                        Text("할일")
-                            .font(.pretendard(size: 16, weight: .bold))
-                            .foregroundColor(Color(0x1DAFFF))
-
-                        Spacer()
+                        Text("해당하는 할일 또는 일정이 없어요.")
+                            .font(.pretendard(size: 16, weight: .regular))
+                            .foregroundColor(Color(0x646464))
                     }
-
-                    self.todoItemList()
+                    .padding(.top, 160)
                 }
-                .padding(.leading, 40)
-                .padding(.trailing, 20)
+            } else {
+                VStack(spacing: 0) {
+                    Image("sns-empty-search")
+                        .resizable()
+                        .frame(width: 165, height: 146)
+                        .padding(.bottom, 54)
+
+                    Text("할일 또는 일정을 검색할 수 있어요.")
+                        .font(.pretendard(size: 16, weight: .regular))
+                        .foregroundColor(Color(0x646464))
+                }
+                .padding(.top, 160)
             }
         }
         .padding(.top, 25)
@@ -87,17 +114,20 @@ struct ProductivitySearchView: View {
                     .onSubmit {
                         if self.searchContent != "" {
                             self.waitingResponse = true
-                            self.searchVM.searchTodoAndSchedule(searchContent: self.searchContent) {
+                            self.searchVM.searchTodoAndSchedule(
+                                searchContent: self.searchContent
+                            ) { success in
                                 self.prevSearchContent = self.searchContent
                                 self.searchContent = ""
                                 self.waitingResponse = false
+                                self.searchSuccess = success
                             }
                         }
                     }
                     .disabled(self.waitingResponse)
                 Spacer()
             }
-            .padding(.vertical, 5)
+            .padding(.vertical, 3)
             .padding(.horizontal, 10)
             .background(Color(0xF1F1F5))
             .cornerRadius(10)
@@ -107,7 +137,7 @@ struct ProductivitySearchView: View {
     @ViewBuilder
     func scheduleItemList() -> some View {
         ForEach(self.searchVM.scheduleList, id: \.id) { schedule in
-            HStack(alignment: .center) {
+            HStack(alignment: .center, spacing: 8) {
                 Circle()
                     .fill(Color(schedule.category?.color))
                     .frame(width: 20, height: 20)
@@ -120,13 +150,17 @@ struct ProductivitySearchView: View {
                             schedule: schedule,
                             categoryList: self.calendarVM.categoryList,
                             successAction: {
-                                self.searchVM.searchTodoAndSchedule(searchContent: self.prevSearchContent) {}
+                                self.searchVM.searchTodoAndSchedule(
+                                    searchContent: self.prevSearchContent
+                                ) { success in
+                                    self.searchSuccess = success
+                                }
                             }
                         ),
                         isSchModalVisible: .constant(false)
                     )
                 } label: {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 3) {
                         HStack(spacing: 0) {
                             let stringList = self.splitContent(content: schedule.content, searchString: self.prevSearchContent)
                             ForEach(stringList.indices, id: \.self) { idx in
@@ -167,10 +201,18 @@ struct ProductivitySearchView: View {
                     contentWords: self.splitContent(content: todo.content, searchString: self.prevSearchContent)
                 ) {
                     // completeAction
-                    self.searchVM.searchTodoAndSchedule(searchContent: self.prevSearchContent) {}
+                    self.searchVM.searchTodoAndSchedule(
+                        searchContent: self.prevSearchContent
+                    ) { success in
+                        self.searchSuccess = success
+                    }
                 } updateAction: {
                     // updateAction
-                    self.searchVM.searchTodoAndSchedule(searchContent: self.prevSearchContent) {}
+                    self.searchVM.searchTodoAndSchedule(
+                        searchContent: self.prevSearchContent
+                    ) { success in
+                        self.searchSuccess = success
+                    }
                 }
             }
             .padding(.leading, -40)
