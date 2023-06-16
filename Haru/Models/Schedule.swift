@@ -28,62 +28,6 @@ struct Schedule: Identifiable, Codable {
         self.realRepeatEnd = realRepeatEnd
         self.prevRepeatEnd = prevRepeatEnd
         self.nextRepeatStart = nextRepeatStart
-
-        if !self.alarms.isEmpty {
-            Task {
-                await AlarmHelper.createNotification(
-                    identifier: id,
-                    body: content,
-                    date: repeatStart
-                )
-            }
-
-            var repeatDate = repeatStart
-            if self.repeatOption != nil {
-                if let repeatValue {
-                    while repeatDate < .now {
-                        do {
-                            if repeatValue.hasPrefix("T") {
-                                repeatDate = try nextSucRepeatStartDate(curRepeatStart: repeatDate)
-                            } else {
-                                repeatDate = try nextRepeatStartDate(curRepeatStart: repeatDate)
-                            }
-                        } catch {
-                            print("[Debug] \(error.localizedDescription) \(#fileID) \(#function)")
-                        }
-                    }
-
-                    var count = 1
-                    while count <= 30,
-                          repeatDate <= self.repeatEnd
-                    {
-                        let date = repeatDate
-                        Task {
-                            await AlarmHelper.createNotification(
-                                identifier: id,
-                                body: content,
-                                date: date
-                            )
-                        }
-
-                        do {
-                            if repeatValue.hasPrefix("T") {
-                                repeatDate = try nextSucRepeatStartDate(curRepeatStart: repeatDate)
-                            } else {
-                                repeatDate = try nextRepeatStartDate(curRepeatStart: repeatDate)
-                            }
-                            count += 1
-                        } catch {
-                            print("[Debug] \(error.localizedDescription) \(#fileID) \(#function)")
-                        }
-                    }
-                }
-            }
-        } else {
-            Task {
-                await AlarmHelper.removeNotification(identifier: id)
-            }
-        }
     }
 
     init(from decoder: Decoder) throws {

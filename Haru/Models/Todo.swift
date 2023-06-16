@@ -59,20 +59,6 @@ struct Todo: Identifiable, Codable {
         self.updatedAt = updatedAt
         self.deletedAt = deletedAt
         self.realRepeatStart = realRepeatStart
-
-        if let alarm = alarms.first {
-            Task {
-                await AlarmHelper.createNotification(
-                    identifier: id,
-                    body: content,
-                    date: alarm.time
-                )
-            }
-        } else {
-            Task {
-                await AlarmHelper.removeNotification(identifier: id)
-            }
-        }
     }
 
     init(from decoder: Decoder) throws {
