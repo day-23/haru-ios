@@ -29,9 +29,7 @@ struct ProductivitySearchView: View {
                     VStack(spacing: 14) {
                         Group {
                             HStack(spacing: 6) {
-                                Image("calendar-schedule")
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
+                                Image("calendar-mini-calendar")
 
                                 Text("일정")
                                     .font(.pretendard(size: 16, weight: .bold))
@@ -39,19 +37,18 @@ struct ProductivitySearchView: View {
 
                                 Spacer()
                             }
+                            .padding(.leading, 40)
 
                             self.scheduleItemList()
+                                .padding(.leading, 34)
                         }
-                        .padding(.leading, 40)
                         .padding(.trailing, 20)
 
                         Divider()
 
                         Group {
                             HStack(spacing: 6) {
-                                Image("calendar-todo")
-                                    .resizable()
-                                    .frame(width: 28, height: 28)
+                                Image("calendar-mini-todo")
 
                                 Text("할일")
                                     .font(.pretendard(size: 16, weight: .bold))
@@ -59,10 +56,11 @@ struct ProductivitySearchView: View {
 
                                 Spacer()
                             }
+                            .padding(.leading, 40)
 
                             self.todoItemList()
+                                .padding(.leading, 35)
                         }
-                        .padding(.leading, 40)
                         .padding(.trailing, 20)
                     }
                 } else {
@@ -139,7 +137,7 @@ struct ProductivitySearchView: View {
     @ViewBuilder
     func scheduleItemList() -> some View {
         ForEach(self.searchVM.scheduleList, id: \.id) { schedule in
-            HStack(alignment: .center) {
+            HStack(alignment: .center, spacing: 8) {
                 Circle()
                     .fill(Color(schedule.category?.color))
                     .frame(width: 20, height: 20)
@@ -162,7 +160,7 @@ struct ProductivitySearchView: View {
                         isSchModalVisible: .constant(false)
                     )
                 } label: {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 3) {
                         HStack(spacing: 0) {
                             let stringList = self.splitContent(content: schedule.content, searchString: self.prevSearchContent)
                             ForEach(stringList.indices, id: \.self) { idx in
