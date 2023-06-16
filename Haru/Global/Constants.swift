@@ -2,7 +2,7 @@
 //  Constants.swift
 //  Haru
 //
-//  Created dfby 최정민 on 2023/03/08.
+//  Created by 최정민 on 2023/03/08.
 //
 
 import Foundation

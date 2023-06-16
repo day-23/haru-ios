@@ -62,7 +62,8 @@ final class SearchService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -92,7 +93,8 @@ final class SearchService {
         AF.request(
             SearchService.userBaseURL + (Global.shared.user?.id ?? "unknown") + "/search/user/\(haruId)",
             method: .get,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -127,7 +129,8 @@ final class SearchService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -162,7 +165,8 @@ final class SearchService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {

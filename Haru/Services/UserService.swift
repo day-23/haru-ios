@@ -6,11 +6,12 @@
 //
 
 import Alamofire
-import Foundation
 import AuthenticationServices
+import Foundation
 
 struct UserService {
     // MARK: - Properties
+
     let appleAuthDelegate = AppleAuthDelegate()
     private static let baseURL = Constants.baseURL + "user/"
 
@@ -70,7 +71,8 @@ struct UserService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):
@@ -108,7 +110,8 @@ struct UserService {
             method: .patch,
             parameters: RequestTime(morningAlarmTime: time),
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):
@@ -146,7 +149,8 @@ struct UserService {
             method: .patch,
             parameters: RequestTime(nightAlarmTime: time),
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):
@@ -175,7 +179,8 @@ struct UserService {
                 Self.baseURL + "\(Global.shared.user?.id ?? "unknown")",
                 method: .delete,
                 encoding: JSONEncoding.default,
-                headers: headers
+                headers: headers,
+                interceptor: ApiRequestInterceptor()
             ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
                 switch response.result {
                 case .success(let data):
@@ -194,14 +199,14 @@ struct UserService {
             request.requestedScopes = [.email]
 
             let controller = ASAuthorizationController(authorizationRequests: [request])
-            appleAuthDelegate.completionHandler = { headers in
-                self.deleteAppleUser(headers : headers, completion: completion)
+            self.appleAuthDelegate.completionHandler = { headers in
+                self.deleteAppleUser(headers: headers, completion: completion)
             }
-            controller.delegate = appleAuthDelegate
+            controller.delegate = self.appleAuthDelegate
             controller.performRequests()
         }
     }
-    
+
     func deleteAppleUser(
         headers: HTTPHeaders,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -215,7 +220,8 @@ struct UserService {
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")" + "/apple",
             method: .delete,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):
@@ -230,11 +236,10 @@ struct UserService {
     }
 }
 
-
 // 애플 로그인을 호출하기 위한 delegate
 class AppleAuthDelegate: NSObject, ASAuthorizationControllerDelegate {
     var completionHandler: ((HTTPHeaders) -> Void)?
-    
+
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             if let authCodeData = appleIDCredential.authorizationCode,
@@ -254,7 +259,7 @@ class AppleAuthDelegate: NSObject, ASAuthorizationControllerDelegate {
 
                         let headers: HTTPHeaders = [
                             "accessToken": data.data.accessToken,
-                            "refreshToken": data.data.refreshToken
+                            "refreshToken": data.data.refreshToken,
                         ]
 
                         AuthService().validateUser(headers: headers) { result in
@@ -282,7 +287,7 @@ class AppleAuthDelegate: NSObject, ASAuthorizationControllerDelegate {
             }
         }
     }
-    
+
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         // handle error
     }

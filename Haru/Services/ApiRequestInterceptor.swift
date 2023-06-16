@@ -19,10 +19,10 @@ final class ApiRequestInterceptor: RequestInterceptor {
         for session: Session,
         completion: @escaping (Result<URLRequest, Error>) -> Void
     ) {
-        guard urlRequest.url?.absoluteString.hasPrefix("https://api.23haru.com/") == true else {
-            completion(.failure(RequestError.invalidURL))
-            return
-        }
+//        guard urlRequest.url?.absoluteString.hasPrefix("https://api.23haru.com/") == true else {
+//            completion(.failure(RequestError.invalidURL))
+//            return
+//        }
 
         guard let rawAccessToken = KeychainService.load(key: "accessToken") else {
             // 엑세스 토큰 경우, 로그인, OAuth 회원 가입시 (유저 정보 기입하는 화면 아님)
