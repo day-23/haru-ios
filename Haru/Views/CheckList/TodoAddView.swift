@@ -71,13 +71,27 @@ struct TodoAddView: View {
                     // Todo, SubTodo 입력 View
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 0) {
-                            TextField("투두 입력", text: self.$viewModel.content)
+                            TextField("", text: self.$viewModel.content)
+                                .placeholder(when: viewModel.content.isEmpty, placeholder: {
+                                    Text("할 일을 입력하세요")
+                                        .font(.pretendard(size: 24, weight: .regular))
+                                        .foregroundColor(Color(0xACACAC))
+                                })
                                 .font(.pretendard(size: 24, weight: .bold))
                                 .strikethrough(self.viewModel.todo?.completed ?? false)
                                 .foregroundColor(
                                     (self.viewModel.todo?.completed ?? false) ? Color(0xACACAC) : Color(0x191919)
                                 )
                                 .padding(.leading, 14)
+                                .onChange(of: viewModel.content) { _ in
+                                    if viewModel.content.count > 50 {
+                                        viewModel.content = String(
+                                            viewModel.content[
+                                                viewModel.content.startIndex ..< viewModel.content.index(viewModel.content.endIndex, offsetBy: -1)
+                                            ]
+                                        )
+                                    }
+                                }
 
                             StarButton(isClicked: self.viewModel.flag)
                                 .onTapGesture {
@@ -96,9 +110,11 @@ struct TodoAddView: View {
 
                                 TextField("", text: .init(get: {
                                     subTodo.content
-                                }, set: {
+                                }, set: { value in
                                     if let index = viewModel.subTodoList.firstIndex(where: { $0.id == subTodo.id }) {
-                                        viewModel.subTodoList[index].content = $0
+                                        if value.count <= 50 {
+                                            viewModel.subTodoList[index].content = value
+                                        }
                                     }
                                 }))
                                 .font(.pretendard(size: 16, weight: .bold))

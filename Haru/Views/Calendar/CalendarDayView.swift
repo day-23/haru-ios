@@ -25,17 +25,18 @@ struct CalendarDayView: View {
         return Pager(page: page, data: data.indices, id: \.self) { index in
             CalendarDayDetailView(
                 calendarVM: calendarViewModel,
-                todoAddViewModel: TodoAddViewModel(todoState: todoState, addAction: { todoId in
-                }, updateAction: { todoId in
+                todoAddViewModel: TodoAddViewModel(todoState: todoState, addAction: { _ in
+                }, updateAction: { _ in
                     calendarViewModel.getRefreshProductivityList()
-                }, deleteAction: { todoId in
+                }, deleteAction: { _ in
                     calendarViewModel.getRefreshProductivityList()
                 }),
                 checkListVM: checkListVM,
+                page: page,
                 row: index
             )
-            .frame(width: 330, height: 480)
-            .cornerRadius(20)
+            .frame(width: 310, height: 480)
+            .cornerRadius(10)
         }
         .itemAspectRatio(0.8)
         .itemSpacing(30)
@@ -70,8 +71,7 @@ struct CalendarDayView: View {
             }
 
             prevPageIndex = page.index
-            print("\(prevPageIndex)")
         }
-        .frame(height: 480, alignment: .center)
+        .frame(height: 480)
     }
 }
