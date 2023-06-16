@@ -16,6 +16,7 @@ struct ScheduleFormView: View {
 
     @State private var showCategorySheet: Bool = false
     @State private var showingPopup: Bool = false
+    @State private var backButtonToggle: Bool = false
 
     @State private var selectedIdx: Int?
     
@@ -62,7 +63,7 @@ struct ScheduleFormView: View {
                 .padding(.trailing, 30)
             }
             ScrollView {
-                VStack(spacing: 15) {
+                VStack(spacing: 8) {
                     // 일정 입력
                     Group {
                         HStack(spacing: 0) {
@@ -427,10 +428,20 @@ struct ScheduleFormView: View {
             if scheduleFormVM.mode == .edit {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        dismissAction.callAsFunction()
+                        backButtonToggle = true
+                        
                     } label: {
                         Image("back-button")
                             .frame(width: 28, height: 28)
+                    }
+                    .confirmationDialog(
+                        "현재 화면에서 나갈까요? 수정 사항은 저장되지 않습니다.",
+                        isPresented: $backButtonToggle,
+                        titleVisibility: .visible
+                    ) {
+                        Button("나가기", role: .destructive) {
+                            dismissAction.callAsFunction()
+                        }
                     }
                 }
             }
