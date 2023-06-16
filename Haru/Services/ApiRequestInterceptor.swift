@@ -12,6 +12,7 @@ final class ApiRequestInterceptor: RequestInterceptor {
     enum RequestError: Error {
         case invalidURL
         case decode
+        case guest
     }
 
     func adapt(
@@ -23,6 +24,11 @@ final class ApiRequestInterceptor: RequestInterceptor {
 //            completion(.failure(RequestError.invalidURL))
 //            return
 //        }
+
+        if Global.shared.user?.id == "guest" {
+            completion(.failure(RequestError.guest))
+            return
+        }
 
         guard let rawAccessToken = KeychainService.load(key: "accessToken") else {
             // 엑세스 토큰 경우, 로그인, OAuth 회원 가입시 (유저 정보 기입하는 화면 아님)

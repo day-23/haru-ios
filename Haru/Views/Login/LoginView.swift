@@ -66,13 +66,22 @@ struct LoginView: View {
                             .frame(width: 312, height: 44)
                             .cornerRadius(12)
 
-                        Text("게스트로 로그인하기")
+                        Text("하루 둘러보기")
                             .font(.pretendard(size: 14, weight: .bold))
                             .foregroundColor(Color(0x191919))
                             .frame(width: 312, height: 44)
                             .background(Color(0xfdfdfd))
                             .cornerRadius(12)
                             .onTapGesture {
+                                withAnimation {
+                                    Global.shared.showGuestMessage = true
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                    withAnimation {
+                                        Global.shared.showGuestMessage = false
+                                    }
+                                }
+
                                 Global.shared.user = Me(
                                     user: User(
                                         id: "guest",
