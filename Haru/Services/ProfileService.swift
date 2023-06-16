@@ -45,7 +45,8 @@ struct ProfileService {
 
         AF.request(
             ProfileService.baseURL + (Global.shared.user?.id ?? "unknown") + "/info" + "/\(userId)",
-            method: .get
+            method: .get,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -96,7 +97,8 @@ struct ProfileService {
             to: ProfileService.baseURL + "\(userId)/profile/image",
             usingThreshold: .init(),
             method: .patch,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -135,7 +137,8 @@ struct ProfileService {
             method: .patch,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -185,7 +188,8 @@ struct ProfileService {
             to: ProfileService.baseURL + "\(userId)/profile/image/init",
             usingThreshold: .init(),
             method: .patch,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -234,7 +238,8 @@ struct ProfileService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder
@@ -281,7 +286,8 @@ struct ProfileService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder
@@ -333,7 +339,8 @@ struct ProfileService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder

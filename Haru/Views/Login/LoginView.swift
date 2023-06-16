@@ -66,26 +66,35 @@ struct LoginView: View {
                             .frame(width: 312, height: 44)
                             .cornerRadius(12)
 
-                        Text("게스트로 로그인하기")
+                        Text("하루 둘러보기")
                             .font(.pretendard(size: 14, weight: .bold))
                             .foregroundColor(Color(0x191919))
                             .frame(width: 312, height: 44)
                             .background(Color(0xfdfdfd))
                             .cornerRadius(12)
                             .onTapGesture {
+                                withAnimation {
+                                    Global.shared.showGuestMessage = true
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                    withAnimation {
+                                        Global.shared.showGuestMessage = false
+                                    }
+                                }
+
                                 Global.shared.user = Me(
                                     user: User(
-                                        id: "005224c0-eec1-4638-9143-58cbfc9688c5",
-                                        name: "GUEST",
+                                        id: "guest",
+                                        name: "",
                                         introduction: "게스트 계정입니다.",
                                         postCount: 0,
                                         friendCount: 0,
                                         friendStatus: 0,
                                         isPublicAccount: true
                                     ),
-                                    haruId: "GUEST",
+                                    haruId: "",
                                     email: "Guest@haru.com",
-                                    socialAccountType: "K",
+                                    socialAccountType: "GUEST",
                                     isPostBrowsingEnabled: true,
                                     isAllowFeedLike: 2,
                                     isAllowFeedComment: 2,

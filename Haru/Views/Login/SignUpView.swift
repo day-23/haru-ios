@@ -71,10 +71,15 @@ struct SignUpView: View {
                                     }
 
                                     isValidId = false
-                                    let regex = /^[a-z0-9]*$/
+                                    let regex = /^[a-z0-9]{1,20}$/
                                     if haruId.wholeMatch(of: regex) != nil {
                                         isInvalidId = false
                                     } else {
+                                        isInvalidId = true
+                                    }
+
+                                    if haruId.count > 20 {
+                                        haruId = String(haruId[haruId.startIndex ..< haruId.index(haruId.endIndex, offsetBy: -1)])
                                         isInvalidId = true
                                     }
                                 }
@@ -133,7 +138,7 @@ struct SignUpView: View {
                                 .font(.pretendard(size: 12, weight: .regular))
                                 .foregroundColor(Color(0xF71E58))
                         } else if isInvalidId {
-                            Text("영어 소문자, 숫자로만 이루어져야 합니다.")
+                            Text("20자 이하의 영어 소문자, 숫자로만 이루어져야 합니다.")
                                 .font(.pretendard(size: 12, weight: .regular))
                                 .foregroundColor(Color(0xF71E58))
                         } else if isValidId {
@@ -250,6 +255,9 @@ struct SignUpView: View {
             Spacer()
 
             Button {
+                isIdFieldFocused = false
+                isNicknameFieldFocused = false
+
                 if haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                     || nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                 {

@@ -12,6 +12,7 @@ final class ApiRequestInterceptor: RequestInterceptor {
     enum RequestError: Error {
         case invalidURL
         case decode
+        case guest
     }
 
     func adapt(
@@ -19,8 +20,13 @@ final class ApiRequestInterceptor: RequestInterceptor {
         for session: Session,
         completion: @escaping (Result<URLRequest, Error>) -> Void
     ) {
-        guard urlRequest.url?.absoluteString.hasPrefix("https://api.23haru.com/") == true else {
-            completion(.failure(RequestError.invalidURL))
+//        guard urlRequest.url?.absoluteString.hasPrefix("https://api.23haru.com/") == true else {
+//            completion(.failure(RequestError.invalidURL))
+//            return
+//        }
+
+        if Global.shared.user?.id == "guest" {
+            completion(.failure(RequestError.guest))
             return
         }
 

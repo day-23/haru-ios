@@ -51,7 +51,8 @@ struct TodoService {
             method: .post,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(
             of: Response.self,
             decoder: Self.decoder
@@ -118,7 +119,8 @@ struct TodoService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -156,7 +158,8 @@ struct TodoService {
         }
 
         AF.request(
-            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos"
+            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos",
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -187,7 +190,8 @@ struct TodoService {
 
         AF.request(
             Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main"
+                "\(Global.shared.user?.id ?? "unknown")/todos/main",
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -252,7 +256,8 @@ struct TodoService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -279,7 +284,8 @@ struct TodoService {
 
         AF.request(
             Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/flag"
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/flag",
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -300,7 +306,8 @@ struct TodoService {
 
         AF.request(
             Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/tag"
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/tag",
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -321,7 +328,8 @@ struct TodoService {
 
         AF.request(
             Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/untag"
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/untag",
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -342,7 +350,8 @@ struct TodoService {
 
         AF.request(
             Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/completed"
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/completed",
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -374,7 +383,8 @@ struct TodoService {
 
         AF.request(
             Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)"
+                "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)",
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -422,7 +432,8 @@ struct TodoService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -465,7 +476,8 @@ struct TodoService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -498,7 +510,8 @@ struct TodoService {
             method: .put,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -545,7 +558,8 @@ struct TodoService {
             method: .put,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -574,7 +588,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -603,7 +618,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -638,7 +654,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -673,7 +690,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -703,7 +721,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -733,7 +752,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -765,7 +785,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -795,7 +816,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -826,7 +848,8 @@ struct TodoService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -871,15 +894,14 @@ struct TodoService {
             params["completedDate"] = Self.formatter.string(from: endDate)
         }
 
-        print(params)
-
         AF.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todo.id)/repeat/\(at.rawValue)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -899,7 +921,8 @@ struct TodoService {
     ) {
         AF.request(
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
-            method: .delete
+            method: .delete,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -947,7 +970,8 @@ struct TodoService {
             method: .delete,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -969,7 +993,8 @@ struct TodoService {
         AF.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(todoId)/tag/\(tagId)",
-            method: .delete
+            method: .delete,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -988,7 +1013,8 @@ struct TodoService {
         AF.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(todoId)/subtodo/\(subTodoId)",
-            method: .delete
+            method: .delete,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
