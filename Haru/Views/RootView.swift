@@ -54,8 +54,7 @@ struct RootView: View {
                             }
                     } else if let me = global.user,
                               global.isLoggedIn,
-                              !me.user.name.isEmpty,
-                              !me.haruId.isEmpty
+                              me.isSignUp
                     {
                         // 로그인 성공
                         NavigationView {
@@ -166,8 +165,7 @@ struct RootView: View {
                         .navigationViewStyle(.stack)
                     } else if let me = global.user,
                               global.isLoggedIn,
-                              me.user.name.isEmpty,
-                              me.haruId.isEmpty
+                              !me.isSignUp
                     {
                         // 첫 로그인으로 회원 가입
                         SignUpView()

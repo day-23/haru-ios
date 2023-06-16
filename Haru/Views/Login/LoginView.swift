@@ -99,6 +99,7 @@ struct LoginView: View {
                                     isAllowFeedLike: 2,
                                     isAllowFeedComment: 2,
                                     isAllowSearch: true,
+                                    isSignUp: true,
                                     isMaliciousUser: false,
                                     morningAlarmTime: nil,
                                     nightAlarmTime: nil,
