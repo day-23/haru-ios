@@ -68,6 +68,10 @@ struct Todo: Identifiable, Codable {
                     date: alarm.time
                 )
             }
+        } else {
+            Task {
+                await AlarmHelper.removeNotification(identifier: id)
+            }
         }
     }
 
@@ -118,6 +122,10 @@ struct Todo: Identifiable, Codable {
                     body: content,
                     date: alarm.time
                 )
+            }
+        } else {
+            Task {
+                await AlarmHelper.removeNotification(identifier: id)
             }
         }
     }
