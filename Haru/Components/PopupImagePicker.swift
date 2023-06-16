@@ -26,7 +26,7 @@ struct PopupImagePicker: View {
 
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
-        let manager = PHCachingImageManager.default()
+        let manager = PHImageManager.default()
         VStack(spacing: 0) {
             HStack {
                 HStack(spacing: 10) {
@@ -116,11 +116,13 @@ struct PopupImagePicker: View {
                                 if imageAsset.thumbnail == nil {
                                     // MARK: Fetching Thumbnail Image
 
+                                    let options = PHImageRequestOptions()
+                                    options.isNetworkAccessAllowed = true
                                     manager.requestImage(
                                         for: imageAsset.asset,
                                         targetSize: CGSize(width: 360, height: 360),
                                         contentMode: .aspectFill,
-                                        options: nil
+                                        options: options
                                     ) { image, _ in
                                         imageAsset.thumbnail = image
                                     }
