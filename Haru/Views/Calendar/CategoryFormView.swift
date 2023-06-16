@@ -142,9 +142,9 @@ struct CategoryFormView: View {
     
     @ViewBuilder
     func colorPicker() -> some View {
-        VStack(spacing: 26) {
+        VStack(spacing: UIScreen.main.bounds.height < 800 ? 16 : 26) {
             ForEach(0 ... 6, id: \.self) { row in
-                HStack(spacing: 16) {
+                HStack(spacing: UIScreen.main.bounds.height < 800 ? 10 : 16) {
                     ForEach(colors[row].indices, id: \.self) { col in
                         ZStack {
                             Image("calendar-picked-circle")
