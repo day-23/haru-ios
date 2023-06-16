@@ -26,6 +26,7 @@ struct PopupImagePicker: View {
 
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
+        let manager = PHCachingImageManager.default()
         VStack(spacing: 0) {
             HStack {
                 HStack(spacing: 10) {
@@ -115,8 +116,12 @@ struct PopupImagePicker: View {
                                 if imageAsset.thumbnail == nil {
                                     // MARK: Fetching Thumbnail Image
 
-                                    let manager = PHCachingImageManager.default()
-                                    manager.requestImage(for: imageAsset.asset, targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill, options: nil) { image, _ in
+                                    manager.requestImage(
+                                        for: imageAsset.asset,
+                                        targetSize: CGSize(width: 360, height: 360),
+                                        contentMode: .aspectFill,
+                                        options: nil
+                                    ) { image, _ in
                                         imageAsset.thumbnail = image
                                     }
                                 }
@@ -157,9 +162,11 @@ struct PopupImagePicker: View {
 
             if let thumbnail = imageAsset.thumbnail {
                 Image(uiImage: thumbnail)
+                    .renderingMode(.original)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .scaledToFill()
                     .frame(width: size, height: size)
+                    .clipped()
                     .border(
                         width: isSelected ? 3 : 0,
                         edges: [.top, .bottom, .leading, .trailing],
@@ -202,10 +209,6 @@ struct PopupImagePicker: View {
         .onTapGesture {
             // MARK: adding / Removing Asset
 
-            if imagePickerModel.selectedImages.count >= 10 {
-                return
-            }
-
             withAnimation(.easeInOut) {
                 if let index = imagePickerModel.selectedImages.firstIndex(where: { asset in
                     asset.id == imageAsset.id
@@ -216,7 +219,7 @@ struct PopupImagePicker: View {
                     imagePickerModel.selectedImages.enumerated().forEach { item in
                         imagePickerModel.selectedImages[item.offset].assetIndex = item.offset
                     }
-                } else {
+                } else if imagePickerModel.selectedImages.count < 10 {
                     // MARK: Add New
 
                     var newAsset = imageAsset

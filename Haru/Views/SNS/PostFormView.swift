@@ -28,6 +28,7 @@ struct PostFormView: View {
     let deviceSize = UIScreen.main.bounds.size
 
     @State var selectedImageNum: Int = 0
+    @State var isProgress: Bool = false
 
     @State private var croppedImage: UIImage?
     @State private var showingCropper = false
@@ -71,21 +72,40 @@ struct PostFormView: View {
                         }
 
                         TabView(selection: $selectedImageNum) {
-                            ForEach(postFormVM.imageList.indices, id: \.self) { idx in
-                                Image(uiImage: postFormVM.imageList[idx])
-                                    .renderingMode(.original)
-                                    .resizable()
-                                    .scaledToFill()
+                            if postFormVM.imageList.count > 0 {
+                                ForEach(postFormVM.imageList.indices, id: \.self) { idx in
+                                    Image(uiImage: postFormVM.imageList[idx])
+                                        .renderingMode(.original)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(
+                                            width: deviceSize.width,
+                                            height: deviceSize.width
+                                        )
+                                        .clipped()
+                                        .onTapGesture {
+                                            croppedImage = postFormVM.oriImageList[selectedImageNum]
+                                            presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
+                                            showingCropper = true
+                                        }
+                                        .overlay {
+                                            if isProgress {
+                                                ProgressView()
+                                                    .frame(
+                                                        width: deviceSize.width,
+                                                        height: deviceSize.width
+                                                    )
+                                                    .background(Color(0x191919).opacity(0.4))
+                                            }
+                                        }
+                                }
+                            } else if isProgress {
+                                ProgressView()
                                     .frame(
                                         width: deviceSize.width,
                                         height: deviceSize.width
                                     )
-                                    .clipped()
-                                    .onTapGesture {
-                                        croppedImage = postFormVM.oriImageList[selectedImageNum]
-                                        presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
-                                        showingCropper = true
-                                    }
+                                    .background(Color(0x191919).opacity(0.4))
                             }
                         }
                         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
@@ -128,6 +148,16 @@ struct PostFormView: View {
             var result: [UIImage] = []
             var oriResult: [UIImage] = []
             options.isSynchronous = true
+            options.isNetworkAccessAllowed = true
+
+            options.progressHandler = { progress, _, _, _ in
+                if progress == 1.0 {
+                    isProgress = false
+                } else {
+                    isProgress = true
+                }
+            }
+
             DispatchQueue.global(qos: .userInteractive).async {
                 assets.forEach { asset in
                     manager.requestImage(for: asset, targetSize: .init(), contentMode: .aspectFit, options: options) { image, _ in
@@ -159,6 +189,7 @@ struct PostFormView: View {
                 DispatchQueue.main.async {
                     postFormVM.imageList = result
                     postFormVM.oriImageList = oriResult
+                    isProgress = false
                 }
             }
         }
