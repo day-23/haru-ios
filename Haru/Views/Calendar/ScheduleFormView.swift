@@ -504,7 +504,7 @@ struct ScheduleFormView: View {
     func getDeleteActionSheet() -> ActionSheet {
         let title = Text(actionSheetOption == .isRepeat ? "이 일정을 삭제할까요? 반복되는 일정입니다." : "이 일정을 삭제할까요?")
         
-        let deleteButton: ActionSheet.Button = .default(Text("이 일정만 삭제")) {
+        let deleteButton: ActionSheet.Button = .destructive(Text("이 일정만 삭제")) {
             scheduleFormVM.deleteTargetSchedule()
             dismissAction.callAsFunction()
         }
@@ -579,6 +579,7 @@ struct ScheduleFormView: View {
 
         switch actionSheetOption {
         case .isRepeat:
+            // 반복 종료일 건드리는 경우
             if scheduleFormVM.tmpIsSelectedRepeatEnd != scheduleFormVM.isSelectedRepeatEnd ||
                 (scheduleFormVM.tmpIsSelectedRepeatEnd &&
                     scheduleFormVM.tmpRealRepeatEnd != scheduleFormVM.realRepeatEnd)
@@ -596,7 +597,9 @@ struct ScheduleFormView: View {
                                        message: nil,
                                        buttons: [editAfterButton, cancleButton])
                 }
-            } else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption ||
+            }
+            // 반복 옵션 건드리는 경우
+            else if scheduleFormVM.tmpRepeatOption != scheduleFormVM.repeatOption ||
                 scheduleFormVM.tmpRepeatValue != scheduleFormVM.repeatValue
             {
                 if (scheduleFormVM.from == .calendar
@@ -610,7 +613,7 @@ struct ScheduleFormView: View {
                 } else {
                     return ActionSheet(title: title,
                                        message: nil,
-                                       buttons: [editAfterButton, editAllButton, cancleButton])
+                                       buttons: [editAfterButton, cancleButton])
                 }
             } else {
                 if (scheduleFormVM.from == .calendar && scheduleFormVM.oriSchedule?.at == .front)
