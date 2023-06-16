@@ -564,7 +564,9 @@ struct TodoAddView: View {
                                         }
                                     }
 
-                                    if self.viewModel.at == .front {
+                                    if self.viewModel.at == .front
+                                        || self.viewModel.at == .none
+                                    {
                                         Button("모든 할 일 수정", role: .destructive) {
                                             self.viewModel.updateTodo { result in
                                                 switch result {
