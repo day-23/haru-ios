@@ -250,6 +250,9 @@ struct SignUpView: View {
             Spacer()
 
             Button {
+                isIdFieldFocused = false
+                isNicknameFieldFocused = false
+
                 if haruId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                     || nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                 {
