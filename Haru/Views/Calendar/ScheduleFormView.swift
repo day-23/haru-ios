@@ -99,11 +99,6 @@ struct ScheduleFormView: View {
                                             selectedIdx: $selectedIdx,
                                             showCategorySheet: $showCategorySheet
                                         )
-                                        .background(Color.white)
-                                        .frame(height: 450)
-                                        .cornerRadius(20)
-                                        .padding(.horizontal, 30)
-                                        .shadow(radius: 2.0)
                                         .onAppear {
                                             selectedIdx = scheduleFormVM.selectionCategory
                                         }
@@ -132,11 +127,6 @@ struct ScheduleFormView: View {
                                             selectedIdx: $selectedIdx,
                                             showCategorySheet: $showCategorySheet
                                         )
-                                        .background(Color.white)
-                                        .frame(height: 450)
-                                        .cornerRadius(20)
-                                        .padding(.horizontal, 30)
-                                        .shadow(radius: 2.0)
                                     } customize: {
                                         $0
                                             .animation(.spring())

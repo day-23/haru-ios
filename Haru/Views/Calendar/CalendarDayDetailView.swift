@@ -63,7 +63,7 @@ struct CalendarDayDetailView: View {
                                 .foregroundColor(Color(0x1DAFFF))
                             Spacer()
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 30)
                         .padding(.top, 10)
                         .padding(.bottom, 6)
                         
@@ -100,7 +100,7 @@ struct CalendarDayDetailView: View {
                                         .font(.pretendard(size: 12, weight: .regular))
                                     }
                                 }
-                                .padding(.horizontal, 19)
+                                .padding(.horizontal, 29)
                             }
                             .disabled(schedule.category == Global.shared.holidayCategory)
                             .foregroundColor(Color(0x191919))
@@ -118,7 +118,7 @@ struct CalendarDayDetailView: View {
                                 .font(.pretendard(size: 16, weight: .bold))
                             Spacer()
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 30)
                         .padding(.bottom, 4)
                         
                         ForEach(calendarVM.todoList[row].indices, id: \.self) { index in
@@ -148,7 +148,7 @@ struct CalendarDayDetailView: View {
                                 }
                             }
                             .tint(.mainBlack)
-                            .padding(.leading, 1)
+                            .padding(.leading, 11)
                             .padding(.top, 11)
                         }
                         
