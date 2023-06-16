@@ -137,7 +137,9 @@ struct CalendarDateView: View {
                                             )
                                         }
                                         .onEnded { _ in
-                                            self.isSchModalVisible = true
+                                            withAnimation {
+                                                self.isSchModalVisible = true
+                                            }
                                         }
                                             
                                     let combined = longPress.sequenced(before: drag)
@@ -166,22 +168,86 @@ struct CalendarDateView: View {
                 }
             }
                 
-            if self.isDatePickerVisible {
+            // 일정 추가를 위한 모달창
+            if self.isSchModalVisible {
+                Color.black.opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            self.isSchModalVisible = false
+                        }
+                    }
+                    
+                Modal(isActive: self.$isSchModalVisible, ratio: 0.9) {
+                    ScheduleFormView(
+                        scheduleFormVM: ScheduleFormViewModel(
+                            selectionSet: self.calendarVM.selectionSet,
+                            categoryList: self.calendarVM.categoryList
+                        ) {
+                            self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                            self.calendarVM.getRefreshProductivityList()
+                        },
+                        isSchModalVisible: self.$isSchModalVisible
+                    )
+                }
+                .transition(.modal)
+                .zIndex(2)
+            } else if self.isTodoModalVisible {
+                Color.black.opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        self.isTodoModalVisible = false
+                    }
+                    
+                Modal(isActive: self.$isTodoModalVisible, ratio: 0.9) {
+                    TodoAddView(
+                        viewModel: self.addViewModel,
+                        isModalVisible: self.$isTodoModalVisible
+                    )
+                }
+                .transition(.modal)
+                .zIndex(2)
+            } else if self.isDayModalVisible {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            self.isDayModalVisible = false
+                            Global.shared.isFaded = false
+                        }
+                    }
+                    
+                CalendarDayView(calendarViewModel: self.calendarVM)
+                    .zIndex(2)
+            } else if self.isDatePickerVisible {
+                Color(0xfdfdfd).opacity(0.001)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            self.isDatePickerVisible = false
+                        }
+                    }
+                
                 CustomCalendar(
                     bindingDate: self.$calendarVM.curDate,
                     comeTo: .calendar
                 )
-            }
+                .zIndex(2)
                 
-            // 추가 버튼
-            if !self.isDayModalVisible, !self.isOptionModalVisible {
+            } else {
                 VStack {
                     Spacer()
                     HStack {
                         Spacer()
                         if self.showTodoButton {
                             Button {
-                                self.isTodoModalVisible = true
+                                withAnimation {
+                                    self.isTodoModalVisible = true
+                                }
                                 self.addViewModel.mode = .add
                             } label: {
                                 Image("calendar-add-todo")
@@ -198,7 +264,9 @@ struct CalendarDateView: View {
                         if self.showSchButton {
                             Button {
                                 self.calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
-                                self.isSchModalVisible = true
+                                withAnimation {
+                                    self.isSchModalVisible = true
+                                }
                             } label: {
                                 Image("calendar-add-schedule")
                                     .resizable()
@@ -227,66 +295,6 @@ struct CalendarDateView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 10)
                 .zIndex(2)
-            }
-                
-            // 일정 추가를 위한 모달창
-            if self.isSchModalVisible {
-                Color.black.opacity(0.5)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        self.isSchModalVisible = false
-                    }
-                    
-                Modal(isActive: self.$isSchModalVisible, ratio: 0.9) {
-                    ScheduleFormView(
-                        scheduleFormVM: ScheduleFormViewModel(
-                            selectionSet: self.calendarVM.selectionSet,
-                            categoryList: self.calendarVM.categoryList
-                        ) {
-                            self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                            self.calendarVM.getRefreshProductivityList()
-                        },
-                        isSchModalVisible: self.$isSchModalVisible
-                    )
-                }
-                .transition(.modal)
-                .zIndex(2)
-            }
-                
-            // 할일 추가를 위한 모달창
-            if self.isTodoModalVisible {
-                Color.black.opacity(0.5)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        self.isTodoModalVisible = false
-                    }
-                    
-                Modal(isActive: self.$isTodoModalVisible, ratio: 0.9) {
-                    TodoAddView(
-                        viewModel: self.addViewModel,
-                        isModalVisible: self.$isTodoModalVisible
-                    )
-                }
-                .transition(.modal)
-                .zIndex(2)
-            }
-                
-            // 선택된 날(하루)을 위한 모달창
-            if self.isDayModalVisible {
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        withAnimation {
-                            self.isDayModalVisible = false
-                            Global.shared.isFaded = false
-                        }
-                    }
-                    
-                CalendarDayView(calendarViewModel: self.calendarVM)
-                    .zIndex(2)
             }
                 
             // 설정을 위한 슬라이드 메뉴
