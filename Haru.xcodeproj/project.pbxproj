@@ -166,6 +166,7 @@
 		6F62F4982A0BAFA9001BA364 /* ImagePickerMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4972A0BAFA9001BA364 /* ImagePickerMode.swift */; };
 		6F62F49A2A0C3C34001BA364 /* PostFormPreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F4992A0C3C34001BA364 /* PostFormPreView.swift */; };
 		6F62F49C2A0C3DAD001BA364 /* PostFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62F49B2A0C3DAD001BA364 /* PostFormViewModel.swift */; };
+		6F710EBA2A3CB67000C6922E /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 6F710EB92A3CB67000C6922E /* ScalingHeaderScrollView */; };
 		6F81134A2A341EF5006613AD /* UserSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8113492A341EF5006613AD /* UserSearchView.swift */; };
 		6F86EF1E29D0EBCA002436A5 /* AlarmOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F86EF1D29D0EBCA002436A5 /* AlarmOption.swift */; };
 		6F87A5CA29D3022C002711D7 /* ScheduleFormMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F87A5C929D3022C002711D7 /* ScheduleFormMode.swift */; };
@@ -417,6 +418,7 @@
 				AE5085AE2A169A7200A373BC /* KakaoSDKTalk in Frameworks */,
 				AE5085A62A169A7200A373BC /* KakaoSDKCommon in Frameworks */,
 				AE5085A42A169A7200A373BC /* KakaoSDKAuth in Frameworks */,
+				6F710EBA2A3CB67000C6922E /* ScalingHeaderScrollView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -816,6 +818,7 @@
 				AE5085AF2A169A7200A373BC /* KakaoSDKTemplate */,
 				AE5085B12A169A7200A373BC /* KakaoSDKUser */,
 				6F456FF82A37822E008F2E70 /* Mantis */,
+				6F710EB92A3CB67000C6922E /* ScalingHeaderScrollView */,
 			);
 			productName = Haru;
 			productReference = 130666C829CEDF4A00AACEE6 /* Haru.app */;
@@ -851,6 +854,7 @@
 				130667C929CEE38500AACEE6 /* XCRemoteSwiftPackageReference "SwiftUIPager" */,
 				AE5085A02A169A7200A373BC /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 				6F456FF72A37822E008F2E70 /* XCRemoteSwiftPackageReference "Mantis" */,
+				6F710EB82A3CB67000C6922E /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */,
 			);
 			productRefGroup = 130666C929CEDF4A00AACEE6 /* Products */;
 			projectDirPath = "";
@@ -1305,6 +1309,14 @@
 				version = 2.10.0;
 			};
 		};
+		6F710EB82A3CB67000C6922E /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/ScalingHeaderScrollView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.5;
+			};
+		};
 		AE5085A02A169A7200A373BC /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
@@ -1335,6 +1347,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6F456FF72A37822E008F2E70 /* XCRemoteSwiftPackageReference "Mantis" */;
 			productName = Mantis;
+		};
+		6F710EB92A3CB67000C6922E /* ScalingHeaderScrollView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6F710EB82A3CB67000C6922E /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */;
+			productName = ScalingHeaderScrollView;
 		};
 		AE5085A12A169A7200A373BC /* KakaoSDK */ = {
 			isa = XCSwiftPackageProductDependency;

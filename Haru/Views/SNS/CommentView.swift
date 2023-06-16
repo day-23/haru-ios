@@ -595,6 +595,24 @@ struct CommentView: View, KeyboardReadable {
                 .simultaneousGesture(
                     combined
                 )
+                .onChange(of: content) { value in
+                    if value.count > 25 {
+                        content = String(
+                            value[
+                                value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
+                            ]
+                        )
+                    }
+
+                    if value.last == "\n" {
+                        content = String(
+                            value[
+                                value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
+                            ]
+                        )
+                        isFocused = false
+                    }
+                }
             }
         }
         .frame(

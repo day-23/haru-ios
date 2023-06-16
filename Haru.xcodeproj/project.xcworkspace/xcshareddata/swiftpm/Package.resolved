@@ -37,6 +37,24 @@
       }
     },
     {
+      "identity" : "scalingheaderscrollview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/exyte/ScalingHeaderScrollView.git",
+      "state" : {
+        "revision" : "5b90bb4e58489d77f3ed787e0535aed57edbcfdf",
+        "version" : "0.1.5"
+      }
+    },
+    {
+      "identity" : "swiftui-introspect",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/siteline/SwiftUI-Introspect.git",
+      "state" : {
+        "revision" : "84196bab1c7f05ad8c3c2a5bfb3058b1211e189f",
+        "version" : "0.6.1"
+      }
+    },
+    {
       "identity" : "swiftuipager",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fermoya/SwiftUIPager.git",
