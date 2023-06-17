@@ -5,6 +5,7 @@
 //  Created by 이준호 on 2023/03/17.
 //
 
+import PopupView
 import SwiftUI
 
 struct CategoryFormView: View {
@@ -14,6 +15,7 @@ struct CategoryFormView: View {
     @State var color: Color?
     @State var selectedIdx: Int = -1
     @State var isToggle: Bool = true
+    @State var showToastMessage: Bool = false
     
     var disable: Bool {
         content == "" || selectedIdx == -1
@@ -116,12 +118,27 @@ struct CategoryFormView: View {
                 }
             }
             
+            ToolbarItem(placement: .principal) {
+                Text(mode == .add ? "카테고리 추가" : "카테고리 수정")
+                    .font(.pretendard(size: 20, weight: .bold))
+            }
+            
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
+                    let alreadyExists = calendarVM.categoryList.contains { category in
+                        category.content == content
+                    }
+                    
+                    if alreadyExists {
+                        showToastMessage = true
+                        return
+                    }
+                    
                     if mode == .add {
                         calendarVM.addCategory(content, color?.toHex()) {
                             dismissAction.callAsFunction()
                         }
+                        
                     } else if let categoryId {
                         calendarVM.updateCategory(categoryId: categoryId, content: content, color: color?.toHex()) {
                             calendarVM.getCategoryList()
@@ -137,6 +154,18 @@ struct CategoryFormView: View {
                 }
                 .disabled(disable)
             }
+        }
+        .popup(isPresented: $showToastMessage) {
+            CustomToastMessage(message: "이미 동일한 카테고리명이 존재합니다.")
+        } customize: { option in
+            option
+                .type(.floater())
+                .position(.bottom)
+                .animation(.easeInOut)
+                .closeOnTap(true)
+                .closeOnTapOutside(true)
+                .autohideIn(2)
+                .backgroundColor(.black.opacity(0.5))
         }
     }
     
