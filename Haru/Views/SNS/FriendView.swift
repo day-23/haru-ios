@@ -151,7 +151,7 @@ struct FriendView: View {
                     if !self.userProfileVM.isMe {
                         Spacer(minLength: 10)
                     }
-                    
+
                     LazyVStack(spacing: 20) {
                         ForEach(self.friendTab ?
                             self.userProfileVM.friendList.indices : self.userProfileVM.requestFriendList.indices, id: \.self)
@@ -234,6 +234,9 @@ struct FriendView: View {
                         }
                     }
                 } // Scroll
+                .refreshable {
+                    self.userProfileVM.refreshFriendList()
+                }
                 .animation(nil, value: UUID())
                 .onAppear {
                     print("init")
