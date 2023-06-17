@@ -36,8 +36,9 @@ struct PostFormView: View {
     @State private var cropShapeType: Mantis.CropShapeType = .rect
     @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
 
+    @State private var showCamera = false
+    @State var captureImage: UIImage?
 //    @State private var showImagePicker = false
-//    @State private var showCamera = false
 //    @State private var showSourceTypeSelection = false
 //    @State private var sourceType: UIImagePickerController.SourceType?
 
@@ -146,12 +147,26 @@ struct PostFormView: View {
                 .onDisappear(perform: reset)
                 .ignoresSafeArea()
         })
+        .fullScreenCover(isPresented: $showCamera, content: {
+            CameraView(image: $captureImage)
+                .ignoresSafeArea()
+        })
         .onChange(of: croppedImage, perform: { _ in
             guard let image = croppedImage else { return }
             postFormVM.imageList[selectedImageNum] = image
         })
+        .onChange(of: captureImage, perform: { _ in
+            guard let image = captureImage else { return }
+            if postFormVM.imageList.count < 10,
+               let data = cropping(image: image)
+            {
+                postFormVM.oriImageList.append(image)
+                postFormVM.imageList.append(data)
+            }
+        })
         .popupImagePicker(
             show: $openPhoto,
+            activeCamera: $showCamera,
             mode: .multiple,
             always: true
         ) { assets in
@@ -178,23 +193,26 @@ struct PostFormView: View {
                     manager.requestImage(for: asset, targetSize: .init(), contentMode: .aspectFit, options: options) { image, _ in
                         guard let image else { return }
 
-                        // 보이는 화면과 이미지의 비율 계산
-                        let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
-                                                 image.size.height / UIScreen.main.bounds.height)
-
-                        let cropZone = CGRect(x: 0,
-                                              y: 0,
-                                              width: UIScreen.main.bounds.width * imageViewScale,
-                                              height: UIScreen.main.bounds.width * imageViewScale)
-
-                        // 이미지 자르기
-                        guard let cutImageRef: CGImage = image.cgImage?.cropping(to: cropZone)
-                        else {
+//                        // 보이는 화면과 이미지의 비율 계산
+//                        let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
+//                                                 image.size.height / UIScreen.main.bounds.height)
+//
+//                        let cropZone = CGRect(x: 0,
+//                                              y: 0,
+//                                              width: UIScreen.main.bounds.width * imageViewScale,
+//                                              height: UIScreen.main.bounds.width * imageViewScale)
+//
+//                        // 이미지 자르기
+//                        guard let cutImageRef: CGImage = image.cgImage?.cropping(to: cropZone)
+//                        else {
+//                            return
+//                        }
+//
+//                        // 최종 uiimage 저장
+                        guard let data = cropping(image: image) else {
+                            print("크롭하는데 실패")
                             return
                         }
-
-                        // 최종 uiimage 저장
-                        let data = UIImage(cgImage: cutImageRef, scale: image.imageRendererFormat.scale, orientation: image.imageOrientation)
 
                         result.append(data)
                         oriResult.append(image)
@@ -264,5 +282,23 @@ struct PostFormView: View {
     func reset() {
         cropShapeType = .rect
         presetFixedRatioType = .canUseMultiplePresetFixedRatio()
+    }
+
+    func cropping(image: UIImage) -> UIImage? {
+        // 보이는 화면과 이미지의 비율 계산
+        let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
+                                 image.size.height / UIScreen.main.bounds.height)
+
+        let cropZone = CGRect(x: 0,
+                              y: 0,
+                              width: UIScreen.main.bounds.width * imageViewScale,
+                              height: UIScreen.main.bounds.width * imageViewScale)
+
+        // 이미지 자르기
+        guard let cutImageRef: CGImage = image.cgImage?.cropping(to: cropZone)
+        else { return nil }
+
+        // 최종 uiimage 저장
+        return UIImage(cgImage: cutImageRef, scale: image.imageRendererFormat.scale, orientation: image.imageOrientation)
     }
 }

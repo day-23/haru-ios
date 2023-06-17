@@ -19,7 +19,8 @@ struct PopupImagePicker: View {
     // MARK: Callbacks
 
     var mode: ImagePickerMode
-    @State var ratio: Double = 0.5
+    @Binding var activeCamera: Bool
+    @State var ratio: Double = 0.43
 
     var onEnd: () -> ()
     var onSelect: ([PHAsset]) -> ()
@@ -42,11 +43,7 @@ struct PopupImagePicker: View {
 
                         if ratio == 0.9 {
                             withAnimation {
-                                ratio = 0.5
-                            }
-                        } else if ratio == 0.5 {
-                            withAnimation {
-                                ratio = 0.15
+                                ratio = 0.43
                             }
                         }
                     } label: {
@@ -59,13 +56,9 @@ struct PopupImagePicker: View {
 
                     if mode == .multiple {
                         Button {
-                            if ratio == 0.5 {
+                            if ratio == 0.43 {
                                 withAnimation {
                                     ratio = 0.9
-                                }
-                            } else if ratio == 0.15 {
-                                withAnimation {
-                                    ratio = 0.5
                                 }
                             }
 
@@ -94,9 +87,13 @@ struct PopupImagePicker: View {
                         Image(multiSelectEnable ? "sns-multiple-button" : "sns-multiple-button-disable")
                     }
                 }
-                Image("sns-camera-disable")
-                    .resizable()
-                    .frame(width: 30, height: 30)
+                Button {
+                    activeCamera = true
+                } label: {
+                    Image("sns-camera-disable")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                }
             }
             .padding(.top, 25)
             .padding(.horizontal, 24)
@@ -140,6 +137,7 @@ struct PopupImagePicker: View {
                 .resizable()
         }
         .cornerRadius(20, corners: [.topLeft, .topRight])
+        .shadow(radius: 10)
 
         // MARK: Since its an Overlay View
 

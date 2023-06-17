@@ -86,7 +86,6 @@ struct PostFormDrawingView: View {
                         .foregroundColor(Color(0x1dafff))
                         .rotationEffect(Angle(degrees: 180))
                 }
-                .disabled(postFormVM.content == "")
             }
         }
     }

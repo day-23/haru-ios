@@ -14,6 +14,7 @@ struct ProfileFormView: View {
     @StateObject var userProfileVM: UserProfileViewModel
 
     @State var openPhoto: Bool = false
+    @State var showCamera: Bool = false
 
     @State var image: UIImage? = nil
     @State var name: String
@@ -118,8 +119,11 @@ struct ProfileFormView: View {
                 }
             }
         }
-
-        .popupImagePicker(show: $openPhoto, mode: .single) { assets in
+        .fullScreenCover(isPresented: $showCamera, content: {
+            CameraView(image: $image)
+                .ignoresSafeArea()
+        })
+        .popupImagePicker(show: $openPhoto, activeCamera: $showCamera, mode: .single) { assets in
 
             // MARK: Do Your Operation With PHAsset
 

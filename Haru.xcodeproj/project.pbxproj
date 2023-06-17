@@ -142,6 +142,7 @@
 		6F1F9A292A013C2F00C4ABF4 /* FeedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1F9A282A013C2F00C4ABF4 /* FeedImage.swift */; };
 		6F1F9A2B2A014A0F00C4ABF4 /* FriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1F9A2A2A014A0F00C4ABF4 /* FriendView.swift */; };
 		6F254D012A3D616500E36675 /* CustomToastMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F254D002A3D616500E36675 /* CustomToastMessage.swift */; };
+		6F254D032A3D8C6C00E36675 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F254D022A3D8C6C00E36675 /* CameraView.swift */; };
 		6F360A132A13AA4C00D64BB6 /* HashTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F360A122A13AA4C00D64BB6 /* HashTag.swift */; };
 		6F360A152A15EC9C00D64BB6 /* MediaListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F360A142A15EC9C00D64BB6 /* MediaListView.swift */; };
 		6F360A172A15ECCB00D64BB6 /* HashTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F360A162A15ECCB00D64BB6 /* HashTagView.swift */; };
@@ -344,6 +345,7 @@
 		6F1F9A282A013C2F00C4ABF4 /* FeedImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImage.swift; sourceTree = "<group>"; };
 		6F1F9A2A2A014A0F00C4ABF4 /* FriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendView.swift; sourceTree = "<group>"; };
 		6F254D002A3D616500E36675 /* CustomToastMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToastMessage.swift; sourceTree = "<group>"; };
+		6F254D022A3D8C6C00E36675 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		6F360A122A13AA4C00D64BB6 /* HashTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashTag.swift; sourceTree = "<group>"; };
 		6F360A142A15EC9C00D64BB6 /* MediaListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaListView.swift; sourceTree = "<group>"; };
 		6F360A162A15ECCB00D64BB6 /* HashTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashTagView.swift; sourceTree = "<group>"; };
@@ -787,6 +789,7 @@
 				6F61A95C2A248181002609D6 /* CommentListView.swift */,
 				6FE967912A3609AB002EC3C5 /* PostFormDrawingView.swift */,
 				6F1304612A38C57A0029871B /* MediaFeedView.swift */,
+				6F254D022A3D8C6C00E36675 /* CameraView.swift */,
 			);
 			path = SNS;
 			sourceTree = "<group>";
@@ -989,6 +992,7 @@
 				13A57DBD2A13587E0010A481 /* TodoState.swift in Sources */,
 				130667A529CEE1F200AACEE6 /* ShapeStyle.swift in Sources */,
 				1342D4E22A1FD4EC006758E9 /* PrivacyView.swift in Sources */,
+				6F254D032A3D8C6C00E36675 /* CameraView.swift in Sources */,
 				1306676629CEE19C00AACEE6 /* CalendarMainView.swift in Sources */,
 				130666FA29CEE0AC00AACEE6 /* Global.swift in Sources */,
 				1306671329CEE13200AACEE6 /* Todo.swift in Sources */,
@@ -1203,6 +1207,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Haru/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "하루에서 사진을 촬영하기 위해 카메라에 접근합니다.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow Access";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "하루에서 사진을 추가하기 위해 앨범에 접근합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -1238,6 +1243,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Haru/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "하루에서 사진을 촬영하기 위해 카메라에 접근합니다.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow Access";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "하루에서 사진을 추가하기 위해 앨범에 접근합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
