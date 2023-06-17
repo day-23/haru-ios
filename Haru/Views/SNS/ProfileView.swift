@@ -137,46 +137,21 @@ struct ProfileView: View {
                     }
 
                 Modal(isActive: self.$postOptModalVis.0,
-                      ratio: UIScreen.main.bounds.height < 800 ? 0.25 : 0.1)
+                      ratio: 0.2)
                 {
                     VStack(spacing: 20) {
+                        Spacer()
+
                         if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {} label: {
                                 Text("이 게시글 수정하기")
                                     .foregroundColor(Color(0x646464))
                                     .font(.pretendard(size: 20, weight: .regular))
                             }
-                        } else {
-                            Button {
-                                withAnimation {
-                                    self.hidePost = true
-                                }
-                            } label: {
-                                Text("이 게시글 숨기기")
-                                    .foregroundColor(Color(0x646464))
-                                    .font(.pretendard(size: 20, weight: .regular))
-                            }
-                            .confirmationDialog(
-                                "\(self.postOptModalVis.1?.user.name ?? "unknown")님의 게시글을 숨길까요? 이 작업은 복원할 수 없습니다.",
-                                isPresented: self.$hidePost,
-                                titleVisibility: .visible
-                            ) {
-                                Button("숨기기", role: .destructive) {
-                                    self.postVM.hidePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
-                                        switch result {
-                                        case .success:
-                                            self.postVM.disablePost(
-                                                targetPost: self.postOptModalVis.1
-                                            )
-                                            self.postOptModalVis.0 = false
-                                        case let .failure(failure):
-                                            print("[Debug] \(failure) \(#file) \(#function)")
-                                        }
-                                    }
-                                }
-                            }
+
+                            Divider()
                         }
-                        Divider()
+
                         if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {
                                 withAnimation {
@@ -247,9 +222,22 @@ struct ProfileView: View {
                                     }
                                 }
                             }
+
+                            Divider()
+
+                            Button {
+                                withAnimation {
+                                    self.postOptModalVis.0 = false
+                                }
+                            } label: {
+                                Text("취소하기")
+                                    .foregroundColor(Color(0x1DAFFF))
+                                    .font(.pretendard(size: 20, weight: .regular))
+                            }
                         }
+
+                        Spacer()
                     }
-                    .padding(.top, 40)
                 }
                 .opacity(self.deletePost || self.hidePost || self.reportPost ? 0 : 1)
                 .transition(.modal)
@@ -318,6 +306,16 @@ struct ProfileView: View {
         .navigationBarBackButtonHidden()
         .onAppear {
             self.userProfileVM.fetchUserProfile()
+        }
+        .onChange(of: reportPost) { _ in
+            if reportPost == false {
+                postOptModalVis.0 = false
+            }
+        }
+        .onChange(of: deletePost) { _ in
+            if deletePost == false {
+                postOptModalVis.0 = false
+            }
         }
     }
 
