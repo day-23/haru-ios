@@ -30,50 +30,88 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack {
-            ScalingHeaderScrollView {
-                VStack(spacing: 0) {
-                    VStack(spacing: 0) {
-                        ProfileInfoView(userProfileVM: userProfileVM)
-                            .background(Color.white)
-                            .padding(.top, 20)
-
-                        Spacer()
-                            .frame(height: 23)
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    Button {
+                        dismissAction.callAsFunction()
+                    } label: {
+                        Image("back-button")
+                            .frame(width: 28, height: 28)
                     }
-
-                    headerView()
 
                     Spacer()
-                }
-                .frame(height: 210)
-            } content: {
-                if userProfileVM.isPublic {
-                    if self.isFeedSelected {
-                        FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
-                            .background(Color.white)
-                            .animation(.none, value: UUID().uuidString)
+
+                    if !userProfileVM.isMe {
+                        Button {
+                            withAnimation {
+                                blockModalVis = true
+                            }
+                        } label: {
+                            Image("more")
+                        }
                     } else {
-                        MediaListView(postVM: self.postVM, scrollable: false)
-                            .background(Color.white)
-                            .animation(.none, value: UUID().uuidString)
+                        HStack(spacing: 5) {
+                            Image("sns-my-history")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 28, height: 28)
+
+                            Text("내 기록")
+                                .font(.pretendard(size: 14, weight: .bold))
+                        }
+                        .foregroundColor(Color(0x1DAFFF))
+                        .padding(.trailing, 8)
                     }
-                } else {
+                }
+                .frame(height: 48)
+                .padding(.horizontal, 20)
+                .background(.white)
+
+                ScalingHeaderScrollView {
                     VStack(spacing: 0) {
-                        Image("sns-private-background")
-                            .resizable()
-                            .frame(width: 160, height: 190)
-                            .padding(.top, 68)
-                            .padding(.bottom, 55)
-                        Text("비공개 계정입니다.")
-                            .padding(.bottom, 5)
-                        Text("수락된 친구만 게시글을 볼 수 있어요.")
+                        VStack(spacing: 0) {
+                            ProfileInfoView(userProfileVM: userProfileVM)
+                                .background(Color.white)
+                                .padding(.top, 20)
+
+                            Spacer()
+                                .frame(height: 23)
+                        }
+
+                        headerView()
+
                         Spacer()
                     }
+                    .frame(height: 210)
+                } content: {
+                    if userProfileVM.isPublic {
+                        if self.isFeedSelected {
+                            FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
+                                .background(Color.white)
+                                .animation(.none, value: UUID().uuidString)
+                        } else {
+                            MediaListView(postVM: self.postVM, scrollable: false)
+                                .background(Color.white)
+                                .animation(.none, value: UUID().uuidString)
+                        }
+                    } else {
+                        VStack(spacing: 0) {
+                            Image("sns-private-background")
+                                .resizable()
+                                .frame(width: 160, height: 190)
+                                .padding(.top, 68)
+                                .padding(.bottom, 55)
+                            Text("비공개 계정입니다.")
+                                .padding(.bottom, 5)
+                            Text("수락된 친구만 게시글을 볼 수 있어요.")
+                            Spacer()
+                        }
+                    }
                 }
+                .height(min: 40, max: 210)
+                .background(Color.white)
+                .clipped()
             }
-            .height(min: 40, max: 210)
-            .background(Color.white)
-            .clipped()
 
             if postOptModalVis.0 {
                 Color.black.opacity(0.5)
@@ -265,43 +303,6 @@ struct ProfileView: View {
             }
         }
         .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismissAction.callAsFunction()
-                } label: {
-                    Image("back-button")
-                        .frame(width: 28, height: 28)
-                }
-            }
-
-            if !userProfileVM.isMe {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        withAnimation {
-                            blockModalVis = true
-                        }
-                    } label: {
-                        Image("more")
-                    }
-                }
-            } else {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 5) {
-                        Image("sns-my-history")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 28, height: 28)
-
-                        Text("내 기록")
-                            .font(.pretendard(size: 14, weight: .bold))
-                    }
-                    .foregroundColor(Color(0x1DAFFF))
-                    .padding(.trailing, 8)
-                }
-            }
-        }
-        .toolbarBackground(Color.white)
         .onAppear {
             self.userProfileVM.fetchUserProfile()
         }
