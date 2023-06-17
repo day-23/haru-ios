@@ -81,235 +81,227 @@ struct CheckListView: View {
                 }
 
                 // 체크 리스트
-                if !self.viewModel.isEmpty {
-                    if self.viewModel.selectedTag == nil {
-                        ListView(checkListViewModel: self.viewModel) {
-                            ListSectionView(
-                                checkListViewModel: self.viewModel,
-                                todoAddViewModel: self.addViewModel,
-                                todoList: self.$todoState.todoListByFlag,
-                                emptyTextContent: "중요한 할 일이 있나요?"
-                            ) {
-                                self.todoState.updateOrderMain()
-                            } header: {
-                                HStack(spacing: 0) {
+                if self.viewModel.selectedTag == nil {
+                    ListView(checkListViewModel: self.viewModel) {
+                        ListSectionView(
+                            checkListViewModel: self.viewModel,
+                            todoAddViewModel: self.addViewModel,
+                            todoList: self.$todoState.todoListByFlag,
+                            emptyTextContent: "중요한 할 일이 있나요?"
+                        ) {
+                            self.todoState.updateOrderMain()
+                        } header: {
+                            HStack(spacing: 0) {
+                                TagView(
+                                    tag: Tag(
+                                        id: DefaultTag.important.rawValue,
+                                        content: DefaultTag.important.rawValue
+                                    ),
+                                    isSelected: true
+                                )
+
+                                Spacer()
+
+                                StarButton(isClicked: true)
+                                    .padding(.trailing, 10)
+                            }
+                            .padding(.leading, 10)
+                        }
+
+                        Divider()
+
+                        ListSectionView(
+                            checkListViewModel: self.viewModel,
+                            todoAddViewModel: self.addViewModel,
+                            todoList: self.$todoState.todoListWithAnyTag
+                        ) {
+                            self.todoState.updateOrderMain()
+                        } header: {
+                            TagView(
+                                tag: Tag(
+                                    id: DefaultTag.classified.rawValue,
+                                    content: DefaultTag.classified.rawValue
+                                ),
+                                isSelected: true,
+                                disabled: self.todoState.todoListWithAnyTag.isEmpty
+                            )
+                            .padding(.leading, 10)
+                        }
+
+                        Divider()
+
+                        ListSectionView(
+                            checkListViewModel: self.viewModel,
+                            todoAddViewModel: self.addViewModel,
+                            todoList: self.$todoState.todoListWithoutTag
+                        ) {
+                            self.todoState.updateOrderMain()
+                        } header: {
+                            TagView(
+                                tag: Tag(
+                                    id: DefaultTag.unclassified.rawValue,
+                                    content: DefaultTag.unclassified.rawValue
+                                ),
+                                isSelected: true,
+                                disabled: self.todoState.todoListWithoutTag.isEmpty
+                            )
+                            .padding(.leading, 10)
+                        }
+
+                        Divider()
+
+                        ListSectionView(
+                            checkListViewModel: self.viewModel,
+                            todoAddViewModel: self.addViewModel,
+                            todoList: self.$todoState.todoListByCompleted,
+                            emptyTextContent: "할 일을 완료해 보세요!"
+                        ) {
+                            self.todoState.updateOrderMain()
+                        } header: {
+                            TagView(
+                                tag: Tag(
+                                    id: DefaultTag.completed.rawValue,
+                                    content: DefaultTag.completed.rawValue
+                                ),
+                                isSelected: true,
+                                disabled: self.todoState.todoListByCompleted.isEmpty
+                            )
+                            .padding(.leading, 10)
+                        }
+                    } offsetChanged: {
+                        self.changeOffset($0)
+                    }
+                } else {
+                    if let tag = viewModel.selectedTag {
+                        if tag.id == DefaultTag.important.rawValue {
+                            ListView(checkListViewModel: self.viewModel) {
+                                ListSectionView(
+                                    checkListViewModel: self.viewModel,
+                                    todoAddViewModel: self.addViewModel,
+                                    todoList: self.$todoState.todoListByFlag
+                                ) {
+                                    self.todoState.updateOrderFlag()
+                                } header: {
+                                    HStack(spacing: 0) {
+                                        TagView(
+                                            tag: tag,
+                                            isSelected: true
+                                        )
+
+                                        Spacer()
+
+                                        StarButton(isClicked: true)
+                                            .padding(.trailing, 10)
+                                    }
+                                    .padding(.leading, 10)
+                                }
+                            } offsetChanged: {
+                                self.changeOffset($0)
+                            }
+                        } else if tag.id == DefaultTag.unclassified.rawValue {
+                            ListView(checkListViewModel: self.viewModel) {
+                                ListSectionView(
+                                    checkListViewModel: self.viewModel,
+                                    todoAddViewModel: self.addViewModel,
+                                    todoList: self.$todoState.todoListWithoutTag
+                                ) {
+                                    self.todoState.updateOrderWithoutTag()
+                                } header: {
+                                    TagView(
+                                        tag: tag,
+                                        isSelected: true,
+                                        disabled: self.todoState.todoListWithoutTag.isEmpty
+                                    )
+                                    .padding(.leading, 10)
+                                }
+                            } offsetChanged: {
+                                self.changeOffset($0)
+                            }
+                        } else if tag.id == DefaultTag.completed.rawValue {
+                            ListView(checkListViewModel: self.viewModel) {
+                                ListSectionView(
+                                    checkListViewModel: self.viewModel,
+                                    todoAddViewModel: self.addViewModel,
+                                    todoList: self.$todoState.todoListByCompleted,
+                                    emptyTextContent: "할 일을 완료해 보세요!"
+                                ) {
+                                    self.todoState.updateOrderWithoutTag()
+                                } header: {
+                                    TagView(
+                                        tag: tag,
+                                        isSelected: true,
+                                        disabled: self.todoState.todoListByCompleted.isEmpty
+                                    )
+                                    .padding(.leading, 10)
+                                }
+                            } offsetChanged: {
+                                self.changeOffset($0)
+                            }
+                        } else {
+                            // Tag 클릭시
+                            ListView(checkListViewModel: self.viewModel) {
+                                ListSectionView(
+                                    checkListViewModel: self.viewModel,
+                                    todoAddViewModel: self.addViewModel,
+                                    todoList: self.$todoState.todoListByFlag,
+                                    emptyTextContent: "중요한 할 일이 있나요?"
+                                ) {
+                                    self.todoState.updateOrderByTag(tagId: tag.id)
+                                } header: {
                                     TagView(
                                         tag: Tag(
                                             id: DefaultTag.important.rawValue,
                                             content: DefaultTag.important.rawValue
                                         ),
-                                        isSelected: true
+                                        isSelected: true,
+                                        disabled: self.todoState.todoListByFlag.isEmpty
                                     )
-
-                                    Spacer()
-
-                                    StarButton(isClicked: true)
-                                        .padding(.trailing, 10)
+                                    .padding(.leading, 10)
                                 }
-                                .padding(.leading, 10)
-                            }
 
-                            Divider()
+                                Divider()
 
-                            ListSectionView(
-                                checkListViewModel: self.viewModel,
-                                todoAddViewModel: self.addViewModel,
-                                todoList: self.$todoState.todoListWithAnyTag
-                            ) {
-                                self.todoState.updateOrderMain()
-                            } header: {
-                                TagView(
-                                    tag: Tag(
-                                        id: DefaultTag.classified.rawValue,
-                                        content: DefaultTag.classified.rawValue
-                                    ),
-                                    isSelected: true,
-                                    disabled: self.todoState.todoListWithAnyTag.isEmpty
-                                )
-                                .padding(.leading, 10)
-                            }
-
-                            Divider()
-
-                            ListSectionView(
-                                checkListViewModel: self.viewModel,
-                                todoAddViewModel: self.addViewModel,
-                                todoList: self.$todoState.todoListWithoutTag
-                            ) {
-                                self.todoState.updateOrderMain()
-                            } header: {
-                                TagView(
-                                    tag: Tag(
-                                        id: DefaultTag.unclassified.rawValue,
-                                        content: DefaultTag.unclassified.rawValue
-                                    ),
-                                    isSelected: true,
-                                    disabled: self.todoState.todoListWithoutTag.isEmpty
-                                )
-                                .padding(.leading, 10)
-                            }
-
-                            Divider()
-
-                            ListSectionView(
-                                checkListViewModel: self.viewModel,
-                                todoAddViewModel: self.addViewModel,
-                                todoList: self.$todoState.todoListByCompleted,
-                                emptyTextContent: "할 일을 완료해 보세요!"
-                            ) {
-                                self.todoState.updateOrderMain()
-                            } header: {
-                                TagView(
-                                    tag: Tag(
-                                        id: DefaultTag.completed.rawValue,
-                                        content: DefaultTag.completed.rawValue
-                                    ),
-                                    isSelected: true,
-                                    disabled: self.todoState.todoListByCompleted.isEmpty
-                                )
-                                .padding(.leading, 10)
-                            }
-                        } offsetChanged: {
-                            self.changeOffset($0)
-                        }
-                    } else {
-                        if let tag = viewModel.selectedTag {
-                            if tag.id == DefaultTag.important.rawValue {
-                                ListView(checkListViewModel: self.viewModel) {
-                                    ListSectionView(
-                                        checkListViewModel: self.viewModel,
-                                        todoAddViewModel: self.addViewModel,
-                                        todoList: self.$todoState.todoListByFlag
-                                    ) {
-                                        self.todoState.updateOrderFlag()
-                                    } header: {
-                                        HStack(spacing: 0) {
-                                            TagView(
-                                                tag: tag,
-                                                isSelected: true
-                                            )
-
-                                            Spacer()
-
-                                            StarButton(isClicked: true)
-                                                .padding(.trailing, 10)
-                                        }
-                                        .padding(.leading, 10)
-                                    }
-                                } offsetChanged: {
-                                    self.changeOffset($0)
+                                ListSectionView(
+                                    checkListViewModel: self.viewModel,
+                                    todoAddViewModel: self.addViewModel,
+                                    todoList: self.$todoState.todoListByTag
+                                ) {
+                                    self.todoState.updateOrderByTag(tagId: tag.id)
+                                } header: {
+                                    TagView(
+                                        tag: tag,
+                                        isSelected: true,
+                                        disabled: self.todoState.todoListByTag.isEmpty
+                                    )
+                                    .padding(.leading, 10)
                                 }
-                            } else if tag.id == DefaultTag.unclassified.rawValue {
-                                ListView(checkListViewModel: self.viewModel) {
-                                    ListSectionView(
-                                        checkListViewModel: self.viewModel,
-                                        todoAddViewModel: self.addViewModel,
-                                        todoList: self.$todoState.todoListWithoutTag
-                                    ) {
-                                        self.todoState.updateOrderWithoutTag()
-                                    } header: {
-                                        TagView(
-                                            tag: tag,
-                                            isSelected: true,
-                                            disabled: self.todoState.todoListWithoutTag.isEmpty
-                                        )
-                                        .padding(.leading, 10)
-                                    }
-                                } offsetChanged: {
-                                    self.changeOffset($0)
+
+                                Divider()
+
+                                ListSectionView(
+                                    checkListViewModel: self.viewModel,
+                                    todoAddViewModel: self.addViewModel,
+                                    todoList: self.$todoState.todoListByCompleted,
+                                    emptyTextContent: "할 일을 완료해 보세요!"
+                                ) {
+                                    self.todoState.updateOrderByTag(tagId: tag.id)
+                                } header: {
+                                    TagView(
+                                        tag: Tag(
+                                            id: DefaultTag.completed.rawValue,
+                                            content: DefaultTag.completed.rawValue
+                                        ),
+                                        isSelected: true,
+                                        disabled: self.todoState.todoListByCompleted.isEmpty
+                                    )
+                                    .padding(.leading, 10)
                                 }
-                            } else if tag.id == DefaultTag.completed.rawValue {
-                                ListView(checkListViewModel: self.viewModel) {
-                                    ListSectionView(
-                                        checkListViewModel: self.viewModel,
-                                        todoAddViewModel: self.addViewModel,
-                                        todoList: self.$todoState.todoListByCompleted,
-                                        emptyTextContent: "할 일을 완료해 보세요!"
-                                    ) {
-                                        self.todoState.updateOrderWithoutTag()
-                                    } header: {
-                                        TagView(
-                                            tag: tag,
-                                            isSelected: true,
-                                            disabled: self.todoState.todoListByCompleted.isEmpty
-                                        )
-                                        .padding(.leading, 10)
-                                    }
-                                } offsetChanged: {
-                                    self.changeOffset($0)
-                                }
-                            } else {
-                                // Tag 클릭시
-                                ListView(checkListViewModel: self.viewModel) {
-                                    ListSectionView(
-                                        checkListViewModel: self.viewModel,
-                                        todoAddViewModel: self.addViewModel,
-                                        todoList: self.$todoState.todoListByFlag,
-                                        emptyTextContent: "중요한 할 일이 있나요?"
-                                    ) {
-                                        self.todoState.updateOrderByTag(tagId: tag.id)
-                                    } header: {
-                                        TagView(
-                                            tag: Tag(
-                                                id: DefaultTag.important.rawValue,
-                                                content: DefaultTag.important.rawValue
-                                            ),
-                                            isSelected: true,
-                                            disabled: self.todoState.todoListByFlag.isEmpty
-                                        )
-                                        .padding(.leading, 10)
-                                    }
 
-                                    Divider()
-
-                                    ListSectionView(
-                                        checkListViewModel: self.viewModel,
-                                        todoAddViewModel: self.addViewModel,
-                                        todoList: self.$todoState.todoListByTag
-                                    ) {
-                                        self.todoState.updateOrderByTag(tagId: tag.id)
-                                    } header: {
-                                        TagView(
-                                            tag: tag,
-                                            isSelected: true,
-                                            disabled: self.todoState.todoListByTag.isEmpty
-                                        )
-                                        .padding(.leading, 10)
-                                    }
-
-                                    Divider()
-
-                                    ListSectionView(
-                                        checkListViewModel: self.viewModel,
-                                        todoAddViewModel: self.addViewModel,
-                                        todoList: self.$todoState.todoListByCompleted,
-                                        emptyTextContent: "할 일을 완료해 보세요!"
-                                    ) {
-                                        self.todoState.updateOrderByTag(tagId: tag.id)
-                                    } header: {
-                                        TagView(
-                                            tag: Tag(
-                                                id: DefaultTag.completed.rawValue,
-                                                content: DefaultTag.completed.rawValue
-                                            ),
-                                            isSelected: true,
-                                            disabled: self.todoState.todoListByCompleted.isEmpty
-                                        )
-                                        .padding(.leading, 10)
-                                    }
-
-                                } offsetChanged: {
-                                    self.changeOffset($0)
-                                }
+                            } offsetChanged: {
+                                self.changeOffset($0)
                             }
                         }
                     }
-                } else {
-                    VStack {
-                        Text("모든 할 일을 마쳤습니다!")
-                            .foregroundColor(Color(0x000000, opacity: 0.5))
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             .background(Color(0xfdfdfd))

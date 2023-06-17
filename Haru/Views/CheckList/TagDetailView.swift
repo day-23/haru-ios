@@ -23,6 +23,8 @@ struct TagDetailView: View {
     @State private var count: Int = 0
 
     @State private var backButtonTapped: Bool = false
+    @State private var confirmButtonTapped: Bool = false
+    @State private var deleteButtonTapped: Bool = false
 
     private var noChanges: Bool {
         return originalContent == content
@@ -91,14 +93,7 @@ struct TagDetailView: View {
             Spacer()
 
             Button {
-                tagService.deleteTag(tagId: tagId) { result in
-                    switch result {
-                    case .success:
-                        dismissAction.callAsFunction()
-                    case .failure:
-                        break
-                    }
-                }
+                deleteButtonTapped = true
             } label: {
                 HStack(spacing: 10) {
                     Text("태그 삭제")
@@ -111,38 +106,34 @@ struct TagDetailView: View {
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.bottom, 20)
         }
-        .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    if noChanges {
+        .confirmationDialog("태그를 삭제할까요?", isPresented: $deleteButtonTapped, titleVisibility: .visible) {
+            Button("삭제하기", role: .destructive) {
+                tagService.deleteTag(tagId: tagId) { result in
+                    switch result {
+                    case .success:
                         dismissAction.callAsFunction()
-                    } else {
-                        backButtonTapped = true
-                    }
-                } label: {
-                    Image("back-button")
-                        .frame(width: 28, height: 28)
-                }
-                .confirmationDialog(
-                    "현재 화면에서 나갈까요? 수정사항이 있습니다.",
-                    isPresented: $backButtonTapped,
-                    titleVisibility: .visible
-                ) {
-                    Button("나가기", role: .destructive) {
-                        dismissAction.callAsFunction()
+                    case .failure:
+                        break
                     }
                 }
             }
-
-            ToolbarItem(placement: .principal) {
-                Text("태그 수정")
-                    .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(Color(0x191919))
+        }
+        .confirmationDialog(
+            "현재 화면에서 나갈까요? 수정사항이 있습니다.",
+            isPresented: $backButtonTapped,
+            titleVisibility: .visible
+        ) {
+            Button("나가기", role: .destructive) {
+                dismissAction.callAsFunction()
             }
-
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
+        }
+        .confirmationDialog(
+            "수정사항을 저장할까요?",
+            isPresented: $confirmButtonTapped,
+            titleVisibility: .visible
+        ) {
+            Button("저장하기") {
+                if !noChanges {
                     checkListViewModel.updateTag(
                         tagId: tagId,
                         params: [
@@ -157,12 +148,38 @@ struct TagDetailView: View {
                             break
                         }
                     }
+                }
+            }
+        }
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    if noChanges {
+                        dismissAction.callAsFunction()
+                    } else {
+                        backButtonTapped = true
+                    }
+                } label: {
+                    Image("back-button")
+                        .frame(width: 28, height: 28)
+                }
+            }
+
+            ToolbarItem(placement: .principal) {
+                Text("태그 수정")
+                    .font(.pretendard(size: 20, weight: .bold))
+                    .foregroundColor(Color(0x191919))
+            }
+
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    confirmButtonTapped = true
                 } label: {
                     Image("confirm")
                         .renderingMode(.template)
-                        .foregroundColor(noChanges ? Color(0xacacac) : Color(0x191919))
+                        .foregroundColor(Color(0x191919))
                 }
-                .disabled(noChanges)
             }
         }
         .onAppear {
