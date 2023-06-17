@@ -28,6 +28,8 @@ struct ProfileView: View {
 
     var myProfile: Bool = false
 
+    @State var scrollToTop: () -> Void = {}
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -109,8 +111,19 @@ struct ProfileView: View {
                     }
                 }
                 .height(min: 40, max: 210)
+                .hideScrollIndicators()
                 .background(Color.white)
                 .clipped()
+                .introspectScrollView { controller in
+                    DispatchQueue.main.async {
+                        scrollToTop = {
+                            controller.setContentOffset(.zero, animated: true)
+                        }
+                    }
+                }
+                .onChange(of: isFeedSelected) { _ in
+                    scrollToTop()
+                }
             }
 
             if postOptModalVis.0 {
