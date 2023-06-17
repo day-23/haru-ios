@@ -58,20 +58,42 @@ struct ProfileFormView: View {
                     VStack(spacing: 16) {
                         HStack(spacing: 20) {
                             Text("닉네임")
-                                .font(.pretendard(size: 14, weight: .regular))
+                                .font(.pretendard(size: 16, weight: .regular))
                                 .foregroundColor(Color(0x646464))
                                 .frame(width: 50, alignment: .leading)
-                            TextField("이름을 입력하세요.", text: $name)
-                                .font(.pretendard(size: 14, weight: .bold))
+                            TextField("", text: $name)
+                                .placeholder(when: name.isEmpty, placeholder: {
+                                    Text("이름을 입력하세요.")
+                                        .font(.pretendard(size: 16, weight: .regular))
+                                        .foregroundColor(Color(0x191919))
+                                })
+                                .font(.pretendard(size: 16, weight: .bold))
+                                .onChange(of: name) { _ in
+                                    if name.count > 8 {
+                                        let nameInput = name
+                                        self.name = String(nameInput[nameInput.startIndex ..< nameInput.index(nameInput.endIndex, offsetBy: -1)])
+                                    }
+                                }
                         }
                         .padding(.horizontal, 15)
                         Divider()
                         HStack(spacing: 20) {
                             Text("자기소개")
-                                .font(.pretendard(size: 14, weight: .regular))
+                                .font(.pretendard(size: 16, weight: .regular))
                                 .foregroundColor(Color(0x646464))
-                            TextField("자기소개를 입력하세요.", text: $introduction)
-                                .font(.pretendard(size: 14, weight: .bold))
+                            TextField("", text: $introduction)
+                                .placeholder(when: introduction.isEmpty, placeholder: {
+                                    Text("자기소개를 입력하세요.")
+                                        .font(.pretendard(size: 16, weight: .regular))
+                                        .foregroundColor(Color(0x191919))
+                                })
+                                .onChange(of: introduction) { _ in
+                                    if introduction.count > 25 {
+                                        let introInput = introduction
+                                        self.introduction = String(introInput[introInput.startIndex ..< introInput.index(introInput.endIndex, offsetBy: -1)])
+                                    }
+                                }
+                                .font(.pretendard(size: 16, weight: .bold))
                         }
                         .padding(.horizontal, 15)
                     }

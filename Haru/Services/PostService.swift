@@ -11,6 +11,10 @@ import SwiftUI
 import UIKit
 
 final class PostService {
+    enum PostError: Error {
+        case badword
+    }
+
     private static let baseURL = Constants.baseURL + "post/"
 
     private static let formatter: DateFormatter = {
@@ -436,8 +440,18 @@ final class PostService {
                 case .success:
                     completion(.success(true))
                 case let .failure(error):
-                    completion(.failure(error))
+                    if let statusCode = response.response?.statusCode {
+                        switch statusCode {
+                        case 403:
+                            completion(.failure(PostError.badword))
+                        default:
+                            completion(.failure(error))
+                        }
+                    } else {
+                        completion(.failure(error))
+                    }
                 }
+
                 withAnimation {
                     Global.shared.isLoading = false
                 }
@@ -476,7 +490,16 @@ final class PostService {
             case .success:
                 completion(.success(true))
             case let .failure(error):
-                completion(.failure(error))
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(PostError.badword))
+                    default:
+                        completion(.failure(error))
+                    }
+                } else {
+                    completion(.failure(error))
+                }
             }
         }
     }
