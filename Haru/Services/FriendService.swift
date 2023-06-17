@@ -176,11 +176,11 @@ final class FriendService {
         ]
         
         let parameters: Parameters = [
-            "acceptorId": acceptorId,
+            "acceptorId": Global.shared.user?.id ?? "unknown",
         ]
         
         AF.request(
-            FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/request",
+            FriendService.baseURL + acceptorId + "/request",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
