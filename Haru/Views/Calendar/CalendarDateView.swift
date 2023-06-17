@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CalendarDateView: View {
     @EnvironmentObject private var todoState: TodoState
+    @EnvironmentObject private var global: Global
 
     @State private var isSchModalVisible: Bool = false
     @State private var isTodoModalVisible: Bool = false
@@ -28,7 +29,21 @@ struct CalendarDateView: View {
     @State var x = UIScreen.main.bounds.width
 
     var body: some View {
-        ZStack {
+        let _isOptionModalVisible: Binding<Bool> = .init {
+            self.isOptionModalVisible && self.global.isFaded
+        } set: {
+            Global.shared.isFaded = $0
+            self.isOptionModalVisible = $0
+        }
+        
+        let _isDayModalVisible: Binding<Bool> = .init {
+            self.isDayModalVisible && self.global.isFaded
+        } set: {
+            Global.shared.isFaded = $0
+            self.isDayModalVisible = $0
+        }
+
+        return ZStack {
             GeometryReader { _ in
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
@@ -90,8 +105,7 @@ struct CalendarDateView: View {
                                 .frame(width: 28, height: 28)
                                 .onTapGesture {
                                     withAnimation {
-                                        self.isOptionModalVisible = true
-                                        Global.shared.isFaded = true
+                                        _isOptionModalVisible.wrappedValue = true
                                         self.x = 0
                                     }
                                 }
@@ -146,7 +160,7 @@ struct CalendarDateView: View {
                                             
                                     CalendarWeekView(
                                         calendarVM: self.calendarVM,
-                                        isDayModalVisible: self.$isDayModalVisible,
+                                        isDayModalVisible: _isDayModalVisible,
                                         isDatePickerVisible: self.$isDatePickerVisible,
                                         cellHeight: proxy.size.height / CGFloat(self.calendarVM.numberOfWeeks),
                                         cellWidth: proxy.size.width / 7
@@ -209,14 +223,13 @@ struct CalendarDateView: View {
                 }
                 .transition(.modal)
                 .zIndex(2)
-            } else if self.isDayModalVisible {
+            } else if _isDayModalVisible.wrappedValue {
                 Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
                         withAnimation {
-                            self.isDayModalVisible = false
-                            Global.shared.isFaded = false
+                            _isDayModalVisible.wrappedValue = false
                         }
                     }
                     
@@ -299,15 +312,14 @@ struct CalendarDateView: View {
                 
             // 설정을 위한 슬라이드 메뉴
             Group {
-                if self.isOptionModalVisible {
+                if _isOptionModalVisible.wrappedValue {
                     Color.black.opacity(0.4)
                         .edgesIgnoringSafeArea(.all)
                         .zIndex(2)
                         .onTapGesture {
                             withAnimation {
                                 self.x = UIScreen.main.bounds.width
-                                self.isOptionModalVisible = false
-                                Global.shared.isFaded = false
+                                _isOptionModalVisible.wrappedValue = false
                             }
                         }
                 }
@@ -324,8 +336,7 @@ struct CalendarDateView: View {
                         withAnimation {
                             if self.x > self.width / 3 {
                                 self.x = UIScreen.main.bounds.width
-                                self.isOptionModalVisible = false
-                                Global.shared.isFaded = false
+                                _isOptionModalVisible.wrappedValue = false
                             } else {
                                 self.x = 0
                             }
@@ -352,6 +363,13 @@ struct CalendarDateView: View {
         .onChange(of: self.isOptionModalVisible) { newValue in
             if newValue == false {
                 self.calendarVM.setAllCategoryList()
+            }
+        }
+        .onChange(of: self.global.isFaded) {
+            if !$0 {
+                self.x = UIScreen.main.bounds.width
+                self.isOptionModalVisible = false
+                self.isDayModalVisible = false
             }
         }
     }
