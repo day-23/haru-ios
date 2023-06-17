@@ -22,13 +22,14 @@ struct FeedListView: View {
                     mainContent()
                 }
             } else {
-                VStack(spacing: 15) {
+                VStack(spacing: 0) {
                     Spacer()
                     Image("sns-empty-feedlist")
                         .resizable()
                         .frame(width: 180, height: 125)
+                        .padding(.bottom, 64)
 
-                    Text(postVM.option == .main ? "게시물을 작성해보세요." : "게시물이 아직 없어요.")
+                    Text("나의 하루를 기록해 보세요.")
                         .font(.pretendard(size: 16, weight: .regular))
                         .foregroundColor(Color(0x646464))
                     Spacer()
