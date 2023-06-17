@@ -19,10 +19,16 @@ struct PostFormDrawingView: View {
 
     var body: some View {
         ScrollView {
-            TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
-                .lineLimit(nil)
+            TextField("", text: $postFormVM.content, axis: .vertical)
+                .placeholder(when: postFormVM.content.isEmpty, placeholder: {
+                    Text("텍스트를 입력해주세요.")
+                        .font(.pretendard(size: 24, weight: .regular))
+                        .foregroundColor(Color(0xacacac))
+                })
+                .lineLimit(15)
                 .frame(alignment: .top)
-                .font(.pretendard(size: 24, weight: .regular))
+                .font(.pretendard(size: 24, weight: .bold))
+                .foregroundColor(Color(0x191919))
                 .background(Color(0xfdfdfd))
                 .focused($isFocused)
                 .onTapGesture {
@@ -30,6 +36,15 @@ struct PostFormDrawingView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 24)
+                .onChange(of: postFormVM.content) { value in
+                    if value.count > 1000 {
+                        postFormVM.content = String(
+                            value[
+                                value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
+                            ]
+                        )
+                    }
+                }
         }
         .background(Color(0xfdfdfd))
         .onTapGesture {
@@ -71,7 +86,6 @@ struct PostFormDrawingView: View {
                         .foregroundColor(Color(0x1dafff))
                         .rotationEffect(Angle(degrees: 180))
                 }
-                .disabled(postFormVM.content == "")
             }
         }
     }

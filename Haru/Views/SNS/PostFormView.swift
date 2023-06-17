@@ -28,6 +28,7 @@ struct PostFormView: View {
     let deviceSize = UIScreen.main.bounds.size
 
     @State var selectedImageNum: Int = 0
+    @State var isProgress: Bool = false
 
     @State private var croppedImage: UIImage?
     @State private var showingCropper = false
@@ -35,18 +36,25 @@ struct PostFormView: View {
     @State private var cropShapeType: Mantis.CropShapeType = .rect
     @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
 
+    @State private var showCamera = false
+    @State var captureImage: UIImage?
 //    @State private var showImagePicker = false
-//    @State private var showCamera = false
 //    @State private var showSourceTypeSelection = false
 //    @State private var sourceType: UIImagePickerController.SourceType?
 
     var body: some View {
         ScrollView {
             if postAddMode == .writing {
-                TextField("텍스트를 입력해주세요.", text: $postFormVM.content, axis: .vertical)
-                    .lineLimit(nil)
+                TextField("", text: $postFormVM.content, axis: .vertical)
+                    .placeholder(when: postFormVM.content.isEmpty, placeholder: {
+                        Text("텍스트를 입력해주세요.")
+                            .font(.pretendard(size: 24, weight: .regular))
+                            .foregroundColor(Color(0xacacac))
+                    })
+                    .lineLimit(15)
                     .frame(alignment: .top)
-                    .font(.pretendard(size: 24, weight: .regular))
+                    .font(.pretendard(size: 24, weight: .bold))
+                    .foregroundColor(Color(0x191919))
                     .background(Color(0xfdfdfd))
                     .focused($isFocused)
                     .onTapGesture {
@@ -54,6 +62,15 @@ struct PostFormView: View {
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 24)
+                    .onChange(of: postFormVM.content) { value in
+                        if value.count > 1000 {
+                            postFormVM.content = String(
+                                value[
+                                    value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
+                                ]
+                            )
+                        }
+                    }
             } else {
                 VStack {
                     ZStack {
@@ -71,21 +88,40 @@ struct PostFormView: View {
                         }
 
                         TabView(selection: $selectedImageNum) {
-                            ForEach(postFormVM.imageList.indices, id: \.self) { idx in
-                                Image(uiImage: postFormVM.imageList[idx])
-                                    .renderingMode(.original)
-                                    .resizable()
-                                    .scaledToFill()
+                            if postFormVM.imageList.count > 0 {
+                                ForEach(postFormVM.imageList.indices, id: \.self) { idx in
+                                    Image(uiImage: postFormVM.imageList[idx])
+                                        .renderingMode(.original)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(
+                                            width: deviceSize.width,
+                                            height: deviceSize.width
+                                        )
+                                        .clipped()
+                                        .onTapGesture {
+                                            croppedImage = postFormVM.oriImageList[selectedImageNum]
+                                            presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
+                                            showingCropper = true
+                                        }
+                                        .overlay {
+                                            if isProgress {
+                                                ProgressView()
+                                                    .frame(
+                                                        width: deviceSize.width,
+                                                        height: deviceSize.width
+                                                    )
+                                                    .background(Color(0x191919).opacity(0.4))
+                                            }
+                                        }
+                                }
+                            } else if isProgress {
+                                ProgressView()
                                     .frame(
                                         width: deviceSize.width,
                                         height: deviceSize.width
                                     )
-                                    .clipped()
-                                    .onTapGesture {
-                                        croppedImage = postFormVM.oriImageList[selectedImageNum]
-                                        presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
-                                        showingCropper = true
-                                    }
+                                    .background(Color(0x191919).opacity(0.4))
                             }
                         }
                         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
@@ -111,12 +147,26 @@ struct PostFormView: View {
                 .onDisappear(perform: reset)
                 .ignoresSafeArea()
         })
+        .fullScreenCover(isPresented: $showCamera, content: {
+            CameraView(image: $captureImage)
+                .ignoresSafeArea()
+        })
         .onChange(of: croppedImage, perform: { _ in
             guard let image = croppedImage else { return }
             postFormVM.imageList[selectedImageNum] = image
         })
+        .onChange(of: captureImage, perform: { _ in
+            guard let image = captureImage else { return }
+            if postFormVM.imageList.count < 10,
+               let data = cropping(image: image)
+            {
+                postFormVM.oriImageList.append(image)
+                postFormVM.imageList.append(data)
+            }
+        })
         .popupImagePicker(
             show: $openPhoto,
+            activeCamera: $showCamera,
             mode: .multiple,
             always: true
         ) { assets in
@@ -128,28 +178,41 @@ struct PostFormView: View {
             var result: [UIImage] = []
             var oriResult: [UIImage] = []
             options.isSynchronous = true
+            options.isNetworkAccessAllowed = true
+
+            options.progressHandler = { progress, _, _, _ in
+                if progress == 1.0 {
+                    isProgress = false
+                } else {
+                    isProgress = true
+                }
+            }
+
             DispatchQueue.global(qos: .userInteractive).async {
                 assets.forEach { asset in
                     manager.requestImage(for: asset, targetSize: .init(), contentMode: .aspectFit, options: options) { image, _ in
                         guard let image else { return }
 
-                        // 보이는 화면과 이미지의 비율 계산
-                        let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
-                                                 image.size.height / UIScreen.main.bounds.height)
-
-                        let cropZone = CGRect(x: 0,
-                                              y: 0,
-                                              width: UIScreen.main.bounds.width * imageViewScale,
-                                              height: UIScreen.main.bounds.width * imageViewScale)
-
-                        // 이미지 자르기
-                        guard let cutImageRef: CGImage = image.cgImage?.cropping(to: cropZone)
-                        else {
+//                        // 보이는 화면과 이미지의 비율 계산
+//                        let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
+//                                                 image.size.height / UIScreen.main.bounds.height)
+//
+//                        let cropZone = CGRect(x: 0,
+//                                              y: 0,
+//                                              width: UIScreen.main.bounds.width * imageViewScale,
+//                                              height: UIScreen.main.bounds.width * imageViewScale)
+//
+//                        // 이미지 자르기
+//                        guard let cutImageRef: CGImage = image.cgImage?.cropping(to: cropZone)
+//                        else {
+//                            return
+//                        }
+//
+//                        // 최종 uiimage 저장
+                        guard let data = cropping(image: image) else {
+                            print("크롭하는데 실패")
                             return
                         }
-
-                        // 최종 uiimage 저장
-                        let data = UIImage(cgImage: cutImageRef, scale: image.imageRendererFormat.scale, orientation: image.imageOrientation)
 
                         result.append(data)
                         oriResult.append(image)
@@ -159,6 +222,7 @@ struct PostFormView: View {
                 DispatchQueue.main.async {
                     postFormVM.imageList = result
                     postFormVM.oriImageList = oriResult
+                    isProgress = false
                 }
             }
         }
@@ -218,5 +282,23 @@ struct PostFormView: View {
     func reset() {
         cropShapeType = .rect
         presetFixedRatioType = .canUseMultiplePresetFixedRatio()
+    }
+
+    func cropping(image: UIImage) -> UIImage? {
+        // 보이는 화면과 이미지의 비율 계산
+        let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
+                                 image.size.height / UIScreen.main.bounds.height)
+
+        let cropZone = CGRect(x: 0,
+                              y: 0,
+                              width: UIScreen.main.bounds.width * imageViewScale,
+                              height: UIScreen.main.bounds.width * imageViewScale)
+
+        // 이미지 자르기
+        guard let cutImageRef: CGImage = image.cgImage?.cropping(to: cropZone)
+        else { return nil }
+
+        // 최종 uiimage 저장
+        return UIImage(cgImage: cutImageRef, scale: image.imageRendererFormat.scale, orientation: image.imageOrientation)
     }
 }

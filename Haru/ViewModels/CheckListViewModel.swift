@@ -57,14 +57,14 @@ final class CheckListViewModel: ObservableObject {
     @Published var todoListOffsetMap: [String: CGFloat] = [:]
 
     var isEmpty: Bool {
-        return (todoState.todoListByTag.isEmpty
+        return todoState.todoListByTag.isEmpty
             && todoState.todoListByFlag.isEmpty
             && todoState.todoListByCompleted.isEmpty
             && todoState.todoListByFlagWithToday.isEmpty
             && todoState.todoListByTodayTodo.isEmpty
             && todoState.todoListByUntilToday.isEmpty
             && todoState.todoListWithAnyTag.isEmpty
-            && todoState.todoListWithoutTag.isEmpty)
+            && todoState.todoListWithoutTag.isEmpty
     }
 
     // MARK: - Create
@@ -148,7 +148,8 @@ final class CheckListViewModel: ObservableObject {
         todo: Request.Todo
     ) {
         todoState.updateTodo(todoId: todoId,
-                             todo: todo) { result in
+                             todo: todo)
+        { result in
             switch result {
             case .success:
                 break
@@ -235,7 +236,8 @@ final class CheckListViewModel: ObservableObject {
         completed: Bool
     ) {
         todoState.completeSubTodo(subTodoId: subTodoId,
-                                  completed: completed) { result in
+                                  completed: completed)
+        { result in
             switch result {
             case .success:
                 self.fetchTodoList()

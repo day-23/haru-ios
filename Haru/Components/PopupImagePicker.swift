@@ -19,13 +19,15 @@ struct PopupImagePicker: View {
     // MARK: Callbacks
 
     var mode: ImagePickerMode
-    @State var ratio: Double = 0.5
+    @Binding var activeCamera: Bool
+    @State var ratio: Double = 0.43
 
     var onEnd: () -> ()
     var onSelect: ([PHAsset]) -> ()
 
     var body: some View {
         let deviceSize = UIScreen.main.bounds.size
+        let manager = PHImageManager.default()
         VStack(spacing: 0) {
             HStack {
                 HStack(spacing: 10) {
@@ -41,11 +43,7 @@ struct PopupImagePicker: View {
 
                         if ratio == 0.9 {
                             withAnimation {
-                                ratio = 0.5
-                            }
-                        } else if ratio == 0.5 {
-                            withAnimation {
-                                ratio = 0.15
+                                ratio = 0.43
                             }
                         }
                     } label: {
@@ -58,13 +56,9 @@ struct PopupImagePicker: View {
 
                     if mode == .multiple {
                         Button {
-                            if ratio == 0.5 {
+                            if ratio == 0.43 {
                                 withAnimation {
                                     ratio = 0.9
-                                }
-                            } else if ratio == 0.15 {
-                                withAnimation {
-                                    ratio = 0.5
                                 }
                             }
 
@@ -93,9 +87,13 @@ struct PopupImagePicker: View {
                         Image(multiSelectEnable ? "sns-multiple-button" : "sns-multiple-button-disable")
                     }
                 }
-                Image("sns-camera-disable")
-                    .resizable()
-                    .frame(width: 30, height: 30)
+                Button {
+                    activeCamera = true
+                } label: {
+                    Image("sns-camera-disable")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                }
             }
             .padding(.top, 25)
             .padding(.horizontal, 24)
@@ -115,8 +113,14 @@ struct PopupImagePicker: View {
                                 if imageAsset.thumbnail == nil {
                                     // MARK: Fetching Thumbnail Image
 
-                                    let manager = PHCachingImageManager.default()
-                                    manager.requestImage(for: imageAsset.asset, targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill, options: nil) { image, _ in
+                                    let options = PHImageRequestOptions()
+                                    options.isNetworkAccessAllowed = true
+                                    manager.requestImage(
+                                        for: imageAsset.asset,
+                                        targetSize: CGSize(width: 360, height: 360),
+                                        contentMode: .aspectFill,
+                                        options: options
+                                    ) { image, _ in
                                         imageAsset.thumbnail = image
                                     }
                                 }
@@ -133,6 +137,7 @@ struct PopupImagePicker: View {
                 .resizable()
         }
         .cornerRadius(20, corners: [.topLeft, .topRight])
+        .shadow(radius: 10)
 
         // MARK: Since its an Overlay View
 
@@ -157,9 +162,11 @@ struct PopupImagePicker: View {
 
             if let thumbnail = imageAsset.thumbnail {
                 Image(uiImage: thumbnail)
+                    .renderingMode(.original)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .scaledToFill()
                     .frame(width: size, height: size)
+                    .clipped()
                     .border(
                         width: isSelected ? 3 : 0,
                         edges: [.top, .bottom, .leading, .trailing],
@@ -202,10 +209,6 @@ struct PopupImagePicker: View {
         .onTapGesture {
             // MARK: adding / Removing Asset
 
-            if imagePickerModel.selectedImages.count >= 10 {
-                return
-            }
-
             withAnimation(.easeInOut) {
                 if let index = imagePickerModel.selectedImages.firstIndex(where: { asset in
                     asset.id == imageAsset.id
@@ -216,7 +219,7 @@ struct PopupImagePicker: View {
                     imagePickerModel.selectedImages.enumerated().forEach { item in
                         imagePickerModel.selectedImages[item.offset].assetIndex = item.offset
                     }
-                } else {
+                } else if imagePickerModel.selectedImages.count < 10 {
                     // MARK: Add New
 
                     var newAsset = imageAsset

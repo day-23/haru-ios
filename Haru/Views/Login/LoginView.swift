@@ -66,16 +66,21 @@ struct LoginView: View {
                             .frame(width: 312, height: 44)
                             .cornerRadius(12)
 
-                        Text("게스트로 로그인하기")
+                        Text("하루 둘러보기")
                             .font(.pretendard(size: 14, weight: .bold))
                             .foregroundColor(Color(0x191919))
                             .frame(width: 312, height: 44)
                             .background(Color(0xfdfdfd))
                             .cornerRadius(12)
                             .onTapGesture {
+                                Global.shared.toastMessageContent = "하루 애플리케이션을 둘러보세요"
+                                withAnimation {
+                                    Global.shared.showToastMessage = true
+                                }
+
                                 Global.shared.user = Me(
                                     user: User(
-                                        id: "005224c0-eec1-4638-9143-58cbfc9688c5",
+                                        id: "guest",
                                         name: "GUEST",
                                         introduction: "게스트 계정입니다.",
                                         postCount: 0,
@@ -85,11 +90,12 @@ struct LoginView: View {
                                     ),
                                     haruId: "GUEST",
                                     email: "Guest@haru.com",
-                                    socialAccountType: "K",
+                                    socialAccountType: "GUEST",
                                     isPostBrowsingEnabled: true,
                                     isAllowFeedLike: 2,
                                     isAllowFeedComment: 2,
                                     isAllowSearch: true,
+                                    isSignUp: true,
                                     isMaliciousUser: false,
                                     morningAlarmTime: nil,
                                     nightAlarmTime: nil,

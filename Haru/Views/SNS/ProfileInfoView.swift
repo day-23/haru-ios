@@ -25,6 +25,8 @@ struct ProfileInfoView: View {
                     HStack(spacing: 4) {
                         Text(userProfileVM.isPublic ? userProfileVM.user.name : "비공계 계정")
                             .font(.pretendard(size: 20, weight: .bold))
+                            .allowsTightening(true)
+                            .lineLimit(1)
                         if !userProfileVM.isPublic {
                             Image("setting-privacy-lock")
                                 .resizable()
@@ -32,6 +34,8 @@ struct ProfileInfoView: View {
                         }
                     }
                     Text(userProfileVM.user.introduction)
+                        .allowsTightening(true)
+                        .lineLimit(1)
                         .font(.pretendard(size: 14, weight: .regular))
                         .foregroundColor(Color(0x191919))
                 }

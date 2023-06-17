@@ -67,7 +67,8 @@ final class CalendarService {
                 method: .post,
                 parameters: parameters,
                 encoding: JSONEncoding.default,
-                headers: headers
+                headers: headers,
+                interceptor: ApiRequestInterceptor()
             )
             .responseDecodable(of: Response.self, decoder: decoder) { response in
                 switch response.result {

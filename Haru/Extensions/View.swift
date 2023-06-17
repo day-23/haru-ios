@@ -145,6 +145,7 @@ extension View {
     @ViewBuilder
     func popupImagePicker(
         show: Binding<Bool>,
+        activeCamera: Binding<Bool>,
         transition: AnyTransition = .move(edge: .bottom),
         mode: ImagePickerMode = .multiple,
         always: Bool = false,
@@ -166,7 +167,7 @@ extension View {
                 }
 
                 if show.wrappedValue {
-                    PopupImagePicker(mode: mode) {
+                    PopupImagePicker(mode: mode, activeCamera: activeCamera) {
                         show.wrappedValue = false
                     } onSelect: { assets in
                         onSelect(assets)

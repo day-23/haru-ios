@@ -32,7 +32,6 @@ struct CalendarWeekView: View {
                                             if !isDatePickerVisible {
                                                 isDayModalVisible = true
                                             }
-                                            Global.shared.isFaded = true
                                         }
                                     }
                             }

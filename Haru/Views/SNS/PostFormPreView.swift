@@ -5,6 +5,7 @@
 //  Created by 이준호 on 2023/05/11.
 //
 
+import PopupView
 import SwiftUI
 import UIKit
 
@@ -26,6 +27,9 @@ struct PostFormPreView: View {
     @State var isModalUp: Bool = true
 
     @State var waitingResponse: Bool = false
+
+    @State var toastMesContent: String = ""
+    @State var showToastMessage: Bool = false
 
     let deviceSize = UIScreen.main.bounds.size
     var body: some View {
@@ -160,9 +164,18 @@ struct PostFormPreView: View {
                                 case .success:
                                     createPost = true
                                     shouldPopToRootView = false
-                                case .failure(let failure):
+
+                                case .failure(let error):
+                                    switch error {
+                                    case PostService.PostError.badword:
+                                        Global.shared.toastMessageContent = "게시글에 부적절한 단어가 포함되어 있습니다."
+                                        withAnimation {
+                                            Global.shared.showToastMessage = true
+                                        }
+                                    default:
+                                        break
+                                    }
                                     waitingResponse = false
-                                    print("[Debug] \(failure) \(#fileID) \(#function)")
                                 }
                             }
                         case .writing:
@@ -174,9 +187,17 @@ struct PostFormPreView: View {
                                     case .success:
                                         createPost = true
                                         shouldPopToRootView = false
-                                    case .failure(let failure):
+                                    case .failure(let error):
+                                        switch error {
+                                        case PostService.PostError.badword:
+                                            Global.shared.toastMessageContent = "게시글에 부적절한 단어가 포함되어 있습니다."
+                                            withAnimation {
+                                                Global.shared.showToastMessage = true
+                                            }
+                                        default:
+                                            break
+                                        }
                                         waitingResponse = false
-                                        print("[Debug] \(failure) \(#fileID) \(#function)")
                                     }
                                 }
                             } else {

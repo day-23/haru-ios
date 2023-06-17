@@ -48,7 +48,8 @@ struct TagService {
             method: .post,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -71,7 +72,8 @@ struct TagService {
 
         AF.request(
             TagService.baseURL + "\(Global.shared.user?.id ?? "unknown")/tags",
-            method: .get
+            method: .get,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -94,7 +96,8 @@ struct TagService {
         AF.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(tagId)/todoCnt",
-            method: .get
+            method: .get,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(data):
@@ -128,7 +131,8 @@ struct TagService {
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success:
@@ -159,7 +163,8 @@ struct TagService {
             method: .delete,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:

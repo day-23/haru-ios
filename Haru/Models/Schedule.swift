@@ -116,6 +116,10 @@ struct Schedule: Identifiable, Codable {
                     }
                 }
             }
+        } else {
+            Task {
+                await AlarmHelper.removeNotification(identifier: id)
+            }
         }
     }
 

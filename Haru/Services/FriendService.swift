@@ -59,7 +59,8 @@ final class FriendService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
@@ -94,7 +95,8 @@ final class FriendService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
@@ -122,7 +124,8 @@ final class FriendService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .response { response in
             switch response.result {
@@ -152,7 +155,8 @@ final class FriendService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -180,7 +184,8 @@ final class FriendService {
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .response { response in
             switch response.result {
@@ -209,7 +214,8 @@ final class FriendService {
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .response { response in
             switch response.result {
@@ -238,7 +244,8 @@ final class FriendService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .response { response in
             switch response.result {

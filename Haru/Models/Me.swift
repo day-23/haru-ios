@@ -20,11 +20,12 @@ struct Me: Codable {
     var morningAlarmTime: Date?
     var nightAlarmTime: Date?
     var isScheduleAlarmOn: Bool
+    var isSignUp: Bool
     let isMaliciousUser: Bool
     let createdAt: Date
     let accessToken: String
 
-    init(user: User, haruId: String, email: String, socialAccountType: String, isPostBrowsingEnabled: Bool, isAllowFeedLike: Int, isAllowFeedComment: Int, isAllowSearch: Bool, isMaliciousUser: Bool, morningAlarmTime: Date?, nightAlarmTime: Date?, isScheduleAlarmOn: Bool, createdAt: Date, accessToken: String) {
+    init(user: User, haruId: String, email: String, socialAccountType: String, isPostBrowsingEnabled: Bool, isAllowFeedLike: Int, isAllowFeedComment: Int, isAllowSearch: Bool, isSignUp: Bool, isMaliciousUser: Bool, morningAlarmTime: Date?, nightAlarmTime: Date?, isScheduleAlarmOn: Bool, createdAt: Date, accessToken: String) {
         self.user = user
         self.haruId = haruId
         self.email = email
@@ -39,6 +40,7 @@ struct Me: Codable {
         self.isMaliciousUser = isMaliciousUser
         self.createdAt = createdAt
         self.accessToken = accessToken
+        self.isSignUp = isSignUp
     }
 
     init(from decoder: Decoder) throws {
@@ -54,6 +56,7 @@ struct Me: Codable {
         self.morningAlarmTime = try container.decodeIfPresent(Date.self, forKey: .morningAlarmTime)
         self.nightAlarmTime = try container.decodeIfPresent(Date.self, forKey: .nightAlarmTime)
         self.isScheduleAlarmOn = try container.decode(Bool.self, forKey: .isScheduleAlarmOn)
+        self.isSignUp = try container.decode(Bool.self, forKey: .isSignUp)
         self.isMaliciousUser = try container.decode(Bool.self, forKey: .isMaliciousUser)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.accessToken = try container.decodeIfPresent(String.self, forKey: .accessToken) ?? ""
@@ -71,6 +74,7 @@ struct Me: Codable {
         case morningAlarmTime
         case nightAlarmTime
         case isScheduleAlarmOn
+        case isSignUp
         case isMaliciousUser
         case createdAt
         case accessToken

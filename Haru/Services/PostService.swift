@@ -11,6 +11,10 @@ import SwiftUI
 import UIKit
 
 final class PostService {
+    enum PostError: Error {
+        case badword
+    }
+
     private static let baseURL = Constants.baseURL + "post/"
 
     private static let formatter: DateFormatter = {
@@ -75,7 +79,8 @@ final class PostService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -123,7 +128,8 @@ final class PostService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -171,7 +177,8 @@ final class PostService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -220,7 +227,8 @@ final class PostService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -269,7 +277,8 @@ final class PostService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -318,7 +327,8 @@ final class PostService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -423,14 +433,25 @@ final class PostService {
                   to: PostService.baseURL + "\(Global.shared.user?.id ?? "unknown")",
                   usingThreshold: .init(),
                   method: .post,
-                  headers: headers)
+                  headers: headers,
+                  interceptor: ApiRequestInterceptor())
             .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
                 switch response.result {
                 case .success:
                     completion(.success(true))
                 case let .failure(error):
-                    completion(.failure(error))
+                    if let statusCode = response.response?.statusCode {
+                        switch statusCode {
+                        case 403:
+                            completion(.failure(PostError.badword))
+                        default:
+                            completion(.failure(error))
+                        }
+                    } else {
+                        completion(.failure(error))
+                    }
                 }
+
                 withAnimation {
                     Global.shared.isLoading = false
                 }
@@ -462,13 +483,32 @@ final class PostService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(PostError.badword))
+                        return
+                    default:
+                        break
+                    }
+                }
                 completion(.success(true))
             case let .failure(error):
-                completion(.failure(error))
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(PostError.badword))
+                    default:
+                        completion(.failure(error))
+                    }
+                } else {
+                    completion(.failure(error))
+                }
             }
         }
     }
@@ -484,7 +524,8 @@ final class PostService {
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)",
             method: .delete,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -506,7 +547,8 @@ final class PostService {
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/hide",
             method: .post,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -528,7 +570,8 @@ final class PostService {
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/report",
             method: .post,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -556,7 +599,8 @@ final class PostService {
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
             method: .get,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -583,7 +627,8 @@ final class PostService {
         AF.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/hashtags/",
             method: .get,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -612,7 +657,8 @@ final class PostService {
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/hashtags/\(targetId)",
             method: .get,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -639,7 +685,8 @@ final class PostService {
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(targetPostId)/like",
             method: .post,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):

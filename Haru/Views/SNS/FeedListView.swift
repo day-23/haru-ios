@@ -16,45 +16,21 @@ struct FeedListView: View {
     var body: some View {
         Group {
             if postVM.postList.count > 0 {
-                ScrollView {
-                    LazyVStack(spacing: 14) {
-                        ForEach(postVM.postList) { post in
-                            if !post.disabled {
-                                FeedView(
-                                    post: post,
-                                    postImageList: postVM.postImageList[post.id] ?? [],
-                                    postVM: postVM,
-                                    postOptModalVis: $postOptModalVis
-                                )
-                            }
-                        }
-                        if !postVM.postList.isEmpty &&
-                            postVM.page <= postVM.feedTotalPage &&
-                            (postVM.option == .target_feed || postVM.option == .main)
-                        {
-                            HStack {
-                                Spacer()
-                                ProgressView()
-                                    .onAppear {
-                                        postVM.loadMorePosts()
-                                    }
-                                Spacer()
-                            }
-                        }
-                    }
-                    .padding(.top, 14)
-                }
-                .refreshable {
-                    postVM.refreshPosts()
+                if comeToRoot {
+                    comeFromMain()
+                } else {
+                    mainContent()
                 }
             } else {
-                VStack(spacing: 15) {
+                VStack(spacing: 0) {
                     Spacer()
                     Image("sns-empty-feedlist")
                         .resizable()
                         .frame(width: 180, height: 125)
+                        .padding(.bottom, 64)
+                        .padding(.top, !comeToRoot ? 57 : 0)
 
-                    Text(postVM.option == .main ? "게시물을 작성해보세요." : "게시물이 아직 없어요.")
+                    Text("나의 하루를 기록해 보세요.")
                         .font(.pretendard(size: 16, weight: .regular))
                         .foregroundColor(Color(0x646464))
                     Spacer()
@@ -63,10 +39,49 @@ struct FeedListView: View {
         }
         .onAppear {
             postVM.option = postVM.targetId == nil ? .main : .target_feed
-
             if postVM.feedTotalPage == -1 {
                 postVM.loadMorePosts()
             }
         }
+    }
+
+    @ViewBuilder
+    func comeFromMain() -> some View {
+        ScrollView {
+            mainContent()
+        }
+        .refreshable {
+            postVM.refreshPosts()
+        }
+    }
+
+    @ViewBuilder
+    func mainContent() -> some View {
+        LazyVStack(spacing: 14) {
+            ForEach(postVM.postList) { post in
+                if !post.disabled {
+                    FeedView(
+                        post: post,
+                        postImageList: postVM.postImageList[post.id] ?? [],
+                        postVM: postVM,
+                        postOptModalVis: $postOptModalVis
+                    )
+                }
+            }
+            if !postVM.postList.isEmpty &&
+                postVM.page <= postVM.feedTotalPage &&
+                (postVM.option == .target_feed || postVM.option == .main)
+            {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .onAppear {
+                            postVM.loadMorePosts()
+                        }
+                    Spacer()
+                }
+            }
+        }
+        .padding(.top, 14)
     }
 }

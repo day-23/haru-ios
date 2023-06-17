@@ -69,7 +69,8 @@ final class ScheduleService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -117,7 +118,8 @@ final class ScheduleService {
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -156,7 +158,8 @@ final class ScheduleService {
             method: .post,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -190,7 +193,8 @@ final class ScheduleService {
             method: .patch,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -215,7 +219,8 @@ final class ScheduleService {
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -236,7 +241,8 @@ final class ScheduleService {
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -257,7 +263,8 @@ final class ScheduleService {
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -284,7 +291,8 @@ final class ScheduleService {
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -301,7 +309,8 @@ final class ScheduleService {
     func deleteSchedule(scheduleId: String, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         AF.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)",
-            method: .delete
+            method: .delete,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -332,7 +341,8 @@ final class ScheduleService {
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -361,7 +371,8 @@ final class ScheduleService {
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -389,7 +400,8 @@ final class ScheduleService {
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:

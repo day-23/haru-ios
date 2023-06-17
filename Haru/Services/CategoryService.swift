@@ -27,7 +27,8 @@ final class CategoryService {
         AF.request(
             CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/categories",
             method: .get,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self) { response in
             switch response.result {
@@ -58,7 +59,8 @@ final class CategoryService {
             method: .post,
             parameters: category,
             encoder: JSONParameterEncoder(),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -93,7 +95,8 @@ final class CategoryService {
             method: .patch,
             parameters: requestBody,
             encoder: JSONParameterEncoder(),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -123,7 +126,8 @@ final class CategoryService {
             method: .patch,
             parameters: category,
             encoder: JSONParameterEncoder(),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -157,7 +161,8 @@ final class CategoryService {
             method: .delete,
             parameters: requestBody,
             encoder: JSONParameterEncoder(),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):

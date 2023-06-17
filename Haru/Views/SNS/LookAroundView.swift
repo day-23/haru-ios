@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LookAroundView: View {
-    @StateObject var postVM = PostViewModel(option: .media_all)
+    @StateObject var postVM: PostViewModel
     var body: some View {
         VStack(spacing: 0) {
             MediaListView(postVM: postVM)

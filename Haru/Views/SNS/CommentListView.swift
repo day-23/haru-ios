@@ -156,7 +156,11 @@ struct CommentListView: View {
                                 }
 
                                 Button("이 코멘트 신고하기") {
-                                    print("코멘트 신고하기")
+                                    commentVM.deleteComment(
+                                        userId: comment.user.id,
+                                        commentId: comment.id,
+                                        imageId: commentVM.postImageIDList[commentVM.imagePageNum]
+                                    )
                                 }
                             }
                         }

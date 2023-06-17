@@ -36,10 +36,10 @@ struct UserSearchView: View {
                                 .resizable()
                                 .frame(width: 125, height: 205)
                                 
-                            Text("해당하는 하루 아이디를 가지는")
+                            Text("하루 아이디를 가지는")
                                 .font(.pretendard(size: 16, weight: .regular))
                                 .foregroundColor(Color(0x646464))
-                                .padding(.top, 50)
+                                .padding(.top, 37)
                                 
                             Text("친구를 찾을 수 없어요.")
                                 .font(.pretendard(size: 16, weight: .regular))

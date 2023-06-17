@@ -52,7 +52,8 @@ final class CommentService {
         AF.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/\(targetPostImageId)/comments/recent",
             method: .get,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -85,7 +86,8 @@ final class CommentService {
             method: .post,
             parameters: comment,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -117,7 +119,8 @@ final class CommentService {
             method: .post,
             parameters: comment,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -149,7 +152,8 @@ final class CommentService {
             method: .patch,
             parameters: comment,
             encoder: JSONParameterEncoder.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -186,7 +190,8 @@ final class CommentService {
             method: .patch,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).response { response in
             switch response.result {
             case .success:
@@ -214,7 +219,8 @@ final class CommentService {
         AF.request(
             CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
             method: .delete,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -266,7 +272,8 @@ final class CommentService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -315,7 +322,8 @@ final class CommentService {
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers
+            headers: headers,
+            interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TagListView: View {
-    let viewModel: CheckListViewModel
+    @StateObject var viewModel: CheckListViewModel
     let action: (Tag) -> Void
 
     var body: some View {

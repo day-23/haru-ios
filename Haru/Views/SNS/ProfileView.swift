@@ -5,13 +5,13 @@
 //  Created by 이준호 on 2023/05/24.
 //
 
+import ScalingHeaderScrollView
 import SwiftUI
 
 struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.dismiss) var dismissAction
 
-    @State var toggleIsClicked: Bool = false
     @State private var isFeedSelected: Bool = true
 
     @StateObject var postVM: PostViewModel
@@ -28,83 +28,103 @@ struct ProfileView: View {
 
     var myProfile: Bool = false
 
+    @State var scrollToTop: () -> Void = {}
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                ProfileInfoView(userProfileVM: userProfileVM)
-                    .background(Color(0xFDFDFD))
-                    .padding(.top, 20)
-
-                Spacer()
-                    .frame(height: 33)
-
-                if userProfileVM.isPublic {
-                    VStack(spacing: 0) {
-                        HStack(spacing: 0) {
-                            Text(self.userProfileVM.isMe ? "내 피드" : "피드")
-                                .frame(width: 175)
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(self.isFeedSelected ? Color(0x1DAFFF) : Color(0xACACAC))
-                                .onTapGesture {
-                                    postVM.option = .target_feed
-                                    withAnimation {
-                                        self.isFeedSelected = true
-                                    }
-                                }
-
-                            Text("미디어")
-                                .frame(width: 175)
-                                .font(.pretendard(size: 14, weight: .bold))
-                                .foregroundColor(self.isFeedSelected ? Color(0xACACAC) : Color(0x1DAFFF))
-                                .onTapGesture {
-                                    postVM.option = .target_media_all
-                                    withAnimation {
-                                        self.isFeedSelected = false
-                                    }
-                                }
-                        }
-                        .padding(.bottom, 10)
-
-                        ZStack(alignment: .leading) {
-                            Rectangle()
-                                .fill(.clear)
-                                .frame(width: 175 * 2, height: 4)
-
-                            Rectangle()
-                                .fill(RadialGradient(
-                                    colors: [
-                                        Color(0xAAD7FF),
-                                        Color(0xD2D7FF)
-                                    ],
-                                    center: .center,
-                                    startRadius: 0,
-                                    endRadius: 90
-                                ))
-                                .frame(width: 175, height: 4)
-                                .offset(x: self.isFeedSelected ? 0 : 175)
-                        }
+                HStack(spacing: 0) {
+                    Button {
+                        dismissAction.callAsFunction()
+                    } label: {
+                        Image("back-button")
+                            .frame(width: 28, height: 28)
                     }
 
-                    if self.isFeedSelected {
-                        FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
+                    Spacer()
+
+                    if !userProfileVM.isMe {
+                        Button {
+                            withAnimation {
+                                blockModalVis = true
+                            }
+                        } label: {
+                            Image("more")
+                        }
                     } else {
-                        MediaListView(postVM: self.postVM)
-                    }
-                } else {
-                    VStack(spacing: 0) {
-                        Image("sns-private-background")
-                            .resizable()
-                            .frame(width: 160, height: 190)
-                            .padding(.top, 68)
-                            .padding(.bottom, 55)
-                        Text("비공개 계정입니다.")
-                            .padding(.bottom, 5)
-                        Text("수락된 친구만 게시글을 볼 수 있어요.")
-                        Spacer()
+                        HStack(spacing: 5) {
+                            Image("sns-my-history")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 28, height: 28)
+
+                            Text("내 기록")
+                                .font(.pretendard(size: 14, weight: .bold))
+                        }
+                        .foregroundColor(Color(0x1DAFFF))
+                        .padding(.trailing, 8)
                     }
                 }
+                .frame(height: 48)
+                .padding(.horizontal, 20)
+                .background(.white)
+
+                ScalingHeaderScrollView {
+                    VStack(spacing: 0) {
+                        VStack(spacing: 0) {
+                            ProfileInfoView(userProfileVM: userProfileVM)
+                                .background(Color.white)
+                                .padding(.top, 20)
+
+                            Spacer()
+                                .frame(height: 23)
+                        }
+
+                        headerView()
+
+                        Spacer()
+                    }
+                    .frame(height: 210)
+                } content: {
+                    if userProfileVM.isPublic {
+                        if self.isFeedSelected {
+                            FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
+                                .background(Color.white)
+                                .animation(.none, value: UUID().uuidString)
+                        } else {
+                            MediaListView(postVM: self.postVM, scrollable: false)
+                                .background(Color.white)
+                                .animation(.none, value: UUID().uuidString)
+                        }
+                    } else {
+                        VStack(spacing: 0) {
+                            Image("sns-private-background")
+                                .resizable()
+                                .frame(width: 160, height: 190)
+                                .padding(.top, 68)
+                                .padding(.bottom, 55)
+                            Text("비공개 계정입니다.")
+                                .padding(.bottom, 5)
+                            Text("수락된 친구만 게시글을 볼 수 있어요.")
+                            Spacer()
+                        }
+                    }
+                }
+                .height(min: 40, max: 210)
+                .hideScrollIndicators()
+                .background(Color.white)
+                .clipped()
+                .introspectScrollView { controller in
+                    DispatchQueue.main.async {
+                        scrollToTop = {
+                            controller.setContentOffset(.zero, animated: true)
+                        }
+                    }
+                }
+                .onChange(of: isFeedSelected) { _ in
+                    scrollToTop()
+                }
             }
-            .background(Color(0xFDFDFD))
 
             if postOptModalVis.0 {
                 Color.black.opacity(0.5)
@@ -117,46 +137,21 @@ struct ProfileView: View {
                     }
 
                 Modal(isActive: self.$postOptModalVis.0,
-                      ratio: UIScreen.main.bounds.height < 800 ? 0.25 : 0.1)
+                      ratio: 0.2)
                 {
                     VStack(spacing: 20) {
+                        Spacer()
+
                         if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {} label: {
                                 Text("이 게시글 수정하기")
                                     .foregroundColor(Color(0x646464))
                                     .font(.pretendard(size: 20, weight: .regular))
                             }
-                        } else {
-                            Button {
-                                withAnimation {
-                                    self.hidePost = true
-                                }
-                            } label: {
-                                Text("이 게시글 숨기기")
-                                    .foregroundColor(Color(0x646464))
-                                    .font(.pretendard(size: 20, weight: .regular))
-                            }
-                            .confirmationDialog(
-                                "\(self.postOptModalVis.1?.user.name ?? "unknown")님의 게시글을 숨길까요? 이 작업은 복원할 수 없습니다.",
-                                isPresented: self.$hidePost,
-                                titleVisibility: .visible
-                            ) {
-                                Button("숨기기", role: .destructive) {
-                                    self.postVM.hidePost(postId: self.postOptModalVis.1?.id ?? "unknown") { result in
-                                        switch result {
-                                        case .success:
-                                            self.postVM.disablePost(
-                                                targetPostId: self.postOptModalVis.1?.id ?? "unknown"
-                                            )
-                                            self.postOptModalVis.0 = false
-                                        case let .failure(failure):
-                                            print("[Debug] \(failure) \(#file) \(#function)")
-                                        }
-                                    }
-                                }
-                            }
+
+                            Divider()
                         }
-                        Divider()
+
                         if self.postOptModalVis.1?.user.id == Global.shared.user?.id {
                             Button {
                                 withAnimation {
@@ -186,7 +181,7 @@ struct ProfileView: View {
                                         case .success:
                                             withAnimation {
                                                 self.postVM.disablePost(
-                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                    targetPost: self.postOptModalVis.1
                                                 )
                                                 self.postOptModalVis.0 = false
                                             }
@@ -215,7 +210,7 @@ struct ProfileView: View {
                                         case .success:
                                             withAnimation {
                                                 self.postVM.disablePost(
-                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                    targetPost: self.postOptModalVis.1
                                                 )
                                                 self.postOptModalVis.0 = false
                                             }
@@ -227,9 +222,22 @@ struct ProfileView: View {
                                     }
                                 }
                             }
+
+                            Divider()
+
+                            Button {
+                                withAnimation {
+                                    self.postOptModalVis.0 = false
+                                }
+                            } label: {
+                                Text("취소하기")
+                                    .foregroundColor(Color(0x1DAFFF))
+                                    .font(.pretendard(size: 20, weight: .regular))
+                            }
                         }
+
+                        Spacer()
                     }
-                    .padding(.top, 40)
                 }
                 .opacity(self.deletePost || self.hidePost || self.reportPost ? 0 : 1)
                 .transition(.modal)
@@ -245,7 +253,8 @@ struct ProfileView: View {
                     }
 
                 Modal(isActive: self.$blockModalVis,
-                      ratio: UIScreen.main.bounds.height < 800 ? 0.4 : 0.3) {
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.4 : 0.3)
+                {
                     VStack(spacing: 0) {
                         ProfileImgView(profileImage: userProfileVM.profileImage)
                             .frame(width: 70, height: 70)
@@ -293,64 +302,75 @@ struct ProfileView: View {
                 .transition(.modal)
                 .zIndex(2)
             }
-
-            if self.toggleIsClicked {
-                DropdownMenu {
-                    Button {
-                        self.dismissAction.callAsFunction()
-                    } label: {
-                        Text("친구피드")
-                            .font(.pretendard(size: 16, weight: .bold))
-                    }
-                } secondContent: {
-                    NavigationLink {
-                        LookAroundView()
-                    } label: {
-                        Text("둘러보기")
-                            .font(.pretendard(size: 16, weight: .bold))
-                    }
-                }
-            }
         }
         .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismissAction.callAsFunction()
-                } label: {
-                    Image("back-button")
-                        .frame(width: 28, height: 28)
-                }
-            }
-
-            if !userProfileVM.isMe {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        withAnimation {
-                            blockModalVis = true
-                        }
-                    } label: {
-                        Image("more")
-                    }
-                }
-            } else {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 5) {
-                        Image("sns-my-history")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 28, height: 28)
-
-                        Text("내 기록")
-                            .font(.pretendard(size: 14, weight: .bold))
-                    }
-                    .foregroundColor(Color(0x1DAFFF))
-                    .padding(.trailing, 8)
-                }
-            }
-        }
         .onAppear {
             self.userProfileVM.fetchUserProfile()
+        }
+        .onChange(of: reportPost) { _ in
+            if reportPost == false {
+                postOptModalVis.0 = false
+            }
+        }
+        .onChange(of: deletePost) { _ in
+            if deletePost == false {
+                postOptModalVis.0 = false
+            }
+        }
+    }
+
+    @ViewBuilder
+    func headerView() -> some View {
+        if userProfileVM.isPublic {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    Text(self.userProfileVM.isMe ? "내 피드" : "피드")
+                        .frame(width: 175)
+                        .font(.pretendard(size: 14, weight: .bold))
+                        .foregroundColor(self.isFeedSelected ? Color(0x1DAFFF) : Color(0xACACAC))
+                        .onTapGesture {
+                            postVM.option = .target_feed
+                            withAnimation {
+                                self.isFeedSelected = true
+                            }
+                        }
+
+                    Text("미디어")
+                        .frame(width: 175)
+                        .font(.pretendard(size: 14, weight: .bold))
+                        .foregroundColor(self.isFeedSelected ? Color(0xACACAC) : Color(0x1DAFFF))
+                        .onTapGesture {
+                            postVM.option = .target_media_all
+                            withAnimation {
+                                self.isFeedSelected = false
+                            }
+                        }
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.white)
+                .padding(.top, 10)
+                .padding(.bottom, 10)
+
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(width: 175 * 2, height: 4)
+
+                    Rectangle()
+                        .fill(RadialGradient(
+                            colors: [
+                                Color(0xAAD7FF),
+                                Color(0xD2D7FF)
+                            ],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 90
+                        ))
+                        .frame(width: 175, height: 4)
+                        .offset(x: self.isFeedSelected ? 0 : 175)
+                }
+            }
+            .background(Color.white)
         }
     }
 }
