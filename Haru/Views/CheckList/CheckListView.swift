@@ -103,7 +103,7 @@ struct CheckListView: View {
                                 Spacer()
 
                                 StarButton(isClicked: true)
-                                    .padding(.trailing, 10)
+                                    .padding(.trailing, 12)
                             }
                             .padding(.leading, 10)
                         }
@@ -248,14 +248,20 @@ struct CheckListView: View {
                                 ) {
                                     self.todoState.updateOrderByTag(tagId: tag.id)
                                 } header: {
-                                    TagView(
-                                        tag: Tag(
-                                            id: DefaultTag.important.rawValue,
-                                            content: DefaultTag.important.rawValue
-                                        ),
-                                        isSelected: true,
-                                        disabled: self.todoState.todoListByFlag.isEmpty
-                                    )
+                                    HStack(spacing: 0) {
+                                        TagView(
+                                            tag: Tag(
+                                                id: DefaultTag.important.rawValue,
+                                                content: DefaultTag.important.rawValue
+                                            ),
+                                            isSelected: true
+                                        )
+
+                                        Spacer()
+
+                                        StarButton(isClicked: true)
+                                            .padding(.trailing, 12)
+                                    }
                                     .padding(.leading, 10)
                                 }
 

@@ -62,7 +62,7 @@ struct HaruView: View {
                     Text(self.formatter.string(from: .now))
                         .font(.system(size: 20, weight: .bold))
                 }
-                .padding(.horizontal, 10)
+                .padding(.horizontal, 15)
 
                 ListView(checkListViewModel: self.viewModel) {
                     ListSectionView(
@@ -86,7 +86,7 @@ struct HaruView: View {
                             Spacer()
 
                             StarButton(isClicked: true)
-                                .padding(.trailing, 10)
+                                .padding(.trailing, 12)
                         }
                         .padding(.leading, 10)
                     }
