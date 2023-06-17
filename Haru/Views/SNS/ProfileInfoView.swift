@@ -33,11 +33,13 @@ struct ProfileInfoView: View {
                                 .frame(width: 20, height: 20)
                         }
                     }
-                    Text(userProfileVM.user.introduction)
-                        .allowsTightening(true)
-                        .lineLimit(1)
-                        .font(.pretendard(size: 14, weight: .regular))
-                        .foregroundColor(Color(0x191919))
+                    if !userProfileVM.user.introduction.isEmpty {
+                        Text(userProfileVM.user.introduction)
+                            .allowsTightening(true)
+                            .lineLimit(1)
+                            .font(.pretendard(size: 14, weight: .regular))
+                            .foregroundColor(Color(0x191919))
+                    }
                 }
                 
                 Spacer()

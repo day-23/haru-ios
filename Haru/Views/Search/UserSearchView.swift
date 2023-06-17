@@ -68,7 +68,7 @@ struct UserSearchView: View {
                 }
             }
         }
-        .padding(.top, 25)
+        .padding(.top, 20)
         .navigationBarBackButtonHidden()
         .customNavigationBar(leftView: {
             Button {

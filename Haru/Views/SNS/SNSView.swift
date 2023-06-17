@@ -58,7 +58,7 @@ struct SNSView: View {
                         }
                     } label: {
                         Text("친구피드")
-                            .font(.pretendard(size: 16, weight: .bold))
+                            .font(.pretendard(size: 16, weight: .regular))
                             .foregroundColor(self.isFriendFeed ? Color(0x1dafff) : Color(0x191919))
                     }
                 } secondContent: {
@@ -69,7 +69,7 @@ struct SNSView: View {
                         }
                     } label: {
                         Text("둘러보기")
-                            .font(.pretendard(size: 16, weight: .bold))
+                            .font(.pretendard(size: 16, weight: .regular))
                             .foregroundColor(self.isFriendFeed ? Color(0x191919) : Color(0x1dafff))
                     }
                 }
