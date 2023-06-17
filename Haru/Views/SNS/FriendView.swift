@@ -26,6 +26,10 @@ struct FriendView: View {
     @State var waitingResponse: Bool = false
 
     @State private var targetUser: FriendUser?
+    
+    @State var blockModalVis: Bool = false
+    @State var blockFriend: Bool = false
+    
     var body: some View {
         ZStack {
             VStack(spacing: 10) {
@@ -42,7 +46,7 @@ struct FriendView: View {
                                         self.friendTab = true
                                     }
                                 }
-
+                            
                             Text("친구 신청 \(self.userProfileVM.reqFriendCount)")
                                 .frame(width: 175, height: 20)
                                 .font(.pretendard(size: 16, weight: .bold))
@@ -55,12 +59,12 @@ struct FriendView: View {
                                 }
                         }
                         .padding(.bottom, 10)
-
+                        
                         ZStack(alignment: .leading) {
                             Rectangle()
                                 .fill(.clear)
                                 .frame(width: 175 * 2, height: 4)
-
+                            
                             Rectangle()
                                 .fill(RadialGradient(
                                     colors: [
@@ -96,7 +100,7 @@ struct FriendView: View {
                             .padding(.bottom, -10)
                     }
                 }
-
+                
                 if self.userProfileVM.isMe {
                     HStack {
                         Image("search")
@@ -116,16 +120,16 @@ struct FriendView: View {
                                 }
                             }
                             .disabled(self.waitingResponse)
-
+                        
                         Spacer()
-
+                        
                         if self.searchWord != "" {
                             ZStack {
                                 Circle()
                                     .fill(Color(0x191919))
                                     .frame(width: 20, height: 20)
                                     .zIndex(1)
-
+                                
                                 Image("cancel")
                                     .resizable()
                                     .renderingMode(.template)
@@ -146,12 +150,12 @@ struct FriendView: View {
                     .cornerRadius(10)
                     .padding(.horizontal, 20)
                 }
-
+                
                 ScrollView {
                     if !self.userProfileVM.isMe {
                         Spacer(minLength: 10)
                     }
-
+                    
                     LazyVStack(spacing: 20) {
                         ForEach(self.friendTab ?
                             self.userProfileVM.friendList.indices : self.userProfileVM.requestFriendList.indices, id: \.self)
@@ -187,15 +191,15 @@ struct FriendView: View {
                                                     .frame(width: 40, height: 40)
                                             }
                                         }
-
+                                        
                                         Text(user.name)
                                             .font(.pretendard(size: 16, weight: .bold))
                                     }
                                 }
                                 .foregroundColor(Color(0x191919))
-
+                                
                                 Spacer()
-
+                                
                                 if self.userProfileVM.isMe {
                                     self.myFriendView(user: user)
                                 } else {
@@ -259,7 +263,7 @@ struct FriendView: View {
                             if !success {
                                 print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                             }
-
+                            
                             self.userProfileVM.refreshFriendList()
                         case let .failure(failure):
                             print("[Debug] \(failure) \(#file) \(#function)")
@@ -296,13 +300,77 @@ struct FriendView: View {
                             if !success {
                                 print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                             }
-
+                            
                             self.userProfileVM.refreshFriendList()
                         case let .failure(failure):
                             print("[Debug] \(failure) \(#file) \(#function)")
                         }
                     }
                 }
+            }
+            
+            if self.blockModalVis {
+                Color.black.opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            self.blockModalVis = false
+                        }
+                    }
+                
+                Modal(isActive: self.$blockModalVis,
+                      ratio: UIScreen.main.bounds.height < 800 ? 0.4 : 0.3)
+                {
+                    VStack(spacing: 0) {
+                        ProfileImgView(imageUrl: URL(string: self.targetUser?.profileImageUrl ?? ""))
+                            .frame(width: 70, height: 70)
+                            .padding(.bottom, 12)
+                        
+                        Text("\(self.targetUser?.name ?? "unknown")")
+                            .font(.pretendard(size: 20, weight: .bold))
+                            .foregroundColor(Color(0x191919))
+                        
+                        Divider()
+                            .padding(.top, 34)
+                            .padding(.bottom, 20)
+                        
+                        Button {
+                            withAnimation {
+                                self.blockFriend = true
+                            }
+                        } label: {
+                            Text("이 이용자 차단하기")
+                                .font(.pretendard(size: 20, weight: .regular))
+                                .foregroundColor(Color(0xF71E58))
+                        }.confirmationDialog(
+                            "\(self.targetUser?.name ?? "unknown")님을 차단할까요? 차단된 이용자는 내 피드를 볼 수 없으며 나에게 친구 신청을 보낼 수 없습니다. 차단된 이용자에게는 내 계정이 검색되지 않습니다.",
+                            isPresented: self.$blockFriend,
+                            titleVisibility: .visible
+                        ) {
+                            Button("차단하기", role: .destructive) {
+                                self.userProfileVM.blockedFriend(
+                                    blockUserId: self.targetUser?.id ?? "unknown"
+                                ) { result in
+                                    switch result {
+                                    case let .success(success):
+                                        if !success {
+                                            print("Toast Message로 알려주기")
+                                        }
+                                        self.userProfileVM.refreshFriendList()
+                                        self.blockModalVis = false
+                                    case let .failure(failure):
+                                        print("\(failure) \(#file) \(#function)")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.top, 25)
+                }
+                .opacity(self.blockFriend ? 0 : 1)
+                .transition(.modal)
+                .zIndex(2)
             }
         } // ZStack
         .onTapGesture {
@@ -326,6 +394,11 @@ struct FriendView: View {
                     .foregroundColor(Color(0x191919))
             }
         }
+        .onChange(of: self.blockFriend) { _ in
+            if self.blockFriend == false {
+                self.blockModalVis = false
+            }
+        }
     }
 
     @ViewBuilder
@@ -347,6 +420,10 @@ struct FriendView: View {
 
                 Button {
                     // TODO: 친구 차단하기 및 숨기기 기능
+                    self.targetUser = user
+                    withAnimation {
+                        self.blockModalVis = true
+                    }
                 } label: {
                     Image("more")
                         .resizable()
