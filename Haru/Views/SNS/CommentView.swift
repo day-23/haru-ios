@@ -11,6 +11,8 @@ struct CommentView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismissAction
     let deviceSize = UIScreen.main.bounds.size
 
+    @Binding var post: Post
+
     var isTemplate: Bool = false
     var templateContent: String?
     var contentColor: String?
@@ -449,7 +451,7 @@ struct CommentView: View, KeyboardReadable {
     @ViewBuilder
     func mainContent(deviceSize: CGSize) -> some View {
         let sz = deviceSize.width
-        let longPress = LongPressGesture(minimumDuration: 0.15)
+        let longPress = LongPressGesture(minimumDuration: 0.1)
             .onEnded { _ in
                 withAnimation {
                     dragging = true
@@ -626,7 +628,7 @@ struct CommentView: View, KeyboardReadable {
         let sz = deviceSize.width
         if !hideAllComment {
             ForEach(commentList[postPageNum]) { comment in
-                let longPress = LongPressGesture(minimumDuration: 0.15)
+                let longPress = LongPressGesture(minimumDuration: 0.1)
                     .onEnded { _ in
                         startingXList[comment.id] = CGFloat(comment.x)
                         startingYList[comment.id] = CGFloat(comment.y)
@@ -841,8 +843,9 @@ struct CommentView: View, KeyboardReadable {
                     x = nil
                     y = nil
                     isCommentWriting = false
-
                     fetchCommentList()
+
+                    post.isCommented = true
                 case .failure(let failure):
                     print("[Debug] \(failure)")
                     print("\(#fileID) \(#function)")
@@ -861,6 +864,7 @@ struct CommentView: View, KeyboardReadable {
                     isCommentWriting = false
 
                     fetchCommentList()
+                    post.isCommented = true
                 case .failure(let failure):
                     print("[Debug] \(failure)")
                     print("\(#fileID) \(#function)")
@@ -930,6 +934,7 @@ struct CommentView: View, KeyboardReadable {
                 switch result {
                 case .success:
                     fetchCommentList()
+                    post.isCommented = false
                 case .failure(let failure):
                     print("[Debug] \(failure)")
                 }

@@ -71,7 +71,7 @@ struct FeedView: View {
                 .padding(.horizontal, 20)
                 
                 FeedImage(
-                    post: post,
+                    post: $post,
                     imageList: postImageList,
                     imageCount: post.images.count,
                     templateMode: post.isTemplatePost != nil,
@@ -116,6 +116,7 @@ struct FeedView: View {
                     HStack(spacing: 5) {
                         NavigationLink {
                             CommentView(
+                                post: $post,
                                 isTemplate: post.isTemplatePost != nil,
                                 templateContent: post.content,
                                 contentColor: post.isTemplatePost ?? "",

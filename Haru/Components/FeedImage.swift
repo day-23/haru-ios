@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FeedImage: View {
-    var post: Post
+    @Binding var post: Post
     var imageList: [PostImage?]
     var imageCount: Int
     var templateMode: Bool
@@ -46,6 +46,7 @@ struct FeedImage: View {
                     if let uiImage = imageList[idx]?.uiImage {
                         NavigationLink {
                             CommentView(
+                                post: $post,
                                 isTemplate: templateMode,
                                 templateContent: content,
                                 contentColor: contentColor,
