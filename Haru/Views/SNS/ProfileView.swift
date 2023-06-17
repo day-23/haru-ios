@@ -28,9 +28,6 @@ struct ProfileView: View {
 
     var myProfile: Bool = false
 
-    @State private var profileInfoViewHeight: CGFloat = .zero
-    @State private var headerHeight: CGFloat = .zero
-
     var body: some View {
         ZStack {
             ScalingHeaderScrollView {
@@ -43,27 +40,12 @@ struct ProfileView: View {
                         Spacer()
                             .frame(height: 23)
                     }
-                    .background(
-                        GeometryReader { proxy in
-                            Color.white
-                                .onAppear {
-                                    profileInfoViewHeight = proxy.size.height
-                                }
-                        }
-                    )
 
                     headerView()
 
                     Spacer()
                 }
-                .background(
-                    GeometryReader { proxy in
-                        Color.white
-                            .onAppear {
-                                headerHeight = proxy.size.height
-                            }
-                    }
-                )
+                .frame(height: 210)
             } content: {
                 if userProfileVM.isPublic {
                     if self.isFeedSelected {
@@ -89,7 +71,7 @@ struct ProfileView: View {
                     }
                 }
             }
-            .height(min: headerHeight + (userProfileVM.isMe ? 0 : 35) - profileInfoViewHeight, max: headerHeight + (userProfileVM.isMe ? 0 : 25))
+            .height(min: 40, max: 210)
             .background(Color.white)
             .clipped()
 
