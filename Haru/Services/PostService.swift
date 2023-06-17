@@ -13,6 +13,7 @@ import UIKit
 final class PostService {
     enum PostError: Error {
         case badword
+        case tooManyPost
     }
 
     private static let baseURL = Constants.baseURL + "post/"
@@ -444,6 +445,8 @@ final class PostService {
                         switch statusCode {
                         case 403:
                             completion(.failure(PostError.badword))
+                        case 429:
+                            completion(.failure(PostError.tooManyPost))
                         default:
                             completion(.failure(error))
                         }
@@ -493,6 +496,9 @@ final class PostService {
                     case 403:
                         completion(.failure(PostError.badword))
                         return
+                    case 429:
+                        completion(.failure(PostError.tooManyPost))
+                        return
                     default:
                         break
                     }
@@ -503,6 +509,8 @@ final class PostService {
                     switch statusCode {
                     case 403:
                         completion(.failure(PostError.badword))
+                    case 429:
+                        completion(.failure(PostError.tooManyPost))
                     default:
                         completion(.failure(error))
                     }

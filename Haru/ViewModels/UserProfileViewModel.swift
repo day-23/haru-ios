@@ -26,13 +26,8 @@ final class UserProfileViewModel: ObservableObject {
     @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
     @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
 
-    var friendCount: Int {
-        friendList.count
-    }
-
-    var reqFriendCount: Int {
-        requestFriendList.count
-    } // 현재 보고 있는 사용자의 친구 요청 수
+    @Published var friendCount: Int = -1
+    @Published var reqFriendCount: Int = -1
 
     private let profileService: ProfileService = .init()
     private let friendService: FriendService = .init()
@@ -227,6 +222,7 @@ final class UserProfileViewModel: ObservableObject {
                 if self.friendListTotalPage == -1 {
                     self.friendListTotalPage = pageInfo.totalPages
                 }
+                self.friendCount = pageInfo.totalItems
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }
@@ -254,6 +250,7 @@ final class UserProfileViewModel: ObservableObject {
                 if self.reqFriListTotalPage == -1 {
                     self.reqFriListTotalPage = pageInfo.totalPages
                 }
+                self.reqFriendCount = pageInfo.totalItems
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
             }

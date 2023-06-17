@@ -93,7 +93,7 @@ struct FriendView: View {
                                     .offset(y: -24)
                             }
                             .padding(.top, 44)
-                            .padding(.bottom, 10)
+                            .padding(.bottom, -10)
                     }
                 }
 
@@ -145,10 +145,13 @@ struct FriendView: View {
                     .background(Color(0xF1F1F5))
                     .cornerRadius(10)
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 10)
                 }
 
                 ScrollView {
+                    if !self.userProfileVM.isMe {
+                        Spacer(minLength: 10)
+                    }
+                    
                     LazyVStack(spacing: 20) {
                         ForEach(self.friendTab ?
                             self.userProfileVM.friendList.indices : self.userProfileVM.requestFriendList.indices, id: \.self)

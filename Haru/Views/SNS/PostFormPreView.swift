@@ -172,6 +172,11 @@ struct PostFormPreView: View {
                                         withAnimation {
                                             Global.shared.showToastMessage = true
                                         }
+                                    case PostService.PostError.tooManyPost:
+                                        Global.shared.toastMessageContent = "게시글을 너무 자주 작성할 수 없습니다."
+                                        withAnimation {
+                                            Global.shared.showToastMessage = true
+                                        }
                                     default:
                                         break
                                     }
@@ -191,6 +196,11 @@ struct PostFormPreView: View {
                                         switch error {
                                         case PostService.PostError.badword:
                                             Global.shared.toastMessageContent = "게시글에 부적절한 단어가 포함되어 있습니다."
+                                            withAnimation {
+                                                Global.shared.showToastMessage = true
+                                            }
+                                        case PostService.PostError.tooManyPost:
+                                            Global.shared.toastMessageContent = "게시글을 너무 자주 작성할 수 없습니다."
                                             withAnimation {
                                                 Global.shared.showToastMessage = true
                                             }

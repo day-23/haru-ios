@@ -167,7 +167,10 @@ struct FeedView: View {
                 }
                 .padding(.horizontal, 20)
                 
-                if let content = post.content, post.isTemplatePost == nil {
+                if let content = post.content,
+                   post.isTemplatePost == nil,
+                   !content.isEmpty
+                {
                     Text(content)
                         .lineLimit(nil)
                         .font(.pretendard(size: 14, weight: .regular))
