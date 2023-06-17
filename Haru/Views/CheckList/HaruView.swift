@@ -31,91 +31,125 @@ struct HaruView: View {
                 .resizable()
                 .edgesIgnoringSafeArea(.all)
 
-            ListView(checkListViewModel: self.viewModel) {
-                ListSectionView(
-                    checkListViewModel: self.viewModel,
-                    todoAddViewModel: self.addViewModel,
-                    todoList: self.$todoState.todoListByFlagWithToday,
-                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
-                    emptyTextContent: "중요한 할 일이 있나요?"
-                ) {
-                    self.todoState.updateOrderHaru()
-                } header: {
-                    HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    Image("back-button")
+                        .frame(width: 28, height: 28)
+                        .padding(.leading, 5)
+                        .onTapGesture {
+                            self.dismissAction.callAsFunction()
+                        }
+
+                    Spacer()
+
+                    NavigationLink {
+                        ProductivitySearchView(
+                            calendarVM: CalendarViewModel(),
+                            todoAddViewModel: self.addViewModel,
+                            checkListVM: self.viewModel
+                        )
+                    } label: {
+                        Image("search")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundColor(Color(0x191919))
+                            .frame(width: 28, height: 28)
+                    }
+                    .padding(.trailing, 5)
+                }
+                .frame(height: 48)
+                .overlay {
+                    Text(self.formatter.string(from: .now))
+                        .font(.system(size: 20, weight: .bold))
+                }
+                .padding(.horizontal, 10)
+
+                ListView(checkListViewModel: self.viewModel) {
+                    ListSectionView(
+                        checkListViewModel: self.viewModel,
+                        todoAddViewModel: self.addViewModel,
+                        todoList: self.$todoState.todoListByFlagWithToday,
+                        itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
+                        emptyTextContent: "중요한 할 일이 있나요?"
+                    ) {
+                        self.todoState.updateOrderHaru()
+                    } header: {
+                        HStack(spacing: 0) {
+                            TagView(
+                                tag: Tag(
+                                    id: DefaultTag.important.rawValue,
+                                    content: DefaultTag.important.rawValue
+                                ),
+                                isSelected: true
+                            )
+
+                            Spacer()
+
+                            StarButton(isClicked: true)
+                                .padding(.trailing, 10)
+                        }
+                        .padding(.leading, 10)
+                    }
+
+                    Divider()
+
+                    ListSectionView(
+                        checkListViewModel: self.viewModel,
+                        todoAddViewModel: self.addViewModel,
+                        todoList: self.$todoState.todoListByTodayTodo,
+                        itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
+                    ) {
+                        self.todoState.updateOrderHaru()
+                    } header: {
+                        TagView(
+                            tag: Tag(id: "오늘 할 일", content: "오늘 할 일"),
+                            isSelected: true,
+                            disabled: self.todoState.todoListByTodayTodo.isEmpty
+                        )
+                        .padding(.leading, 10)
+                    }
+
+                    Divider()
+
+                    ListSectionView(
+                        checkListViewModel: self.viewModel,
+                        todoAddViewModel: self.addViewModel,
+                        todoList: self.$todoState.todoListByUntilToday,
+                        itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
+                    ) {
+                        self.todoState.updateOrderHaru()
+                    } header: {
+                        TagView(
+                            tag: Tag(id: "오늘까지", content: "오늘까지"),
+                            isSelected: true,
+                            disabled: self.todoState.todoListByUntilToday.isEmpty
+                        )
+                        .padding(.leading, 10)
+                    }
+
+                    Divider()
+
+                    ListSectionView(
+                        checkListViewModel: self.viewModel,
+                        todoAddViewModel: self.addViewModel,
+                        todoList: self.$todoState.todoListByCompleted,
+                        itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
+                        emptyTextContent: "할 일을 완료해 보세요!"
+                    ) {
+                        self.todoState.updateOrderHaru()
+                    } header: {
                         TagView(
                             tag: Tag(
-                                id: DefaultTag.important.rawValue,
-                                content: DefaultTag.important.rawValue
+                                id: DefaultTag.completed.rawValue,
+                                content: DefaultTag.completed.rawValue
                             ),
-                            isSelected: true
+                            isSelected: true,
+                            disabled: self.todoState.todoListByCompleted.isEmpty
                         )
-
-                        Spacer()
-
-                        StarButton(isClicked: true)
-                            .padding(.trailing, 10)
+                        .padding(.leading, 10)
                     }
-                    .padding(.leading, 10)
-                }
-
-                Divider()
-
-                ListSectionView(
-                    checkListViewModel: self.viewModel,
-                    todoAddViewModel: self.addViewModel,
-                    todoList: self.$todoState.todoListByTodayTodo,
-                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
-                ) {
-                    self.todoState.updateOrderHaru()
-                } header: {
-                    TagView(
-                        tag: Tag(id: "오늘 할 일", content: "오늘 할 일"),
-                        isSelected: true,
-                        disabled: self.todoState.todoListByTodayTodo.isEmpty
-                    )
-                    .padding(.leading, 10)
-                }
-
-                Divider()
-
-                ListSectionView(
-                    checkListViewModel: self.viewModel,
-                    todoAddViewModel: self.addViewModel,
-                    todoList: self.$todoState.todoListByUntilToday,
-                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01)
-                ) {
-                    self.todoState.updateOrderHaru()
-                } header: {
-                    TagView(
-                        tag: Tag(id: "오늘까지", content: "오늘까지"),
-                        isSelected: true,
-                        disabled: self.todoState.todoListByUntilToday.isEmpty
-                    )
-                    .padding(.leading, 10)
-                }
-
-                Divider()
-
-                ListSectionView(
-                    checkListViewModel: self.viewModel,
-                    todoAddViewModel: self.addViewModel,
-                    todoList: self.$todoState.todoListByCompleted,
-                    itemBackgroundColor: Color(0xFFFFFF, opacity: 0.01),
-                    emptyTextContent: "할 일을 완료해 보세요!"
-                ) {
-                    self.todoState.updateOrderHaru()
-                } header: {
-                    TagView(
-                        tag: Tag(
-                            id: DefaultTag.completed.rawValue,
-                            content: DefaultTag.completed.rawValue
-                        ),
-                        isSelected: true,
-                        disabled: self.todoState.todoListByCompleted.isEmpty
-                    )
-                    .padding(.leading, 10)
-                }
-            } offsetChanged: { self.changeOffset($0) }
+                } offsetChanged: { self.changeOffset($0) }
+            }
 
             if self.isModalVisible {
                 Color.black.opacity(0.4)
@@ -173,39 +207,6 @@ struct HaruView: View {
             }
         }
         .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Image("back-button")
-                    .frame(width: 28, height: 28)
-                    .padding(.leading, 5)
-                    .onTapGesture {
-                        self.dismissAction.callAsFunction()
-                    }
-            }
-
-            ToolbarItem(placement: .principal) {
-                Text(self.formatter.string(from: .now))
-                    .font(.system(size: 20, weight: .bold))
-            }
-
-            ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink {
-                    ProductivitySearchView(
-                        calendarVM: CalendarViewModel(),
-                        todoAddViewModel: self.addViewModel,
-                        checkListVM: self.viewModel
-                    )
-                } label: {
-                    Image("search")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundColor(Color(0x191919))
-                        .frame(width: 28, height: 28)
-                }
-                .padding(.trailing, 5)
-            }
-        }
-        .toolbarBackground(Color(0xD9EAFD))
         .onAppear {
             self.viewModel.mode = .haru
             self.todoState.fetchTodoListByTodayTodoAndUntilToday()
