@@ -76,6 +76,7 @@ struct MediaFeedView: View {
                                                 self.postVM.disablePost(
                                                     targetPost: self.postOptModalVis.1
                                                 )
+                                                dismissAction.callAsFunction()
                                                 self.postOptModalVis.0 = false
                                             }
                                         case let .failure(failure):
@@ -117,6 +118,7 @@ struct MediaFeedView: View {
                                                 self.postVM.disablePost(
                                                     targetPost: self.postOptModalVis.1
                                                 )
+                                                dismissAction.callAsFunction()
                                                 self.postOptModalVis.0 = false
                                             }
                                         case let .failure(failure):
@@ -146,6 +148,7 @@ struct MediaFeedView: View {
                                                 self.postVM.disablePost(
                                                     targetPost: self.postOptModalVis.1
                                                 )
+                                                dismissAction.callAsFunction()
                                                 self.postOptModalVis.0 = false
                                             }
                                             // TODO: 토스트 메시지로 신고가 접수 되었다고 알리기

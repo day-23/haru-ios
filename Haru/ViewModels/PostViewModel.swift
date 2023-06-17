@@ -104,8 +104,6 @@ final class PostViewModel: ObservableObject {
         case .main:
             if feedTotalPage != -1 {
                 if page > feedTotalPage {
-                    print("[Error] 더 이상 불러올 게시물이 없습니다")
-                    print("\(#function) \(#fileID)")
                     return
                 }
             }
@@ -115,8 +113,6 @@ final class PostViewModel: ObservableObject {
         case .target_feed:
             if feedTotalPage != -1 {
                 if page > feedTotalPage {
-                    print("[Error] 더 이상 불러올 게시물이 없습니다")
-                    print("\(#function) \(#fileID)")
                     return
                 }
             }
@@ -132,8 +128,6 @@ final class PostViewModel: ObservableObject {
         case .target_media_all:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
-                    print("[Error] 더 이상 불러올 게시물이 없습니다")
-                    print("\(#function) \(#fileID)")
                     return
                 }
             }
@@ -149,8 +143,6 @@ final class PostViewModel: ObservableObject {
         case .target_media_hashtag:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
-                    print("[Error] 더 이상 불러올 게시물이 없습니다")
-                    print("\(#function) \(#fileID)")
                     return
                 }
             }
@@ -166,8 +158,6 @@ final class PostViewModel: ObservableObject {
         case .media_all:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
-                    print("[Error] 더 이상 불러올 게시물이 없습니다")
-                    print("\(#function) \(#fileID)")
                     return
                 }
             }
@@ -177,8 +167,6 @@ final class PostViewModel: ObservableObject {
         case .media_hashtag:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
-                    print("[Error] 더 이상 불러올 게시물이 없습니다")
-                    print("\(#function) \(#fileID)")
                     return
                 }
             }
@@ -539,13 +527,21 @@ final class PostViewModel: ObservableObject {
     func disablePost(targetPost: Post?) {
         guard let targetPost else { return }
 
-        guard let index = (postList.firstIndex { post in
+        // 친구피드 쪽에서 안보이게
+        if let index = (postList.firstIndex { post in
             post.id == targetPost.id
-        }) else {
-            return
+        }) {
+            postList[index].disabled = true
         }
-        postList[index].disabled = true
 
+        // 전체보기 쪽에서 안보이게
+        if let index = mediaList[Global.shared.hashTagAll.id]?.firstIndex(where: { post in
+            post.id == targetPost.id
+        }) {
+            mediaList[Global.shared.hashTagAll.id]?[index].disabled = true
+        }
+
+        // 해시태그 쪽에서 안보이게
         targetPost.hashTags.forEach { content in
             guard let hashTag = hashTags.first(where: { $0.content == content }) else { return }
             guard let index = (mediaList[hashTag.id]?.firstIndex { post in

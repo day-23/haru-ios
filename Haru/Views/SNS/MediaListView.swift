@@ -49,6 +49,9 @@ struct MediaListView: View {
                 })
             }
         }
+        .refreshable {
+            postVM.refreshPosts()
+        }
     }
 
     @ViewBuilder
