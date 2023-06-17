@@ -22,7 +22,22 @@ final class Global: ObservableObject {
     @Published var isNetworkConnected: Bool = false
     @Published var isLoading: Bool = false
     @Published var isLoggedIn: Bool = false
-    @Published var showGuestMessage: Bool = false
+
+    // MARK: - Toast
+
+    @Published var showToastMessage: Bool = false {
+        didSet {
+            if showToastMessage {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation {
+                        self.showToastMessage = false
+                    }
+                }
+            }
+        }
+    }
+
+    @Published var toastMessageContent: String = ""
 
     var holidayCategory = Category(
         id: UUID().uuidString,

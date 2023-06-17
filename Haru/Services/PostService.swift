@@ -488,6 +488,15 @@ final class PostService {
         ).response { response in
             switch response.result {
             case .success:
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(PostError.badword))
+                        return
+                    default:
+                        break
+                    }
+                }
                 completion(.success(true))
             case let .failure(error):
                 if let statusCode = response.response?.statusCode {

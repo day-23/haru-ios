@@ -5,6 +5,7 @@
 //  Created by 이준호 on 2023/05/24.
 //
 
+import ScalingHeaderScrollView
 import SwiftUI
 
 struct ProfileView: View {
@@ -27,66 +28,68 @@ struct ProfileView: View {
 
     var myProfile: Bool = false
 
+    @State private var profileInfoViewHeight: CGFloat = .zero
+    @State private var headerHeight: CGFloat = .zero
+
     var body: some View {
         ZStack {
-            ScrollView {
+            ScalingHeaderScrollView {
                 VStack(spacing: 0) {
-                    ProfileInfoView(userProfileVM: userProfileVM)
-                        .background(Color.white)
-                        .padding(.top, 20)
+                    VStack(spacing: 0) {
+                        ProfileInfoView(userProfileVM: userProfileVM)
+                            .background(Color.white)
+                            .padding(.top, 20)
+
+                        Spacer()
+                            .frame(height: 23)
+                    }
+                    .background(
+                        GeometryReader { proxy in
+                            Color.white
+                                .onAppear {
+                                    profileInfoViewHeight = proxy.size.height
+                                }
+                        }
+                    )
+
+                    headerView()
 
                     Spacer()
-                        .frame(height: 23)
                 }
-                .background(Color.white)
-
-                if self.isFeedSelected {
-                    LazyVStack(pinnedViews: [.sectionHeaders]) {
-                        Section(header: headerView()) {
-                            if userProfileVM.isPublic {
-                                FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
-                                    .background(Color.white)
-                                    .animation(.none, value: UUID().uuidString)
-
-                            } else {
-                                VStack(spacing: 0) {
-                                    Image("sns-private-background")
-                                        .resizable()
-                                        .frame(width: 160, height: 190)
-                                        .padding(.top, 68)
-                                        .padding(.bottom, 55)
-                                    Text("비공개 계정입니다.")
-                                        .padding(.bottom, 5)
-                                    Text("수락된 친구만 게시글을 볼 수 있어요.")
-                                    Spacer()
-                                }
+                .background(
+                    GeometryReader { proxy in
+                        Color.white
+                            .onAppear {
+                                headerHeight = proxy.size.height
                             }
-                        }
+                    }
+                )
+            } content: {
+                if userProfileVM.isPublic {
+                    if self.isFeedSelected {
+                        FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis)
+                            .background(Color.white)
+                            .animation(.none, value: UUID().uuidString)
+                    } else {
+                        MediaListView(postVM: self.postVM, scrollable: false)
+                            .background(Color.white)
+                            .animation(.none, value: UUID().uuidString)
                     }
                 } else {
-                    LazyVStack(pinnedViews: [.sectionHeaders]) {
-                        Section(header: headerView()) {
-                            if userProfileVM.isPublic {
-                                MediaListView(postVM: self.postVM, scrollable: true)
-                                    .background(Color.white)
-                                    .animation(.none, value: UUID().uuidString)
-                            } else {
-                                VStack(spacing: 0) {
-                                    Image("sns-private-background")
-                                        .resizable()
-                                        .frame(width: 160, height: 190)
-                                        .padding(.top, 68)
-                                        .padding(.bottom, 55)
-                                    Text("비공개 계정입니다.")
-                                        .padding(.bottom, 5)
-                                    Text("수락된 친구만 게시글을 볼 수 있어요.")
-                                    Spacer()
-                                }
-                            }
-                        }
+                    VStack(spacing: 0) {
+                        Image("sns-private-background")
+                            .resizable()
+                            .frame(width: 160, height: 190)
+                            .padding(.top, 68)
+                            .padding(.bottom, 55)
+                        Text("비공개 계정입니다.")
+                            .padding(.bottom, 5)
+                        Text("수락된 친구만 게시글을 볼 수 있어요.")
+                        Spacer()
                     }
                 }
             }
+            .height(min: headerHeight + (userProfileVM.isMe ? 0 : 35) - profileInfoViewHeight, max: headerHeight + (userProfileVM.isMe ? 0 : 25))
             .background(Color.white)
             .clipped()
 

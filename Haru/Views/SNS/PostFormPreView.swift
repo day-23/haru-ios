@@ -168,8 +168,10 @@ struct PostFormPreView: View {
                                 case .failure(let error):
                                     switch error {
                                     case PostService.PostError.badword:
-                                        toastMesContent = "게시글에 부적절한 단어가 포함되어 있습니다."
-                                        showToastMessage = true
+                                        Global.shared.toastMessageContent = "게시글에 부적절한 단어가 포함되어 있습니다."
+                                        withAnimation {
+                                            Global.shared.showToastMessage = true
+                                        }
                                     default:
                                         break
                                     }
@@ -188,8 +190,10 @@ struct PostFormPreView: View {
                                     case .failure(let error):
                                         switch error {
                                         case PostService.PostError.badword:
-                                            toastMesContent = "게시글에 부적절한 단어가 포함되어 있습니다."
-                                            showToastMessage = true
+                                            Global.shared.toastMessageContent = "게시글에 부적절한 단어가 포함되어 있습니다."
+                                            withAnimation {
+                                                Global.shared.showToastMessage = true
+                                            }
                                         default:
                                             break
                                         }
@@ -215,18 +219,6 @@ struct PostFormPreView: View {
             hideKeyboard()
         }
         .ignoresSafeArea(.keyboard)
-        .popup(isPresented: $showToastMessage) {
-            CustomToastMessage(message: toastMesContent)
-        } customize: { option in
-            option
-                .type(.floater())
-                .position(.bottom)
-                .animation(.easeInOut)
-                .closeOnTap(true)
-                .closeOnTapOutside(true)
-                .autohideIn(2)
-                .backgroundColor(.black.opacity(0.5))
-        }
     }
 
     func onChangeTag(_: String) {

@@ -28,6 +28,7 @@ struct FeedListView: View {
                         .resizable()
                         .frame(width: 180, height: 125)
                         .padding(.bottom, 64)
+                        .padding(.top, !comeToRoot ? 57 : 0)
 
                     Text("나의 하루를 기록해 보세요.")
                         .font(.pretendard(size: 16, weight: .regular))

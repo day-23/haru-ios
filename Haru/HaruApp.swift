@@ -121,8 +121,8 @@ struct HaruApp: App {
                         if global.isLoading {
                             LoadingView()
                                 .zIndex(2)
-                        } else if global.showGuestMessage {
-                            Text("하루 애플리케이션을 둘러보세요")
+                        } else if global.showToastMessage {
+                            Text(global.toastMessageContent)
                                 .font(.pretendard(size: 16, weight: .bold))
                                 .foregroundColor(Color(0x191919))
                                 .padding(.vertical, 10)

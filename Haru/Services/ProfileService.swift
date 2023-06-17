@@ -298,6 +298,7 @@ struct ProfileService {
                     switch statusCode {
                     case 409:
                         completion(.failure(ProfileError.duplicated))
+                        return
                     default:
                         break
                     }
@@ -351,6 +352,7 @@ struct ProfileService {
                     switch statusCode {
                     case 403:
                         completion(.failure(ProfileError.badname))
+                        return
                     default:
                         break
                     }

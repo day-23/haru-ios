@@ -19,7 +19,7 @@ struct MediaListView: View {
             } else {
                 VStack(spacing: 0) {
                     HashTagView(postVM: postVM)
-                        .background(Color(0xfdfdfd))
+                        .background(.white)
                         .padding(.bottom, 4)
 
                     content()
@@ -94,10 +94,12 @@ struct MediaListView: View {
             } else {
                 VStack(spacing: 15) {
                     Spacer()
+                        .padding(.bottom, 57)
 
                     Image("sns-empty-feedlist")
                         .resizable()
                         .frame(width: 180, height: 125)
+                        .padding(.bottom, 64)
 
                     Text("나의 하루를 기록해 보세요.")
                         .font(.pretendard(size: 16, weight: .regular))
@@ -109,6 +111,7 @@ struct MediaListView: View {
         } else {
             VStack(spacing: 15) {
                 Spacer()
+                    .padding(.top, 57)
 
                 Image("sns-empty-feedlist")
                     .resizable()

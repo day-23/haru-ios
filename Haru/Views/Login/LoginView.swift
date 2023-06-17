@@ -73,13 +73,9 @@ struct LoginView: View {
                             .background(Color(0xfdfdfd))
                             .cornerRadius(12)
                             .onTapGesture {
+                                Global.shared.toastMessageContent = "하루 애플리케이션을 둘러보세요"
                                 withAnimation {
-                                    Global.shared.showGuestMessage = true
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                    withAnimation {
-                                        Global.shared.showGuestMessage = false
-                                    }
+                                    Global.shared.showToastMessage = true
                                 }
 
                                 Global.shared.user = Me(
