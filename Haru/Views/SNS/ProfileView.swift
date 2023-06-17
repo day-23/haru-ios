@@ -127,7 +127,7 @@ struct ProfileView: View {
             }
 
             if postOptModalVis.0 {
-                Color.black.opacity(0.5)
+                Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
@@ -243,7 +243,7 @@ struct ProfileView: View {
                 .transition(.modal)
                 .zIndex(2)
             } else if blockModalVis {
-                Color.black.opacity(0.5)
+                Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {

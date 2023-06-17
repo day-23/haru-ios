@@ -310,7 +310,7 @@ struct FriendView: View {
             }
             
             if self.blockModalVis {
-                Color.black.opacity(0.5)
+                Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {

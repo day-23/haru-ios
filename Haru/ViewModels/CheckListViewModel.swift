@@ -44,6 +44,8 @@ final class CheckListViewModel: ObservableObject {
                 }
             } else {
                 mode = .main
+                fetchTodoList()
+                fetchTags()
             }
         }
     }

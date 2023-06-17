@@ -34,7 +34,7 @@ struct MediaFeedView: View {
             .padding(.top, 20)
 
             if self.postOptModalVis.0 {
-                Color.black.opacity(0.5)
+                Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {

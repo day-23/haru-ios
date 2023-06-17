@@ -184,7 +184,7 @@ struct CalendarDateView: View {
                 
             // 일정 추가를 위한 모달창
             if self.isSchModalVisible {
-                Color.black.opacity(0.5)
+                Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
@@ -208,7 +208,7 @@ struct CalendarDateView: View {
                 .transition(.modal)
                 .zIndex(2)
             } else if self.isTodoModalVisible {
-                Color.black.opacity(0.5)
+                Color.black.opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
