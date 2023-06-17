@@ -59,17 +59,19 @@ struct MediaListView: View {
             if mediaList.count > 0 {
                 LazyVGrid(columns: columns, spacing: 3) {
                     ForEach(mediaList.indices, id: \.self) { idx in
-                        NavigationLink {
-                            MediaFeedView(
-                                post: mediaList[idx],
-                                postImageList: postVM.mediaImageList[mediaList[idx].id] ?? [],
-                                postVM: postVM
-                            )
+                        if !mediaList[idx].disabled {
+                            NavigationLink {
+                                MediaFeedView(
+                                    post: mediaList[idx],
+                                    postImageList: postVM.mediaImageList[mediaList[idx].id] ?? [],
+                                    postVM: postVM
+                                )
 
-                        } label: {
-                            MediaView(uiImage: postVM.mediaImageList[mediaList[idx].id]?.first??.uiImage)
+                            } label: {
+                                MediaView(uiImage: postVM.mediaImageList[mediaList[idx].id]?.first??.uiImage)
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
 
                     if !mediaList.isEmpty,

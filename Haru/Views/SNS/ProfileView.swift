@@ -11,7 +11,6 @@ struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.dismiss) var dismissAction
 
-    @State var toggleIsClicked: Bool = false
     @State private var isFeedSelected: Bool = true
 
     @StateObject var postVM: PostViewModel
@@ -131,7 +130,7 @@ struct ProfileView: View {
                                         switch result {
                                         case .success:
                                             self.postVM.disablePost(
-                                                targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                targetPost: self.postOptModalVis.1
                                             )
                                             self.postOptModalVis.0 = false
                                         case let .failure(failure):
@@ -171,7 +170,7 @@ struct ProfileView: View {
                                         case .success:
                                             withAnimation {
                                                 self.postVM.disablePost(
-                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                    targetPost: self.postOptModalVis.1
                                                 )
                                                 self.postOptModalVis.0 = false
                                             }
@@ -200,7 +199,7 @@ struct ProfileView: View {
                                         case .success:
                                             withAnimation {
                                                 self.postVM.disablePost(
-                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                    targetPost: self.postOptModalVis.1
                                                 )
                                                 self.postOptModalVis.0 = false
                                             }
@@ -278,24 +277,6 @@ struct ProfileView: View {
                 .opacity(self.blockFriend ? 0 : 1)
                 .transition(.modal)
                 .zIndex(2)
-            }
-
-            if self.toggleIsClicked {
-                DropdownMenu {
-                    Button {
-                        self.dismissAction.callAsFunction()
-                    } label: {
-                        Text("친구피드")
-                            .font(.pretendard(size: 16, weight: .bold))
-                    }
-                } secondContent: {
-                    NavigationLink {
-                        LookAroundView()
-                    } label: {
-                        Text("둘러보기")
-                            .font(.pretendard(size: 16, weight: .bold))
-                    }
-                }
             }
         }
         .navigationBarBackButtonHidden()

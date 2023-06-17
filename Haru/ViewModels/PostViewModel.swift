@@ -192,29 +192,17 @@ final class PostViewModel: ObservableObject {
         loadMorePosts()
     }
 
+    // 게시물 생성 시 게시물 리스트 다시 다 불러오기
     func reloadPosts() {
-        clear()
-        switch option {
-        case .main:
-            fetchFreindsPosts(page: page, lastCreatedAt: lastCreatedAt)
+        postList = []
+        postImageList = [:]
+        mediaList = [:]
+        mediaImageList = [:]
 
-        case .target_feed:
-            guard let targetId else { return }
-            fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
-            if selectedHashTag.id == Global.shared.hashTagAll.id {
-                fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
-            } else {
-                fetchTargetMediaHashTag(targetId: targetId, hashTagId: selectedHashTag.id, page: page, lastCreatedAt: lastCreatedAt)
-            }
-
-        case .target_media_all:
-            print("미디어쪽에서 reload 하지는 않을 것 같음")
-        case .target_media_hashtag:
-            print("미디어쪽에서 reload 하지는 않을 것 같음")
-        case .media_all:
-            print("미디어쪽에서 reload 하지는 않을 것 같음")
-        case .media_hashtag:
-            print("미디어쪽에서 reload 하지는 않을 것 같음")
+        fetchFreindsPosts(page: 1, lastCreatedAt: nil)
+        fetchMediaAll(page: 1, lastCreatedAt: nil)
+        if selectedHashTag.id != Global.shared.hashTagAll.id {
+            fetchMediaHashTag(hashTagId: selectedHashTag.id, page: 1, lastCreatedAt: nil)
         }
     }
 
@@ -411,6 +399,7 @@ final class PostViewModel: ObservableObject {
         }
     }
 
+    // 둘러보기 > 전체보기
     func fetchMediaAll(
         page: Int,
         lastCreatedAt: Date?)
@@ -441,6 +430,7 @@ final class PostViewModel: ObservableObject {
         }
     }
 
+    // 둘러보기 > 해시태그
     func fetchMediaHashTag(
         hashTagId: String,
         page: Int,
@@ -546,20 +536,46 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    func disablePost(targetPostId: String) {
+    func disablePost(targetPost: Post?) {
+        guard let targetPost else { return }
+
         guard let index = (postList.firstIndex { post in
-            post.id == targetPostId
+            post.id == targetPost.id
         }) else {
             return
         }
-
         postList[index].disabled = true
+
+        targetPost.hashTags.forEach { content in
+            guard let hashTag = hashTags.first(where: { $0.content == content }) else { return }
+            guard let index = (mediaList[hashTag.id]?.firstIndex { post in
+                post.id == targetPost.id
+            }) else { return }
+
+            self.mediaList[hashTag.id]?[index].disabled = true
+        }
     }
 
     func clear() {
-        postList = []
-        postImageList = [:]
-        mediaList = [:]
-        mediaImageList = [:]
+        switch option {
+        case .main:
+            postList = []
+            postImageList = [:]
+        case .target_feed:
+            postList = []
+            postImageList = [:]
+        case .target_media_all:
+            mediaList = [:]
+            mediaImageList = [:]
+        case .target_media_hashtag:
+            mediaList = [:]
+            mediaImageList = [:]
+        case .media_all:
+            mediaList = [:]
+            mediaImageList = [:]
+        case .media_hashtag:
+            mediaList = [:]
+            mediaImageList = [:]
+        }
     }
 }

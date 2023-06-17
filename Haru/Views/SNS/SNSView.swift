@@ -38,8 +38,14 @@ struct SNSView: View {
                 if self.isFriendFeed {
                     FeedListView(postVM: self.postVM, postOptModalVis: self.$postOptModalVis, comeToRoot: true)
                         .background(Color(0xfdfdfd))
+                        .onAppear {
+                            self.postVM.option = .main
+                        }
                 } else {
-                    LookAroundView()
+                    LookAroundView(postVM: self.postVM)
+                        .onAppear {
+                            self.postVM.option = .media_all
+                        }
                 }
             }
 
@@ -110,7 +116,7 @@ struct SNSView: View {
                                         case .success:
                                             withAnimation {
                                                 self.postVM.disablePost(
-                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                    targetPost: self.postOptModalVis.1
                                                 )
                                                 self.postOptModalVis.0 = false
                                             }
@@ -151,7 +157,7 @@ struct SNSView: View {
                                         case .success:
                                             withAnimation {
                                                 self.postVM.disablePost(
-                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                    targetPost: self.postOptModalVis.1
                                                 )
                                                 self.postOptModalVis.0 = false
                                             }
@@ -180,7 +186,7 @@ struct SNSView: View {
                                         case .success:
                                             withAnimation {
                                                 self.postVM.disablePost(
-                                                    targetPostId: self.postOptModalVis.1?.id ?? "unknown"
+                                                    targetPost: self.postOptModalVis.1
                                                 )
                                                 self.postOptModalVis.0 = false
                                             }
