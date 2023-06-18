@@ -26,6 +26,10 @@ final class ImagePickerViewModel: ObservableObject {
         options.includeAssetSourceTypes = [.typeUserLibrary]
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         PHAsset.fetchAssets(with: .image, options: options).enumerateObjects { asset, _, _ in
+            if self.fetchedImages.count > 200 {
+                return
+            }
+
             let imageAsset: ImageAsset = .init(asset: asset)
             self.fetchedImages.append(imageAsset)
         }
