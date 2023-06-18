@@ -51,10 +51,10 @@ struct CalendarDateView: View {
                             Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[0])년")
                                 .font(.pretendard(size: 28, weight: .bold))
                                 .padding(.trailing, 4)
-                                    
+                            
                             Text("\(CalendarHelper.extraDate(self.calendarVM.monthOffest)[1])월")
                                 .font(.pretendard(size: 28, weight: .bold))
-                                    
+                            
                             Button {
                                 withAnimation(.easeInOut(duration: 0.1)) {
                                     self.isDatePickerVisible.toggle()
@@ -68,9 +68,9 @@ struct CalendarDateView: View {
                                     .rotationEffect(Angle(degrees: self.isDatePickerVisible ? 0 : -90))
                             }
                         } // HStack
-                                
+                        
                         Spacer()
-                                
+                        
                         HStack(spacing: 10) {
                             NavigationLink {
                                 ProductivitySearchView(
@@ -85,7 +85,7 @@ struct CalendarDateView: View {
                                     .foregroundColor(Color(0x191919))
                                     .frame(width: 28, height: 28)
                             }
-                                    
+                            
                             Button {
                                 self.calendarVM.monthOffest = 0
                             } label: {
@@ -97,7 +97,7 @@ struct CalendarDateView: View {
                                     }
                             }
                             .tint(Color.gradientStart1)
-                                    
+                            
                             Image("slider")
                                 .resizable()
                                 .renderingMode(.template)
@@ -113,7 +113,7 @@ struct CalendarDateView: View {
                     } // HStack
                     .padding(.leading, 33)
                     .padding(.trailing, 20)
-                            
+                    
                     Group {
                         // Day View ...
                         HStack(spacing: 0) {
@@ -132,16 +132,16 @@ struct CalendarDateView: View {
                         } // HStack
                         .padding(.top, 14)
                         .padding(.bottom, 3)
-                                
+                        
                         TabView(selection: self.$calendarVM.monthOffest) {
                             ForEach(-10 ... 100, id: \.self) { _ in
                                 GeometryReader { proxy in
-                                            
+                                    
                                     let longPress = LongPressGesture(minimumDuration: 0.3)
                                         .onEnded { _ in
                                             self.calendarVM.firstSelected = true
                                         }
-                                            
+                                    
                                     let drag = DragGesture()
                                         .onChanged { value in
                                             self.calendarVM.addSelectedItems(
@@ -155,9 +155,9 @@ struct CalendarDateView: View {
                                                 self.isSchModalVisible = true
                                             }
                                         }
-                                            
+                                    
                                     let combined = longPress.sequenced(before: drag)
-                                            
+                                    
                                     CalendarWeekView(
                                         calendarVM: self.calendarVM,
                                         isDayModalVisible: _isDayModalVisible,
@@ -180,177 +180,176 @@ struct CalendarDateView: View {
                         self.isDatePickerVisible = false
                     }
                 }
-            }
                 
-            // 일정 추가를 위한 모달창
-            if self.isSchModalVisible {
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        withAnimation {
-                            self.isSchModalVisible = false
-                        }
-                    }
-                    
-                Modal(isActive: self.$isSchModalVisible, ratio: 0.9) {
-                    ScheduleFormView(
-                        scheduleFormVM: ScheduleFormViewModel(
-                            selectionSet: self.calendarVM.selectionSet,
-                            categoryList: self.calendarVM.categoryList
-                        ) {
-                            self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
-                            self.calendarVM.getRefreshProductivityList()
-                        },
-                        isSchModalVisible: self.$isSchModalVisible
-                    )
-                }
-                .transition(.modal)
-                .zIndex(2)
-            } else if self.isTodoModalVisible {
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        withAnimation {
-                            self.isTodoModalVisible = false
-                        }
-                    }
-                    
-                Modal(isActive: self.$isTodoModalVisible, ratio: 0.9) {
-                    TodoAddView(
-                        viewModel: self.addViewModel,
-                        isModalVisible: self.$isTodoModalVisible
-                    )
-                    .onAppear {
-                        self.addViewModel.isSelectedEndDate = true
-                    }
-                }
-                .transition(.modal)
-                .zIndex(2)
-            } else if _isDayModalVisible.wrappedValue {
-                Color.black.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        withAnimation {
-                            _isDayModalVisible.wrappedValue = false
-                        }
-                    }
-                    
-                CalendarDayView(calendarViewModel: self.calendarVM)
-                    .zIndex(2)
-            } else if self.isDatePickerVisible {
-                Color(0xfdfdfd).opacity(0.001)
-                    .edgesIgnoringSafeArea(.all)
-                    .zIndex(1)
-                    .onTapGesture {
-                        withAnimation {
-                            self.isDatePickerVisible = false
-                        }
-                    }
-                
-                CustomCalendar(
-                    bindingDate: self.$calendarVM.curDate,
-                    comeTo: .calendar
-                )
-                .zIndex(2)
-                
-            } else {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        if self.showTodoButton {
-                            Button {
-                                withAnimation {
-                                    self.isTodoModalVisible = true
-                                }
-                                self.addViewModel.mode = .add
-                            } label: {
-                                Image("calendar-add-todo")
-                                    .resizable()
-                                    .frame(width: 56, height: 56)
-                                    .clipShape(Circle())
-                                    .shadow(radius: 10, x: 5, y: 0)
-                            }
-                        }
-                    }
-                    HStack {
-                        Spacer()
-                            
-                        if self.showSchButton {
-                            Button {
-                                self.calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
-                                withAnimation {
-                                    self.isSchModalVisible = true
-                                }
-                            } label: {
-                                Image("calendar-add-schedule")
-                                    .resizable()
-                                    .frame(width: 56, height: 56)
-                                    .clipShape(Circle())
-                                    .shadow(radius: 10, x: 5, y: 0)
-                            }
-                        }
-                    }
-                    if self.showAddButton {
-                        HStack {
-                            Spacer()
-                            Button {
-                                withAnimation {
-                                    self.showAddMenu()
-                                }
-                            } label: {
-                                Image("add-button")
-                                    .resizable()
-                                    .frame(width: 56, height: 56)
-                                    .clipShape(Circle())
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 10)
-                .zIndex(2)
-            }
-                
-            // 설정을 위한 슬라이드 메뉴
-            Group {
-                if _isOptionModalVisible.wrappedValue {
+                // 일정 추가를 위한 모달창
+                if self.isSchModalVisible {
                     Color.black.opacity(0.4)
                         .edgesIgnoringSafeArea(.all)
-                        .zIndex(2)
+                        .zIndex(1)
                         .onTapGesture {
                             withAnimation {
-                                self.x = UIScreen.main.bounds.width
-                                _isOptionModalVisible.wrappedValue = false
+                                self.isSchModalVisible = false
                             }
                         }
+                    
+                    Modal(isActive: self.$isSchModalVisible, ratio: 0.9) {
+                        ScheduleFormView(
+                            scheduleFormVM: ScheduleFormViewModel(
+                                selectionSet: self.calendarVM.selectionSet,
+                                categoryList: self.calendarVM.categoryList
+                            ) {
+                                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+                                self.calendarVM.getRefreshProductivityList()
+                            },
+                            isSchModalVisible: self.$isSchModalVisible
+                        )
+                    }
+                    .transition(.modal)
+                    .zIndex(2)
+                } else if self.isTodoModalVisible {
+                    Color.black.opacity(0.4)
+                        .edgesIgnoringSafeArea(.all)
+                        .zIndex(1)
+                        .onTapGesture {
+                            withAnimation {
+                                self.isTodoModalVisible = false
+                            }
+                        }
+                    
+                    Modal(isActive: self.$isTodoModalVisible, ratio: 0.9) {
+                        TodoAddView(
+                            viewModel: self.addViewModel,
+                            isModalVisible: self.$isTodoModalVisible
+                        )
+                        .onAppear {
+                            self.addViewModel.isSelectedEndDate = true
+                        }
+                    }
+                    .transition(.modal)
+                    .zIndex(2)
+                } else if _isDayModalVisible.wrappedValue {
+                    Color.black.opacity(0.4)
+                        .edgesIgnoringSafeArea(.all)
+                        .zIndex(1)
+                        .onTapGesture {
+                            withAnimation {
+                                _isDayModalVisible.wrappedValue = false
+                            }
+                        }
+                    
+                    CalendarDayView(calendarViewModel: self.calendarVM)
+                        .zIndex(2)
+                } else if self.isDatePickerVisible {
+                    Color(0xfdfdfd).opacity(0.001)
+                        .edgesIgnoringSafeArea(.all)
+                        .zIndex(1)
+                        .onTapGesture {
+                            withAnimation {
+                                self.isDatePickerVisible = false
+                            }
+                        }
+                    
+                    CustomCalendar(
+                        bindingDate: self.$calendarVM.curDate,
+                        comeTo: .calendar
+                    )
+                    .zIndex(2)
+                    
+                } else {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            if self.showTodoButton {
+                                Button {
+                                    withAnimation {
+                                        self.isTodoModalVisible = true
+                                    }
+                                    self.addViewModel.mode = .add
+                                } label: {
+                                    Image("calendar-add-todo")
+                                        .resizable()
+                                        .frame(width: 56, height: 56)
+                                        .clipShape(Circle())
+                                        .shadow(radius: 10, x: 5, y: 0)
+                                }
+                            }
+                        }
+                        HStack {
+                            Spacer()
+                            
+                            if self.showSchButton {
+                                Button {
+                                    self.calendarVM.selectionSet.insert(DateValue(day: Date().day, date: Date()))
+                                    withAnimation {
+                                        self.isSchModalVisible = true
+                                    }
+                                } label: {
+                                    Image("calendar-add-schedule")
+                                        .resizable()
+                                        .frame(width: 56, height: 56)
+                                        .clipShape(Circle())
+                                        .shadow(radius: 10, x: 5, y: 0)
+                                }
+                            }
+                        }
+                        if self.showAddButton {
+                            HStack {
+                                Spacer()
+                                Button {
+                                    withAnimation {
+                                        self.showAddMenu()
+                                    }
+                                } label: {
+                                    Image("add-button")
+                                        .resizable()
+                                        .frame(width: 56, height: 56)
+                                        .clipShape(Circle())
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 10)
+                    .zIndex(2)
                 }
-                SlideOptionView(calendarVM: self.calendarVM)
-                    .shadow(color: .black.opacity(self.x != 0 ? 0.1 : 0), radius: 5)
-                    .offset(x: self.x)
-                    .gesture(DragGesture().onChanged { value in
-                        withAnimation {
-                            if value.translation.width > 0 {
-                                self.x = value.translation.width
+                
+                // 설정을 위한 슬라이드 메뉴
+                Group {
+                    if _isOptionModalVisible.wrappedValue {
+                        Color.black.opacity(0.4)
+                            .edgesIgnoringSafeArea(.all)
+                            .zIndex(2)
+                            .onTapGesture {
+                                withAnimation {
+                                    self.x = UIScreen.main.bounds.width
+                                    _isOptionModalVisible.wrappedValue = false
+                                }
                             }
-                        }
-                    }.onEnded { _ in
-                        withAnimation {
-                            if self.x > self.width / 3 {
-                                self.x = UIScreen.main.bounds.width
-                                _isOptionModalVisible.wrappedValue = false
-                            } else {
-                                self.x = 0
+                    }
+                    SlideOptionView(calendarVM: self.calendarVM)
+                        .shadow(color: .black.opacity(self.x != 0 ? 0.1 : 0), radius: 5)
+                        .offset(x: self.x)
+                        .gesture(DragGesture().onChanged { value in
+                            withAnimation {
+                                if value.translation.width > 0 {
+                                    self.x = value.translation.width
+                                }
                             }
-                        }
-                    })
-                    .zIndex(3)
+                        }.onEnded { _ in
+                            withAnimation {
+                                if self.x > self.width / 3 {
+                                    self.x = UIScreen.main.bounds.width
+                                    _isOptionModalVisible.wrappedValue = false
+                                } else {
+                                    self.x = 0
+                                }
+                            }
+                        })
+                        .zIndex(3)
+                }
             }
         } // ZStack
-        
         .onAppear {
             UIApplication.shared.addTapGestureRecognizer()
             self.calendarVM.dayList = CalendarHelper.getDays(self.calendarVM.startOnSunday)
