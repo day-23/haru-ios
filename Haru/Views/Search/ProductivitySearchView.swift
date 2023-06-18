@@ -190,14 +190,14 @@ struct ProductivitySearchView: View {
                     .onAppear {
                         self.todoAddViewModel.applyTodoData(
                             todo: todo,
-                            at: todo.at
+                            at: todo.repeatOption != nil ? .front : .none
                         )
                     }
             } label: {
                 TodoView(
                     checkListViewModel: self.checkListVM,
                     todo: todo,
-                    at: todo.at,
+                    at: todo.repeatOption != nil ? .front : .none,
                     contentWords: self.splitContent(content: todo.content, searchString: self.prevSearchContent)
                 ) {
                     // completeAction
