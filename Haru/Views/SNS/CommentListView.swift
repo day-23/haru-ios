@@ -17,7 +17,7 @@ struct CommentListView: View {
     var isTemplate: Bool = false
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             LazyVStack(spacing: 0) {
                 Divider()
                     .foregroundColor(Color(0xdbdbdb))

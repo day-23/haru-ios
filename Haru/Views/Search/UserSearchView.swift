@@ -25,7 +25,7 @@ struct UserSearchView: View {
     @StateObject var searchVM: SearchViewModel = .init()
     
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
                 if let user = searchVM.searchUser {
                     searchUserView(user: user)

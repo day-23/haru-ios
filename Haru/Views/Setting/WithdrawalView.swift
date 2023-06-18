@@ -25,7 +25,7 @@ struct WithdrawalView: View {
 
             Divider()
 
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 Spacer(minLength: 20)
 
                 VStack(spacing: 20) {

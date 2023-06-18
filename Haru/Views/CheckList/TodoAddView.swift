@@ -27,7 +27,7 @@ struct TodoAddView: View {
 
     var body: some View {
         VStack {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 LazyVStack {
                     if isModalVisible {
                         HStack(spacing: 0) {

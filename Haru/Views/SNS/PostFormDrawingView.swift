@@ -18,7 +18,7 @@ struct PostFormDrawingView: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             TextField("", text: $postFormVM.content, axis: .vertical)
                 .placeholder(when: postFormVM.content.isEmpty, placeholder: {
                     Text("텍스트를 입력해주세요.")

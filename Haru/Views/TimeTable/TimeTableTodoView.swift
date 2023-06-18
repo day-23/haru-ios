@@ -64,7 +64,7 @@ struct TimeTableTodoView: View {
                 timeTableViewModel.fetchTodoList()
             }
         } else {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     ForEach(timeTableViewModel.thisWeek.indices, id: \.self) { index in
                         TimeTableTodoRow(

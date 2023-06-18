@@ -62,7 +62,7 @@ struct ScheduleFormView: View {
                 .padding(.leading, 37)
                 .padding(.trailing, 30)
             }
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(spacing: 8) {
                     // 일정 입력
                     Group {

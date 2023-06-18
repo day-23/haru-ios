@@ -38,7 +38,7 @@ struct MediaListView: View {
 
     @ViewBuilder
     func scrollView() -> some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
                 Section(content: {
                     content()

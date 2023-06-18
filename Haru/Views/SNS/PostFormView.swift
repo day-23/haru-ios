@@ -43,7 +43,7 @@ struct PostFormView: View {
 //    @State private var sourceType: UIImagePickerController.SourceType?
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             if postAddMode == .writing {
                 TextField("", text: $postFormVM.content, axis: .vertical)
                     .placeholder(when: postFormVM.content.isEmpty, placeholder: {

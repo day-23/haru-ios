@@ -19,7 +19,7 @@ struct PolicyView: View {
 
             Divider()
             
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 Spacer(minLength: 19)
                 
                 Text("""

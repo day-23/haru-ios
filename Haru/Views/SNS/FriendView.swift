@@ -151,7 +151,7 @@ struct FriendView: View {
                     .padding(.horizontal, 20)
                 }
                 
-                ScrollView {
+                ScrollView(showsIndicators: false) {
                     if !self.userProfileVM.isMe {
                         Spacer(minLength: 10)
                     }

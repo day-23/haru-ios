@@ -23,7 +23,7 @@ struct ProductivitySearchView: View {
     @State var searchSuccess: Bool?
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             if let searchSuccess {
                 if searchSuccess {
                     VStack(spacing: 14) {

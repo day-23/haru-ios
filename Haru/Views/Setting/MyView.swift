@@ -66,7 +66,7 @@ struct MyView: View {
                     }
                 }
 
-                ScrollView {
+                ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         // --- 프로필 view
                         ProfileInfoView(userProfileVM: self.userProfileVM)

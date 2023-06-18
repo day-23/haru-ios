@@ -28,7 +28,7 @@ struct TagManageView: View {
             .padding(.leading, 30)
             .padding(.bottom, 15)
 
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(spacing: 9) {
                     HStack(spacing: 0) {
                         TextField("", text: $checkListViewModel.tagContent)

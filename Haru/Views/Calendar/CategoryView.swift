@@ -27,7 +27,7 @@ struct CategoryView: View {
             .padding(.top, 25)
             .padding(.horizontal, 24)
 
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 10) {
                     Group {
                         ForEach(Array(scheduleFormVM.categoryList.enumerated()),

@@ -24,7 +24,7 @@ struct CalendarOptionView: View {
             
             Group {
                 VStack {
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         VStack(spacing: 0) {
                             HStack(spacing: 0) {
                                 HStack(spacing: 0) {
