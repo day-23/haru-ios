@@ -290,15 +290,13 @@ final class CalendarViewModel: ObservableObject {
     func getRefreshProductivityList() {
         guard let startDate = pivotDateList.first else { return }
         guard let endDate = pivotDateList.last else { return }
-        
-        scheduleList = [[Schedule]](repeating: [], count: 31)
-        todoList = [[Todo]](repeating: [], count: 31)
-        pivotDateList = [Date](repeating: Date(), count: 31)
+    
+        var tempPivotDateList = [Date](repeating: Date(), count: 31)
         
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
         
         for (index, date) in stride(from: startDate, through: endDate, by: dayDurationInSeconds).enumerated() {
-            pivotDateList[index] = date
+            tempPivotDateList[index] = date
         }
         
         scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
@@ -342,6 +340,7 @@ final class CalendarViewModel: ObservableObject {
                     return leftEndDate < rightEndDate
                 })
                 
+                self.pivotDateList = tempPivotDateList
                 (self.scheduleList, self.todoList) = self.fittingDay(startDate, endDate, scheduleList: result.0, todoList: result.1)
                 
             case .failure(let failure):

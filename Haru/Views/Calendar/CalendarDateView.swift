@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CalendarDateView: View {
-    @EnvironmentObject private var todoState: TodoState
+    @StateObject private var todoState: TodoState = .init()
     @EnvironmentObject private var global: Global
 
     @State private var isSchModalVisible: Bool = false
@@ -76,7 +76,7 @@ struct CalendarDateView: View {
                                 ProductivitySearchView(
                                     calendarVM: self.calendarVM,
                                     todoAddViewModel: self.addViewModel,
-                                    checkListVM: .init(todoState: StateObject(wrappedValue: self.todoState))
+                                    checkListVM: .init(todoState: _todoState)
                                 )
                             } label: {
                                 Image("search")

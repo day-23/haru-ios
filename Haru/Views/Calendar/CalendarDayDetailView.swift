@@ -140,11 +140,23 @@ struct CalendarDayDetailView: View {
                                     at: calendarVM.todoList[row][index].at,
                                     isMiniCalendar: true
                                 ) {
-                                    calendarVM.getRefreshProductivityList()
-                                    calendarVM.getCurMonthSchList(calendarVM.dateList)
+                                    withAnimation {
+                                        calendarVM.todoList[row][index].completed.toggle()
+                                    }
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        calendarVM.getRefreshProductivityList()
+                                        calendarVM.getCurMonthSchList(calendarVM.dateList)
+                                    }
                                 } updateAction: {
-                                    calendarVM.getRefreshProductivityList()
-                                    calendarVM.getCurMonthSchList(calendarVM.dateList)
+                                    withAnimation {
+                                        calendarVM.todoList[row][index].flag.toggle()
+                                    }
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        calendarVM.getRefreshProductivityList()
+                                        calendarVM.getCurMonthSchList(calendarVM.dateList)
+                                    }
                                 }
                             }
                             .tint(.mainBlack)

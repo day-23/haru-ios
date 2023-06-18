@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftUIPager
 
 struct CalendarDayView: View {
-    @EnvironmentObject private var todoState: TodoState
+    @StateObject private var todoState: TodoState = .init()
 
     @StateObject var page: Page = .withIndex(15)
 
@@ -20,7 +20,7 @@ struct CalendarDayView: View {
     @State var prevPageIndex: Int = 15
 
     var body: some View {
-        let checkListVM: CheckListViewModel = .init(todoState: StateObject(wrappedValue: todoState))
+        let checkListVM: CheckListViewModel = .init(todoState: _todoState)
 
         return Pager(page: page, data: data.indices, id: \.self) { index in
             CalendarDayDetailView(
