@@ -18,9 +18,10 @@ struct CalendarDateItem: View {
         let isSameDay = CalendarHelper.isSameDay(date1: value.date, date2: Date())
         return VStack(spacing: 0) {
             Spacer()
-                .frame(height: 7)
+                .frame(height: 10)
 
             Text("\(value.day)")
+                .frame(height: 20)
                 .font(.pretendard(size: 14, weight: .regular))
                 .foregroundColor(
                     isSameDay ?
@@ -30,9 +31,10 @@ struct CalendarDateItem: View {
                 .background(
                     Image("calendar-date-circle")
                         .resizable()
-                        .frame(width: 24, height: 24)
+                        .frame(width: 28, height: 28)
                         .opacity(isSameDay ? 1 : 0)
                 )
+
             Spacer()
         } // VStack
         .frame(width: cellWidth, height: cellHeight, alignment: .top)

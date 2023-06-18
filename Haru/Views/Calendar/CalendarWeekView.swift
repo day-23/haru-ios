@@ -38,7 +38,7 @@ struct CalendarWeekView: View {
                         }
 
                         VStack(spacing: 2) {
-                            Spacer().frame(height: 26)
+                            Spacer().frame(height: 36)
                             ForEach(0 ..< calendarVM.maxOrder, id: \.self) { order in
                                 CalendarScheduleItem(
                                     productivityList: $calendarVM.viewProductivityList[week][order],
