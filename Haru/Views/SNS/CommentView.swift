@@ -109,17 +109,19 @@ struct CommentView: View, KeyboardReadable {
                     HStack(alignment: .center, spacing: 0) {
                         HStack(spacing: 5) {
                             if alreadyComment[postPageNum] == nil {
-                                Image(isMine ?
-                                    "sns-edit" : "sns-comment-empty")
+                                Image(isMine
+                                    ? "sns-edit"
+                                    : "sns-comment-empty")
                                     .renderingMode(.template)
                                     .resizable()
                                     .frame(width: 28, height: 28)
 
                                 Text(
-                                    isMine ?
-                                        isCommentEditing ? "편집중" : "편집하기"
-                                        :
-                                        "작성하기"
+                                    isMine
+                                        ? (isCommentEditing
+                                            ? "편집중"
+                                            : "편집하기")
+                                        : "작성하기"
                                 )
                                 .font(.pretendard(size: 14, weight: .bold))
 
@@ -584,7 +586,7 @@ struct CommentView: View, KeyboardReadable {
                 }
                 .offset(y: deviceSize.width / 2 + 80)
             }
-            .onTapGesture { location in
+            .onTapGesture { _ in
                 if post.user.isAllowFeedComment == 0
                     || (post.user.isAllowFeedComment == 1 &&
                         post.user.friendStatus != 2)
@@ -607,10 +609,10 @@ struct CommentView: View, KeyboardReadable {
                     isCommentDeleting = true
                     deleteWriting = true
                 } else {
-                    x = location.x
-                    y = location.y
-                    startingX = location.x
-                    startingY = location.y
+                    x = deviceSize.width / 2
+                    y = deviceSize.width / 2
+                    startingX = deviceSize.width / 2
+                    startingY = deviceSize.width / 2
                     isCommentWriting = true
                     isFocused = true
                 }
@@ -624,7 +626,7 @@ struct CommentView: View, KeyboardReadable {
                 }
                 .lineLimit(4)
                 .focused($isFocused)
-                .font(.pretendard(size: dragging ? overDelete ? 11 : 18 : 14, weight: .bold))
+                .font(.pretendard(size: overDelete ? 11 : 14, weight: .bold))
                 .foregroundColor(Color(0x1DAFFF))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
