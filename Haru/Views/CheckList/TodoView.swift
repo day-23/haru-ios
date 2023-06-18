@@ -93,8 +93,6 @@ struct TodoView: View {
                 .onTapGesture {
                     isCompletionButtonActive = false
 
-                    print(at)
-
                     if (todo.repeatOption == nil && todo.repeatValue == nil)
                         || todo.completed
                     {
@@ -167,7 +165,13 @@ struct TodoView: View {
                     contentWordsView()
                         .multilineTextAlignment(.leading)
                         .font(.pretendard(size: 16, weight: .bold))
-                        .strikethrough(todo.completed)
+                        .overlay {
+                            if todo.completed {
+                                Rectangle()
+                                    .frame(height: 1.3)
+                                    .foregroundColor(Color(0xacacac))
+                            }
+                        }
                 } else {
                     Text(todo.content)
                         .multilineTextAlignment(.leading)
@@ -267,7 +271,15 @@ struct TodoView: View {
         if let contentWords {
             contentWords.reduce(Text("")) { res, content in
                 res + Text("\(content.0)")
-                    .foregroundColor(content.1 ? Color(0x1dafff) : Color(0x191919))
+                    .foregroundColor(
+                        todo.completed
+                            ? (content.1
+                                ? Color(0x1dafff, opacity: 0.5)
+                                : Color(0xacacac))
+                            : (content.1
+                                ? Color(0x1dafff)
+                                : Color(0x191919))
+                    )
             }
         } else {
             Text("")
