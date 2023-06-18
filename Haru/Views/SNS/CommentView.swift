@@ -351,6 +351,8 @@ struct CommentView: View, KeyboardReadable {
                         Text("\(target.content)")
                             .font(.pretendard(size: 20, weight: .regular))
                             .foregroundColor(Color(0x646464))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
 
                         Divider()
                             .padding(.vertical, 30)
