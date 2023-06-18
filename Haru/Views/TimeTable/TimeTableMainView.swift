@@ -191,7 +191,9 @@ struct TimeTableMainView: View {
                 .background(
                     Color.white.opacity(0.001)
                         .onTapGesture {
-                            self.isDateButtonClicked = false
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                self.isDateButtonClicked = false
+                            }
                         }
                 )
             } else {

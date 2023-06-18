@@ -122,7 +122,7 @@ struct HaruApp: App {
                             LoadingView()
                                 .zIndex(2)
                         } else if global.showToastMessage {
-                            if global.toastMessageTheme == .light {
+                            if global.toastMessageTheme == .default {
                                 Text(global.toastMessageContent)
                                     .font(.pretendard(size: 16, weight: .bold))
                                     .foregroundColor(Color(0x191919))
@@ -132,7 +132,17 @@ struct HaruApp: App {
                                     .cornerRadius(10)
                                     .offset(y: UIScreen.main.bounds.height * 0.3)
                                     .zIndex(2)
-                            } else {
+                            } else if global.toastMessageTheme == .light {
+                                Text(global.toastMessageContent)
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(Color(0x191919))
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 16)
+                                    .background(Color(0xfdfdfd))
+                                    .cornerRadius(10)
+                                    .offset(y: UIScreen.main.bounds.height * 0.3)
+                                    .zIndex(2)
+                            } else if global.toastMessageTheme == .dark {
                                 Text(global.toastMessageContent)
                                     .font(.pretendard(size: 16, weight: .bold))
                                     .foregroundColor(Color(0xfdfdfd))

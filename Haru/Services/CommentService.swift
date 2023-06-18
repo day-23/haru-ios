@@ -9,6 +9,10 @@ import Alamofire
 import Foundation
 
 final class CommentService {
+    enum CommentError: Error {
+        case badword
+    }
+
     private static let baseURL = Constants.baseURL + "comment/"
 
     private static let formatter: DateFormatter = {
@@ -91,10 +95,29 @@ final class CommentService {
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
-            case let .success(response):
-                completion(.success(response.data))
+            case let .success(data):
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(CommentError.badword))
+                        return
+                    default:
+                        break
+                    }
+                }
+                completion(.success(data.data))
             case let .failure(error):
-                completion(.failure(error))
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(CommentError.badword))
+                    default:
+                        completion(.failure(error))
+                    }
+                } else {
+                    print("[Debug] \(error) \(#fileID) \(#function)")
+                    completion(.failure(error))
+                }
             }
         }
     }
@@ -124,10 +147,29 @@ final class CommentService {
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
-            case let .success(response):
-                completion(.success(response.data))
+            case let .success(data):
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(CommentError.badword))
+                        return
+                    default:
+                        break
+                    }
+                }
+                completion(.success(data.data))
             case let .failure(error):
-                completion(.failure(error))
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(CommentError.badword))
+                    default:
+                        completion(.failure(error))
+                    }
+                } else {
+                    print("[Debug] \(error) \(#fileID) \(#function)")
+                    completion(.failure(error))
+                }
             }
         }
     }

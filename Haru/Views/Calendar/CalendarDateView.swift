@@ -41,6 +41,9 @@ struct CalendarDateView: View {
         } set: {
             Global.shared.isFaded = $0
             self.isDayModalVisible = $0
+            if !self.isDayModalVisible {
+                self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)
+            }
         }
 
         return ZStack {
@@ -228,33 +231,36 @@ struct CalendarDateView: View {
                     .transition(.modal)
                     .zIndex(2)
                 } else if _isDayModalVisible.wrappedValue {
-                    Color.black.opacity(0.4)
-                        .edgesIgnoringSafeArea(.all)
-                        .zIndex(1)
-                        .onTapGesture {
-                            withAnimation {
-                                _isDayModalVisible.wrappedValue = false
+                    ZStack {
+                        Color.black.opacity(0.4)
+                            .edgesIgnoringSafeArea(.all)
+                            .zIndex(1)
+                            .onTapGesture {
+                                withAnimation {
+                                    _isDayModalVisible.wrappedValue = false
+                                }
                             }
-                        }
-                    
-                    CalendarDayView(calendarViewModel: self.calendarVM)
-                        .zIndex(2)
+                        
+                        CalendarDayView(calendarViewModel: self.calendarVM)
+                            .zIndex(2)
+                    }
                 } else if self.isDatePickerVisible {
-                    Color(0xfdfdfd).opacity(0.001)
-                        .edgesIgnoringSafeArea(.all)
-                        .zIndex(1)
-                        .onTapGesture {
-                            withAnimation {
-                                self.isDatePickerVisible = false
+                    ZStack {
+                        Color(0xfdfdfd).opacity(0.001)
+                            .edgesIgnoringSafeArea(.all)
+                            .zIndex(1)
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 0.1)) {
+                                    self.isDatePickerVisible = false
+                                }
                             }
-                        }
-                    
-                    CustomCalendar(
-                        bindingDate: self.$calendarVM.curDate,
-                        comeTo: .calendar
-                    )
-                    .zIndex(2)
-                    
+                        
+                        CustomCalendar(
+                            bindingDate: self.$calendarVM.curDate,
+                            comeTo: .calendar
+                        )
+                        .zIndex(2)
+                    }
                 } else {
                     VStack {
                         Spacer()

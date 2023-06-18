@@ -17,10 +17,12 @@ struct CalendarDayDetailView: View {
     
     @State private var content: String = ""
     
+    @FocusState private var focused
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("\(calendarVM.pivotDateList[row].getDateFormatString("dd일 E요일"))")
+                Text("\(calendarVM.pivotDateList[row].getDateFormatString("d일 E요일"))")
                     .foregroundColor(Color(0xFDFDFD))
                     .font(.pretendard(size: 24, weight: .bold))
                 
@@ -146,7 +148,7 @@ struct CalendarDayDetailView: View {
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                         calendarVM.getRefreshProductivityList()
-                                        calendarVM.getCurMonthSchList(calendarVM.dateList)
+//                                        calendarVM.getCurMonthSchList(calendarVM.dateList)
                                     }
                                 } updateAction: {
                                     withAnimation {
@@ -155,7 +157,7 @@ struct CalendarDayDetailView: View {
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                         calendarVM.getRefreshProductivityList()
-                                        calendarVM.getCurMonthSchList(calendarVM.dateList)
+//                                        calendarVM.getCurMonthSchList(calendarVM.dateList)
                                     }
                                 }
                             }
@@ -173,13 +175,19 @@ struct CalendarDayDetailView: View {
                     Spacer()
                     
                     HStack {
-                        TextField("\(calendarVM.pivotDateList[row].month)월 \(calendarVM.pivotDateList[row].day)일 일정 추가", text: $content)
+                        TextField("", text: $content)
+                            .placeholder(when: content.isEmpty, placeholder: {
+                                Text("\(calendarVM.pivotDateList[row].month)월 \(calendarVM.pivotDateList[row].day)일 일정 추가")
+                                    .font(.pretendard(size: 14, weight: .regular))
+                                    .foregroundColor(Color(0x646464))
+                            })
                             .font(.pretendard(size: 14, weight: .regular))
                             .foregroundColor(Color(0x191919))
                             .padding(.vertical, 10)
                             .padding(.horizontal, 12)
                             .background(Color(0xF1F1F5))
                             .cornerRadius(8)
+                            .focused($focused)
                         
                         Button {
                             ScheduleFormViewModel(
@@ -189,7 +197,10 @@ struct CalendarDayDetailView: View {
                                     calendarVM.getCurMonthSchList(calendarVM.dateList)
                                     calendarVM.getRefreshProductivityList()
                                 }
-                            ).addEasySchedule(content: content, pivotDate: calendarVM.pivotDate)
+                            ).addEasySchedule(
+                                content: content,
+                                pivotDate: calendarVM.pivotDate.addingTimeInterval(TimeInterval(60 * 30))
+                            )
                             content = ""
                         } label: {
                             Image("calendar-add-button-small")
@@ -199,6 +210,16 @@ struct CalendarDayDetailView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.trailing, 4)
+                    .padding(
+                        .bottom,
+                        UIDevice.current.name.contains("Max")
+                            ? 0
+                            : (focused
+                                ? (UIDevice.current.name.contains("SE")
+                                    ? 90
+                                    : 20)
+                                : 0)
+                    )
                 }
                 .padding(.bottom, 10)
             }
@@ -207,5 +228,10 @@ struct CalendarDayDetailView: View {
         .background(
             Image("calendar-card-background")
         )
+        .onChange(of: focused) { _ in
+            withAnimation {
+                Global.shared.isTabViewActive.toggle()
+            }
+        }
     }
 }

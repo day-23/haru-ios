@@ -13,6 +13,7 @@ final class Global: ObservableObject {
     private init() {}
 
     enum ToastMessageTheme {
+        case `default`
         case light
         case dark
     }
@@ -40,7 +41,7 @@ final class Global: ObservableObject {
 
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         self.toastMessageContent = ""
-                        self.toastMessageTheme = .light
+                        self.toastMessageTheme = .default
                     }
                 }
             }

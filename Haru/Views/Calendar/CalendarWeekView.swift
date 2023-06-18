@@ -48,6 +48,7 @@ struct CalendarWeekView: View {
                                 )
                             }
                             moreText(week: week, dateColumns: dateColumns)
+                                .animation(.none, value: UUID())
                         }
                         .frame(width: cellWidth * 7, height: cellHeight, alignment: .top)
                     }

@@ -173,7 +173,6 @@ struct CommentView: View, KeyboardReadable {
                                         hideAllComment = false
                                     } label: {
                                         Image("todo-tag-hidden")
-
                                             .resizable()
                                             .renderingMode(.template)
                                             .foregroundColor(Color(0x1CAFFF))
@@ -491,6 +490,7 @@ struct CommentView: View, KeyboardReadable {
             .onEnded { _ in
                 withAnimation {
                     dragging = true
+                    HapticManager.instance.impact(style: .heavy)
                 }
             }
 
@@ -507,19 +507,20 @@ struct CommentView: View, KeyboardReadable {
                     overDelete = false
                 }
 
+                x = value.location.x
+                y = value.location.y
+
                 // 범위 막기
-                if value.location.y < 0 {
-                    return
+                if value.location.y < 10 {
+                    y = CGFloat(10) + textRect.height / 2
                 }
 
-                if value.location.x + textRect.width / 2 >= sz - 15 ||
-                    value.location.x - textRect.width / 2 <= 15 ||
-                    value.location.y - textRect.height / 2 <= 15
-                {
-                    return
-                } else {
-                    x = value.location.x
-                    y = value.location.y
+                if value.location.x - textRect.width / 2 <= 10 {
+                    x = textRect.width / 2 + CGFloat(10)
+                }
+
+                if value.location.x + textRect.width / 2 >= sz - 10 {
+                    x = CGFloat(sz - 10) - textRect.width / 2
                 }
             }
             .onEnded { value in
@@ -534,10 +535,10 @@ struct CommentView: View, KeyboardReadable {
                     overDelete = false
                 }
 
-                if value.location.y + textRect.height / 2 > sz - 5 {
-                    x = startingX ?? 190
-                    y = startingY ?? 190
+                if value.location.y + textRect.height / 2 >= sz - 10 {
+                    y = CGFloat(sz - 10) - textRect.height / 2
                 }
+
                 withAnimation {
                     dragging = false
                 }
@@ -889,9 +890,17 @@ struct CommentView: View, KeyboardReadable {
                     fetchCommentList()
 
                     post.isCommented = true
-                case .failure(let failure):
-                    print("[Debug] \(failure)")
-                    print("\(#fileID) \(#function)")
+                case .failure(let error):
+                    switch error {
+                    case CommentService.CommentError.badword:
+                        Global.shared.toastMessageTheme = .light
+                        Global.shared.toastMessageContent = "댓글에 부적절한 단어가 포함되어 있습니다."
+                        withAnimation {
+                            Global.shared.showToastMessage = true
+                        }
+                    default:
+                        break
+                    }
                 }
             }
         } else {
@@ -908,9 +917,17 @@ struct CommentView: View, KeyboardReadable {
 
                     fetchCommentList()
                     post.isCommented = true
-                case .failure(let failure):
-                    print("[Debug] \(failure)")
-                    print("\(#fileID) \(#function)")
+                case .failure(let error):
+                    switch error {
+                    case CommentService.CommentError.badword:
+                        Global.shared.toastMessageTheme = .light
+                        Global.shared.toastMessageContent = "댓글에 부적절한 단어가 포함되어 있습니다."
+                        withAnimation {
+                            Global.shared.showToastMessage = true
+                        }
+                    default:
+                        break
+                    }
                 }
             }
         }
