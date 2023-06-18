@@ -372,6 +372,16 @@ final class TimeTableViewModel: ObservableObject {
                 while schedule.repeatStart <= last,
                       schedule.repeatStart <= repeatEnd
                 {
+                    if at == .front {
+                        let temp = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
+                        let nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: temp)
+                        if schedule.repeatStart.isEqual(other: repeatEnd)
+                            || repeatEnd < nextRepeatStart
+                        {
+                            at = .none
+                        }
+                    }
+
                     schedules.append(
                         ScheduleCell(id: "\(schedule.id)-\(schedule.repeatStart)", data: schedule, weight: 1, order: 1, at: at)
                     )
@@ -381,7 +391,7 @@ final class TimeTableViewModel: ObservableObject {
                     schedule.repeatEnd = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatEnd)
                     let nextRepeatStart = try schedule.nextRepeatStartDate(curRepeatStart: schedule.repeatStart)
                     if schedule.repeatStart.isEqual(other: repeatEnd)
-                        || repeatEnd > nextRepeatStart
+                        || repeatEnd < nextRepeatStart
                     {
                         at = .back
                     }
@@ -632,11 +642,6 @@ final class TimeTableViewModel: ObservableObject {
                 }
             }
         } else {
-            if at == .none {
-                print("[Debug] at의 값이 none입니다. \(#fileID), \(#function)")
-                return
-            }
-
             var nextRepeatStart: Date? {
                 if !(at == .front || at == .middle) {
                     return nil
