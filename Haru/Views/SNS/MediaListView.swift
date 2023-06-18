@@ -74,20 +74,22 @@ struct MediaListView: View {
                                 MediaView(uiImage: postVM.mediaImageList[mediaList[idx].id]?.first??.uiImage)
                             }
                             .buttonStyle(.plain)
-                        }
-                    }
-
-                    if !mediaList.isEmpty,
-                       postVM.page <= postVM.mediaTotalPage[postVM.selectedHashTag.id] ?? 0,
-                       postVM.option == .mediaAll || postVM.option == .mediaHashtag
-                    {
-                        HStack {
-                            Spacer()
-                            ProgressView()
-                                .onAppear {
+                            .onAppear {
+                                if idx == mediaList.count - 1 {
                                     postVM.loadMorePosts()
                                 }
-                            Spacer()
+                            }
+                            .onReceive(postVM.$mediaList, perform: { value in
+                                if postVM.mediaTotalItems[postVM.selectedHashTag.id] == value[postVM.selectedHashTag.id]?.count,
+                                   !postVM.isEnd
+                                {
+                                    postVM.isEnd = true
+                                    Global.shared.toastMessageContent = "최근 게시글을 모두 불러왔습니다."
+                                    withAnimation {
+                                        Global.shared.showToastMessage = true
+                                    }
+                                }
+                            })
                         }
                     }
                 }

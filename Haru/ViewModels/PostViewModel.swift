@@ -59,6 +59,8 @@ final class PostViewModel: ObservableObject {
 
     var feedTotalPage: Int = -1
     var mediaTotalPage: [HashTag.ID: Int] = [:]
+    var mediaTotalItems: [HashTag.ID: Int] = [:]
+    var isEnd: Bool = false
 
     var lastCreatedAt: Date? {
         switch option {
@@ -281,7 +283,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPage = pageInfo.totalPages
+                self.feedTotalPage = min(pageInfo.totalPages, 20)
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -314,7 +316,7 @@ final class PostViewModel: ObservableObject {
 
                 self.postList.append(contentsOf: success.0)
                 let pageInfo = success.1
-                self.feedTotalPage = pageInfo.totalPages
+                self.feedTotalPage = min(pageInfo.totalPages, 20)
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -346,7 +348,8 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
                 let pageInfo = success.1
-                self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
+                self.mediaTotalPage[Global.shared.hashTagAll.id] = min(pageInfo.totalPages, 8)
+                self.mediaTotalItems[Global.shared.hashTagAll.id] = min(pageInfo.totalItems, 12 * 8)
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -379,7 +382,8 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
                 let pageInfo = success.1
-                self.mediaTotalPage[hashTagId] = pageInfo.totalPages
+                self.mediaTotalPage[hashTagId] = min(pageInfo.totalPages, 8)
+                self.mediaTotalItems[Global.shared.hashTagAll.id] = min(pageInfo.totalItems, 12 * 8)
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -410,7 +414,8 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
                 let pageInfo = success.1
-                self.mediaTotalPage[Global.shared.hashTagAll.id] = pageInfo.totalPages
+                self.mediaTotalPage[Global.shared.hashTagAll.id] = min(pageInfo.totalPages, 8)
+                self.mediaTotalItems[Global.shared.hashTagAll.id] = min(pageInfo.totalItems, 12 * 8)
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -442,7 +447,8 @@ final class PostViewModel: ObservableObject {
 
                 self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
                 let pageInfo = success.1
-                self.mediaTotalPage[hashTagId] = pageInfo.totalPages
+                self.mediaTotalPage[hashTagId] = min(pageInfo.totalPages, 8)
+                self.mediaTotalItems[Global.shared.hashTagAll.id] = min(pageInfo.totalItems, 12 * 8)
 
             case .failure(let failure):
                 print("[Debug] \(failure) \(#fileID) \(#function)")
