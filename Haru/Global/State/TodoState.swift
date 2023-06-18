@@ -282,13 +282,13 @@ final class TodoState: ObservableObject {
 
     func completeTodoWithRepeat(
         todo: Todo,
-        nextEndDate: Date,
+        date: Date,
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         todoService.completeTodoWithRepeat(
             todo: todo,
-            nextEndDate: nextEndDate,
+            date: date,
             at: at
         ) { result in
             switch result {

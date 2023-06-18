@@ -115,15 +115,32 @@ struct TodoView: View {
                         // 만약 반복이 끝났다면, nextEndDate == nil
                         guard let nextEndDate = try todo.nextEndDate() else {
                             // 반복이 끝났음
-                            checkListViewModel.completeTodo(
-                                todoId: todo.id,
-                                completed: !todo.completed
-                            ) { result in
-                                switch result {
-                                case .success:
-                                    completeAction()
-                                case .failure(let failure):
-                                    print("[Debug] 반복하는 할 일 마지막 반복 완료 실패, \(failure) \(#fileID) \(#function)")
+                            if at == .none {
+                                checkListViewModel.completeTodo(
+                                    todoId: todo.id,
+                                    completed: !todo.completed
+                                ) { result in
+                                    switch result {
+                                    case .success:
+                                        completeAction()
+                                    case .failure(let failure):
+                                        print("[Debug] 반복하는 할 일 마지막 반복 완료 실패, \(failure) \(#fileID) \(#function)")
+                                    }
+                                }
+                            } else {
+                                let prevRepeatEnd = try todo.prevEndDate()
+                                checkListViewModel.completeTodoWithRepeat(
+                                    todo: todo,
+                                    date: prevRepeatEnd,
+                                    at: at
+                                ) { result in
+                                    switch result {
+                                    case .success:
+                                        completeAction()
+                                    case .failure(let failure):
+                                        print("[Debug] 반복하는 할 일 완료 실패, \(failure) \(#fileID) \(#function)")
+                                    }
+                                    isCompletionButtonActive = true
                                 }
                             }
                             isCompletionButtonActive = true
@@ -133,7 +150,7 @@ struct TodoView: View {
                         // 반복이 끝나지 않음. (무한히 반복하는 할 일 or 반복 마감일 이전)
                         checkListViewModel.completeTodoWithRepeat(
                             todo: todo,
-                            nextEndDate: nextEndDate,
+                            date: nextEndDate,
                             at: at
                         ) { result in
                             switch result {

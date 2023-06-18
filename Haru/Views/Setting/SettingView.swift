@@ -55,7 +55,7 @@ struct SettingView: View {
                 Divider()
                     .padding(.horizontal, 20)
 
-                Text("Version")
+                Text("Version 1.0.0")
                     .font(.pretendard(size: 14, weight: .regular))
                     .foregroundColor(Color(0x646464))
                     .padding(.leading, 34)

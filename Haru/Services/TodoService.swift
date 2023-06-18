@@ -863,7 +863,7 @@ struct TodoService {
 
     func completeTodoWithRepeat(
         todo: Todo,
-        nextEndDate endDate: Date,
+        date: Date,
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -887,7 +887,7 @@ struct TodoService {
         ]
 
         var params: [String: Any] = [
-            "endDate": Self.formatter.string(from: endDate),
+            "endDate": Self.formatter.string(from: date),
         ]
 
         if let endDate = todo.endDate, at == .middle {
