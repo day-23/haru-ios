@@ -184,7 +184,7 @@ struct ProductivitySearchView: View {
 
     @ViewBuilder
     func todoItemList() -> some View {
-        ForEach(self.searchVM.todoList, id: \.id) { todo in
+        ForEach(self.$searchVM.todoList) { $todo in
             NavigationLink {
                 TodoAddView(viewModel: self.todoAddViewModel)
                     .onAppear {
@@ -201,17 +201,29 @@ struct ProductivitySearchView: View {
                     contentWords: self.splitContent(content: todo.content, searchString: self.prevSearchContent)
                 ) {
                     // completeAction
-                    self.searchVM.searchTodoAndSchedule(
-                        searchContent: self.prevSearchContent
-                    ) { success in
-                        self.searchSuccess = success
+                    withAnimation {
+                        todo.completed.toggle()
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.searchVM.searchTodoAndSchedule(
+                            searchContent: self.prevSearchContent
+                        ) { success in
+                            self.searchSuccess = success
+                        }
                     }
                 } updateAction: {
                     // updateAction
-                    self.searchVM.searchTodoAndSchedule(
-                        searchContent: self.prevSearchContent
-                    ) { success in
-                        self.searchSuccess = success
+                    withAnimation {
+                        todo.flag.toggle()
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.searchVM.searchTodoAndSchedule(
+                            searchContent: self.prevSearchContent
+                        ) { success in
+                            self.searchSuccess = success
+                        }
                     }
                 }
             }

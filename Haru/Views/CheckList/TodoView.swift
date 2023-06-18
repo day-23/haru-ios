@@ -93,6 +93,8 @@ struct TodoView: View {
                 .onTapGesture {
                     isCompletionButtonActive = false
 
+                    print(at)
+
                     if (todo.repeatOption == nil && todo.repeatValue == nil)
                         || todo.completed
                     {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import UIKit
 
 final class SearchViewModel: ObservableObject {
@@ -53,10 +54,12 @@ final class SearchViewModel: ObservableObject {
         searchService.searchTodoAndSchedule(searchContent: searchContent) { result in
             switch result {
             case .success(let success):
-                self.scheduleList = success.0.reduce([Schedule]()) { partialResult, schedule in
-                    partialResult + [self.fittingSchedule(schedule: schedule)]
+                withAnimation {
+                    self.scheduleList = success.0.reduce([Schedule]()) { partialResult, schedule in
+                        partialResult + [self.fittingSchedule(schedule: schedule)]
+                    }
+                    self.todoList = success.1
                 }
-                self.todoList = success.1
                 completion(success.0.isEmpty && success.1.isEmpty ? false : true)
             case .failure(let failure):
                 completion(false)

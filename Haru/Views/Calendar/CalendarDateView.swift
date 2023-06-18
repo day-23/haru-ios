@@ -212,7 +212,9 @@ struct CalendarDateView: View {
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
-                        self.isTodoModalVisible = false
+                        withAnimation {
+                            self.isTodoModalVisible = false
+                        }
                     }
                     
                 Modal(isActive: self.$isTodoModalVisible, ratio: 0.9) {
