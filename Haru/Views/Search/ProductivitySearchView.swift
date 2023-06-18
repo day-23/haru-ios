@@ -50,7 +50,7 @@ struct ProductivitySearchView: View {
                             HStack(spacing: 6) {
                                 Image("calendar-mini-todo")
 
-                                Text("할일")
+                                Text("할 일")
                                     .font(.pretendard(size: 16, weight: .bold))
                                     .foregroundColor(Color(0x1DAFFF))
 
@@ -70,7 +70,7 @@ struct ProductivitySearchView: View {
                             .frame(width: 165, height: 146)
                             .padding(.bottom, 54)
 
-                        Text("해당하는 할일 또는 일정이 없어요.")
+                        Text("해당하는 할 일 또는 일정이 없어요.")
                             .font(.pretendard(size: 16, weight: .regular))
                             .foregroundColor(Color(0x646464))
                     }
@@ -83,7 +83,7 @@ struct ProductivitySearchView: View {
                         .frame(width: 165, height: 146)
                         .padding(.bottom, 54)
 
-                    Text("할일 또는 일정을 검색할 수 있어요.")
+                    Text("할 일 또는 일정을 검색할 수 있어요.")
                         .font(.pretendard(size: 16, weight: .regular))
                         .foregroundColor(Color(0x646464))
                 }

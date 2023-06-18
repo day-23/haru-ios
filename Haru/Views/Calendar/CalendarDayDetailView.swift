@@ -113,7 +113,7 @@ struct CalendarDayDetailView: View {
                         
                         HStack(spacing: 12) {
                             Image("calendar-mini-todo")
-                            Text("할일")
+                            Text("할 일")
                                 .foregroundColor(Color(0x1DAFFF))
                                 .font(.pretendard(size: 16, weight: .bold))
                             Spacer()

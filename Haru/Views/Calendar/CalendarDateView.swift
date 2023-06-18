@@ -56,7 +56,7 @@ struct CalendarDateView: View {
                                 .font(.pretendard(size: 28, weight: .bold))
                                     
                             Button {
-                                withAnimation {
+                                withAnimation(.easeInOut(duration: 0.1)) {
                                     self.isDatePickerVisible.toggle()
                                 }
                             } label: {
