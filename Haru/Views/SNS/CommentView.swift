@@ -184,28 +184,6 @@ struct CommentView: View, KeyboardReadable {
                                             .frame(width: 28, height: 28)
                                     }
                                 }
-
-                                if isMine {
-                                    NavigationLink {
-                                        CommentListView(
-                                            commentVM: CommentViewModel(
-                                                userId: userId,
-                                                postImageIDList: postImageList.map { image in
-                                                    image.id
-                                                },
-                                                postId: postId,
-                                                imagePageNum: postPageNum
-                                            ),
-                                            isTemplate: isTemplate
-                                        )
-                                    } label: {
-                                        Image("slider")
-                                            .resizable()
-                                            .renderingMode(.template)
-                                            .frame(width: 28, height: 28)
-                                            .foregroundColor(Color(0x646464))
-                                    }
-                                }
                             }
                             .opacity(isCommentEditing || (isCommentWriting || isCommentDeleting) ? 0 : 1)
                         }
@@ -281,6 +259,49 @@ struct CommentView: View, KeyboardReadable {
             mainContent(deviceSize: deviceSize)
                 .zIndex(3)
 
+            if isMine {
+                HStack(spacing: 0) {
+                    HStack(spacing: 5) {
+                        Image("sns-heart-fill")
+                        Text("\(post.likedCount)")
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .foregroundColor(Color(0x191919))
+                    }
+                    .padding(.trailing, 10)
+
+                    HStack(spacing: 5) {
+                        Image("sns-comment-fill")
+                        Text("\(post.commentCount)")
+                            .font(.pretendard(size: 14, weight: .bold))
+                            .foregroundColor(Color(0x191919))
+                    }
+
+                    Spacer()
+
+                    NavigationLink {
+                        CommentListView(
+                            commentVM: CommentViewModel(
+                                userId: userId,
+                                postImageIDList: postImageList.map { image in
+                                    image.id
+                                },
+                                postId: postId,
+                                imagePageNum: postPageNum
+                            ),
+                            isTemplate: isTemplate
+                        )
+                    } label: {
+                        Image("slider")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(Color(0x646464))
+                    }
+                }
+                .offset(y: deviceSize.width / 2 + 20)
+                .padding(.horizontal, 20)
+            }
+
             if hideCommentModalVis,
                let target = hideCommentTarget
             {
@@ -298,7 +319,7 @@ struct CommentView: View, KeyboardReadable {
                       ratio: UIScreen.main.bounds.height < 800 ? 0.35 : 0.3)
                 {
                     VStack(spacing: 0) {
-                        HStack(alignment: .center, spacing: 0) {
+                        HStack(spacing: 0) {
                             if let profileImage = target.user.profileImage {
                                 ProfileImgView(imageUrl: URL(string: profileImage))
                                     .frame(width: 62, height: 62)
@@ -309,10 +330,16 @@ struct CommentView: View, KeyboardReadable {
                                     .frame(width: 62, height: 62)
                             }
 
-                            Text(target.user.name)
-                                .font(.pretendard(size: 20, weight: .bold))
-                                .foregroundColor(Color(0x191919))
-                                .padding(.leading, 20)
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(target.user.name)
+                                    .font(.pretendard(size: 20, weight: .bold))
+                                    .padding(.bottom, 4)
+
+                                Text(target.createdAt.relative())
+                                    .font(.pretendard(size: 14, weight: .regular))
+                            }
+                            .foregroundColor(Color(0x191919))
+                            .padding(.leading, 20)
                         }
                         .padding(.bottom, 20)
 
