@@ -222,6 +222,9 @@ struct CalendarDateView: View {
                         viewModel: self.addViewModel,
                         isModalVisible: self.$isTodoModalVisible
                     )
+                    .onAppear {
+                        self.addViewModel.isSelectedEndDate = true
+                    }
                 }
                 .transition(.modal)
                 .zIndex(2)
