@@ -329,7 +329,7 @@ struct ProfileView: View {
                         .font(.pretendard(size: 14, weight: .bold))
                         .foregroundColor(self.isFeedSelected ? Color(0x1DAFFF) : Color(0xACACAC))
                         .onTapGesture {
-                            postVM.option = .target_feed
+                            postVM.option = .targetFeed
                             withAnimation {
                                 self.isFeedSelected = true
                             }
@@ -340,7 +340,7 @@ struct ProfileView: View {
                         .font(.pretendard(size: 14, weight: .bold))
                         .foregroundColor(self.isFeedSelected ? Color(0xACACAC) : Color(0x1DAFFF))
                         .onTapGesture {
-                            postVM.option = .target_media_all
+                            postVM.option = .targetMediaAll
                             withAnimation {
                                 self.isFeedSelected = false
                             }

@@ -33,7 +33,7 @@ struct FeedView: View {
                 HStack(spacing: 10) {
                     NavigationLink {
                         ProfileView(
-                            postVM: PostViewModel(targetId: post.user.id, option: .target_feed),
+                            postVM: PostViewModel(targetId: post.user.id, option: .targetFeed),
                             userProfileVM: UserProfileViewModel(userId: post.user.id)
                         )
                     } label: {
@@ -46,9 +46,9 @@ struct FeedView: View {
                                 .foregroundColor(.mainBlack)
                         }
                     }.disabled(
-                        postVM.option == .target_feed ||
-                            postVM.option == .target_media_all ||
-                            postVM.option == .target_media_hashtag
+                        postVM.option == .targetFeed ||
+                            postVM.option == .targetMediaAll ||
+                            postVM.option == .targetMediaHashtag
                     )
                     
                     Text("\(post.createdAt.relative())")

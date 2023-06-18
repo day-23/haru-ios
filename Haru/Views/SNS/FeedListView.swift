@@ -38,7 +38,7 @@ struct FeedListView: View {
             }
         }
         .onAppear {
-            postVM.option = postVM.targetId == nil ? .main : .target_feed
+            postVM.option = postVM.targetId == nil ? .main : .targetFeed
             if postVM.feedTotalPage == -1 {
                 postVM.loadMorePosts()
             }
@@ -70,7 +70,7 @@ struct FeedListView: View {
             }
             if !postVM.postList.isEmpty &&
                 postVM.page <= postVM.feedTotalPage &&
-                (postVM.option == .target_feed || postVM.option == .main)
+                (postVM.option == .targetFeed || postVM.option == .main)
             {
                 HStack {
                     Spacer()

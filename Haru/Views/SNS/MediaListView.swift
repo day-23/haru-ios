@@ -27,7 +27,7 @@ struct MediaListView: View {
             }
         }
         .onAppear {
-            postVM.option = postVM.targetId == nil ? .media_all : postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media_all : .target_media_hashtag
+            postVM.option = postVM.targetId == nil ? .mediaAll : postVM.selectedHashTag == Global.shared.hashTagAll ? .targetMediaAll : .targetMediaHashtag
             postVM.fetchTargetHashTags()
 
             if postVM.mediaTotalPage[postVM.selectedHashTag.id] == nil {
@@ -79,7 +79,7 @@ struct MediaListView: View {
 
                     if !mediaList.isEmpty,
                        postVM.page <= postVM.mediaTotalPage[postVM.selectedHashTag.id] ?? 0,
-                       postVM.option == .media_all || postVM.option == .media_hashtag
+                       postVM.option == .mediaAll || postVM.option == .mediaHashtag
                     {
                         HStack {
                             Spacer()

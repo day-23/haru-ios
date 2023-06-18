@@ -32,24 +32,24 @@ final class PostViewModel: ObservableObject {
         switch option {
         case .main:
             return Int(ceil(Double(postList.count) / 5.0)) + 1
-        case .target_feed:
+        case .targetFeed:
             return Int(ceil(Double(postList.count) / 5.0)) + 1
-        case .target_media_all:
+        case .targetMediaAll:
             guard let mediaList = mediaList[Global.shared.hashTagAll.id] else {
                 return 1
             }
             return Int(ceil(Double(mediaList.count) / 12.0)) + 1
-        case .target_media_hashtag:
+        case .targetMediaHashtag:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return 1
             }
             return Int(ceil(Double(mediaList.count) / 12.0)) + 1
-        case .media_all:
+        case .mediaAll:
             guard let mediaList = mediaList[Global.shared.hashTagAll.id] else {
                 return 1
             }
             return Int(ceil(Double(mediaList.count) / 12.0)) + 1
-        case .media_hashtag:
+        case .mediaHashtag:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return 1
             }
@@ -64,24 +64,24 @@ final class PostViewModel: ObservableObject {
         switch option {
         case .main:
             return postList.first?.createdAt
-        case .target_feed:
+        case .targetFeed:
             return postList.first?.createdAt
-        case .target_media_all:
+        case .targetMediaAll:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return nil
             }
             return mediaList.first?.createdAt
-        case .target_media_hashtag:
+        case .targetMediaHashtag:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return nil
             }
             return mediaList.first?.createdAt
-        case .media_all:
+        case .mediaAll:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return nil
             }
             return mediaList.first?.createdAt
-        case .media_hashtag:
+        case .mediaHashtag:
             guard let mediaList = mediaList[selectedHashTag.id] else {
                 return nil
             }
@@ -110,7 +110,7 @@ final class PostViewModel: ObservableObject {
 
             fetchFreindsPosts(page: page, lastCreatedAt: lastCreatedAt)
 
-        case .target_feed:
+        case .targetFeed:
             if feedTotalPage != -1 {
                 if page > feedTotalPage {
                     return
@@ -125,7 +125,7 @@ final class PostViewModel: ObservableObject {
 
             fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
 
-        case .target_media_all:
+        case .targetMediaAll:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
                     return
@@ -140,7 +140,7 @@ final class PostViewModel: ObservableObject {
 
             fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt)
 
-        case .target_media_hashtag:
+        case .targetMediaHashtag:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
                     return
@@ -155,7 +155,7 @@ final class PostViewModel: ObservableObject {
 
             fetchTargetMediaHashTag(targetId: targetId, hashTagId: selectedHashTag.id, page: page, lastCreatedAt: lastCreatedAt)
 
-        case .media_all:
+        case .mediaAll:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
                     return
@@ -164,7 +164,7 @@ final class PostViewModel: ObservableObject {
 
             fetchMediaAll(page: page, lastCreatedAt: lastCreatedAt)
 
-        case .media_hashtag:
+        case .mediaHashtag:
             if let mediaTotalPage = mediaTotalPage[selectedHashTag.id] {
                 if page > mediaTotalPage {
                     return
@@ -557,19 +557,19 @@ final class PostViewModel: ObservableObject {
         case .main:
             postList = []
             postImageList = [:]
-        case .target_feed:
+        case .targetFeed:
             postList = []
             postImageList = [:]
-        case .target_media_all:
+        case .targetMediaAll:
             mediaList = [:]
             mediaImageList = [:]
-        case .target_media_hashtag:
+        case .targetMediaHashtag:
             mediaList = [:]
             mediaImageList = [:]
-        case .media_all:
+        case .mediaAll:
             mediaList = [:]
             mediaImageList = [:]
-        case .media_hashtag:
+        case .mediaHashtag:
             mediaList = [:]
             mediaImageList = [:]
         }

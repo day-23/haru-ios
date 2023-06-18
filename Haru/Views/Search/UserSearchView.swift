@@ -193,7 +193,7 @@ struct UserSearchView: View {
         HStack(spacing: 0) {
             NavigationLink {
                 ProfileView(
-                    postVM: PostViewModel(targetId: user.id, option: .target_feed),
+                    postVM: PostViewModel(targetId: user.id, option: .targetFeed),
                     userProfileVM: UserProfileViewModel(userId: user.id)
                 )
             } label: {

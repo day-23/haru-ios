@@ -44,7 +44,7 @@ struct SNSView: View {
                 } else {
                     LookAroundView(postVM: self.postVM)
                         .onAppear {
-                            self.postVM.option = .media_all
+                            self.postVM.option = .mediaAll
                         }
                 }
             }
@@ -288,7 +288,7 @@ struct SNSView: View {
         HaruHeader(toggleIsClicked: self.$toggleIsClicked) {
             NavigationLink {
                 ProfileView(
-                    postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .target_feed),
+                    postVM: PostViewModel(targetId: Global.shared.user?.id ?? nil, option: .targetFeed),
                     userProfileVM: UserProfileViewModel(userId: Global.shared.user?.id ?? "unknown"),
                     myProfile: true
                 )

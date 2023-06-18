@@ -43,9 +43,9 @@ struct HashTagView: View {
 
                             postVM.selectedHashTag = postVM.hashTags[idx]
                             if postVM.targetId == nil {
-                                postVM.option = postVM.selectedHashTag == Global.shared.hashTagAll ? .media_all : .media_hashtag
+                                postVM.option = postVM.selectedHashTag == Global.shared.hashTagAll ? .mediaAll : .mediaHashtag
                             } else {
-                                postVM.option = postVM.selectedHashTag == Global.shared.hashTagAll ? .target_media_all : .target_media_hashtag
+                                postVM.option = postVM.selectedHashTag == Global.shared.hashTagAll ? .targetMediaAll : .targetMediaHashtag
                             }
 
                             postVM.loadMorePosts()
