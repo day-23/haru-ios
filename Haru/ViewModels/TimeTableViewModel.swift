@@ -680,7 +680,7 @@ final class TimeTableViewModel: ObservableObject {
                 var date: Date?
                 do {
                     date = try draggingSchedule.data.prevRepeatEndDate(
-                        curRepeatEnd: draggingSchedule.data.repeatStart
+                        curRepeatEnd: draggingSchedule.data.repeatEnd
                     )
 
                     let components = DateComponents(
@@ -707,6 +707,7 @@ final class TimeTableViewModel: ObservableObject {
                 }
                 return date
             }
+
             scheduleService.updateScheduleWithRepeat(
                 scheduleId: draggingSchedule.data.id,
                 schedule: Request.RepeatSchedule(
