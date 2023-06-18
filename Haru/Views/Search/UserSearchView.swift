@@ -36,15 +36,12 @@ struct UserSearchView: View {
                                 .resizable()
                                 .frame(width: 125, height: 205)
                                 
-                            Text("하루 아이디를 가지는")
+                            Text("하루 아이디를 가지는\n친구를 찾을 수 없r어요.")
                                 .font(.pretendard(size: 16, weight: .regular))
-                                .foregroundColor(Color(0x646464))
+                                .foregroundColor(Color(0xACACAC))
+                                .multilineTextAlignment(.center)
+                                .lineSpacing(26 - 16)
                                 .padding(.top, 37)
-                                
-                            Text("친구를 찾을 수 없어요.")
-                                .font(.pretendard(size: 16, weight: .regular))
-                                .foregroundColor(Color(0x646464))
-                                .padding(.top, 10)
                         }
                         .padding(.top, 100)
                     } else {
@@ -53,15 +50,12 @@ struct UserSearchView: View {
                                 .resizable()
                                 .frame(width: 165, height: 145)
                                 
-                            Text("하루 아이디 검색을 통해")
+                            Text("하루 아이디 또는 이메일 검색을 통해\n친구를 찾을 수 있어요.")
                                 .font(.pretendard(size: 16, weight: .regular))
-                                .foregroundColor(Color(0x646464))
-                                .padding(.top, 50)
-                                
-                            Text("친구를 찾을 수 있어요.")
-                                .font(.pretendard(size: 16, weight: .regular))
-                                .foregroundColor(Color(0x646464))
-                                .padding(.top, 10)
+                                .foregroundColor(Color(0xACACAC))
+                                .multilineTextAlignment(.center)
+                                .lineSpacing(26 - 16)
+                                .padding(.top, 55)
                         }
                         .padding(.top, 150)
                     }

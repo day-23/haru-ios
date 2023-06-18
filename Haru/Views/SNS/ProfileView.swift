@@ -103,11 +103,13 @@ struct ProfileView: View {
                                 .frame(width: 160, height: 190)
                                 .padding(.top, 68)
                                 .padding(.bottom, 55)
-                            Text("비공개 계정입니다.")
-                                .padding(.bottom, 5)
-                            Text("수락된 친구만 게시글을 볼 수 있어요.")
+                            Text("비공개 계정입니다.\n수락된 친구만 게시글을 볼 수 있어요.")
+                                .multilineTextAlignment(.center)
+                                .lineSpacing(26 - 16)
                             Spacer()
                         }
+                        .font(.pretendard(size: 16, weight: .regular))
+                        .foregroundColor(Color(0xACACAC))
                     }
                 }
                 .height(min: 40, max: 210)

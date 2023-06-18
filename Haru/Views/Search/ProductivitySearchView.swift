@@ -72,7 +72,7 @@ struct ProductivitySearchView: View {
 
                         Text("해당하는 할 일 또는 일정이 없어요.")
                             .font(.pretendard(size: 16, weight: .regular))
-                            .foregroundColor(Color(0x646464))
+                            .foregroundColor(Color(0xACACAC))
                     }
                     .padding(.top, 160)
                 }
@@ -85,7 +85,7 @@ struct ProductivitySearchView: View {
 
                     Text("할 일 또는 일정을 검색할 수 있어요.")
                         .font(.pretendard(size: 16, weight: .regular))
-                        .foregroundColor(Color(0x646464))
+                        .foregroundColor(Color(0xACACAC))
                 }
                 .padding(.top, 160)
             }

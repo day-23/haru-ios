@@ -32,7 +32,7 @@ struct FeedListView: View {
 
                     Text("나의 하루를 기록해 보세요.")
                         .font(.pretendard(size: 16, weight: .regular))
-                        .foregroundColor(Color(0x646464))
+                        .foregroundColor(Color(0xacacac))
                     Spacer()
                 }
             }
