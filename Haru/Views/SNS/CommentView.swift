@@ -137,6 +137,11 @@ struct CommentView: View, KeyboardReadable {
                             if isMine {
                                 isCommentEditing = true
                             } else if alreadyComment[postPageNum] == nil {
+                                if post.user.isAllowFeedComment == 0
+                                    || (post.user.isAllowFeedComment == 1 && post.user.friendStatus != 2)
+                                {
+                                    return
+                                }
                                 x = UIScreen.main.bounds.size.width / 2
                                 y = UIScreen.main.bounds.size.width / 2
                                 startingX = UIScreen.main.bounds.size.width / 2
@@ -578,6 +583,13 @@ struct CommentView: View, KeyboardReadable {
                 .offset(y: deviceSize.width / 2 + 80)
             }
             .onTapGesture { location in
+                if post.user.isAllowFeedComment == 0
+                    || (post.user.isAllowFeedComment == 1 &&
+                        post.user.friendStatus != 2)
+                {
+                    return
+                }
+
                 if isCommentWriting || isCommentDeleting || isCommentEditing {
                     return
                 }

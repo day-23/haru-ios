@@ -70,12 +70,6 @@ struct FeedImage: View {
                             }
                         }
                         .buttonStyle(.plain)
-                        .disabled(
-                            !(isMine ||
-                                post.user.isAllowFeedComment == 2 ||
-                                (post.user.isAllowFeedComment == 1 &&
-                                    post.user.friendStatus == 2))
-                        )
                     } else {
                         ProgressView()
                     }

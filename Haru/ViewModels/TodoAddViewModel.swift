@@ -404,7 +404,6 @@ final class TodoAddViewModel: ObservableObject {
             return false
         }
 
-        // FIXME: alarm 비교하는 코드 추가 필요
         return todo.content == content
             && todo.flag == flag
             && todo.subTodos.elementsEqual(subTodoList, by: { lhs, rhs in

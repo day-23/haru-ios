@@ -85,13 +85,15 @@ struct FeedView: View {
                 HStack(spacing: 10) {
                     HStack(spacing: 5) {
                         Button {
-                            postVM.likeThisPost(targetPostId: post.id) {
-                                if post.isLiked {
-                                    post.likedCount -= 1
-                                    post.isLiked = false
-                                } else {
-                                    post.likedCount += 1
-                                    post.isLiked = true
+                            if post.user.isAllowFeedLike == 2 || (post.user.isAllowFeedLike == 1 && post.user.friendStatus == 2) {
+                                postVM.likeThisPost(targetPostId: post.id) {
+                                    if post.isLiked {
+                                        post.likedCount -= 1
+                                        post.isLiked = false
+                                    } else {
+                                        post.likedCount += 1
+                                        post.isLiked = true
+                                    }
                                 }
                             }
                         } label: {
