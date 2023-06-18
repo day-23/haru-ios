@@ -124,6 +124,16 @@ struct PopupImagePicker: View {
                                         imageAsset.thumbnail = image
                                     }
                                 }
+
+                                if imagePickerModel.fetchedImages.firstIndex(where: { $0.id == imageAsset.id })
+                                    == imagePickerModel.fetchedImages.count - 1
+                                {
+                                    Global.shared.toastMessageContent = "최근 200개의 사진을 모두 불러 왔습니다."
+                                    Global.shared.toastMessageTheme = .dark
+                                    withAnimation {
+                                        Global.shared.showToastMessage = true
+                                    }
+                                }
                             }
                             .contentShape(RoundedRectangle(cornerRadius: 8))
                     }

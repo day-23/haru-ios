@@ -122,15 +122,27 @@ struct HaruApp: App {
                             LoadingView()
                                 .zIndex(2)
                         } else if global.showToastMessage {
-                            Text(global.toastMessageContent)
-                                .font(.pretendard(size: 16, weight: .bold))
-                                .foregroundColor(Color(0x191919))
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, 16)
-                                .background(Color(0xdbdbdb, opacity: 0.5))
-                                .cornerRadius(10)
-                                .offset(y: UIScreen.main.bounds.height * 0.3)
-                                .zIndex(2)
+                            if global.toastMessageTheme == .light {
+                                Text(global.toastMessageContent)
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(Color(0x191919))
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 16)
+                                    .background(Color(0xdbdbdb, opacity: 0.5))
+                                    .cornerRadius(10)
+                                    .offset(y: UIScreen.main.bounds.height * 0.3)
+                                    .zIndex(2)
+                            } else {
+                                Text(global.toastMessageContent)
+                                    .font(.pretendard(size: 16, weight: .bold))
+                                    .foregroundColor(Color(0xfdfdfd))
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 16)
+                                    .background(Color(0x191919, opacity: 0.8))
+                                    .cornerRadius(10)
+                                    .offset(y: UIScreen.main.bounds.height * 0.3)
+                                    .zIndex(2)
+                            }
                         }
                     }
                 }

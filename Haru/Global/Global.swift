@@ -12,6 +12,11 @@ import UserNotifications
 final class Global: ObservableObject {
     private init() {}
 
+    enum ToastMessageTheme {
+        case light
+        case dark
+    }
+
     static let shared: Global = .init()
     @Published var user: Me?
 
@@ -32,12 +37,18 @@ final class Global: ObservableObject {
                     withAnimation {
                         self.showToastMessage = false
                     }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.toastMessageContent = ""
+                        self.toastMessageTheme = .light
+                    }
                 }
             }
         }
     }
 
     @Published var toastMessageContent: String = ""
+    @Published var toastMessageTheme: ToastMessageTheme = .light
 
     var holidayCategory = Category(
         id: UUID().uuidString,
