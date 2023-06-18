@@ -47,7 +47,7 @@ struct FeedListView: View {
 
     @ViewBuilder
     func comeFromMain() -> some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             mainContent()
         }
         .refreshable {
