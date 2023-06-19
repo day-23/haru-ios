@@ -35,6 +35,7 @@ struct FeedListView: View {
                         .foregroundColor(Color(0xacacac))
                     Spacer()
                 }
+                .frame(maxWidth: .infinity)
             }
         }
         .onAppear {
