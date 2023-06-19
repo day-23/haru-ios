@@ -95,7 +95,6 @@ struct CommentView: View, KeyboardReadable {
     @State var startingYList: [String: CGFloat] = [:]
 
     @State var overHide: Bool = false
-    @State var overWarning: Bool = false
 
     var isMine: Bool // 해당 게시물이 내 게시물인지 남의 게시물인지
 
@@ -137,7 +136,9 @@ struct CommentView: View, KeyboardReadable {
                         }
                         .onTapGesture {
                             if isMine {
-                                isCommentEditing = true
+                                withAnimation(.linear(duration: 0.1)) {
+                                    isCommentEditing = true
+                                }
                             } else if alreadyComment[postPageNum] == nil {
                                 if post.user.isAllowFeedComment == 0
                                     || (post.user.isAllowFeedComment == 1 && post.user.friendStatus != 2)
@@ -148,7 +149,11 @@ struct CommentView: View, KeyboardReadable {
                                 y = UIScreen.main.bounds.size.width / 2
                                 startingX = UIScreen.main.bounds.size.width / 2
                                 startingY = UIScreen.main.bounds.size.width / 2
-                                isCommentWriting = true
+
+                                withAnimation(.linear(duration: 0.1)) {
+                                    isCommentWriting = true
+                                }
+
                                 isFocused = true
                             } else {
                                 delCommentTarget = alreadyComment[postPageNum]?.0
@@ -265,7 +270,7 @@ struct CommentView: View, KeyboardReadable {
             mainContent(deviceSize: deviceSize)
                 .zIndex(3)
 
-            if isMine {
+            if isMine, !isCommentEditing {
                 HStack(spacing: 0) {
                     HStack(spacing: 5) {
                         Image("sns-heart-fill")
@@ -587,7 +592,9 @@ struct CommentView: View, KeyboardReadable {
                 }
                 .offset(y: deviceSize.width / 2 + 80)
             }
+            .onTapGesture(count: 2) {}
             .onTapGesture { _ in
+                // 이미지 영역 눌렀을 때 생성, 삭제, 수정 플로우 시작
                 if post.user.isAllowFeedComment == 0
                     || (post.user.isAllowFeedComment == 1 &&
                         post.user.friendStatus != 2)
@@ -614,7 +621,9 @@ struct CommentView: View, KeyboardReadable {
                     y = deviceSize.width / 2
                     startingX = deviceSize.width / 2
                     startingY = deviceSize.width / 2
-                    isCommentWriting = true
+                    withAnimation(.linear(duration: 0.1)) {
+                        isCommentWriting = true
+                    }
                     isFocused = true
                 }
             }
@@ -678,6 +687,7 @@ struct CommentView: View, KeyboardReadable {
                         startingYList[comment.id] = CGFloat(comment.y)
                         withAnimation {
                             draggingList[comment.id] = true
+                            HapticManager.instance.impact(style: .heavy)
                         }
                     }
 
@@ -696,24 +706,20 @@ struct CommentView: View, KeyboardReadable {
                             overHide = false
                         }
 
-                        // 범위 막기
-                        if value.location.y < 0 {
-                            return
+                        xList[comment.id] = value.location.x
+                        yList[comment.id] = value.location.y
+
+                        // 범위
+                        if value.location.y < 10 {
+                            yList[comment.id] = CGFloat(10) + ((textSize[comment.id]?.height ?? 0) / 2)
                         }
 
-                        if value.location.x + ((textSize[comment.id]?.width ?? 0) / 2) >= sz - 10 ||
-                            value.location.x - ((textSize[comment.id]?.width ?? 0) / 2) <= 10 ||
-                            value.location.y - ((textSize[comment.id]?.height ?? 0) / 2) <= 10
-                        {
-                            return
-                        } else {
-                            if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz {
-                                overWarning = true
-                            } else {
-                                overWarning = false
-                            }
-                            xList[comment.id] = value.location.x
-                            yList[comment.id] = value.location.y
+                        if value.location.x - ((textSize[comment.id]?.width ?? 0) / 2) <= 10 {
+                            xList[comment.id] = CGFloat(10) + ((textSize[comment.id]?.width ?? 0) / 2)
+                        }
+
+                        if value.location.x + ((textSize[comment.id]?.width ?? 0) / 2) >= sz - 10 {
+                            xList[comment.id] = CGFloat(sz - 10) - ((textSize[comment.id]?.width ?? 0) / 2)
                         }
                     }
                     .onEnded { value in
@@ -723,10 +729,8 @@ struct CommentView: View, KeyboardReadable {
                             overHide = false
                         }
 
-                        if value.location.y + (textSize[comment.id]?.height ?? 0 / 2) > sz {
-                            xList[comment.id] = startingXList[comment.id] ?? 190
-                            yList[comment.id] = startingYList[comment.id] ?? 190
-                            overWarning = false
+                        if value.location.y + ((textSize[comment.id]?.height ?? 0) / 2) >= sz - 10 {
+                            yList[comment.id] = CGFloat(sz - 10) - ((textSize[comment.id]?.height ?? 0) / 2)
                         }
                         withAnimation {
                             draggingList[comment.id] = false
@@ -791,13 +795,33 @@ struct CommentView: View, KeyboardReadable {
                     }
 
                     if let uiImage = imageList[idx]?.uiImage {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .border(
-                                width: 2,
-                                edges: [.top, .bottom, .leading, .trailing],
-                                color: overWarning ? .red : .clear
-                            )
+                        if !isCommentWriting,
+                           !isCommentDeleting,
+                           !isCommentEditing,
+                           !isTemplate
+                        {
+                            GeometryReader { proxy in
+                                Image(uiImage: uiImage)
+                                    .renderingMode(.original)
+                                    .resizable()
+                                    .frame(
+                                        width: deviceSize.width,
+                                        height: deviceSize.width
+                                    )
+                                    .clipShape(Rectangle())
+                                    .modifier(ImageModifier(
+                                        contentSize: CGSize(width: proxy.size.width, height: proxy.size.height)))
+                            }
+                        } else {
+                            Image(uiImage: uiImage)
+                                .renderingMode(.original)
+                                .resizable()
+                                .frame(
+                                    width: deviceSize.width,
+                                    height: deviceSize.width
+                                )
+                                .clipShape(Rectangle())
+                        }
                     } else {
                         ProgressView()
                     }

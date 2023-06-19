@@ -161,52 +161,55 @@ struct FriendView: View {
                             self.userProfileVM.friendList.indices : self.userProfileVM.requestFriendList.indices, id: \.self)
                         { idx in
                             let user = self.friendTab ? self.userProfileVM.friendList[idx] : self.userProfileVM.requestFriendList[idx]
-                            HStack {
-                                NavigationLink {
-                                    ProfileView(
-                                        postVM: PostViewModel(targetId: user.id, option: .targetFeed),
-                                        userProfileVM: UserProfileViewModel(userId: user.id)
-                                    )
-                                } label: {
-                                    HStack(spacing: 16) {
-                                        switch self.userProfileVM.option {
-                                        case .friendList:
-                                            if let profileImage = userProfileVM.friProfileImageList[user.id] {
-                                                ProfileImgView(profileImage: profileImage)
-                                                    .frame(width: 40, height: 40)
-                                            } else {
-                                                Image("sns-default-profile-image-rectangle")
-                                                    .resizable()
-                                                    .clipShape(Circle())
-                                                    .frame(width: 40, height: 40)
+                            
+                            if !user.disabled {
+                                HStack {
+                                    NavigationLink {
+                                        ProfileView(
+                                            postVM: PostViewModel(targetId: user.id, option: .targetFeed),
+                                            userProfileVM: UserProfileViewModel(userId: user.id)
+                                        )
+                                    } label: {
+                                        HStack(spacing: 16) {
+                                            switch self.userProfileVM.option {
+                                            case .friendList:
+                                                if let profileImage = userProfileVM.friProfileImageList[user.id] {
+                                                    ProfileImgView(profileImage: profileImage)
+                                                        .frame(width: 40, height: 40)
+                                                } else {
+                                                    Image("sns-default-profile-image-rectangle")
+                                                        .resizable()
+                                                        .clipShape(Circle())
+                                                        .frame(width: 40, height: 40)
+                                                }
+                                            case .requestFriendList:
+                                                if let profileImage = userProfileVM.reqFriProImageList[user.id] {
+                                                    ProfileImgView(profileImage: profileImage)
+                                                        .frame(width: 40, height: 40)
+                                                } else {
+                                                    Image("sns-default-profile-image-rectangle")
+                                                        .resizable()
+                                                        .clipShape(Circle())
+                                                        .frame(width: 40, height: 40)
+                                                }
                                             }
-                                        case .requestFriendList:
-                                            if let profileImage = userProfileVM.reqFriProImageList[user.id] {
-                                                ProfileImgView(profileImage: profileImage)
-                                                    .frame(width: 40, height: 40)
-                                            } else {
-                                                Image("sns-default-profile-image-rectangle")
-                                                    .resizable()
-                                                    .clipShape(Circle())
-                                                    .frame(width: 40, height: 40)
-                                            }
+                                            
+                                            Text(user.name)
+                                                .font(.pretendard(size: 16, weight: .bold))
                                         }
-                                        
-                                        Text(user.name)
-                                            .font(.pretendard(size: 16, weight: .bold))
+                                    }
+                                    .foregroundColor(Color(0x191919))
+                                    
+                                    Spacer()
+                                    
+                                    if self.userProfileVM.isMe {
+                                        self.myFriendView(user: user, index: idx)
+                                    } else {
+                                        self.otherFriendView(user: user, index: idx)
                                     }
                                 }
-                                .foregroundColor(Color(0x191919))
-                                
-                                Spacer()
-                                
-                                if self.userProfileVM.isMe {
-                                    self.myFriendView(user: user)
-                                } else {
-                                    self.otherFriendView(user: user)
-                                }
+                                .padding(.horizontal, 20)
                             }
-                            .padding(.horizontal, 20)
                         }
                         switch self.userProfileVM.option {
                         case .friendList:
@@ -243,7 +246,6 @@ struct FriendView: View {
                 }
                 .animation(nil, value: UUID())
                 .onAppear {
-                    print("init")
                     self.userProfileVM.initLoad()
                 }
             } // VStack
@@ -264,7 +266,23 @@ struct FriendView: View {
                                 print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                             }
                             
-                            self.userProfileVM.refreshFriendList()
+                            var index: Int
+                            if self.friendTab {
+                                index = self.userProfileVM.friendList.firstIndex(of: user) ?? -1
+                            } else {
+                                index = self.userProfileVM.requestFriendList.firstIndex(of: user) ?? -1
+                            }
+                            
+                            if index == -1 {
+                                return
+                            }
+
+                            self.userProfileVM.reflectFriendList(
+                                targetIndex: index,
+                                isFriendList: self.friendTab,
+                                action: .cancel
+                            )
+                            
                         case let .failure(failure):
                             print("[Debug] \(failure) \(#file) \(#function)")
                         }
@@ -281,7 +299,22 @@ struct FriendView: View {
                         return
                     }
                     self.userProfileVM.deleteFriend(friendId: user.id) {
-                        self.userProfileVM.refreshFriendList()
+                        var index: Int
+                        if self.friendTab {
+                            index = self.userProfileVM.friendList.firstIndex(of: user) ?? -1
+                        } else {
+                            index = self.userProfileVM.requestFriendList.firstIndex(of: user) ?? -1
+                        }
+                        
+                        if index == -1 {
+                            return
+                        }
+
+                        self.userProfileVM.reflectFriendList(
+                            targetIndex: index,
+                            isFriendList: self.friendTab,
+                            action: .delete
+                        )
                     }
                 }
             }
@@ -301,7 +334,23 @@ struct FriendView: View {
                                 print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                             }
                             
-                            self.userProfileVM.refreshFriendList()
+                            var index: Int
+                            if self.friendTab {
+                                index = self.userProfileVM.friendList.firstIndex(of: user) ?? -1
+                            } else {
+                                index = self.userProfileVM.requestFriendList.firstIndex(of: user) ?? -1
+                            }
+                            
+                            if index == -1 {
+                                return
+                            }
+
+                            self.userProfileVM.reflectFriendList(
+                                targetIndex: index,
+                                isFriendList: self.friendTab,
+                                action: .refuse
+                            )
+                            
                         case let .failure(failure):
                             print("[Debug] \(failure) \(#file) \(#function)")
                         }
@@ -352,12 +401,35 @@ struct FriendView: View {
                                 self.userProfileVM.blockedFriend(
                                     blockUserId: self.targetUser?.id ?? "unknown"
                                 ) { result in
+                                    
+                                    guard let user = targetUser else {
+                                        return
+                                    }
+                                    
                                     switch result {
                                     case let .success(success):
                                         if !success {
                                             print("Toast Message로 알려주기")
                                         }
-                                        self.userProfileVM.refreshFriendList()
+                                        
+                                        var index: Int
+                                        if self.friendTab {
+                                            index = self.userProfileVM.friendList.firstIndex(of: user) ?? -1
+                                        } else {
+                                            index = self.userProfileVM.requestFriendList.firstIndex(of: user) ?? -1
+                                        }
+                                        
+                                        if index == -1 {
+                                            self.blockModalVis = false
+                                            return
+                                        }
+
+                                        self.userProfileVM.reflectFriendList(
+                                            targetIndex: index,
+                                            isFriendList: self.friendTab,
+                                            action: .block
+                                        )
+                                        
                                         self.blockModalVis = false
                                     case let .failure(failure):
                                         print("\(failure) \(#file) \(#function)")
@@ -402,7 +474,7 @@ struct FriendView: View {
     }
 
     @ViewBuilder
-    func myFriendView(user: FriendUser) -> some View {
+    func myFriendView(user: FriendUser, index: Int) -> some View {
         if self.friendTab {
             HStack(spacing: 10) {
                 Button {
@@ -440,7 +512,11 @@ struct FriendView: View {
                                 print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                             }
 
-                            self.userProfileVM.refreshFriendList()
+                            self.userProfileVM.reflectFriendList(
+                                targetIndex: index,
+                                isFriendList: self.friendTab,
+                                action: .accept
+                            )
 
                         case let .failure(failure):
                             print("[Debug] \(failure) \(#file) \(#function)")
@@ -475,7 +551,7 @@ struct FriendView: View {
     }
 
     @ViewBuilder
-    func otherFriendView(user: FriendUser) -> some View {
+    func otherFriendView(user: FriendUser, index: Int) -> some View {
         HStack {
             if user.id == Global.shared.user?.user.id {
                 Text("나")
@@ -494,7 +570,12 @@ struct FriendView: View {
                                 print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                             }
 
-                            self.userProfileVM.refreshFriendList()
+                            self.userProfileVM.reflectFriendList(
+                                targetIndex: index,
+                                isFriendList: self.friendTab,
+                                action: .request
+                            )
+                            
                         case let .failure(failure):
                             print("[Debug] \(failure) \(#file) \(#function)")
                         }
@@ -532,7 +613,13 @@ struct FriendView: View {
                                 if !success {
                                     print("Toast message로 해당 사용자가 탈퇴했다고 알려주기")
                                 }
-                                self.userProfileVM.refreshFriendList()
+                                
+                                self.userProfileVM.reflectFriendList(
+                                    targetIndex: index,
+                                    isFriendList: self.friendTab,
+                                    action: .accept
+                                )
+                                
                             case let .failure(failure):
                                 print("[Debug] \(failure) \(#file) \(#function)")
                             }
@@ -562,7 +649,7 @@ struct FriendView: View {
                             .cornerRadius(10)
                     }
                 }
-            } else {
+            } else if user.friendStatus == 2 {
                 Button {
                     self.targetUser = user
                     self.deleteFriend = true

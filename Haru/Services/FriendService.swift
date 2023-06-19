@@ -169,18 +169,22 @@ final class FriendService {
     
     func cancelRequestFriend(
         acceptorId: String,
+        isRefuse: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
+        let acceptor = isRefuse ? acceptorId : Global.shared.user?.id ?? "unknown"
+        let requester = isRefuse ? Global.shared.user?.id ?? "unknown" : acceptorId
+        
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
         
         let parameters: Parameters = [
-            "acceptorId": Global.shared.user?.id ?? "unknown",
+            "acceptorId": acceptor,
         ]
         
         AF.request(
-            FriendService.baseURL + acceptorId + "/request",
+            FriendService.baseURL + requester + "/request",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,

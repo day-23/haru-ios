@@ -8,6 +8,15 @@
 import Foundation
 import SwiftUI
 
+enum UserUpdate {
+    case accept // 친구 수락
+    case request // 친구 요청
+    case refuse // 친구 삭제
+    case cancel // 친구 취소
+    case delete // 친구 삭제
+    case block // 친구 차단
+}
+
 final class UserProfileViewModel: ObservableObject {
     @Published var user: User // 현재 보고 있는 사용자
     @Published var profileImage: PostImage? // 현재 보고 있는 사용자의 프로필 이미지
@@ -95,8 +104,62 @@ final class UserProfileViewModel: ObservableObject {
     }
 
     func refreshFriendList() {
-        clear()
         initLoad()
+    }
+
+    func reflectFriendList(targetIndex: Int, isFriendList: Bool, action: UserUpdate) {
+        switch action {
+        case .accept:
+            if isFriendList {
+                friendList[targetIndex].friendStatus = 2
+            } else {
+                requestFriendList[targetIndex].disabled = true
+                requestFriendList[targetIndex].friendStatus = 2
+            }
+        case .request:
+            if isFriendList {
+                friendList[targetIndex].friendStatus = 1
+            } else {
+                requestFriendList[targetIndex].friendStatus = 1
+                print("[Debug] 들어올 수 없는 플로우 입니다. \(#file) \(#function)")
+            }
+        case .refuse:
+            if isFriendList {
+                friendList[targetIndex].friendStatus = 0
+            } else {
+                requestFriendList[targetIndex].disabled = true
+                requestFriendList[targetIndex].friendStatus = 0
+            }
+        case .cancel:
+            if isFriendList {
+                friendList[targetIndex].friendStatus = 0
+            } else {
+                requestFriendList[targetIndex].friendStatus = 0
+                print("[Debug] 들어올 수 없는 플로우 입니다. \(#file) \(#function)")
+            }
+        case .delete:
+            if isFriendList {
+                friendList[targetIndex].friendStatus = 0
+                if isMe {
+                    friendList[targetIndex].disabled = true
+                }
+            } else {
+                requestFriendList[targetIndex].friendStatus = 0
+                requestFriendList[targetIndex].disabled = true
+                print("[Debug] 들어올 수 없는 플로우 입니다. \(#file) \(#function)")
+            }
+        case .block:
+            if isFriendList {
+                friendList[targetIndex].friendStatus = 0
+                if isMe {
+                    friendList[targetIndex].disabled = true
+                }
+            } else {
+                requestFriendList[targetIndex].friendStatus = 0
+                requestFriendList[targetIndex].disabled = true
+                print("[Debug] 들어올 수 없는 플로우 입니다. \(#file) \(#function)")
+            }
+        }
     }
 
     func clear() {
@@ -289,9 +352,13 @@ final class UserProfileViewModel: ObservableObject {
 
     func cancelRequestFriend(
         acceptorId: String,
+        isRefuse: Bool = true,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.cancelRequestFriend(acceptorId: acceptorId) { result in
+        friendService.cancelRequestFriend(
+            acceptorId: acceptorId,
+            isRefuse: isRefuse
+        ) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))

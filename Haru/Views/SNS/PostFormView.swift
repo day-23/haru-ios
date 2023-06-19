@@ -93,7 +93,6 @@ struct PostFormView: View {
                                     Image(uiImage: postFormVM.imageList[idx])
                                         .renderingMode(.original)
                                         .resizable()
-                                        .scaledToFill()
                                         .frame(
                                             width: deviceSize.width,
                                             height: deviceSize.width
@@ -193,22 +192,7 @@ struct PostFormView: View {
                     manager.requestImage(for: asset, targetSize: .init(), contentMode: .aspectFit, options: options) { image, _ in
                         guard let image else { return }
 
-//                        // 보이는 화면과 이미지의 비율 계산
-//                        let imageViewScale = max(image.size.width / UIScreen.main.bounds.width,
-//                                                 image.size.height / UIScreen.main.bounds.height)
-//
-//                        let cropZone = CGRect(x: 0,
-//                                              y: 0,
-//                                              width: UIScreen.main.bounds.width * imageViewScale,
-//                                              height: UIScreen.main.bounds.width * imageViewScale)
-//
-//                        // 이미지 자르기
-//                        guard let cutImageRef: CGImage = image.cgImage?.cropping(to: cropZone)
-//                        else {
-//                            return
-//                        }
-//
-//                        // 최종 uiimage 저장
+                        // 최종 uiimage 저장
                         guard let data = cropping(image: image) else {
                             print("크롭하는데 실패")
                             return

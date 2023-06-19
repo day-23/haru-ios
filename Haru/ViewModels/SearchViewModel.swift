@@ -258,9 +258,13 @@ final class SearchViewModel: ObservableObject {
 
     func cancelRequestFriend(
         acceptorId: String,
+        isRefuse: Bool = true,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.cancelRequestFriend(acceptorId: acceptorId) { result in
+        friendService.cancelRequestFriend(
+            acceptorId: acceptorId,
+            isRefuse: isRefuse
+        ) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))

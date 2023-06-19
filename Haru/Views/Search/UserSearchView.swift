@@ -36,7 +36,7 @@ struct UserSearchView: View {
                                 .resizable()
                                 .frame(width: 125, height: 205)
                                 
-                            Text("하루 아이디를 가지는\n친구를 찾을 수 없r어요.")
+                            Text("하루 아이디를 가지는\n친구를 찾을 수 없어요.")
                                 .font(.pretendard(size: 16, weight: .regular))
                                 .foregroundColor(Color(0xACACAC))
                                 .multilineTextAlignment(.center)
@@ -110,7 +110,10 @@ struct UserSearchView: View {
                     return
                 }
                 waitingResponse = true
-                searchVM.cancelRequestFriend(acceptorId: user.id) { result in
+                searchVM.cancelRequestFriend(
+                    acceptorId: user.id,
+                    isRefuse: false
+                ) { result in
                     switch result {
                     case .success(let success):
                         if !success {

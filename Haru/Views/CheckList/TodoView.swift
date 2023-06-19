@@ -106,8 +106,8 @@ struct TodoView: View {
                             case .failure(let failure):
                                 print("[Debug] 반복하지 않는 할 일 완료 실패 \(failure) \(#fileID) \(#function)")
                             }
+                            isCompletionButtonActive = true
                         }
-                        isCompletionButtonActive = true
                         return
                     }
 
@@ -126,13 +126,14 @@ struct TodoView: View {
                                     case .failure(let failure):
                                         print("[Debug] 반복하는 할 일 마지막 반복 완료 실패, \(failure) \(#fileID) \(#function)")
                                     }
+                                    isCompletionButtonActive = true
                                 }
                             } else {
                                 let prevRepeatEnd = try todo.prevEndDate()
                                 checkListViewModel.completeTodoWithRepeat(
                                     todo: todo,
                                     date: prevRepeatEnd,
-                                    at: at
+                                    at: .back
                                 ) { result in
                                     switch result {
                                     case .success:
@@ -143,7 +144,6 @@ struct TodoView: View {
                                     isCompletionButtonActive = true
                                 }
                             }
-                            isCompletionButtonActive = true
                             return
                         }
 
