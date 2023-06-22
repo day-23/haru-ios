@@ -5,6 +5,7 @@
 //  Created by 이준호 on 2023/04/05.
 //
 
+import Mantis
 import Photos
 import SwiftUI
 
@@ -19,6 +20,13 @@ struct ProfileFormView: View {
     @State var image: UIImage? = nil
     @State var name: String
     @State var introduction: String
+
+    @State var isProgress: Bool = false
+
+    @State private var showingCropper = false
+    @State private var showingCropShapeList = false
+    @State private var cropShapeType: Mantis.CropShapeType = .circle()
+    @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
 
     var body: some View {
         ZStack {
@@ -125,6 +133,10 @@ struct ProfileFormView: View {
 
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
+                    withAnimation {
+                        Global.shared.isLoading = true
+                    }
+                    
                     userProfileVM.updateUserProfile(name: name, introduction: introduction, profileImage: image) { result in
                         switch result {
                         case .success:
@@ -132,6 +144,9 @@ struct ProfileFormView: View {
                         case .failure(let error):
                             // TODO: 알럿창으로 바꿔주기
                             print("[Error] \(error)")
+                        }
+                        withAnimation {
+                            Global.shared.isLoading = false
                         }
                     }
                 } label: {
@@ -145,7 +160,18 @@ struct ProfileFormView: View {
             CameraView(image: $image)
                 .ignoresSafeArea()
         })
-        .popupImagePicker(show: $openPhoto, activeCamera: $showCamera, mode: .single) { assets in
+        .fullScreenCover(isPresented: $showingCropper, content: {
+            ImageCropper(image: $image,
+                         cropShapeType: $cropShapeType,
+                         presetFixedRatioType: $presetFixedRatioType)
+                .onDisappear(perform: reset)
+                .ignoresSafeArea()
+        })
+        .popupImagePicker(
+            show: $openPhoto,
+            activeCamera: $showCamera,
+            mode: .single
+        ) { assets in
 
             // MARK: Do Your Operation With PHAsset
 
@@ -154,16 +180,34 @@ struct ProfileFormView: View {
             let manager = PHCachingImageManager.default()
             let options = PHImageRequestOptions()
             options.isSynchronous = true
+            options.isNetworkAccessAllowed = true
+
+            options.progressHandler = { progress, _, _, _ in
+                if progress == 1.0 {
+                    isProgress = false
+                } else {
+                    isProgress = true
+                }
+            }
+
             DispatchQueue.global(qos: .userInteractive).async {
                 assets.forEach { asset in
-                    manager.requestImage(for: asset, targetSize: .init(), contentMode: .default, options: options) { image, _ in
+                    manager.requestImage(for: asset, targetSize: .init(), contentMode: .aspectFit, options: options) { image, _ in
                         guard let image else { return }
+
                         DispatchQueue.main.async {
                             self.image = image
+                            isProgress = false
+                            self.showingCropper = true
                         }
                     }
                 }
             }
         }
+    }
+
+    func reset() {
+        cropShapeType = .circle()
+        presetFixedRatioType = .canUseMultiplePresetFixedRatio()
     }
 }

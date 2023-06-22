@@ -203,9 +203,9 @@ struct TodoAddView: View {
                                 .foregroundColor(self.viewModel.tagList.isEmpty ? Color(0xACACAC) : Color(0x191919))
                         }
                         .padding(.horizontal, 20)
-
-                        Divider()
                     }
+
+                    Divider()
 
                     // 나의 하루에 추가
                     Group {
@@ -694,7 +694,6 @@ struct TodoAddView: View {
                 }
             }
         }
-        .ignoresSafeArea(.keyboard)
         .onChange(of: tagInFocus, perform: { value in
             if !value {
                 self.viewModel.onSubmitTag()
