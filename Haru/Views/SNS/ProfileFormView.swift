@@ -68,7 +68,7 @@ struct ProfileFormView: View {
                             Text("닉네임")
                                 .font(.pretendard(size: 16, weight: .regular))
                                 .foregroundColor(Color(0x646464))
-                                .frame(width: 50, alignment: .leading)
+                                .frame(width: 58, alignment: .leading)
                             TextField("", text: $name)
                                 .placeholder(when: name.isEmpty, placeholder: {
                                     Text("이름을 입력하세요.")
@@ -89,6 +89,7 @@ struct ProfileFormView: View {
                             Text("자기소개")
                                 .font(.pretendard(size: 16, weight: .regular))
                                 .foregroundColor(Color(0x646464))
+                                .frame(width: 58, alignment: .leading)
                             TextField("", text: $introduction)
                                 .placeholder(when: introduction.isEmpty, placeholder: {
                                     Text("자기소개를 입력하세요.")
@@ -136,14 +137,21 @@ struct ProfileFormView: View {
                     withAnimation {
                         Global.shared.isLoading = true
                     }
-                    
+
                     userProfileVM.updateUserProfile(name: name, introduction: introduction, profileImage: image) { result in
                         switch result {
                         case .success:
                             dismissAction.callAsFunction()
                         case .failure(let error):
-                            // TODO: 알럿창으로 바꿔주기
-                            print("[Error] \(error)")
+                            switch error {
+                            case ProfileService.ProfileError.invalid:
+                                Global.shared.toastMessageContent = "사용할 수 없는 단어가 포함되어 있습니다."
+                                withAnimation {
+                                    Global.shared.showToastMessage = true
+                                }
+                            default:
+                                break
+                            }
                         }
                         withAnimation {
                             Global.shared.isLoading = false
