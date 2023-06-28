@@ -139,7 +139,7 @@ struct PrivacyView: View {
                             .toggleStyle(CustomToggleStyle())
                     }
 
-                    Text("계정 공개 상태를 변경하여 나의 피드를 볼 수 있는 사람을 제한할 수 있습니다. 공개 계정일 경우 개별 카테고리에 대한 공개 설정은 카테고리 관리에서, 개별 게시글에 대한 공개 설정은 작성 시 설정할 수 있습니다.")
+                    Text("계정 공개 상태를 변경하여 나의 피드를 볼 수 있는 사람을 제한할 수 있습니다.")
                         .font(.pretendard(size: 12, weight: .regular))
                         .foregroundColor(Color(0xacacac))
                         .lineSpacing(6)
