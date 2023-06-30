@@ -124,6 +124,8 @@ struct ScheduleFormView: View {
                         .font(.pretendard(size: 20, weight: .bold))
                         .foregroundColor(Color(0x191919))
                 }
+                .padding(.top, 5)
+                .padding(.bottom, 19)
             }
             
             ScrollView(showsIndicators: false) {
