@@ -148,11 +148,15 @@ struct PopupImagePicker: View {
         }
         .cornerRadius(20, corners: [.topLeft, .topRight])
         .shadow(radius: 10)
-
-        // MARK: Since its an Overlay View
-
-        // Making It to Take Full Screen Space
         .frame(width: deviceSize.width, height: deviceSize.height, alignment: .bottom)
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    let y = value.location.y
+                    let newer = 1 - y / deviceSize.height
+                    ratio = max(0.43, min(0.9, newer))
+                }
+        )
     }
 
     // MARK: Grid Image Content
