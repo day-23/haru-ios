@@ -28,6 +28,8 @@ struct ProfileFormView: View {
     @State private var cropShapeType: Mantis.CropShapeType = .circle()
     @State private var presetFixedRatioType: Mantis.PresetFixedRatioType = .canUseMultiplePresetFixedRatio()
 
+    @State private var requestPermission: Bool = false // 카메라 권한 요청
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -165,7 +167,17 @@ struct ProfileFormView: View {
             }
         }
         .fullScreenCover(isPresented: $showCamera, content: {
-            CameraView(image: $image)
+            CameraView(image: $image, isPopup: $showCamera, requestPermission: $requestPermission)
+                .alert("카메라 권한 요청", isPresented: $requestPermission, actions: {
+                    Button("허용") {
+                        UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                    }
+                    Button("허용 안함") {
+                        requestPermission = false
+                    }
+                }, message: {
+                    Text("하루에서 카메라에 접근하고 싶어요")
+                })
                 .ignoresSafeArea()
         })
         .fullScreenCover(isPresented: $showingCropper, content: {

@@ -177,7 +177,7 @@ struct PopupImagePicker: View {
             case .restricted, .denied:
                 requestPermission = true
             case .authorized, .limited:
-                print("[Debug] 사진 권환 획득")
+                print("[Debug] 사진 권한 획득")
             @unknown default:
                 fatalError()
             }
