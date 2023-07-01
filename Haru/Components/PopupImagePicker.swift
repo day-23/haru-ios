@@ -151,10 +151,6 @@ struct PopupImagePicker: View {
         }
         .cornerRadius(20, corners: [.topLeft, .topRight])
         .shadow(radius: 10)
-
-        // MARK: Since its an Overlay View
-
-        // Making It to Take Full Screen Space
         .frame(width: deviceSize.width, height: deviceSize.height, alignment: .bottom)
         .onAppear {
             // 사진 선택 허용이 처음인지 아닌지
@@ -196,6 +192,14 @@ struct PopupImagePicker: View {
         } message: {
             Text("하루에서 사진을 추가하기 위해 앨범에 접근합니다.")
         }
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    let y = value.location.y
+                    let newer = 1 - y / deviceSize.height
+                    ratio = max(0.43, min(0.9, newer))
+                }
+        )
     }
 
     // MARK: Grid Image Content
