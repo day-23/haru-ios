@@ -280,7 +280,14 @@ final class UserProfileViewModel: ObservableObject {
                     }
                 }
 
-                self.friendList.append(contentsOf: success.0)
+                var result = success.0
+                for friend in self.friendList {
+                    result = result.filter {
+                        $0.id != friend.id
+                    }
+                }
+
+                self.friendList.append(contentsOf: result)
                 let pageInfo = success.1
                 if self.friendListTotalPage == -1 {
                     self.friendListTotalPage = pageInfo.totalPages
@@ -308,7 +315,14 @@ final class UserProfileViewModel: ObservableObject {
                     }
                 }
 
-                self.requestFriendList.append(contentsOf: success.0)
+                var result = success.0
+                for friend in self.friendList {
+                    result = result.filter {
+                        $0.id != friend.id
+                    }
+                }
+
+                self.requestFriendList.append(contentsOf: result)
                 let pageInfo = success.1
                 if self.reqFriListTotalPage == -1 {
                     self.reqFriListTotalPage = pageInfo.totalPages

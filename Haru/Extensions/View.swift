@@ -167,7 +167,10 @@ extension View {
                 }
 
                 if show.wrappedValue {
-                    PopupImagePicker(mode: mode, activeCamera: activeCamera) {
+                    PopupImagePicker(
+                        mode: mode,
+                        activeCamera: activeCamera
+                    ) {
                         show.wrappedValue = false
                     } onSelect: { assets in
                         onSelect(assets)
