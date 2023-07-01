@@ -177,7 +177,7 @@ struct ProfileFormView: View {
                         requestPermission = false
                     }
                 }, message: {
-                    Text("하루에서 사진을 촬영하기 위해 카메라에 접근합니다.")
+                    Text("하루에서 사진을 촬영하기 위해 카메라에 접근합니다. 프로필 사진 첨부, 게시글 사진 첨부 기능 사용을 위해 카메라 접근권한 동의가 필요합니다. 설정에서 이를 변경할 수 있습니다.")
                 })
                 .ignoresSafeArea()
         })

@@ -1215,9 +1215,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Haru/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "하루에서 사진을 촬영하기 위해 카메라에 접근합니다.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "하루에서 사진을 촬영하기 위해 카메라에 접근합니다. 프로필 사진 첨부, 게시글 사진 첨부 기능 사용을 위해 카메라 접근권한 동의가 필요합니다. 설정에서 이를 변경할 수 있습니다.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow Access";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "하루에서 사진을 추가하기 위해 앨범에 접근합니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "하루에서 사진을 추가하기 위해 앨범에 접근합니다. 프로필 사진 첨부, 게시글 사진 첨부 기능 사용을 위해 사진 라이브러리 접근권한 동의가 필요합니다. 설정에서 이를 변경할 수 있습니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1251,9 +1251,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Haru/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "하루에서 사진을 촬영하기 위해 카메라에 접근합니다.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "하루에서 사진을 촬영하기 위해 카메라에 접근합니다. 프로필 사진 첨부, 게시글 사진 첨부 기능 사용을 위해 카메라 접근권한 동의가 필요합니다. 설정에서 이를 변경할 수 있습니다.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow Access";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "하루에서 사진을 추가하기 위해 앨범에 접근합니다.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "하루에서 사진을 추가하기 위해 앨범에 접근합니다. 프로필 사진 첨부, 게시글 사진 첨부 기능 사용을 위해 사진 라이브러리 접근권한 동의가 필요합니다. 설정에서 이를 변경할 수 있습니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
