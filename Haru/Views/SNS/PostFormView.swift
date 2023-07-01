@@ -149,7 +149,7 @@ struct PostFormView: View {
         })
         .fullScreenCover(isPresented: $showCamera, content: {
             CameraView(image: $captureImage, isPopup: $showCamera, requestPermission: $requestPermission)
-                .alert("카메라 권한 요청", isPresented: $requestPermission, actions: {
+                .alert("'Haru'이(가) 카메라에 접근하려고 합니다.", isPresented: $requestPermission, actions: {
                     Button("허용") {
                         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                     }
@@ -157,7 +157,7 @@ struct PostFormView: View {
                         requestPermission = false
                     }
                 }, message: {
-                    Text("하루에서 카메라에 접근하고 싶어요")
+                    Text("하루에서 사진을 촬영하기 위해 카메라에 접근합니다.")
                 })
                 .ignoresSafeArea()
         })
