@@ -43,92 +43,144 @@ struct PostFormView: View {
 //    @State private var sourceType: UIImagePickerController.SourceType?
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            if postAddMode == .writing {
-                TextField("", text: $postFormVM.content, axis: .vertical)
-                    .placeholder(when: postFormVM.content.isEmpty, placeholder: {
-                        Text("텍스트를 입력해주세요.")
-                            .font(.pretendard(size: 24, weight: .regular))
-                            .foregroundColor(Color(0xacacac))
-                    })
-                    .lineLimit(15)
-                    .frame(alignment: .top)
-                    .font(.pretendard(size: 24, weight: .bold))
-                    .foregroundColor(Color(0x191919))
-                    .background(Color(0xfdfdfd))
-                    .focused($isFocused)
-                    .onTapGesture {
-                        isFocused = true
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Button {
+                    cancelWriting = true
+                } label: {
+                    Image("cancel")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x191919))
+                }
+                .confirmationDialog(
+                    "게시글 작성을 취소할까요? 작성 중인 내용은 삭제됩니다.",
+                    isPresented: $cancelWriting,
+                    titleVisibility: .visible
+                ) {
+                    Button("삭제하기", role: .destructive) {
+                        dismissAction.callAsFunction()
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 24)
-                    .onChange(of: postFormVM.content) { value in
-                        if value.count > 1000 {
-                            postFormVM.content = String(
-                                value[
-                                    value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
-                                ]
-                            )
-                        }
-                    }
-            } else {
-                VStack {
-                    ZStack {
-                        if !postFormVM.imageList.isEmpty {
-                            Text("\(selectedImageNum + 1)/\(postFormVM.imageList.count)")
-                                .font(.pretendard(size: 12, weight: .regular))
-                                .foregroundColor(Color(0xfdfdfd))
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 14)
-                                .background(Color(0x191919).opacity(0.5))
-                                .cornerRadius(15)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                                .offset(x: -10, y: 10)
-                                .zIndex(2)
-                        }
+                }
 
-                        TabView(selection: $selectedImageNum) {
-                            if postFormVM.imageList.count > 0 {
-                                ForEach(postFormVM.imageList.indices, id: \.self) { idx in
-                                    Image(uiImage: postFormVM.imageList[idx])
-                                        .renderingMode(.original)
-                                        .resizable()
+                Spacer()
+
+                NavigationLink {
+                    if postAddMode == .writing {
+                        PostFormPreView(
+                            postFormVM: postFormVM,
+                            shouldPopToRootView: $rootIsActive,
+                            createPost: $createPost
+                        )
+                    } else {
+                        PostFormDrawingView(
+                            postFormVM: postFormVM,
+                            rootIsActive: $rootIsActive,
+                            createPost: $createPost
+                        )
+                    }
+                } label: {
+                    Image("back-button")
+                        .renderingMode(.template)
+                        .foregroundColor(Color(0x1dafff))
+                        .rotationEffect(Angle(degrees: 180))
+                }
+                .disabled(postAddMode == .drawing ? postFormVM.imageList.isEmpty : postFormVM.content == "")
+            }
+            .padding(.horizontal, 20)
+            .overlay {
+                Text(postAddMode == .drawing ? "하루 그리기" : "하루 쓰기")
+                    .font(.pretendard(size: 20, weight: .bold))
+                    .foregroundColor(Color(0x191919))
+            }
+            .padding(.top, 5)
+            .padding(.bottom, 19)
+
+            ScrollView(showsIndicators: false) {
+                if postAddMode == .writing {
+                    TextField("", text: $postFormVM.content, axis: .vertical)
+                        .placeholder(when: postFormVM.content.isEmpty, placeholder: {
+                            Text("텍스트를 입력해주세요.")
+                                .font(.pretendard(size: 24, weight: .regular))
+                                .foregroundColor(Color(0xacacac))
+                        })
+                        .lineLimit(15)
+                        .frame(alignment: .top)
+                        .font(.pretendard(size: 24, weight: .bold))
+                        .foregroundColor(Color(0x191919))
+                        .background(Color(0xfdfdfd))
+                        .focused($isFocused)
+                        .onTapGesture {
+                            isFocused = true
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 24)
+                        .onChange(of: postFormVM.content) { value in
+                            if value.count > 1000 {
+                                postFormVM.content = String(
+                                    value[
+                                        value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
+                                    ]
+                                )
+                            }
+                        }
+                } else {
+                    VStack {
+                        ZStack {
+                            if !postFormVM.imageList.isEmpty {
+                                Text("\(selectedImageNum + 1)/\(postFormVM.imageList.count)")
+                                    .font(.pretendard(size: 12, weight: .regular))
+                                    .foregroundColor(Color(0xfdfdfd))
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 14)
+                                    .background(Color(0x191919).opacity(0.5))
+                                    .cornerRadius(15)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                                    .offset(x: -10, y: 10)
+                                    .zIndex(2)
+                            }
+
+                            TabView(selection: $selectedImageNum) {
+                                if postFormVM.imageList.count > 0 {
+                                    ForEach(postFormVM.imageList.indices, id: \.self) { idx in
+                                        Image(uiImage: postFormVM.imageList[idx])
+                                            .renderingMode(.original)
+                                            .resizable()
+                                            .frame(
+                                                width: deviceSize.width,
+                                                height: deviceSize.width
+                                            )
+                                            .clipped()
+                                            .onTapGesture {
+                                                croppedImage = postFormVM.oriImageList[selectedImageNum]
+                                                presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
+                                                showingCropper = true
+                                            }
+                                            .overlay {
+                                                if isProgress {
+                                                    ProgressView()
+                                                        .frame(
+                                                            width: deviceSize.width,
+                                                            height: deviceSize.width
+                                                        )
+                                                        .background(Color(0x191919).opacity(0.4))
+                                                }
+                                            }
+                                    }
+                                } else if isProgress {
+                                    ProgressView()
                                         .frame(
                                             width: deviceSize.width,
                                             height: deviceSize.width
                                         )
-                                        .clipped()
-                                        .onTapGesture {
-                                            croppedImage = postFormVM.oriImageList[selectedImageNum]
-                                            presetFixedRatioType = .alwaysUsingOnePresetFixedRatio(ratio: 1)
-                                            showingCropper = true
-                                        }
-                                        .overlay {
-                                            if isProgress {
-                                                ProgressView()
-                                                    .frame(
-                                                        width: deviceSize.width,
-                                                        height: deviceSize.width
-                                                    )
-                                                    .background(Color(0x191919).opacity(0.4))
-                                            }
-                                        }
+                                        .background(Color(0x191919).opacity(0.4))
                                 }
-                            } else if isProgress {
-                                ProgressView()
-                                    .frame(
-                                        width: deviceSize.width,
-                                        height: deviceSize.width
-                                    )
-                                    .background(Color(0x191919).opacity(0.4))
                             }
+                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                            .zIndex(1)
+                            .frame(width: deviceSize.width, height: deviceSize.width)
                         }
-                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                        .zIndex(1)
-                        .frame(width: deviceSize.width, height: deviceSize.width)
                     }
                 }
-                .padding(.top, 15)
             }
         }
         .background(Color(0xfdfdfd))
@@ -211,56 +263,6 @@ struct PostFormView: View {
             }
         }
         .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    cancelWriting = true
-                } label: {
-                    Image("cancel")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x191919))
-                }
-                .confirmationDialog(
-                    "게시글 작성을 취소할까요? 작성 중인 내용은 삭제됩니다.",
-                    isPresented: $cancelWriting,
-                    titleVisibility: .visible
-                ) {
-                    Button("삭제하기", role: .destructive) {
-                        dismissAction.callAsFunction()
-                    }
-                }
-            }
-
-            ToolbarItem(placement: .principal) {
-                Text(postAddMode == .drawing ? "하루 그리기" : "하루 쓰기")
-                    .font(.pretendard(size: 20, weight: .bold))
-                    .foregroundColor(Color(0x191919))
-            }
-
-            ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink {
-                    if postAddMode == .writing {
-                        PostFormPreView(
-                            postFormVM: postFormVM,
-                            shouldPopToRootView: $rootIsActive,
-                            createPost: $createPost
-                        )
-                    } else {
-                        PostFormDrawingView(
-                            postFormVM: postFormVM,
-                            rootIsActive: $rootIsActive,
-                            createPost: $createPost
-                        )
-                    }
-                } label: {
-                    Image("back-button")
-                        .renderingMode(.template)
-                        .foregroundColor(Color(0x1dafff))
-                        .rotationEffect(Angle(degrees: 180))
-                }
-                .disabled(postAddMode == .drawing ? postFormVM.imageList.isEmpty : postFormVM.content == "")
-            }
-        }
     }
 
     func reset() {

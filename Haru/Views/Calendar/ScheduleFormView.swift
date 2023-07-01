@@ -61,7 +61,73 @@ struct ScheduleFormView: View {
                 }
                 .padding(.leading, 37)
                 .padding(.trailing, 30)
+            } else if scheduleFormVM.mode == .edit {
+                HStack {
+                    Button {
+                        backButtonToggle = true
+                            
+                    } label: {
+                        Image("back-button")
+                            .frame(width: 28, height: 28)
+                    }
+                    .confirmationDialog(
+                        "현재 화면에서 나갈까요? 수정 사항은 저장되지 않습니다.",
+                        isPresented: $backButtonToggle,
+                        titleVisibility: .visible
+                    ) {
+                        Button("나가기", role: .destructive) {
+                            dismissAction.callAsFunction()
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    if scheduleFormVM.overWeek {
+                        Button {
+                            showEditActionSheet = true
+                            actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
+                        } label: {
+                            Image("confirm")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
+                                .frame(width: 28, height: 28)
+                        }
+                        .confirmationDialog(
+                            "수정사항을 저장할까요?",
+                            isPresented: $showEditActionSheet,
+                            titleVisibility: .visible
+                        ) {
+                            Button("저장하기", role: .destructive) {
+                                scheduleFormVM.updateSchedule()
+                                dismissAction.callAsFunction()
+                            }
+                        }
+                    } else {
+                        Button {
+                            showEditActionSheet = true
+                            actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
+                        } label: {
+                            Image("confirm")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
+                                .frame(width: 28, height: 28)
+                        }
+                        .actionSheet(isPresented: $showEditActionSheet, content: getEditActionSheet)
+                        .disabled(scheduleFormVM.buttonDisable)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .overlay {
+                    Text("일정 수정")
+                        .font(.pretendard(size: 20, weight: .bold))
+                        .foregroundColor(Color(0x191919))
+                }
+                .padding(.top, 5)
+                .padding(.bottom, 19)
             }
+            
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 8) {
                     // 일정 입력
@@ -424,69 +490,6 @@ struct ScheduleFormView: View {
             }
         }
         .navigationBarBackButtonHidden()
-        .toolbar {
-            if scheduleFormVM.mode == .edit {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        backButtonToggle = true
-                        
-                    } label: {
-                        Image("back-button")
-                            .frame(width: 28, height: 28)
-                    }
-                    .confirmationDialog(
-                        "현재 화면에서 나갈까요? 수정 사항은 저장되지 않습니다.",
-                        isPresented: $backButtonToggle,
-                        titleVisibility: .visible
-                    ) {
-                        Button("나가기", role: .destructive) {
-                            dismissAction.callAsFunction()
-                        }
-                    }
-                }
-            }
-        }
-        .toolbar {
-            if scheduleFormVM.mode == .edit {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if scheduleFormVM.overWeek {
-                        Button {
-                            showEditActionSheet = true
-                            actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
-                        } label: {
-                            Image("confirm")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
-                                .frame(width: 28, height: 28)
-                        }
-                        .confirmationDialog(
-                            "수정사항을 저장할까요?",
-                            isPresented: $showEditActionSheet,
-                            titleVisibility: .visible
-                        ) {
-                            Button("저장하기", role: .destructive) {
-                                scheduleFormVM.updateSchedule()
-                                dismissAction.callAsFunction()
-                            }
-                        }
-                    } else {
-                        Button {
-                            showEditActionSheet = true
-                            actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
-                        } label: {
-                            Image("confirm")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(scheduleFormVM.buttonDisable ? Color(0xacacac) : Color(0x191919))
-                                .frame(width: 28, height: 28)
-                        }
-                        .actionSheet(isPresented: $showEditActionSheet, content: getEditActionSheet)
-                        .disabled(scheduleFormVM.buttonDisable)
-                    }
-                }
-            }
-        }
     }
     
     func isClear() -> Bool {

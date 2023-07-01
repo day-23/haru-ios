@@ -26,48 +26,165 @@ struct TodoAddView: View {
     @State private var isConfirmButtonActive: Bool = true
 
     var body: some View {
-        VStack {
-            ScrollView(showsIndicators: false) {
-                LazyVStack {
-                    if isModalVisible {
-                        HStack(spacing: 0) {
-                            Button {
+        VStack(spacing: 0) {
+            if isModalVisible {
+                HStack(spacing: 0) {
+                    Button {
+                        withAnimation {
+                            self.isModalVisible = false
+                        }
+                    } label: {
+                        Image("todo-cancel")
+                            .renderingMode(.template)
+                            .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x646464))
+                    }
+
+                    Spacer()
+
+                    Button {
+                        self.isConfirmButtonActive = false
+
+                        self.viewModel.addTodo { result in
+                            switch result {
+                            case .success:
                                 withAnimation {
                                     self.isModalVisible = false
                                 }
-                            } label: {
-                                Image("todo-cancel")
-                                    .renderingMode(.template)
-                                    .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x646464))
+                            case .failure:
+                                break
                             }
-
-                            Spacer()
-
-                            Button {
-                                self.isConfirmButtonActive = false
-
-                                self.viewModel.addTodo { result in
-                                    switch result {
-                                    case .success:
-                                        withAnimation {
-                                            self.isModalVisible = false
-                                        }
-                                    case .failure:
-                                        break
-                                    }
-                                    self.isConfirmButtonActive = true
-                                }
-                            } label: {
-                                Image("confirm")
-                                    .renderingMode(.template)
-                                    .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x646464))
-                            }
-                            .disabled(self.viewModel.isFieldEmpty || !self.isConfirmButtonActive)
+                            self.isConfirmButtonActive = true
                         }
-                        .padding(.horizontal, 33)
-                        .padding(.bottom, 27)
+                    } label: {
+                        Image("confirm")
+                            .renderingMode(.template)
+                            .foregroundColor(viewModel.isFieldEmpty ? Color(0xACACAC) : Color(0x646464))
+                    }
+                    .disabled(self.viewModel.isFieldEmpty || !self.isConfirmButtonActive)
+                }
+                .padding(.horizontal, 33)
+                .padding(.bottom, 27)
+            } else {
+                HStack(spacing: 0) {
+                    Button {
+                        if !self.viewModel.isPreviousStateEqual {
+                            self.backButtonTapped = true
+                        } else {
+                            self.dismissAction.callAsFunction()
+                        }
+                    } label: {
+                        Image("back-button")
+                            .frame(width: 28, height: 28)
+                    }
+                    .confirmationDialog(
+                        "현재 화면에서 나갈까요? 수정사항이 있습니다.",
+                        isPresented: self.$backButtonTapped,
+                        titleVisibility: .visible
+                    ) {
+                        Button("나가기", role: .destructive) {
+                            self.dismissAction.callAsFunction()
+                        }
                     }
 
+                    Spacer()
+
+                    if let complete = viewModel.todo?.completed, !complete {
+                        Button {
+                            self.updateButtonTapped = true
+                        } label: {
+                            Image("confirm")
+                                .renderingMode(.template)
+                                .foregroundColor(Color(0x191919))
+                        }
+                        .disabled(self.viewModel.isFieldEmpty)
+                        .confirmationDialog(
+                            self.viewModel.todo?.repeatOption != nil
+                                ? "수정사항을 저장할까요? 반복되는 할 일 입니다."
+                                : "수정사항을 저장할까요?",
+                            isPresented: self.$updateButtonTapped,
+                            titleVisibility: .visible
+                        ) {
+                            if self.viewModel.todo?.repeatOption != nil {
+                                // 반복 옵션 미수정, front, middle
+                                if self.viewModel.isPreviousRepeatStateEqual
+                                    && self.viewModel.at != .none
+                                    && self.viewModel.at != .back
+                                {
+                                    Button("이 할 일만 수정") {
+                                        // 반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
+                                        // 아래 옵션을 false로 변경한다.
+                                        self.viewModel.isSelectedRepeat = false
+
+                                        self.viewModel.updateTodoWithRepeat(
+                                            at: self.viewModel.at
+                                        ) { result in
+                                            switch result {
+                                            case .success:
+                                                self.dismissAction.callAsFunction()
+                                            case .failure:
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // middle
+                                if self.viewModel.at == .middle
+                                    || self.viewModel.at == .back
+                                {
+                                    Button("이 할 일부터 수정", role: .destructive) {
+                                        self.viewModel.updateTodoWithRepeat(
+                                            at: .back
+                                        ) { result in
+                                            switch result {
+                                            case .success:
+                                                self.dismissAction.callAsFunction()
+                                            case .failure:
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if self.viewModel.at == .front
+                                    || self.viewModel.at == .none
+                                {
+                                    Button("모든 할 일 수정", role: .destructive) {
+                                        self.viewModel.updateTodo { result in
+                                            switch result {
+                                            case .success:
+                                                self.dismissAction.callAsFunction()
+                                            case .failure:
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                Button("저장하기") {
+                                    self.viewModel.updateTodo { result in
+                                        switch result {
+                                        case .success:
+                                            self.dismissAction.callAsFunction()
+                                        case .failure:
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .overlay {
+                    Text(viewModel.todo?.completed == true ? "완료한 일" : "할 일 수정")
+                        .font(.pretendard(size: 20, weight: .bold))
+                        .foregroundColor(Color(0x191919))
+                }
+            }
+
+            ScrollView(showsIndicators: false) {
+                LazyVStack {
                     // Todo, SubTodo 입력 View
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(spacing: 0) {
@@ -475,126 +592,6 @@ struct TodoAddView: View {
             }
             .padding(.top, self.isModalVisible ? 0 : 16)
             .navigationBarBackButtonHidden()
-            .toolbar {
-                if !self.isModalVisible {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            if !self.viewModel.isPreviousStateEqual {
-                                self.backButtonTapped = true
-                            } else {
-                                self.dismissAction.callAsFunction()
-                            }
-                        } label: {
-                            Image("back-button")
-                                .frame(width: 28, height: 28)
-                        }
-                        .confirmationDialog(
-                            "현재 화면에서 나갈까요? 수정사항이 있습니다.",
-                            isPresented: self.$backButtonTapped,
-                            titleVisibility: .visible
-                        ) {
-                            Button("나가기", role: .destructive) {
-                                self.dismissAction.callAsFunction()
-                            }
-                        }
-                    }
-
-                    ToolbarItem(placement: .principal) {
-                        Text(viewModel.todo?.completed == true ? "완료한 일" : "할 일 수정")
-                            .font(.pretendard(size: 20, weight: .bold))
-                            .foregroundColor(Color(0x191919))
-                    }
-
-                    if let complete = viewModel.todo?.completed, !complete {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button {
-                                self.updateButtonTapped = true
-                            } label: {
-                                Image("confirm")
-                                    .renderingMode(.template)
-                                    .foregroundColor(Color(0x191919))
-                            }
-                            .disabled(self.viewModel.isFieldEmpty)
-                            .confirmationDialog(
-                                self.viewModel.todo?.repeatOption != nil
-                                    ? "수정사항을 저장할까요? 반복되는 할 일 입니다."
-                                    : "수정사항을 저장할까요?",
-                                isPresented: self.$updateButtonTapped,
-                                titleVisibility: .visible
-                            ) {
-                                if self.viewModel.todo?.repeatOption != nil {
-                                    // 반복 옵션 미수정, front, middle
-                                    if self.viewModel.isPreviousRepeatStateEqual
-                                        && self.viewModel.at != .none
-                                        && self.viewModel.at != .back
-                                    {
-                                        Button("이 할 일만 수정") {
-                                            // 반복 할 일은 수정시에 반복 관련된 옵션은 null로 만들어 전달해야하기 때문에
-                                            // 아래 옵션을 false로 변경한다.
-                                            self.viewModel.isSelectedRepeat = false
-
-                                            self.viewModel.updateTodoWithRepeat(
-                                                at: self.viewModel.at
-                                            ) { result in
-                                                switch result {
-                                                case .success:
-                                                    self.dismissAction.callAsFunction()
-                                                case .failure:
-                                                    break
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    // middle
-                                    if self.viewModel.at == .middle
-                                        || self.viewModel.at == .back
-                                    {
-                                        Button("이 할 일부터 수정", role: .destructive) {
-                                            self.viewModel.updateTodoWithRepeat(
-                                                at: .back
-                                            ) { result in
-                                                switch result {
-                                                case .success:
-                                                    self.dismissAction.callAsFunction()
-                                                case .failure:
-                                                    break
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    if self.viewModel.at == .front
-                                        || self.viewModel.at == .none
-                                    {
-                                        Button("모든 할 일 수정", role: .destructive) {
-                                            self.viewModel.updateTodo { result in
-                                                switch result {
-                                                case .success:
-                                                    self.dismissAction.callAsFunction()
-                                                case .failure:
-                                                    break
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    Button("저장하기") {
-                                        self.viewModel.updateTodo { result in
-                                            switch result {
-                                            case .success:
-                                                self.dismissAction.callAsFunction()
-                                            case .failure:
-                                                break
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
 
             if !self.isModalVisible {
                 Button {
