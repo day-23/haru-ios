@@ -8,7 +8,7 @@
 import PopupView
 import SwiftUI
 
-struct ScheduleFormView: View {
+struct ScheduleFormView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismissAction
     @StateObject var scheduleFormVM: ScheduleFormViewModel
 
@@ -23,6 +23,8 @@ struct ScheduleFormView: View {
     @State var showDeleteActionSheet: Bool = false
     @State var showEditActionSheet: Bool = false
     @State var actionSheetOption: ActionSheetOption = .isNotRepeat
+    
+    @State private var keyboardUp: Bool = false
         
     enum ActionSheetOption {
         case isRepeat
@@ -423,9 +425,14 @@ struct ScheduleFormView: View {
                         .padding(.horizontal, 20)
                         .foregroundColor(scheduleFormVM.memo.isEmpty ? .gray2 : .mainBlack)
                         
-                        TextField("메모를 작성해주세요", text: $scheduleFormVM.memo, axis: .vertical)
-                            .font(.pretendard(size: 14, weight: .medium))
-                            .padding(.leading, 45)
+                        TextField("", text: $scheduleFormVM.memo, axis: .vertical)
+                            .placeholder(when: self.scheduleFormVM.memo.isEmpty) {
+                                Text("메모를 작성해주세요.")
+                                    .font(.pretendard(size: 14, weight: .regular))
+                                    .foregroundColor(Color(0xacacac))
+                            }
+                            .font(.pretendard(size: 14, weight: .regular))
+                            .padding(.leading, 37)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 8)
                             .onChange(of: scheduleFormVM.memo) { _ in
@@ -441,7 +448,9 @@ struct ScheduleFormView: View {
                 .padding(.top, 33)
             }
             .padding(.top, scheduleFormVM.mode == .edit ? -10 : 0)
-            if scheduleFormVM.mode == .edit {
+            if scheduleFormVM.mode == .edit,
+               !keyboardUp
+            {
                 Spacer()
                 if scheduleFormVM.overWeek {
                     Button {
@@ -475,7 +484,7 @@ struct ScheduleFormView: View {
                         actionSheetOption = scheduleFormVM.tmpRepeatOption != nil ? .isRepeat : .isNotRepeat
                     } label: {
                         HStack {
-                            Text("일정 삭제하기")
+                            Text("일정 삭제")
                                 .font(.pretendard(size: 20, weight: .medium))
                             
                             Image("todo-delete")
@@ -489,6 +498,11 @@ struct ScheduleFormView: View {
                 }
             }
         }
+        .onReceive(keyboardEventPublisher, perform: { value in
+            withAnimation {
+                keyboardUp = value
+            }
+        })
         .navigationBarBackButtonHidden()
     }
     

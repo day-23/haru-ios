@@ -18,6 +18,7 @@ struct PostFormView: View {
     @State var cancelWriting: Bool = false
 
     @FocusState private var isFocused: Bool
+    @State private var requestPermission: Bool = false // 카메라 권한 요청
 
     // For pop up to root
     @Binding var rootIsActive: Bool
@@ -199,7 +200,18 @@ struct PostFormView: View {
                 .ignoresSafeArea()
         })
         .fullScreenCover(isPresented: $showCamera, content: {
-            CameraView(image: $captureImage)
+            CameraView(image: $captureImage, isPopup: $showCamera, requestPermission: $requestPermission)
+                .alert("'Haru'이(가) 카메라에 접근하려고 합니다.", isPresented: $requestPermission, actions: {
+                    Button("허용") {
+                        UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                    }
+                    Button("허용 안함") {
+                        showCamera = false
+                        requestPermission = false
+                    }
+                }, message: {
+                    Text("하루에서 사진을 촬영하기 위해 카메라에 접근합니다.")
+                })
                 .ignoresSafeArea()
         })
         .onChange(of: croppedImage, perform: { _ in

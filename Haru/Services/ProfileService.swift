@@ -101,10 +101,30 @@ struct ProfileService {
             interceptor: ApiRequestInterceptor()
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
-            case let .success(response):
-                completion(.success(response.data))
+            case let .success(data):
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(ProfileError.invalid))
+                        return
+                    default:
+                        break
+                    }
+                }
+                completion(.success(data.data))
+
             case let .failure(error):
-                completion(.failure(error))
+                if let statusCode = response.response?.statusCode {
+                    switch statusCode {
+                    case 403:
+                        completion(.failure(ProfileError.invalid))
+                        return
+                    default:
+                        completion(.failure(error))
+                    }
+                } else {
+                    completion(.failure(error))
+                }
             }
         }
     }

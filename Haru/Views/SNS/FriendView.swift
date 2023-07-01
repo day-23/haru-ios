@@ -209,8 +209,23 @@ struct FriendView: View {
                                     }
                                 }
                                 .padding(.horizontal, 20)
+//                                .onAppear {
+//                                    print(idx, self.userProfileVM.friendList.count)
+//                                    switch self.userProfileVM.option {
+//                                    case .friendList:
+//                                        if idx == self.userProfileVM.friendList.count - 1 {
+//                                            self.userProfileVM.loadMoreFriendList()
+//                                        }
+//
+//                                    case .requestFriendList:
+//                                        if idx == self.userProfileVM.requestFriendList.count - 1 {
+//                                            self.userProfileVM.loadMoreFriendList()
+//                                        }
+//                                    }
+//                                }
                             }
                         }
+                        
                         switch self.userProfileVM.option {
                         case .friendList:
                             if !self.userProfileVM.friendList.isEmpty,

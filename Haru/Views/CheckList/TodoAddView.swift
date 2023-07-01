@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TodoAddView: View {
+struct TodoAddView: View, KeyboardReadable {
     init(viewModel: TodoAddViewModel, isModalVisible: Binding<Bool>? = nil) {
         self.viewModel = viewModel
         _isModalVisible = isModalVisible ?? .constant(false)
@@ -24,6 +24,7 @@ struct TodoAddView: View {
     @State private var backButtonTapped = false
 
     @State private var isConfirmButtonActive: Bool = true
+    @State private var keyboardUp: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -320,9 +321,9 @@ struct TodoAddView: View {
                                 .foregroundColor(self.viewModel.tagList.isEmpty ? Color(0xACACAC) : Color(0x191919))
                         }
                         .padding(.horizontal, 20)
-
-                        Divider()
                     }
+
+                    Divider()
 
                     // 나의 하루에 추가
                     Group {
@@ -593,7 +594,9 @@ struct TodoAddView: View {
             .padding(.top, self.isModalVisible ? 0 : 16)
             .navigationBarBackButtonHidden()
 
-            if !self.isModalVisible {
+            if !self.isModalVisible,
+               !keyboardUp
+            {
                 Button {
                     self.deleteButtonTapped = true
                 } label: {
@@ -691,7 +694,11 @@ struct TodoAddView: View {
                 }
             }
         }
-        .ignoresSafeArea(.keyboard)
+        .onReceive(keyboardEventPublisher, perform: { value in
+            withAnimation {
+                keyboardUp = value
+            }
+        })
         .onChange(of: tagInFocus, perform: { value in
             if !value {
                 self.viewModel.onSubmitTag()

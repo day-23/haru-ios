@@ -47,6 +47,7 @@ extension ImageCropper {
     func makeImageCropperHiddingRotationDial(context: Context) -> UIViewController {
         var config = Mantis.Config()
         config.cropViewConfig.showAttachedRotationControlView = false
+        config.cropViewConfig.cropShapeType = cropShapeType
         config.presetFixedRatioType = presetFixedRatioType
         let cropViewController = Mantis.cropViewController(image: image!, config: config)
         cropViewController.delegate = context.coordinator

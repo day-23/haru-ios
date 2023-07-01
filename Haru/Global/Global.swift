@@ -49,7 +49,7 @@ final class Global: ObservableObject {
     }
 
     @Published var toastMessageContent: String = ""
-    @Published var toastMessageTheme: ToastMessageTheme = .light
+    @Published var toastMessageTheme: ToastMessageTheme = .default
 
     var holidayCategory = Category(
         id: UUID().uuidString,
