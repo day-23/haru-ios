@@ -173,6 +173,7 @@ struct ProfileFormView: View {
                         UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                     }
                     Button("허용 안함") {
+                        showCamera = false
                         requestPermission = false
                     }
                 }, message: {

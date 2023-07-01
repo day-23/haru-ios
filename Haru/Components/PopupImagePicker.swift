@@ -171,7 +171,9 @@ struct PopupImagePicker: View {
                             self.imagePickerModel.fetchImages()
                         }
                     } else {
-                        dismissAction.callAsFunction()
+                        DispatchQueue.main.async {
+                            dismissAction.callAsFunction()
+                        }
                     }
                 }
             case .restricted, .denied:
@@ -187,7 +189,9 @@ struct PopupImagePicker: View {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
             Button("허용 안 함") {
-                dismissAction.callAsFunction()
+                DispatchQueue.main.async {
+                    dismissAction.callAsFunction()
+                }
             }
         } message: {
             Text("하루에서 사진을 추가하기 위해 앨범에 접근합니다.")
