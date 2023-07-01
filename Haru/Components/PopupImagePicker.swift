@@ -6,15 +6,18 @@
 //
 
 import Foundation
+import Photos
 import PhotosUI
 import SwiftUI
 
 struct PopupImagePicker: View {
+    @Environment(\.dismiss) var dismissAction
     @StateObject var imagePickerModel: ImagePickerViewModel = .init()
 
     @Environment(\.self) var env
 
     @State var multiSelectEnable: Bool = false
+    @State private var requestPermission: Bool = false
 
     // MARK: Callbacks
 
@@ -153,6 +156,42 @@ struct PopupImagePicker: View {
 
         // Making It to Take Full Screen Space
         .frame(width: deviceSize.width, height: deviceSize.height, alignment: .bottom)
+        .onAppear {
+            // 사진 선택 허용이 처음인지 아닌지
+            let albumStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+            switch albumStatus {
+            case .notDetermined:
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+                    if status == .limited {
+                        DispatchQueue.main.async {
+                            self.imagePickerModel.fetchImages()
+                        }
+                    } else if status == .authorized {
+                        DispatchQueue.main.async {
+                            self.imagePickerModel.fetchImages()
+                        }
+                    } else {
+                        dismissAction.callAsFunction()
+                    }
+                }
+            case .restricted, .denied:
+                requestPermission = true
+            case .authorized, .limited:
+                print("[Debug] 사진 권환 획득")
+            @unknown default:
+                fatalError()
+            }
+        }
+        .alert("'Haru'이(가) 사용자의 사진에 접근하려고 합니다.", isPresented: $requestPermission) {
+            Button("허용") {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }
+            Button("허용 안 함") {
+                dismissAction.callAsFunction()
+            }
+        } message: {
+            Text("하루에서 사진을 추가하기 위해 앨범에 접근합니다.")
+        }
     }
 
     // MARK: Grid Image Content
