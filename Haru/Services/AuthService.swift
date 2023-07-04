@@ -46,8 +46,7 @@ struct AuthService {
         AF.request(
             AuthService.baseURL + "kakao",
             method: .post,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: UserKakaoAuthResponse.self) { response in
             switch response.result {
             case .success(let data):
@@ -99,8 +98,7 @@ struct AuthService {
         AF.request(
             AuthService.baseURL + "apple",
             method: .post,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: UserAppleAuthResponse.self) { response in
             switch response.result {
             case .success(let data):
