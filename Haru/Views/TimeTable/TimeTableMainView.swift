@@ -51,6 +51,7 @@ struct TimeTableMainView: View {
                         .padding(.trailing, 6)
 
                     Button {
+                        HapticManager.instance.impact(style: .rigid)
                         withAnimation(.easeInOut(duration: 0.1)) {
                             self.isDateButtonClicked.toggle()
                         }
@@ -68,17 +69,6 @@ struct TimeTableMainView: View {
                                 )
                             )
                     }
-//                    .popover(
-//                        isPresented: self.$isDateButtonClicked,
-//                        arrowDirection: .up
-//                    ) {
-//                        DatePicker(
-//                            "",
-//                            selection: self.$timeTableViewModel.currentDate,
-//                            displayedComponents: .date
-//                        )
-//                        .datePickerStyle(.graphical)
-//                    }
 
                     Spacer()
 

@@ -178,7 +178,7 @@ final class UserProfileViewModel: ObservableObject {
     ) {
         DispatchQueue.global().async {
             if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
-                completion(PostImage(url: profileUrl, uiImage: uiImage))
+                completion(PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png"))
             } else {
                 guard
                     let encodeUrl = profileUrl.encodeUrl(),
@@ -191,7 +191,7 @@ final class UserProfileViewModel: ObservableObject {
                 }
 
                 ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
-                completion(PostImage(url: profileUrl, uiImage: uiImage))
+                completion(PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png"))
             }
         }
     }

@@ -590,10 +590,12 @@ struct ScheduleFormView: View, KeyboardReadable {
         let editButton: ActionSheet.Button = .default(Text("이 일정만 수정")) {
             scheduleFormVM.isSelectedRepeat = false
             scheduleFormVM.updateTargetSchedule()
+            dismissAction.callAsFunction()
         }
         
         let editAfterButton: ActionSheet.Button = .destructive(Text("이 일정부터 수정")) {
             scheduleFormVM.updateTargetSchedule(isAfter: true)
+            dismissAction.callAsFunction()
         }
         
         let editAllButton: ActionSheet.Button = .destructive(

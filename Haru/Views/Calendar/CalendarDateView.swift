@@ -59,6 +59,7 @@ struct CalendarDateView: View {
                                 .font(.pretendard(size: 28, weight: .bold))
                             
                             Button {
+                                HapticManager.instance.impact(style: .rigid)
                                 withAnimation(.easeInOut(duration: 0.1)) {
                                     self.isDatePickerVisible.toggle()
                                 }
@@ -142,6 +143,7 @@ struct CalendarDateView: View {
                                     
                                     let longPress = LongPressGesture(minimumDuration: 0.3)
                                         .onEnded { _ in
+                                            HapticManager.instance.impact(style: .heavy)
                                             self.calendarVM.firstSelected = true
                                         }
                                     

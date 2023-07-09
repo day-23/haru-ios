@@ -178,6 +178,8 @@
 		6F8D8C442A027F4B00A32988 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C432A027F4B00A32988 /* Post.swift */; };
 		6F8D8C462A0281E500A32988 /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C452A0281E500A32988 /* PostService.swift */; };
 		6F8D8C482A02B80300A32988 /* PostFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F8D8C472A02B80300A32988 /* PostFormView.swift */; };
+		6F9693722A57E82400BE8B62 /* FLAnimatedImage in Frameworks */ = {isa = PBXBuildFile; productRef = 6F9693712A57E82400BE8B62 /* FLAnimatedImage */; };
+		6F9693742A57E86D00BE8B62 /* GIFImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9693732A57E86D00BE8B62 /* GIFImage.swift */; };
 		6F9AE8652A21F26D00BD5269 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9AE8642A21F26D00BD5269 /* UIApplication.swift */; };
 		6F9C740A2A276E5F00C04788 /* FriendOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9C74092A276E5F00C04788 /* FriendOption.swift */; };
 		6F9C740C2A27803900C04788 /* FriendUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9C740B2A27803900C04788 /* FriendUser.swift */; };
@@ -381,6 +383,7 @@
 		6F8D8C432A027F4B00A32988 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		6F8D8C452A0281E500A32988 /* PostService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
 		6F8D8C472A02B80300A32988 /* PostFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFormView.swift; sourceTree = "<group>"; };
+		6F9693732A57E86D00BE8B62 /* GIFImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFImage.swift; sourceTree = "<group>"; };
 		6F9AE8642A21F26D00BD5269 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		6F9C74092A276E5F00C04788 /* FriendOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendOption.swift; sourceTree = "<group>"; };
 		6F9C740B2A27803900C04788 /* FriendUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendUser.swift; sourceTree = "<group>"; };
@@ -425,6 +428,7 @@
 				AE5085B22A169A7200A373BC /* KakaoSDKUser in Frameworks */,
 				AE5085AE2A169A7200A373BC /* KakaoSDKTalk in Frameworks */,
 				AE5085A62A169A7200A373BC /* KakaoSDKCommon in Frameworks */,
+				6F9693722A57E82400BE8B62 /* FLAnimatedImage in Frameworks */,
 				AE5085A42A169A7200A373BC /* KakaoSDKAuth in Frameworks */,
 				6F710EBA2A3CB67000C6922E /* ScalingHeaderScrollView in Frameworks */,
 			);
@@ -547,8 +551,8 @@
 				6F8D8C452A0281E500A32988 /* PostService.swift */,
 				6FB144FC2A0A87D9006EA177 /* FriendService.swift */,
 				AE5085B62A16B21100A373BC /* AuthService.swift */,
-				6F0B0F762A0E9FE00003F313 /* CommentService.swift */,
 				1392241F2A20C532002894B2 /* UserService.swift */,
+				6F0B0F762A0E9FE00003F313 /* CommentService.swift */,
 				6F0649432A2A4DDE001C88B3 /* SearchService.swift */,
 				13E976BB2A3C3A6D00D1870F /* ApiRequestInterceptor.swift */,
 			);
@@ -615,6 +619,7 @@
 				6F45700D2A378E8D008F2E70 /* ImageCropper.swift */,
 				6F254D002A3D616500E36675 /* CustomToastMessage.swift */,
 				6F243B5A2A3FEF0E0086CC34 /* PinchZoom.swift */,
+				6F9693732A57E86D00BE8B62 /* GIFImage.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -831,6 +836,7 @@
 				AE5085B12A169A7200A373BC /* KakaoSDKUser */,
 				6F456FF82A37822E008F2E70 /* Mantis */,
 				6F710EB92A3CB67000C6922E /* ScalingHeaderScrollView */,
+				6F9693712A57E82400BE8B62 /* FLAnimatedImage */,
 			);
 			productName = Haru;
 			productReference = 130666C829CEDF4A00AACEE6 /* Haru.app */;
@@ -867,6 +873,7 @@
 				AE5085A02A169A7200A373BC /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 				6F456FF72A37822E008F2E70 /* XCRemoteSwiftPackageReference "Mantis" */,
 				6F710EB82A3CB67000C6922E /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */,
+				6F9693702A57E82400BE8B62 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
 			);
 			productRefGroup = 130666C929CEDF4A00AACEE6 /* Products */;
 			projectDirPath = "";
@@ -907,6 +914,7 @@
 				1306679129CEE1E300AACEE6 /* CustomToggleStyle.swift in Sources */,
 				1306676229CEE19C00AACEE6 /* CategoryFormView.swift in Sources */,
 				6F566C8329CEEE73000F0555 /* Font.swift in Sources */,
+				6F9693742A57E86D00BE8B62 /* GIFImage.swift in Sources */,
 				130667AD29CEE1FE00AACEE6 /* RepeatOption.swift in Sources */,
 				13A57DBF2A1358B40010A481 /* ScheduleState.swift in Sources */,
 				1306671D29CEE14000AACEE6 /* TagService.swift in Sources */,
@@ -1228,7 +1236,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = day23.Haru;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1267,7 +1275,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = day23.Haru;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1343,6 +1351,14 @@
 				minimumVersion = 0.1.5;
 			};
 		};
+		6F9693702A57E82400BE8B62 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Flipboard/FLAnimatedImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		AE5085A02A169A7200A373BC /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
@@ -1378,6 +1394,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6F710EB82A3CB67000C6922E /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */;
 			productName = ScalingHeaderScrollView;
+		};
+		6F9693712A57E82400BE8B62 /* FLAnimatedImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6F9693702A57E82400BE8B62 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */;
+			productName = FLAnimatedImage;
 		};
 		AE5085A12A169A7200A373BC /* KakaoSDK */ = {
 			isa = XCSwiftPackageProductDependency;

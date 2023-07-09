@@ -260,6 +260,7 @@ struct TimeTableScheduleView: View {
                                         timeTableViewModel: _timeTableViewModel
                                     ))
                                     .onDrag {
+                                        HapticManager.instance.impact(style: .heavy)
                                         let scheduleId = schedule.id
                                         timeTableViewModel.draggingSchedule = schedule
                                         return NSItemProvider(object: scheduleId as NSString)

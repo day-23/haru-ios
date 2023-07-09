@@ -92,6 +92,7 @@ struct TodoView: View {
             CompleteButton(isClicked: todo.completed)
                 .onTapGesture {
                     isCompletionButtonActive = false
+                    HapticManager.instance.impact(style: .heavy)
 
                     if (todo.repeatOption == nil && todo.repeatValue == nil)
                         || todo.completed

@@ -93,6 +93,7 @@ struct TimeTableTodoRow: View {
                                     .transition(.scale)
                                     .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 10))
                                     .onDrag {
+                                        HapticManager.instance.impact(style: .heavy)
                                         timeTableViewModel.draggingTodo = todo
                                         return NSItemProvider(object: todo.data.id as NSString)
                                     }

@@ -38,7 +38,7 @@ final class PostFormViewModel: ObservableObject {
             templateImageUrlList.enumerated().forEach { idx, urlString in
                 if let uiImage = ImageCache.shared.object(forKey: urlString as NSString) {
                     DispatchQueue.main.async {
-                        self.templateList[idx] = PostImage(url: urlString, uiImage: uiImage)
+                        self.templateList[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: "image/png")
                     }
                 } else {
                     guard
@@ -52,7 +52,7 @@ final class PostFormViewModel: ObservableObject {
 
                     ImageCache.shared.setObject(uiImage, forKey: urlString as NSString)
                     DispatchQueue.main.async {
-                        self.templateList[idx] = PostImage(url: urlString, uiImage: uiImage)
+                        self.templateList[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: "image/png")
                     }
                 }
             }
