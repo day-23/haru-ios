@@ -111,7 +111,7 @@ final class CommentViewModel: ObservableObject {
                 if let urlString {
                     if let uiImage = ImageCache.shared.object(forKey: urlString as NSString) { // 캐싱된게 있는 경우
                         DispatchQueue.main.async {
-                            self.imageCommentUserProfileList[imageId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                            self.imageCommentUserProfileList[imageId]?[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: "image/png")
                         }
                     } else { // 캐싱이 아직 안된 경우
                         guard
@@ -125,7 +125,7 @@ final class CommentViewModel: ObservableObject {
                         
                         ImageCache.shared.setObject(uiImage, forKey: urlString as NSString)
                         DispatchQueue.main.async {
-                            self.imageCommentUserProfileList[imageId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                            self.imageCommentUserProfileList[imageId]?[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: "image/png")
                         }
                     }
                 }
