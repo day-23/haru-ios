@@ -43,7 +43,7 @@ struct FeedImage: View {
 
             TabView(selection: $postPageNum) {
                 ForEach(imageList.indices, id: \.self) { idx in
-                    if let uiImage = imageList[idx]?.uiImage {
+                    if let postImage = imageList[idx], let uiImage = imageList[idx]?.uiImage {
                         NavigationLink {
                             CommentView(
                                 post: $post,
@@ -61,12 +61,16 @@ struct FeedImage: View {
 
                         } label: {
                             GeometryReader { geo in
-                                Image(uiImage: uiImage)
-                                    .renderingMode(.original)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: geo.size.width, height: geo.size.height)
-                                    .clipped()
+                                if imageList[idx]?.mimeType == "image/gif" {
+                                    GifImage(url: postImage.url, data: postImage.data)
+                                } else {
+                                    Image(uiImage: uiImage)
+                                        .renderingMode(.original)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: geo.size.width, height: geo.size.height)
+                                        .clipped()
+                                }
                             }
                         }
                         .buttonStyle(.plain)
