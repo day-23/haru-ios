@@ -198,15 +198,20 @@ final class PostViewModel: ObservableObject {
 
     // MARK: - UIImage로 변환 + 이미지 캐싱
 
-    func fetchPostImage(postId: String, postImageUrlList: [String], isMedia: Bool = false) {
+    func fetchPostImage(
+        postId: String,
+        postImageUrlList: [String],
+        mimeTypeList: [String],
+        isMedia: Bool = false)
+    {
         DispatchQueue.global().async {
             postImageUrlList.enumerated().forEach { idx, urlString in
-                if let uiImage = ImageCache.shared.object(forKey: urlString as NSString) {
+                if let cacheData = ImageCache.shared.object(forKey: urlString as NSString) {
                     DispatchQueue.main.async {
                         if isMedia {
-                            self.mediaImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                            self.mediaImageList[postId]?[idx] = PostImage(url: urlString, uiImage: cacheData, mimeType: mimeTypeList[idx])
                         } else {
-                            self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                            self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: cacheData, mimeType: mimeTypeList[idx])
                         }
                     }
                 } else {
@@ -222,9 +227,9 @@ final class PostViewModel: ObservableObject {
                     ImageCache.shared.setObject(uiImage, forKey: urlString as NSString)
                     DispatchQueue.main.async {
                         if isMedia {
-                            self.mediaImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                            self.mediaImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: mimeTypeList[idx], data: data)
                         } else {
-                            self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage)
+                            self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: mimeTypeList[idx], data: data)
                         }
                     }
                 }
@@ -236,7 +241,7 @@ final class PostViewModel: ObservableObject {
         DispatchQueue.global().async {
             if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
                 DispatchQueue.main.async {
-                    self.profileImageList[postId] = PostImage(url: profileUrl, uiImage: uiImage)
+                    self.profileImageList[postId] = PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png")
                 }
             } else {
                 guard
@@ -251,7 +256,7 @@ final class PostViewModel: ObservableObject {
 
                 ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
                 DispatchQueue.main.async {
-                    self.profileImageList[postId] = PostImage(url: profileUrl, uiImage: uiImage)
+                    self.profileImageList[postId] = PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png")
                 }
             }
         }
@@ -278,6 +283,9 @@ final class PostViewModel: ObservableObject {
                         postId: post.id,
                         postImageUrlList: post.images.map { image in
                             image.url
+                        },
+                        mimeTypeList: post.images.map { image in
+                            image.mimeType
                         })
                 }
 
@@ -311,6 +319,9 @@ final class PostViewModel: ObservableObject {
                         postId: post.id,
                         postImageUrlList: post.images.map { image in
                             image.url
+                        },
+                        mimeTypeList: post.images.map { image in
+                            image.mimeType
                         })
                 }
 
@@ -343,6 +354,7 @@ final class PostViewModel: ObservableObject {
                     self.fetchPostImage(
                         postId: post.id,
                         postImageUrlList: post.images.map(\.url),
+                        mimeTypeList: post.images.map(\.mimeType),
                         isMedia: true)
                 }
 
@@ -377,6 +389,7 @@ final class PostViewModel: ObservableObject {
                     self.fetchPostImage(
                         postId: post.id,
                         postImageUrlList: post.images.map(\.url),
+                        mimeTypeList: post.images.map(\.mimeType),
                         isMedia: true)
                 }
 
@@ -409,6 +422,7 @@ final class PostViewModel: ObservableObject {
                     self.fetchPostImage(
                         postId: post.id,
                         postImageUrlList: post.images.map(\.url),
+                        mimeTypeList: post.images.map(\.mimeType),
                         isMedia: true)
                 }
 
@@ -442,6 +456,7 @@ final class PostViewModel: ObservableObject {
                     self.fetchPostImage(
                         postId: post.id,
                         postImageUrlList: post.images.map(\.url),
+                        mimeTypeList: post.images.map(\.mimeType),
                         isMedia: true)
                 }
 
