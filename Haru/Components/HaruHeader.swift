@@ -38,6 +38,7 @@ struct HaruHeader<
                 HStack {
                     if self.toggleOn {
                         Button {
+                            HapticManager.instance.impact(style: .rigid)
                             withAnimation {
                                 self.toggleIsClicked.toggle()
                             }

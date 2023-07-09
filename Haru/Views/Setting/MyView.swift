@@ -92,6 +92,7 @@ struct MyView: View {
                                         guard let prevMonth = Calendar.current.date(byAdding: .month, value: -1, to: now) else {
                                             return
                                         }
+                                        HapticManager.instance.impact(style: .rigid)
                                         self.now = prevMonth
                                     } label: {
                                         Image("todo-toggle")
@@ -111,6 +112,7 @@ struct MyView: View {
                                         guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: now) else {
                                             return
                                         }
+                                        HapticManager.instance.impact(style: .rigid)
                                         self.now = nextMonth
                                     } label: {
                                         Image("todo-toggle")

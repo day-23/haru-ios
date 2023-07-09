@@ -547,8 +547,8 @@
 				6F8D8C452A0281E500A32988 /* PostService.swift */,
 				6FB144FC2A0A87D9006EA177 /* FriendService.swift */,
 				AE5085B62A16B21100A373BC /* AuthService.swift */,
-				6F0B0F762A0E9FE00003F313 /* CommentService.swift */,
 				1392241F2A20C532002894B2 /* UserService.swift */,
+				6F0B0F762A0E9FE00003F313 /* CommentService.swift */,
 				6F0649432A2A4DDE001C88B3 /* SearchService.swift */,
 				13E976BB2A3C3A6D00D1870F /* ApiRequestInterceptor.swift */,
 			);
