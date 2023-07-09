@@ -7,13 +7,14 @@
 
 import SwiftUI
 
-struct TagManageView: View {
+struct TagManageView: View, KeyboardReadable {
     private let width = UIScreen.main.bounds.width * 0.78
     private let height = UIScreen.main.bounds.height * 0.8
 
     @StateObject var checkListViewModel: CheckListViewModel
     @State private var offset = CGSize.zero
     @Binding var isActive: Bool
+    @Binding var isKeyboardUp: Bool
     @State private var addButtonTapped = false
 
     var body: some View {
@@ -118,6 +119,10 @@ struct TagManageView: View {
                     }
                 }
         )
+        .onReceive(keyboardEventPublisher) { value in
+            isKeyboardUp = value
+            Global.shared.isTabViewActive = !isKeyboardUp
+        }
     }
 }
 

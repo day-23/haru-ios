@@ -16,6 +16,7 @@ struct CheckListView: View {
     @State private var prevOffset: CGFloat?
     @State private var offset: CGFloat?
     @State private var viewIsShown: Bool = true
+    @State private var isKeyboardUpInTagManageView: Bool = false
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
@@ -335,14 +336,17 @@ struct CheckListView: View {
                     .edgesIgnoringSafeArea(.all)
                     .zIndex(1)
                     .onTapGesture {
-                        withAnimation {
-                            isTagManageModalVisible.wrappedValue = false
+                        if !self.isKeyboardUpInTagManageView {
+                            withAnimation {
+                                isTagManageModalVisible.wrappedValue = false
+                            }
                         }
                     }
 
                 TagManageView(
                     checkListViewModel: self.viewModel,
-                    isActive: isTagManageModalVisible
+                    isActive: isTagManageModalVisible,
+                    isKeyboardUp: self.$isKeyboardUpInTagManageView
                 )
                 .position(
                     x: UIScreen.main.bounds.width - UIScreen.main.bounds.width * 0.78 + (UIScreen.main.bounds.width * 0.78 * 0.5),
