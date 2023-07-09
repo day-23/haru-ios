@@ -65,7 +65,7 @@ struct GifImage: UIViewRepresentable {
     private let activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.color = .systemBlue
+        activityIndicator.color = .gray
         return activityIndicator
     }()
 }
