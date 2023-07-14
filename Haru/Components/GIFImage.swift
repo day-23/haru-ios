@@ -9,10 +9,10 @@ import FLAnimatedImage
 import SwiftUI
 
 struct GifImage: UIViewRepresentable {
-    private let url: String
+    private let url: URL?
     private let data: Data?
     
-    init(url: String, data: Data?) {
+    init(url: URL?, data: Data?) {
         self.url = url
         self.data = data
     }
@@ -37,7 +37,7 @@ struct GifImage: UIViewRepresentable {
     func updateUIView(_ uiView: UIView, context: Context) {
         activityIndicator.startAnimating()
         
-        guard let url = URL(string: url) else { return }
+        guard let url = url else { return }
         DispatchQueue.global().async {
             if let data {
                 let image = FLAnimatedImage(animatedGIFData: data)

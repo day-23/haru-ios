@@ -116,7 +116,7 @@ struct CommentListView: View {
                             let comment = commentList[idx]
                             HStack(spacing: 0) {
                                 ProfileImgView(
-                                    profileImage: commentVM.imageCommentUserProfileList[commentVM.postImageIDList[commentVM.imagePageNum]]?[idx])
+                                    imageUrl: commentVM.imageCommentUserProfileUrlList[commentVM.postImageIDList[commentVM.imagePageNum]]?[idx])
                                     .frame(width: 40, height: 40)
                                     .padding(.trailing, 14)
                                 

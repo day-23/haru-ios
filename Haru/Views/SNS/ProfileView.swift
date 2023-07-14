@@ -258,7 +258,7 @@ struct ProfileView: View {
                       ratio: UIScreen.main.bounds.height < 800 ? 0.4 : 0.3)
                 {
                     VStack(spacing: 0) {
-                        ProfileImgView(profileImage: userProfileVM.profileImage)
+                        ProfileImgView(imageUrl: userProfileVM.profileImageURL)
                             .frame(width: 70, height: 70)
                             .padding(.bottom, 12)
 

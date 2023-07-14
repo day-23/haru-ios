@@ -11,7 +11,7 @@ struct MediaFeedView: View {
     @Environment(\.dismiss) var dismissAction
 
     var post: Post
-    var postImageList: [PostImage?]
+    var postImageUrlList: [URL?]
     @StateObject var postVM: PostViewModel
 
     @State var postOptModalVis: (Bool, Post?) = (false, nil)
@@ -25,7 +25,7 @@ struct MediaFeedView: View {
             VStack {
                 FeedView(
                     post: post,
-                    postImageList: postImageList,
+                    postImageUrlList: postImageUrlList,
                     postVM: postVM,
                     postOptModalVis: $postOptModalVis
                 )

@@ -89,6 +89,8 @@
 		130667C529CEE33200AACEE6 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C429CEE33200AACEE6 /* Alamofire */; };
 		130667C829CEE35400AACEE6 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 130667C729CEE35400AACEE6 /* PopupView */; };
 		130667CB29CEE38500AACEE6 /* SwiftUIPager in Frameworks */ = {isa = PBXBuildFile; productRef = 130667CA29CEE38500AACEE6 /* SwiftUIPager */; };
+		131CFCA32A6133E400C813C3 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 131CFCA22A6133E400C813C3 /* Kingfisher */; };
+		131CFCA52A6143D400C813C3 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131CFCA42A6143D400C813C3 /* URL.swift */; };
 		1342D4DC2A1F7A74006758E9 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1342D4DB2A1F7A74006758E9 /* SignUpView.swift */; };
 		1342D4DE2A1FBDB0006758E9 /* SettingHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1342D4DD2A1FBDB0006758E9 /* SettingHeader.swift */; };
 		1342D4E02A1FBE87006758E9 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1342D4DF2A1FBE87006758E9 /* AccountView.swift */; };
@@ -295,6 +297,7 @@
 		130667A929CEE1FE00AACEE6 /* TodoAddMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodoAddMode.swift; sourceTree = "<group>"; };
 		130667AC29CEE1FE00AACEE6 /* Calendar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		130667B229CEE20A00AACEE6 /* CalendarHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
+		131CFCA42A6143D400C813C3 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		1342D4DB2A1F7A74006758E9 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		1342D4DD2A1FBDB0006758E9 /* SettingHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingHeader.swift; sourceTree = "<group>"; };
 		1342D4DF2A1FBE87006758E9 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
@@ -420,6 +423,7 @@
 				130667C829CEE35400AACEE6 /* PopupView in Frameworks */,
 				AE5085AA2A169A7200A373BC /* KakaoSDKShare in Frameworks */,
 				AE5085AC2A169A7200A373BC /* KakaoSDKStory in Frameworks */,
+				131CFCA32A6133E400C813C3 /* Kingfisher in Frameworks */,
 				AE5085B02A169A7200A373BC /* KakaoSDKTemplate in Frameworks */,
 				AE5085A22A169A7200A373BC /* KakaoSDK in Frameworks */,
 				130667C529CEE33200AACEE6 /* Alamofire in Frameworks */,
@@ -639,6 +643,7 @@
 				6F1082CA2A0E55D300CB89DB /* String.swift */,
 				6F9AE8642A21F26D00BD5269 /* UIApplication.swift */,
 				6F61A95A2A246C79002609D6 /* KeyboardReadable.swift */,
+				131CFCA42A6143D400C813C3 /* URL.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -837,6 +842,7 @@
 				6F456FF82A37822E008F2E70 /* Mantis */,
 				6F710EB92A3CB67000C6922E /* ScalingHeaderScrollView */,
 				6F9693712A57E82400BE8B62 /* FLAnimatedImage */,
+				131CFCA22A6133E400C813C3 /* Kingfisher */,
 			);
 			productName = Haru;
 			productReference = 130666C829CEDF4A00AACEE6 /* Haru.app */;
@@ -874,6 +880,7 @@
 				6F456FF72A37822E008F2E70 /* XCRemoteSwiftPackageReference "Mantis" */,
 				6F710EB82A3CB67000C6922E /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */,
 				6F9693702A57E82400BE8B62 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
+				131CFCA12A6133E400C813C3 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 130666C929CEDF4A00AACEE6 /* Products */;
 			projectDirPath = "";
@@ -1065,6 +1072,7 @@
 				1306677B29CEE19C00AACEE6 /* HaruLinkView.swift in Sources */,
 				1306670F29CEE13200AACEE6 /* Request.swift in Sources */,
 				6F54DF5729DD7C33002FAD7F /* FeedView.swift in Sources */,
+				131CFCA52A6143D400C813C3 /* URL.swift in Sources */,
 				6F0B0F772A0E9FE00003F313 /* CommentService.swift in Sources */,
 				6F45700E2A378E8D008F2E70 /* ImageCropper.swift in Sources */,
 				1306670A29CEE13200AACEE6 /* TagWithTodo.swift in Sources */,
@@ -1335,6 +1343,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		131CFCA12A6133E400C813C3 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 		6F456FF72A37822E008F2E70 /* XCRemoteSwiftPackageReference "Mantis" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/guoyingtao/Mantis.git";
@@ -1384,6 +1400,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 130667C929CEE38500AACEE6 /* XCRemoteSwiftPackageReference "SwiftUIPager" */;
 			productName = SwiftUIPager;
+		};
+		131CFCA22A6133E400C813C3 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 131CFCA12A6133E400C813C3 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		6F456FF82A37822E008F2E70 /* Mantis */ = {
 			isa = XCSwiftPackageProductDependency;
