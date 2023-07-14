@@ -119,12 +119,6 @@ struct PostFormPreView: View {
                             } else {
                                 if let url = postFormVM.templateUrlList[selectedTemplateIdx] {
                                     KFImage(url)
-                                        .downsampling(
-                                            size: CGSize(
-                                                width: deviceSize.width * UIScreen.main.scale,
-                                                height: deviceSize.width * UIScreen.main.scale
-                                            )
-                                        )
                                         .placeholder { _ in
                                             ProgressView()
                                         }
@@ -315,12 +309,6 @@ struct PostFormPreView: View {
                             ZStack(alignment: .topTrailing) {
                                 if let url = postFormVM.templateUrlList[idx] {
                                     KFImage(url)
-                                        .downsampling(
-                                            size: CGSize(
-                                                width: 74 * UIScreen.main.scale,
-                                                height: 74 * UIScreen.main.scale
-                                            )
-                                        )
                                         .placeholder { _ in
                                             ProgressView()
                                         }
