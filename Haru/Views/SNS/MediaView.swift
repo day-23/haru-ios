@@ -15,6 +15,7 @@ struct MediaView: View {
         let width = (UIScreen.main.bounds.size.width - 6) / 3
         if let url {
             KFImage(url)
+                .downsampling(size: CGSize(width: width * UIScreen.main.scale, height: width * UIScreen.main.scale))
                 .placeholder { _ in
                     ProgressView()
                 }

@@ -803,6 +803,12 @@ struct CommentView: View, KeyboardReadable {
                         {
                             GeometryReader { proxy in
                                 KFImage(url)
+                                    .downsampling(
+                                        size: CGSize(
+                                            width: deviceSize.width * UIScreen.main.scale,
+                                            height: deviceSize.width * UIScreen.main.scale
+                                        )
+                                    )
                                     .placeholder { _ in
                                         ProgressView()
                                     }
@@ -824,6 +830,12 @@ struct CommentView: View, KeyboardReadable {
                             }
                         } else {
                             KFImage(url)
+                                .downsampling(
+                                    size: CGSize(
+                                        width: deviceSize.width * UIScreen.main.scale,
+                                        height: deviceSize.width * UIScreen.main.scale
+                                    )
+                                )
                                 .renderingMode(.original)
                                 .resizable()
                                 .frame(

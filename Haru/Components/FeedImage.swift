@@ -66,6 +66,12 @@ struct FeedImage: View {
                                     GifImage(url: imageURL, data: try? Data(contentsOf: imageURL))
                                 } else {
                                     KFImage(imageURL)
+                                        .downsampling(
+                                            size: CGSize(
+                                                width: geo.size.width * UIScreen.main.scale,
+                                                height: geo.size.width * UIScreen.main.scale
+                                            )
+                                        )
                                         .placeholder { _ in
                                             ProgressView()
                                         }
