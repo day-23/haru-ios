@@ -5,15 +5,19 @@
 //  Created by 이준호 on 2023/04/05.
 //
 
+import Kingfisher
 import SwiftUI
 
 struct MediaView: View {
-    var uiImage: UIImage?
+    var url: URL?
 
     var body: some View {
         let width = (UIScreen.main.bounds.size.width - 6) / 3
-        if let uiImage {
-            Image(uiImage: uiImage)
+        if let url {
+            KFImage(url)
+                .placeholder { _ in
+                    ProgressView()
+                }
                 .resizable()
                 .frame(width: width, height: width)
         } else {

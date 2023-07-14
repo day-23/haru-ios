@@ -19,7 +19,7 @@ enum UserUpdate {
 
 final class UserProfileViewModel: ObservableObject {
     @Published var user: User // 현재 보고 있는 사용자
-    @Published var profileImage: PostImage? // 현재 보고 있는 사용자의 프로필 이미지
+    @Published var profileImageURL: URL? // 현재 보고 있는 사용자의 프로필 이미지
     var userId: String // 현재 보고 있는 사용자의 id
     var isMe: Bool {
         user.id == Global.shared.user?.id
@@ -32,8 +32,8 @@ final class UserProfileViewModel: ObservableObject {
     @Published var friendList: [FriendUser] = [] // 현재 보고 있는 사용자의 친구 목록
     @Published var requestFriendList: [FriendUser] = [] // 현재 보고 있는 사용자의 친구 신청 목록
 
-    @Published var friProfileImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
-    @Published var reqFriProImageList: [FriendUser.ID: PostImage?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
+    @Published var friProfileImageUrlList: [FriendUser.ID: URL?] = [:] // key값인 User.ID는 firendList의 User와 맵핑
+    @Published var reqFriProImageUrlList: [FriendUser.ID: URL?] = [:] // key값인 User.ID는 reqfriList의 User와 맵핑
 
     @Published var friendCount: Int = -1
     @Published var reqFriendCount: Int = -1
@@ -164,36 +164,10 @@ final class UserProfileViewModel: ObservableObject {
 
     func clear() {
         friendList.removeAll()
-        friProfileImageList.removeAll()
+        friProfileImageUrlList.removeAll()
 
         requestFriendList.removeAll()
-        reqFriProImageList.removeAll()
-    }
-
-    // MARK: - 이미지 캐싱
-
-    func fetchProfileImage(
-        profileUrl: String,
-        completion: @escaping (PostImage) -> Void
-    ) {
-        DispatchQueue.global().async {
-            if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
-                completion(PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png"))
-            } else {
-                guard
-                    let encodeUrl = profileUrl.encodeUrl(),
-                    let url = URL(string: encodeUrl),
-                    let data = try? Data(contentsOf: url),
-                    let uiImage = UIImage(data: data)
-                else {
-                    print("[Error] \(profileUrl)이 잘못됨 \(#fileID) \(#function)")
-                    return
-                }
-
-                ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
-                completion(PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png"))
-            }
-        }
+        reqFriProImageUrlList.removeAll()
     }
 
     // MARK: - 사용자 프로필을 위한 함수
@@ -202,13 +176,9 @@ final class UserProfileViewModel: ObservableObject {
         profileService.fetchUserProfile(userId: userId) { result in
             switch result {
             case .success(let success):
-                // 이미지 캐시
-                if let profileUrl = success.profileImage {
-                    self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
-                        DispatchQueue.main.async {
-                            self.profileImage = profileImage
-                        }
-                    }
+                self.profileImageURL = nil
+                if let url = success.profileImage {
+                    self.profileImageURL = URL.encodeURL(url)
                 }
                 self.userId = success.id
                 self.user = success
@@ -228,13 +198,9 @@ final class UserProfileViewModel: ObservableObject {
             profileService.updateUserProfileWithImage(userId: userId, name: name, introduction: introduction, profileImage: profileImage) { result in
                 switch result {
                 case .success(let success):
-                    // 이미지 캐시
+                    self.profileImageURL = nil
                     if let profileUrl = success.profileImage {
-                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
-                            DispatchQueue.main.async {
-                                self.profileImage = profileImage
-                            }
-                        }
+                        self.profileImageURL = URL.encodeURL(profileUrl)
                     }
 
                     self.user = success
@@ -270,13 +236,9 @@ final class UserProfileViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 success.0.forEach { user in
-                    self.friProfileImageList[user.id] = nil
+                    self.friProfileImageUrlList[user.id] = nil
                     if let profileUrl = user.profileImageUrl {
-                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
-                            DispatchQueue.main.async {
-                                self.friProfileImageList[user.id] = profileImage
-                            }
-                        }
+                        self.friProfileImageUrlList[user.id] = URL.encodeURL(profileUrl)
                     }
                 }
 
@@ -305,13 +267,9 @@ final class UserProfileViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 success.0.forEach { user in
-                    self.reqFriProImageList[user.id] = nil
+                    self.reqFriProImageUrlList[user.id] = nil
                     if let profileUrl = user.profileImageUrl {
-                        self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
-                            DispatchQueue.main.async {
-                                self.reqFriProImageList[user.id] = profileImage
-                            }
-                        }
+                        self.reqFriProImageUrlList[user.id] = URL.encodeURL(profileUrl)
                     }
                 }
 
@@ -418,13 +376,9 @@ final class UserProfileViewModel: ObservableObject {
                 switch result {
                 case .success(let success):
                     success.forEach { user in
-                        self.friProfileImageList[user.id] = nil
+                        self.friProfileImageUrlList[user.id] = nil
                         if let profileUrl = user.profileImageUrl {
-                            self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
-                                DispatchQueue.main.async {
-                                    self.friProfileImageList[user.id] = profileImage
-                                }
-                            }
+                            self.friProfileImageUrlList[user.id] = URL.encodeURL(profileUrl)
                         }
                     }
                     self.friendList = success
@@ -439,13 +393,9 @@ final class UserProfileViewModel: ObservableObject {
                 switch result {
                 case .success(let success):
                     success.forEach { user in
-                        self.reqFriProImageList[user.id] = nil
+                        self.reqFriProImageUrlList[user.id] = nil
                         if let profileUrl = user.profileImageUrl {
-                            self.fetchProfileImage(profileUrl: profileUrl) { profileImage in
-                                DispatchQueue.main.async {
-                                    self.reqFriProImageList[user.id] = profileImage
-                                }
-                            }
+                            self.reqFriProImageUrlList[user.id] = URL.encodeURL(profileUrl)
                         }
                     }
                     self.requestFriendList = success

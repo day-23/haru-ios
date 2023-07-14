@@ -43,7 +43,7 @@ struct ProfileFormView: View {
                             .frame(width: 94, height: 94)
                             .clipShape(Circle())
                     } else {
-                        ProfileImgView(profileImage: userProfileVM.profileImage)
+                        ProfileImgView(imageUrl: userProfileVM.profileImageURL)
                             .frame(width: 94, height: 94)
                             .clipShape(Circle())
                     }

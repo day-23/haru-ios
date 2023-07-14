@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FeedView: View {
     @State var post: Post
-    var postImageList: [PostImage?]
+    var postImageUrlList: [URL?]
 
     @StateObject var postVM: PostViewModel
     @Binding var postOptModalVis: (Bool, Post?)
@@ -38,7 +38,7 @@ struct FeedView: View {
                         )
                     } label: {
                         HStack {
-                            ProfileImgView(profileImage: postVM.profileImageList[post.id] ?? nil)
+                            ProfileImgView(imageUrl: postVM.profileImageUrlList[post.id] ?? nil)
                                 .frame(width: 30, height: 30)
                             
                             Text("\(post.user.name)")
@@ -72,7 +72,7 @@ struct FeedView: View {
                 
                 FeedImage(
                     post: $post,
-                    imageList: postImageList,
+                    imageUrlList: postImageUrlList,
                     imageCount: post.images.count,
                     templateMode: post.isTemplatePost != nil,
                     contentColor: post.isTemplatePost ?? "",
@@ -125,7 +125,7 @@ struct FeedView: View {
                                 postId: post.id,
                                 userId: post.user.id,
                                 postImageList: post.images,
-                                imageList: postImageList,
+                                imageUrlList: postImageUrlList,
                                 commentList: Array(repeating: [Post.Comment](), count: post.images.count),
                                 postPageNum: 0,
                                 isMine: isMine

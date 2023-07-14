@@ -12,19 +12,19 @@ final class PostViewModel: ObservableObject {
     // MARK: 피드를 위한 필드
 
     @Published var postList: [Post] = [] // 게시물 > 피드
-    @Published var postImageList: [Post.ID: [PostImage?]] = [:] // 게시물 > 피드 > 사진들
+    @Published var postImageUrlList: [Post.ID: [URL?]] = [:] // 게시물 > 피드 > 사진들
 
     // MARK: 미디어를 위한 필드
 
     @Published var mediaList: [HashTag.ID: [Post]] = [:] // 게시물 > 미디어
-    @Published var mediaImageList: [Post.ID: [PostImage?]] = [:] // 게시물 > 미디어 > 사진들
+    @Published var mediaImageUrlList: [Post.ID: [URL?]] = [:] // 게시물 > 미디어 > 사진들
     @Published var hashTags: [HashTag] = [Global.shared.hashTagAll]
     @Published var selectedHashTag: HashTag = Global.shared.hashTagAll
 
     // MARK: postVM 공용 필드
 
     // TODO: 프로필 이미지들로 받기
-    @Published var profileImageList: [Post.ID: PostImage?] = [:]
+    @Published var profileImageUrlList: [Post.ID: URL?] = [:]
 
     var option: PostOption
 
@@ -185,80 +185,14 @@ final class PostViewModel: ObservableObject {
     // 게시물 생성 시 게시물 리스트 다시 다 불러오기
     func reloadPosts() {
         postList = []
-        postImageList = [:]
+        postImageUrlList = [:]
         mediaList = [:]
-        mediaImageList = [:]
+        mediaImageUrlList = [:]
 
         fetchFreindsPosts(page: 1, lastCreatedAt: nil)
         fetchMediaAll(page: 1, lastCreatedAt: nil)
         if selectedHashTag.id != Global.shared.hashTagAll.id {
             fetchMediaHashTag(hashTagId: selectedHashTag.id, page: 1, lastCreatedAt: nil)
-        }
-    }
-
-    // MARK: - UIImage로 변환 + 이미지 캐싱
-
-    func fetchPostImage(
-        postId: String,
-        postImageUrlList: [String],
-        mimeTypeList: [String],
-        isMedia: Bool = false)
-    {
-        DispatchQueue.global().async {
-            postImageUrlList.enumerated().forEach { idx, urlString in
-                if let cacheData = ImageCache.shared.object(forKey: urlString as NSString) {
-                    DispatchQueue.main.async {
-                        if isMedia {
-                            self.mediaImageList[postId]?[idx] = PostImage(url: urlString, uiImage: cacheData, mimeType: mimeTypeList[idx])
-                        } else {
-                            self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: cacheData, mimeType: mimeTypeList[idx])
-                        }
-                    }
-                } else {
-                    guard
-                        let url = URL(string: urlString.encodeUrl()!),
-                        let data = try? Data(contentsOf: url),
-                        let uiImage = UIImage(data: data)
-                    else {
-                        print("[Error] \(urlString)이 잘못됨 \(#fileID) \(#function)")
-                        return
-                    }
-
-                    ImageCache.shared.setObject(uiImage, forKey: urlString as NSString)
-                    DispatchQueue.main.async {
-                        if isMedia {
-                            self.mediaImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: mimeTypeList[idx], data: data)
-                        } else {
-                            self.postImageList[postId]?[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: mimeTypeList[idx], data: data)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    func fetchProfileImage(postId: String, profileUrl: String) {
-        DispatchQueue.global().async {
-            if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
-                DispatchQueue.main.async {
-                    self.profileImageList[postId] = PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png")
-                }
-            } else {
-                guard
-                    let encodeUrl = profileUrl.encodeUrl(),
-                    let url = URL(string: encodeUrl),
-                    let data = try? Data(contentsOf: url),
-                    let uiImage = UIImage(data: data)
-                else {
-                    print("[Error] \(profileUrl)이 잘못됨 \(#fileID) \(#function)")
-                    return
-                }
-
-                ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
-                DispatchQueue.main.async {
-                    self.profileImageList[postId] = PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png")
-                }
-            }
         }
     }
 
@@ -271,22 +205,12 @@ final class PostViewModel: ObservableObject {
         postService.fetchFreindPosts(page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
-                // 이미지 캐싱
                 success.0.forEach { post in
-                    // 프로필 이미지 캐싱
-                    if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
+                    self.profileImageUrlList[post.id] = nil
+                    if let profileImage = post.user.profileImage {
+                        self.profileImageUrlList[post.id] = URL.encodeURL(profileImage)
                     }
-                    // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
-                    self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                    self.fetchPostImage(
-                        postId: post.id,
-                        postImageUrlList: post.images.map { image in
-                            image.url
-                        },
-                        mimeTypeList: post.images.map { image in
-                            image.mimeType
-                        })
+                    self.postImageUrlList[post.id] = post.images.map { URL.encodeURL($0.url) }
                 }
 
                 self.postList.append(contentsOf: success.0)
@@ -307,22 +231,12 @@ final class PostViewModel: ObservableObject {
         postService.fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
-                // 이미지 캐싱
                 success.0.forEach { post in
-                    // 프로필 이미지 캐싱
-                    if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
+                    self.profileImageUrlList[post.id] = nil
+                    if let profileImage = post.user.profileImage {
+                        self.profileImageUrlList[post.id] = URL.encodeURL(profileImage)
                     }
-                    // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
-                    self.postImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                    self.fetchPostImage(
-                        postId: post.id,
-                        postImageUrlList: post.images.map { image in
-                            image.url
-                        },
-                        mimeTypeList: post.images.map { image in
-                            image.mimeType
-                        })
+                    self.postImageUrlList[post.id] = post.images.map { URL.encodeURL($0.url) }
                 }
 
                 self.postList.append(contentsOf: success.0)
@@ -343,19 +257,12 @@ final class PostViewModel: ObservableObject {
         postService.fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
-                // 이미지 캐싱
                 success.0.forEach { post in
-                    // 프로필 이미지 캐싱
-                    if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
+                    self.profileImageUrlList[post.id] = nil
+                    if let profileImage = post.user.profileImage {
+                        self.profileImageUrlList[post.id] = URL.encodeURL(profileImage)
                     }
-                    // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
-                    self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                    self.fetchPostImage(
-                        postId: post.id,
-                        postImageUrlList: post.images.map(\.url),
-                        mimeTypeList: post.images.map(\.mimeType),
-                        isMedia: true)
+                    self.mediaImageUrlList[post.id] = post.images.map { URL.encodeURL($0.url) }
                 }
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
@@ -378,19 +285,12 @@ final class PostViewModel: ObservableObject {
         postService.fetchTargetMediaHashTag(targetId: targetId, hashTagId: hashTagId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
-                // 이미지 캐싱
                 success.0.forEach { post in
-                    // 프로필 이미지 캐싱
-                    if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
+                    self.profileImageUrlList[post.id] = nil
+                    if let profileImage = post.user.profileImage {
+                        self.profileImageUrlList[post.id] = URL.encodeURL(profileImage)
                     }
-                    // 게시물 이미지 캐싱 (하나의 게시물에 여러개의 이미지)
-                    self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                    self.fetchPostImage(
-                        postId: post.id,
-                        postImageUrlList: post.images.map(\.url),
-                        mimeTypeList: post.images.map(\.mimeType),
-                        isMedia: true)
+                    self.mediaImageUrlList[post.id] = post.images.map { URL.encodeURL($0.url) }
                 }
 
                 self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
@@ -413,17 +313,11 @@ final class PostViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 success.0.forEach { post in
-                    // 프로필 이미지 캐싱
-                    if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
+                    self.profileImageUrlList[post.id] = nil
+                    if let profileImage = post.user.profileImage {
+                        self.profileImageUrlList[post.id] = URL.encodeURL(profileImage)
                     }
-
-                    self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                    self.fetchPostImage(
-                        postId: post.id,
-                        postImageUrlList: post.images.map(\.url),
-                        mimeTypeList: post.images.map(\.mimeType),
-                        isMedia: true)
+                    self.mediaImageUrlList[post.id] = post.images.map { URL.encodeURL($0.url) }
                 }
 
                 self.mediaList[self.hashTags[0].id] = (self.mediaList[self.hashTags[0].id] ?? []) + success.0
@@ -447,17 +341,11 @@ final class PostViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 success.0.forEach { post in
-                    // 프로필 이미지 캐싱
-                    if let profileUrl = post.user.profileImage {
-                        self.fetchProfileImage(postId: post.id, profileUrl: profileUrl)
+                    self.profileImageUrlList[post.id] = nil
+                    if let profileImage = post.user.profileImage {
+                        self.profileImageUrlList[post.id] = URL.encodeURL(profileImage)
                     }
-
-                    self.mediaImageList[post.id] = Array(repeating: nil, count: post.images.count)
-                    self.fetchPostImage(
-                        postId: post.id,
-                        postImageUrlList: post.images.map(\.url),
-                        mimeTypeList: post.images.map(\.mimeType),
-                        isMedia: true)
+                    self.mediaImageUrlList[post.id] = post.images.map { URL.encodeURL($0.url) }
                 }
 
                 self.mediaList[hashTagId] = (self.mediaList[hashTagId] ?? []) + success.0
@@ -577,22 +465,22 @@ final class PostViewModel: ObservableObject {
         switch option {
         case .main:
             postList = []
-            postImageList = [:]
+            postImageUrlList = [:]
         case .targetFeed:
             postList = []
-            postImageList = [:]
+            postImageUrlList = [:]
         case .targetMediaAll:
             mediaList = [:]
-            mediaImageList = [:]
+            mediaImageUrlList = [:]
         case .targetMediaHashtag:
             mediaList = [:]
-            mediaImageList = [:]
+            mediaImageUrlList = [:]
         case .mediaAll:
             mediaList = [:]
-            mediaImageList = [:]
+            mediaImageUrlList = [:]
         case .mediaHashtag:
             mediaList = [:]
-            mediaImageList = [:]
+            mediaImageUrlList = [:]
         }
     }
 }

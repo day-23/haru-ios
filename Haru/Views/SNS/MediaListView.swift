@@ -66,12 +66,14 @@ struct MediaListView: View {
                             NavigationLink {
                                 MediaFeedView(
                                     post: mediaList[idx],
-                                    postImageList: postVM.mediaImageList[mediaList[idx].id] ?? [],
+                                    postImageUrlList: postVM.mediaImageUrlList[mediaList[idx].id] ?? [],
                                     postVM: postVM
                                 )
 
                             } label: {
-                                MediaView(uiImage: postVM.mediaImageList[mediaList[idx].id]?.first??.uiImage)
+                                MediaView(
+                                    url: postVM.mediaImageUrlList[mediaList[idx].id]?.first ?? nil
+                                )
                             }
                             .buttonStyle(.plain)
                             .onAppear {

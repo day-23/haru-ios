@@ -19,32 +19,6 @@ final class SearchViewModel: ObservableObject {
     private let friendService: FriendService = .init()
     private let profileService: ProfileService = .init()
 
-    // MARK: - 이미지 캐싱
-
-    func fetchProfileImage(
-        profileUrl: String,
-        completion: @escaping (PostImage) -> Void
-    ) {
-        DispatchQueue.global().async {
-            if let uiImage = ImageCache.shared.object(forKey: profileUrl as NSString) {
-                completion(PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png"))
-            } else {
-                guard
-                    let encodeUrl = profileUrl.encodeUrl(),
-                    let url = URL(string: encodeUrl),
-                    let data = try? Data(contentsOf: url),
-                    let uiImage = UIImage(data: data)
-                else {
-                    print("[Error] \(profileUrl)이 잘못됨 \(#fileID) \(#function)")
-                    return
-                }
-
-                ImageCache.shared.setObject(uiImage, forKey: profileUrl as NSString)
-                completion(PostImage(url: profileUrl, uiImage: uiImage, mimeType: "image/png"))
-            }
-        }
-    }
-
     // MARK: - 할일과 일정 검색
 
     func searchTodoAndSchedule(

@@ -10,7 +10,6 @@ import SwiftUI
 
 struct PostImage: Identifiable {
     let url: String
-    let uiImage: UIImage
     let mimeType: String
     var data: Data? = nil
 }

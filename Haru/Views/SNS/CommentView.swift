@@ -5,6 +5,7 @@
 //  Created by 이준호 on 2023/05/12.
 //
 
+import Kingfisher
 import SwiftUI
 
 struct CommentView: View, KeyboardReadable {
@@ -20,7 +21,7 @@ struct CommentView: View, KeyboardReadable {
     var postId: String
     var userId: String // 게시물을 작성한 사용자 id
     @State var postImageList: [Post.Image]
-    var imageList: [PostImage?]
+    var imageUrlList: [URL?]
     @State var commentList: [[Post.Comment]]
 
     @State var postPageNum: Int = 0
@@ -782,7 +783,7 @@ struct CommentView: View, KeyboardReadable {
     @ViewBuilder
     func postListView() -> some View {
         TabView(selection: $postPageNum) {
-            ForEach(imageList.indices, id: \.self) { idx in
+            ForEach(imageUrlList.indices, id: \.self) { idx in
                 ZStack {
                     if isTemplate, let templateContent {
                         Text("\(templateContent)")
@@ -794,14 +795,17 @@ struct CommentView: View, KeyboardReadable {
                             .zIndex(99)
                     }
 
-                    if let uiImage = imageList[idx]?.uiImage {
+                    if let url = imageUrlList[idx] {
                         if !isCommentWriting,
                            !isCommentDeleting,
                            !isCommentEditing,
                            !isTemplate
                         {
                             GeometryReader { proxy in
-                                Image(uiImage: uiImage)
+                                KFImage(url)
+                                    .placeholder { _ in
+                                        ProgressView()
+                                    }
                                     .renderingMode(.original)
                                     .resizable()
                                     .frame(
@@ -809,11 +813,17 @@ struct CommentView: View, KeyboardReadable {
                                         height: deviceSize.width
                                     )
                                     .clipShape(Rectangle())
-                                    .modifier(ImageModifier(
-                                        contentSize: CGSize(width: proxy.size.width, height: proxy.size.height)))
+                                    .modifier(
+                                        ImageModifier(
+                                            contentSize: CGSize(
+                                                width: proxy.size.width,
+                                                height: proxy.size.height
+                                            )
+                                        )
+                                    )
                             }
                         } else {
-                            Image(uiImage: uiImage)
+                            KFImage(url)
                                 .renderingMode(.original)
                                 .resizable()
                                 .frame(

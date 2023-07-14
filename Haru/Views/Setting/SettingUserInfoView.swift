@@ -12,7 +12,7 @@ struct SettingUserInfoView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ProfileImgView(profileImage: userProfileVM.profileImage)
+            ProfileImgView(imageUrl: userProfileVM.profileImageURL)
                 .frame(width: 62, height: 62)
                 .padding(.trailing, 20)
 

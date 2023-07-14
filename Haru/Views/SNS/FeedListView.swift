@@ -63,7 +63,7 @@ struct FeedListView: View {
                 if !post.disabled {
                     FeedView(
                         post: post,
-                        postImageList: postVM.postImageList[post.id] ?? [],
+                        postImageUrlList: postVM.postImageUrlList[post.id] ?? [],
                         postVM: postVM,
                         postOptModalVis: $postOptModalVis
                     )
