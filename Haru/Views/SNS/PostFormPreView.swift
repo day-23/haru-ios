@@ -5,6 +5,7 @@
 //  Created by 이준호 on 2023/05/11.
 //
 
+import Kingfisher
 import PopupView
 import SwiftUI
 import UIKit
@@ -111,13 +112,16 @@ struct PostFormPreView: View {
                         }
                     } else {
                         ZStack {
-                            if postFormVM.templateList.isEmpty {
+                            if postFormVM.templateUrlList.isEmpty {
                                 Rectangle()
                                     .fill(Color(0xfdfdfd))
                                     .frame(width: deviceSize.width, height: deviceSize.width)
                             } else {
-                                if let uiImage = postFormVM.templateList[selectedTemplateIdx]?.uiImage {
-                                    Image(uiImage: uiImage)
+                                if let url = postFormVM.templateUrlList[selectedTemplateIdx] {
+                                    KFImage(url)
+                                        .placeholder { _ in
+                                            ProgressView()
+                                        }
                                         .resizable()
                                         .frame(width: deviceSize.width, height: deviceSize.width)
                                 } else {
@@ -198,7 +202,7 @@ struct PostFormPreView: View {
                             }
                         case .writing:
                             if postFormVM.templateIdList.count > selectedTemplateIdx,
-                               postFormVM.templateList[selectedTemplateIdx] != nil
+                               postFormVM.templateUrlList[selectedTemplateIdx] != nil
                             {
                                 postFormVM.createPost(templateIdx: selectedTemplateIdx) { result in
                                     switch result {
@@ -303,8 +307,11 @@ struct PostFormPreView: View {
                     HStack(spacing: 7) {
                         ForEach(postFormVM.templateIdList.indices, id: \.self) { idx in
                             ZStack(alignment: .topTrailing) {
-                                if let uiImage = postFormVM.templateList[idx]?.uiImage {
-                                    Image(uiImage: uiImage)
+                                if let url = postFormVM.templateUrlList[idx] {
+                                    KFImage(url)
+                                        .placeholder { _ in
+                                            ProgressView()
+                                        }
                                         .resizable()
                                         .frame(width: 74, height: 74)
                                         .onTapGesture {

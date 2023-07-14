@@ -16,7 +16,7 @@ final class CommentViewModel: ObservableObject {
     @Published var imagePageNum: Int
     
     @Published var imageCommentList: [Post.Image.ID: [Post.Comment]]
-    @Published var imageCommentUserProfileList: [PostImage.ID: [PostImage?]]
+    @Published var imageCommentUserProfileUrlList: [Post.Image.ID: [URL?]]
     
     var page: Int {
         guard let commentList = imageCommentList[postImageIDList[imagePageNum]] else {
@@ -53,7 +53,7 @@ final class CommentViewModel: ObservableObject {
             dictionary[element] = []
         }
         
-        self.imageCommentUserProfileList = postImageIDList.reduce(into: [String: [PostImage?]]()) { dictionary, element in
+        self.imageCommentUserProfileUrlList = postImageIDList.reduce(into: [String: [URL?]]()) { dictionary, element in
             dictionary[element] = []
         }
         
@@ -103,36 +103,7 @@ final class CommentViewModel: ObservableObject {
             )
         }
     }
-    
-    // 프로필 이미지 캐싱
-    func fetchProfileImage(imageId: String, imageUrlList: [String?]) {
-        DispatchQueue.global().async {
-            imageUrlList.enumerated().forEach { idx, urlString in
-                if let urlString {
-                    if let uiImage = ImageCache.shared.object(forKey: urlString as NSString) { // 캐싱된게 있는 경우
-                        DispatchQueue.main.async {
-                            self.imageCommentUserProfileList[imageId]?[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: "image/png")
-                        }
-                    } else { // 캐싱이 아직 안된 경우
-                        guard
-                            let url = URL(string: urlString.encodeUrl()!),
-                            let data = try? Data(contentsOf: url),
-                            let uiImage = UIImage(data: data)
-                        else {
-                            print("[Error] \(urlString)이 잘못됨 \(#fileID) \(#function)")
-                            return
-                        }
-                        
-                        ImageCache.shared.setObject(uiImage, forKey: urlString as NSString)
-                        DispatchQueue.main.async {
-                            self.imageCommentUserProfileList[imageId]?[idx] = PostImage(url: urlString, uiImage: uiImage, mimeType: "image/png")
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
+
     // MARK: - 서버와 API 연동
     
     func fetchTargetImageComment(
@@ -151,13 +122,13 @@ final class CommentViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success(let success):
-                // 댓글을 단 사용자들의 프로필 이미지 캐싱
-                self.imageCommentUserProfileList[imageId] = (self.imageCommentUserProfileList[imageId] ?? []) + Array(repeating: nil, count: success.0.count)
-                
-                self.fetchProfileImage(
-                    imageId: imageId,
-                    imageUrlList: success.0.map { comment in
-                        comment.user.profileImage
+                self.imageCommentUserProfileUrlList[imageId]?.append(
+                    contentsOf: success.0.map {
+                        if let url = $0.user.profileImage {
+                            return URL.encodeURL(url)
+                        } else {
+                            return nil
+                        }
                     }
                 )
             
@@ -190,13 +161,13 @@ final class CommentViewModel: ObservableObject {
         ) { result in
             switch result {
             case .success(let success):
-                // 댓글을 단 사용자들의 프로필 이미지 캐싱
-                self.imageCommentUserProfileList[imageId] = (self.imageCommentUserProfileList[imageId] ?? []) + Array(repeating: nil, count: success.0.count)
-                
-                self.fetchProfileImage(
-                    imageId: imageId,
-                    imageUrlList: success.0.map { comment in
-                        comment.user.profileImage
+                self.imageCommentUserProfileUrlList[imageId]?.append(
+                    contentsOf: success.0.map {
+                        if let url = $0.user.profileImage {
+                            return URL.encodeURL(url)
+                        } else {
+                            return nil
+                        }
                     }
                 )
             
@@ -262,7 +233,7 @@ final class CommentViewModel: ObservableObject {
             dictionary[element] = []
         }
         
-        imageCommentUserProfileList = postImageIDList.reduce(into: [String: [PostImage?]]()) { dictionary, element in
+        imageCommentUserProfileUrlList = postImageIDList.reduce(into: [String: [URL?]]()) { dictionary, element in
             dictionary[element] = []
         }
     }

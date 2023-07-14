@@ -173,8 +173,8 @@ struct FriendView: View {
                                         HStack(spacing: 16) {
                                             switch self.userProfileVM.option {
                                             case .friendList:
-                                                if let profileImage = userProfileVM.friProfileImageList[user.id] {
-                                                    ProfileImgView(profileImage: profileImage)
+                                                if let url = userProfileVM.friProfileImageUrlList[user.id] {
+                                                    ProfileImgView(imageUrl: url)
                                                         .frame(width: 40, height: 40)
                                                 } else {
                                                     Image("sns-default-profile-image-rectangle")
@@ -183,8 +183,8 @@ struct FriendView: View {
                                                         .frame(width: 40, height: 40)
                                                 }
                                             case .requestFriendList:
-                                                if let profileImage = userProfileVM.reqFriProImageList[user.id] {
-                                                    ProfileImgView(profileImage: profileImage)
+                                                if let url = userProfileVM.reqFriProImageUrlList[user.id] {
+                                                    ProfileImgView(imageUrl: url)
                                                         .frame(width: 40, height: 40)
                                                 } else {
                                                     Image("sns-default-profile-image-rectangle")

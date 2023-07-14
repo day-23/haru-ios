@@ -5,11 +5,12 @@
 //  Created by 이준호 on 2023/05/02.
 //
 
+import Kingfisher
 import SwiftUI
 
 struct FeedImage: View {
     @Binding var post: Post
-    var imageList: [PostImage?]
+    var imageUrlList: [URL?]
     var imageCount: Int
     var templateMode: Bool
     var contentColor: String? // 템플릿 게시물인 경우 black인지 white인지 받아줘야함
@@ -42,29 +43,38 @@ struct FeedImage: View {
             }
 
             TabView(selection: $postPageNum) {
-                ForEach(imageList.indices, id: \.self) { idx in
-                    if let postImage = imageList[idx], let uiImage = imageList[idx]?.uiImage {
-                        NavigationLink {
-                            CommentView(
-                                post: $post,
-                                isTemplate: templateMode,
-                                templateContent: content,
-                                contentColor: contentColor,
-                                postId: post.id,
-                                userId: post.user.id,
-                                postImageList: post.images,
-                                imageList: imageList,
-                                commentList: Array(repeating: [Post.Comment](), count: post.images.count),
-                                postPageNum: postPageNum,
-                                isMine: isMine
-                            )
+                ForEach(imageUrlList.indices, id: \.self) { idx in
+                    NavigationLink {
+                        CommentView(
+                            post: $post,
+                            isTemplate: templateMode,
+                            templateContent: content,
+                            contentColor: contentColor,
+                            postId: post.id,
+                            userId: post.user.id,
+                            postImageList: post.images,
+                            imageUrlList: imageUrlList,
+                            commentList: Array(repeating: [Post.Comment](), count: post.images.count),
+                            postPageNum: postPageNum,
+                            isMine: isMine
+                        )
 
-                        } label: {
-                            GeometryReader { geo in
-                                if imageList[idx]?.mimeType == "image/gif" {
-                                    GifImage(url: postImage.url, data: postImage.data)
+                    } label: {
+                        GeometryReader { geo in
+                            if let imageURL = imageUrlList[idx] {
+                                if post.images[idx].mimeType == "image/gif" {
+                                    GifImage(url: imageURL)
                                 } else {
-                                    Image(uiImage: uiImage)
+                                    KFImage(imageURL)
+                                        .downsampling(
+                                            size: CGSize(
+                                                width: geo.size.width * UIScreen.main.scale,
+                                                height: geo.size.width * UIScreen.main.scale
+                                            )
+                                        )
+                                        .placeholder { _ in
+                                            ProgressView()
+                                        }
                                         .renderingMode(.original)
                                         .resizable()
                                         .scaledToFill()
@@ -73,10 +83,8 @@ struct FeedImage: View {
                                 }
                             }
                         }
-                        .buttonStyle(.plain)
-                    } else {
-                        ProgressView()
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
