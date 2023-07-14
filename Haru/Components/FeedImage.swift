@@ -63,7 +63,7 @@ struct FeedImage: View {
                         GeometryReader { geo in
                             if let imageURL = imageUrlList[idx] {
                                 if post.images[idx].mimeType == "image/gif" {
-                                    GifImage(url: imageURL, data: try? Data(contentsOf: imageURL))
+                                    GifImage(url: imageURL)
                                 } else {
                                     KFImage(imageURL)
                                         .downsampling(
