@@ -29,10 +29,10 @@ final class AFProxyClass {
                                              headers: headers,
                                              requestModifier: requestModifier)
 
-        var interceptor = (interceptor == nil
-            ? AFProxyClass.interceptor
-            : interceptor)
-        return AF.request(convertible, interceptor: AFProxyClass.interceptor)
+        return AF.request(convertible,
+                          interceptor: interceptor == nil
+                              ? AFProxyClass.interceptor
+                              : interceptor)
     }
 
     public func request<Parameters: Encodable>(_ convertible: URLConvertible,
@@ -50,10 +50,10 @@ final class AFProxyClass {
                                                       headers: headers,
                                                       requestModifier: requestModifier)
 
-        var interceptor = (interceptor == nil
-            ? AFProxyClass.interceptor
-            : interceptor)
-        return AF.request(convertible, interceptor: interceptor)
+        return AF.request(convertible,
+                          interceptor: interceptor == nil
+                              ? AFProxyClass.interceptor
+                              : interceptor)
     }
 
     public func upload(multipartFormData: @escaping (MultipartFormData) -> Void,
@@ -73,13 +73,12 @@ final class AFProxyClass {
         let formData = MultipartFormData(fileManager: fileManager)
         multipartFormData(formData)
 
-        var interceptor = (interceptor == nil
-            ? AFProxyClass.interceptor
-            : interceptor)
         return AF.upload(multipartFormData: formData,
                          with: convertible,
                          usingThreshold: encodingMemoryThreshold,
-                         interceptor: interceptor,
+                         interceptor: interceptor == nil
+                             ? AFProxyClass.interceptor
+                             : interceptor,
                          fileManager: fileManager)
     }
 
