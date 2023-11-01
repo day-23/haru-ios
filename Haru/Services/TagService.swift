@@ -43,13 +43,12 @@ struct TagService {
             "content": content
         ]
 
-        AF.request(
+        AFProxy.request(
             TagService.baseURL + "\(Global.shared.user?.id ?? "unknown")/tag",
             method: .post,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -70,10 +69,9 @@ struct TagService {
             let data: [Tag]
         }
 
-        AF.request(
+        AFProxy.request(
             TagService.baseURL + "\(Global.shared.user?.id ?? "unknown")/tags",
-            method: .get,
-            interceptor: ApiRequestInterceptor()
+            method: .get
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -93,11 +91,10 @@ struct TagService {
             let data: Int
         }
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(tagId)/todoCnt",
-            method: .get,
-            interceptor: ApiRequestInterceptor()
+            method: .get
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(data):
@@ -125,14 +122,13 @@ struct TagService {
             "Content-Type": "application/json"
         ]
 
-        AF.request(
+        AFProxy.request(
             TagService.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(tagId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success:
@@ -157,14 +153,13 @@ struct TagService {
             "tagIds": [tagId]
         ]
 
-        AF.request(
+        AFProxy.request(
             TagService.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/tags",
             method: .delete,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:

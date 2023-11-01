@@ -8,7 +8,7 @@
 import Alamofire
 import Foundation
 
-class AFProxyClass {
+final class AFProxyClass {
     private init() {}
     static let `default`: AFProxyClass = .init()
 
@@ -33,6 +33,27 @@ class AFProxyClass {
             ? AFProxyClass.interceptor
             : interceptor)
         return AF.request(convertible, interceptor: AFProxyClass.interceptor)
+    }
+
+    public func request<Parameters: Encodable>(_ convertible: URLConvertible,
+                                               method: HTTPMethod = .get,
+                                               parameters: Parameters? = nil,
+                                               encoder: ParameterEncoder = URLEncodedFormParameterEncoder.default,
+                                               headers: HTTPHeaders? = nil,
+                                               interceptor: RequestInterceptor? = nil,
+                                               requestModifier: RequestModifier? = nil) -> DataRequest
+    {
+        let convertible = RequestEncodableConvertible(url: convertible,
+                                                      method: method,
+                                                      parameters: parameters,
+                                                      encoder: encoder,
+                                                      headers: headers,
+                                                      requestModifier: requestModifier)
+
+        var interceptor = (interceptor == nil
+            ? AFProxyClass.interceptor
+            : interceptor)
+        return AF.request(convertible, interceptor: interceptor)
     }
 
     public func upload(multipartFormData: @escaping (MultipartFormData) -> Void,
@@ -77,6 +98,22 @@ class AFProxyClass {
             try requestModifier?(&request)
 
             return try encoding.encode(request, with: parameters)
+        }
+    }
+
+    struct RequestEncodableConvertible<Parameters: Encodable>: URLRequestConvertible {
+        let url: URLConvertible
+        let method: HTTPMethod
+        let parameters: Parameters?
+        let encoder: ParameterEncoder
+        let headers: HTTPHeaders?
+        let requestModifier: RequestModifier?
+
+        func asURLRequest() throws -> URLRequest {
+            var request = try URLRequest(url: url, method: method, headers: headers)
+            try requestModifier?(&request)
+
+            return try parameters.map { try encoder.encode($0, into: request) } ?? request
         }
     }
 

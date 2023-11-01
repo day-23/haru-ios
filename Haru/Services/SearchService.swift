@@ -57,13 +57,12 @@ final class SearchService {
             "content": searchContent,
         ]
 
-        AF.request(
+        AFProxy.request(
             SearchService.prodBaseURL + (Global.shared.user?.id ?? "unknown") + "/search",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -90,11 +89,10 @@ final class SearchService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             SearchService.userBaseURL + (Global.shared.user?.id ?? "unknown") + "/search/user/\(haruId)",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -124,13 +122,12 @@ final class SearchService {
             "name": name,
         ]
 
-        AF.request(
+        AFProxy.request(
             SearchService.friendBaseURL + (Global.shared.user?.id ?? "unknown") + "/search/",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -160,13 +157,12 @@ final class SearchService {
             "name": name,
         ]
 
-        AF.request(
+        AFProxy.request(
             SearchService.friendBaseURL + (Global.shared.user?.id ?? "unknown") + "/request/search/",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {

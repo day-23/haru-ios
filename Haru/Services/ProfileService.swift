@@ -43,10 +43,9 @@ struct ProfileService {
             let data: User
         }
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + (Global.shared.user?.id ?? "unknown") + "/info" + "/\(userId)",
-            method: .get,
-            interceptor: ApiRequestInterceptor()
+            method: .get
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -83,7 +82,7 @@ struct ProfileService {
             "introduction": introduction,
         ]
 
-        AF.upload(
+        AFProxy.upload(
             multipartFormData: { multipartFormData in
                 if let image = profileImage.jpegData(compressionQuality: 1) {
                     multipartFormData.append(image, withName: "image", fileName: "\(image).jpeg", mimeType: "image/jpeg")
@@ -97,8 +96,7 @@ struct ProfileService {
             to: ProfileService.baseURL + "\(userId)/profile/image",
             usingThreshold: .init(),
             method: .patch,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(data):
@@ -152,13 +150,12 @@ struct ProfileService {
             "introduction": introduction,
         ]
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + "\(userId)/profile",
             method: .patch,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -194,7 +191,7 @@ struct ProfileService {
             "haruId": haruId,
         ]
 
-        AF.upload(
+        AFProxy.upload(
             multipartFormData: { multipartFormData in
                 if let image = profileImage.jpegData(compressionQuality: 1) {
                     multipartFormData.append(image, withName: "image", fileName: "\(image).jpeg", mimeType: "image/jpeg")
@@ -208,8 +205,7 @@ struct ProfileService {
             to: ProfileService.baseURL + "\(userId)/profile/image/init",
             usingThreshold: .init(),
             method: .patch,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -253,13 +249,12 @@ struct ProfileService {
             "haruId": haruId,
         ]
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + "\(userId)/profile/init",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder
@@ -301,13 +296,12 @@ struct ProfileService {
             "haruId": haruId,
         ]
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + "\(Global.shared.user?.id ?? "unknown")/profile/init/haruId",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder
@@ -355,13 +349,12 @@ struct ProfileService {
             "name": nickname,
         ]
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + "\(Global.shared.user?.id ?? "unknown")/profile/init/name",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder
