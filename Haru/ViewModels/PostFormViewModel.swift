@@ -31,10 +31,8 @@ final class PostFormViewModel: ObservableObject {
         }
     }
 
-    private var postService: PostService = .init()
-
     func fetchTemplate() {
-        postService.fetchTemplate { result in
+        PostService.fetchTemplate { result in
             switch result {
             case .success(let success):
                 self.templateUrlList = success.map { URL.encodeURL($0.url) }
@@ -52,7 +50,7 @@ final class PostFormViewModel: ObservableObject {
     func createPost(templateIdx: Int = 0, completion: @escaping (Result<Bool, Error>) -> Void) {
         switch postOption {
         case .drawing:
-            postService.createPostWithImages(imageList: imageList, content: content, tagList: tagList) { result in
+            PostService.createPostWithImages(imageList: imageList, content: content, tagList: tagList) { result in
                 switch result {
                 case .success:
                     completion(.success(true))
@@ -66,7 +64,7 @@ final class PostFormViewModel: ObservableObject {
                 return
             }
 
-            postService.createPostWithTemplate(
+            PostService.createPostWithTemplate(
                 templateId: templateId,
                 templateTextColor: templateTextColor ?? "#191919",
                 content: content,

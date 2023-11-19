@@ -14,8 +14,6 @@ struct WithdrawalView: View {
 
     @State private var deleteButtonTapped: Bool = false
 
-    private let userService = UserService()
-
     var body: some View {
         VStack(spacing: 0) {
             SettingHeader(header: "계정 삭제") {
@@ -113,7 +111,7 @@ struct WithdrawalView: View {
                         titleVisibility: .visible
                     ) {
                         Button("삭제하기", role: .destructive) {
-                            userService.deleteUser { _ in }
+                            UserService.deleteUser { _ in }
                         }
                     }
                 }

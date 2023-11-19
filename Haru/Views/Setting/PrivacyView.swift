@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct PrivacyView: View {
-    private let userService: UserService = .init()
-
     @Environment(\.dismiss) var dismissAction
     @EnvironmentObject var global: Global
 
@@ -21,7 +19,7 @@ struct PrivacyView: View {
             return !user.user.isPublicAccount
         } set: {
             self.global.user?.user.isPublicAccount = !$0
-            self.userService.updateUserOption(isPublicAccount: !$0) { _ in }
+            UserService.updateUserOption(isPublicAccount: !$0) { _ in }
         }
 
         let isPostBrowsingEnabled: Binding<Bool> = Binding {
@@ -31,7 +29,7 @@ struct PrivacyView: View {
             return user.isPostBrowsingEnabled
         } set: {
             self.global.user?.isPostBrowsingEnabled = $0
-            self.userService.updateUserOption(isPostBrowsingEnabled: $0) { _ in }
+            UserService.updateUserOption(isPostBrowsingEnabled: $0) { _ in }
         }
 
         let isAllowFeedLike: Binding<String> = Binding {
@@ -52,16 +50,16 @@ struct PrivacyView: View {
             switch $0 {
             case "허용 안함":
                 self.global.user?.isAllowFeedLike = 0
-                self.userService.updateUserOption(isAllowFeedLike: 0) { _ in }
+                UserService.updateUserOption(isAllowFeedLike: 0) { _ in }
             case "친구만":
                 self.global.user?.isAllowFeedLike = 1
-                self.userService.updateUserOption(isAllowFeedLike: 1) { _ in }
+                UserService.updateUserOption(isAllowFeedLike: 1) { _ in }
             case "모든 사람":
                 self.global.user?.isAllowFeedLike = 2
-                self.userService.updateUserOption(isAllowFeedLike: 2) { _ in }
+                UserService.updateUserOption(isAllowFeedLike: 2) { _ in }
             default:
                 self.global.user?.isAllowFeedLike = 0
-                self.userService.updateUserOption(isAllowFeedLike: 0) { _ in }
+                UserService.updateUserOption(isAllowFeedLike: 0) { _ in }
             }
         }
 
@@ -83,16 +81,16 @@ struct PrivacyView: View {
             switch $0 {
             case "허용 안함":
                 self.global.user?.isAllowFeedComment = 0
-                self.userService.updateUserOption(isAllowFeedComment: 0) { _ in }
+                UserService.updateUserOption(isAllowFeedComment: 0) { _ in }
             case "친구만":
                 self.global.user?.isAllowFeedComment = 1
-                self.userService.updateUserOption(isAllowFeedComment: 1) { _ in }
+                UserService.updateUserOption(isAllowFeedComment: 1) { _ in }
             case "모든 사람":
                 self.global.user?.isAllowFeedComment = 2
-                self.userService.updateUserOption(isAllowFeedComment: 2) { _ in }
+                UserService.updateUserOption(isAllowFeedComment: 2) { _ in }
             default:
                 self.global.user?.isAllowFeedComment = 0
-                self.userService.updateUserOption(isAllowFeedComment: 0) { _ in }
+                UserService.updateUserOption(isAllowFeedComment: 0) { _ in }
             }
         }
 
@@ -103,7 +101,7 @@ struct PrivacyView: View {
             return user.isAllowSearch
         } set: {
             self.global.user?.isAllowSearch = $0
-            self.userService.updateUserOption(isAllowSearch: $0) { _ in }
+            UserService.updateUserOption(isAllowSearch: $0) { _ in }
         }
 
         return VStack(spacing: 0) {

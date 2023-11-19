@@ -93,12 +93,9 @@ final class PostViewModel: ObservableObject {
 
     var targetId: String? // targetId가 nil이면 둘러보기 / 아니면 사용자 피드
 
-    private let postService: PostService
-
     init(targetId: String? = nil, option: PostOption) {
         self.targetId = targetId
         self.option = option
-        postService = .init()
     }
 
     func loadMorePosts() {
@@ -202,7 +199,7 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        postService.fetchFreindPosts(page: page, lastCreatedAt: lastCreatedAt) { result in
+        PostService.fetchFreindPosts(page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 success.0.forEach { post in
@@ -228,7 +225,7 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        postService.fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
+        PostService.fetchTargetPosts(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 success.0.forEach { post in
@@ -254,7 +251,7 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        postService.fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
+        PostService.fetchTargetMediaAll(targetId: targetId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 success.0.forEach { post in
@@ -282,7 +279,7 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        postService.fetchTargetMediaHashTag(targetId: targetId, hashTagId: hashTagId, page: page, lastCreatedAt: lastCreatedAt) { result in
+        PostService.fetchTargetMediaHashTag(targetId: targetId, hashTagId: hashTagId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 success.0.forEach { post in
@@ -309,7 +306,7 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        postService.fetchAllMedia(page: page, lastCreatedAt: lastCreatedAt) { result in
+        PostService.fetchAllMedia(page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 success.0.forEach { post in
@@ -337,7 +334,7 @@ final class PostViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?)
     {
-        postService.fetchMediaHashTag(hashTagId: hashTagId, page: page, lastCreatedAt: lastCreatedAt) { result in
+        PostService.fetchMediaHashTag(hashTagId: hashTagId, page: page, lastCreatedAt: lastCreatedAt) { result in
             switch result {
             case .success(let success):
                 success.0.forEach { post in
@@ -362,7 +359,7 @@ final class PostViewModel: ObservableObject {
     // MARK: - 게시물 수정, 삭제, 숨기기
 
     func deletePost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        postService.deletePost(postId: postId) { result in
+        PostService.deletePost(postId: postId) { result in
             switch result {
             case .success:
                 completion(.success(true))
@@ -373,7 +370,7 @@ final class PostViewModel: ObservableObject {
     }
 
     func hidePost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        postService.hidePost(postId: postId) { result in
+        PostService.hidePost(postId: postId) { result in
             switch result {
             case .success:
                 completion(.success(true))
@@ -384,7 +381,7 @@ final class PostViewModel: ObservableObject {
     }
 
     func reportPost(postId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        postService.reportPost(postId: postId) { result in
+        PostService.reportPost(postId: postId) { result in
             switch result {
             case .success:
                 completion(.success(true))
@@ -397,7 +394,7 @@ final class PostViewModel: ObservableObject {
     // MARK: - 게시물 이외
 
     func fetchPopularHashTags() {
-        postService.fetchPopularHashTags { result in
+        PostService.fetchPopularHashTags { result in
             switch result {
             case .success(let success):
                 self.hashTags = [Global.shared.hashTagAll] + success
@@ -409,7 +406,7 @@ final class PostViewModel: ObservableObject {
 
     func fetchTargetHashTags() {
         guard let targetId else { return }
-        postService.fetchTargetHashTags(targetId: targetId) { result in
+        PostService.fetchTargetHashTags(targetId: targetId) { result in
             switch result {
             case .success(let success):
                 self.hashTags = [Global.shared.hashTagAll] + success
@@ -423,7 +420,7 @@ final class PostViewModel: ObservableObject {
         targetPostId: String,
         completion: @escaping () -> Void)
     {
-        postService.likeThisPost(targetPostId: targetPostId) { result in
+        PostService.likeThisPost(targetPostId: targetPostId) { result in
             switch result {
             case .success:
                 completion()

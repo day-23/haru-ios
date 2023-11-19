@@ -31,10 +31,12 @@ struct ProfileService {
         return decoder
     }()
 
+    private init() {}
+
     /**
      * 유저 프로필 정보 가져오기
      */
-    func fetchUserProfile(
+    public static func fetchUserProfile(
         userId: String,
         completion: @escaping (Result<User, Error>) -> Void
     ) {
@@ -60,7 +62,7 @@ struct ProfileService {
     /**
      * 유저 프로필 변경 사진과 함께
      */
-    func updateUserProfileWithImage(
+    public static func updateUserProfileWithImage(
         userId: String,
         name: String,
         introduction: String,
@@ -130,7 +132,7 @@ struct ProfileService {
     /**
      * 유저 프로필 사진은 변경하지 않은 경우
      */
-    func updateUserProfileWithoutImage(
+    public static func updateUserProfileWithoutImage(
         userId: String,
         name: String,
         introduction: String,
@@ -170,7 +172,7 @@ struct ProfileService {
     /**
      * 초기에 유저 정보가 입력될 때 호출 (이미지 포함)
      */
-    func initUserProfileWithImage(
+    public static func initUserProfileWithImage(
         userId: String,
         name: String,
         haruId: String,
@@ -219,7 +221,7 @@ struct ProfileService {
     /**
      * 초기에 유저 정보가 입력될 때 호출 (이미지 제외)
      */
-    func initUserProfileWithoutImage(
+    public static func initUserProfileWithoutImage(
         userId: String,
         name: String,
         haruId: String,
@@ -280,7 +282,7 @@ struct ProfileService {
     }
 
     // 아이디 중복 검사
-    func validateHaruId(
+    public static func validateHaruId(
         haruId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -333,7 +335,7 @@ struct ProfileService {
         }
     }
 
-    func validateNickname(
+    public static func validateNickname(
         nickname: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {

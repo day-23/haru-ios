@@ -29,9 +29,11 @@ struct AuthService {
         return encoder
     }()
 
+    private init() {}
+
     // MARK: - CREATE API
 
-    func validateKakaoUserWithToken(
+    public static func validateKakaoUserWithToken(
         token: String,
         completion: @escaping (Result<UserKakaoAuthResponse, Error>) -> Void
     ) {
@@ -39,7 +41,7 @@ struct AuthService {
         validateKakaoUser(headers: headers, completion: completion)
     }
 
-    func validateKakaoUser(
+    public static func validateKakaoUser(
         headers: HTTPHeaders,
         completion: @escaping (Result<UserKakaoAuthResponse, Error>) -> Void
     ) {
@@ -58,7 +60,7 @@ struct AuthService {
     }
 
     // 하루 서버에 최종 인증
-    func validateUser(
+    public static func validateUser(
         headers: HTTPHeaders,
         completion: @escaping (Result<Me, Error>) -> Void
     ) {
@@ -71,7 +73,7 @@ struct AuthService {
             AuthService.baseURL + "verify-token",
             method: .post,
             headers: headers
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case .success(let data):
                 completion(.success(data.data))
@@ -82,7 +84,7 @@ struct AuthService {
     }
 
     // apple login
-    func validateAppleUserWithToken(
+    public static func validateAppleUserWithToken(
         token: String,
         completion: @escaping (Result<UserAppleAuthResponse, Error>) -> Void
     ) {
@@ -90,7 +92,7 @@ struct AuthService {
         validateAppleUser(headers: headers, completion: completion)
     }
 
-    func validateAppleUser(
+    public static func validateAppleUser(
         headers: HTTPHeaders,
         completion: @escaping (Result<UserAppleAuthResponse, Error>) -> Void
     ) {
@@ -108,7 +110,7 @@ struct AuthService {
         }
     }
 
-    func validateAppleUserWithAuthCode(
+    public static func validateAppleUserWithAuthCode(
         authCode: String,
         completion: @escaping (Result<UserAppleAuthResponse, Error>) -> Void
     ) {

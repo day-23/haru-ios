@@ -30,10 +30,12 @@ final class ScheduleService {
         return encoder
     }()
 
+    private init() {}
+
     /**
      * 현재 선택된 달을 기준으로 이전 달, (선택된) 현재 달, 다음 달의 스케줄 데이터 가져오기
      */
-    func fetchScheduleList(
+    public static func fetchScheduleList(
         _ startDate: Date,
         _ endDate: Date,
         _ completion: @escaping (Result<[Schedule], Error>) -> Void
@@ -80,7 +82,7 @@ final class ScheduleService {
         }
     }
 
-    func fetchScheduleAndTodo(
+    public static func fetchScheduleAndTodo(
         _ startDate: Date,
         _ endDate: Date,
         _ completion: @escaping (Result<([Schedule], [Todo]), Error>) -> Void
@@ -141,7 +143,7 @@ final class ScheduleService {
     /**
      * 일정 추가하기
      */
-    func addSchedule(_ schedule: Request.Schedule, _ completion: @escaping (Result<Schedule, Error>) -> Void) {
+    public static func addSchedule(_ schedule: Request.Schedule, _ completion: @escaping (Result<Schedule, Error>) -> Void) {
         struct Response: Codable {
             let success: Bool
             let data: Schedule
@@ -171,7 +173,7 @@ final class ScheduleService {
     /**
      * 일정 업데이트 API
      */
-    func updateSchedule(
+    public static func updateSchedule(
         scheduleId: String?,
         schedule: Request.Schedule,
         completion: @escaping (Result<Schedule, Error>) -> Void
@@ -205,7 +207,7 @@ final class ScheduleService {
     /**
      * 일정 수정하기 (이 일정만 수정)
      */
-    func updateRepeatFrontSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func updateRepeatFrontSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -226,7 +228,7 @@ final class ScheduleService {
         }
     }
 
-    func updateRepeatMiddleSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func updateRepeatMiddleSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -247,7 +249,7 @@ final class ScheduleService {
         }
     }
 
-    func updateRepeatBackSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func updateRepeatBackSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -268,7 +270,7 @@ final class ScheduleService {
         }
     }
 
-    func updateScheduleWithRepeat(
+    public static func updateScheduleWithRepeat(
         scheduleId: String,
         schedule: Request.RepeatSchedule,
         at: RepeatAt,
@@ -298,7 +300,7 @@ final class ScheduleService {
     /**
      * 일정 삭제하기 (모든 일정 삭제, 일반 삭제)
      */
-    func deleteSchedule(scheduleId: String, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func deleteSchedule(scheduleId: String, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)",
             method: .delete
@@ -318,7 +320,7 @@ final class ScheduleService {
     /**
      * 일정 삭제하기 (이 일정만 삭제)
      */
-    func deleteRepeatFrontSchedule(scheduleId: String, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func deleteRepeatFrontSchedule(scheduleId: String, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -346,7 +348,7 @@ final class ScheduleService {
         }
     }
 
-    func deleteRepeatMiddleSchedule(scheduleId: String, removedDate: Date, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func deleteRepeatMiddleSchedule(scheduleId: String, removedDate: Date, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -375,7 +377,7 @@ final class ScheduleService {
         }
     }
 
-    func deleteRepeatBackSchedule(scheduleId: String, repeatEnd: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func deleteRepeatBackSchedule(scheduleId: String, repeatEnd: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]

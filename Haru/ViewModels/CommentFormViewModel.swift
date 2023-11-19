@@ -12,8 +12,6 @@ final class CommentFormViewModel: ObservableObject {
     @Published var x: Double?
     @Published var y: Double?
 
-    private let commentService: CommentService = .init()
-
     func createComment(
         targetPostId: String,
         targetPostImageId: String,
@@ -21,7 +19,7 @@ final class CommentFormViewModel: ObservableObject {
     ) {
         let comment = Request.Comment(content: content, x: x, y: y)
 
-        commentService.createComment(targetPostId: targetPostId, targetPostImageId: targetPostImageId, comment: comment) { result in
+        CommentService.createComment(targetPostId: targetPostId, targetPostImageId: targetPostImageId, comment: comment) { result in
             switch result {
             case .success:
                 completion()
