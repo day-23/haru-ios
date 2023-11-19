@@ -99,9 +99,6 @@ struct CommentView: View, KeyboardReadable {
 
     var isMine: Bool // 해당 게시물이 내 게시물인지 남의 게시물인지
 
-    // For API
-    private let commentService: CommentService = .init()
-
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 5) {
@@ -900,7 +897,7 @@ struct CommentView: View, KeyboardReadable {
 
     func fetchCommentList() {
         for (idx, postImage) in postImageList.enumerated() {
-            commentService.fetchImageComment(
+            CommentService.fetchImageComment(
                 targetPostId: postId,
                 targetPostImageId: postImage.id
             ) { result in
@@ -922,7 +919,7 @@ struct CommentView: View, KeyboardReadable {
 
     func createComment() {
         if !isTemplate {
-            commentService.createComment(
+            CommentService.createComment(
                 targetPostId: postId,
                 targetPostImageId: postImageList[postPageNum].id,
                 comment: Request.Comment(content: content, x: x, y: y)
@@ -950,7 +947,7 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
         } else {
-            commentService.createCommentTemplate(
+            CommentService.createCommentTemplate(
                 targetPostId: postId,
                 comment: Request.Comment(content: content, x: x, y: y)
             ) { result in
@@ -990,7 +987,7 @@ struct CommentView: View, KeyboardReadable {
             yList_.append(y)
         }
 
-        commentService.updateCommentList(
+        CommentService.updateCommentList(
             targetPostId: postId,
             targetCommentIdList: targetCommentIdList,
             xList: xList_,
@@ -1015,7 +1012,7 @@ struct CommentView: View, KeyboardReadable {
     func updateCommentHide(target: Post.Comment) {
         let request = Request.Comment(isPublic: false)
 
-        commentService.updateComment(
+        CommentService.updateComment(
             targetUserId: target.user.id,
             targetCommentId: target.id,
             comment: request
@@ -1033,7 +1030,7 @@ struct CommentView: View, KeyboardReadable {
 
     func deleteComment() {
         if let target = delCommentTarget {
-            commentService.deleteComment(
+            CommentService.deleteComment(
                 targetUserId: target.user.id,
                 targetCommentId: target.id
             ) { result in

@@ -11,10 +11,12 @@ import Foundation
 final class CategoryService {
     private static let baseURL = Constants.baseURL + "category/"
     
+    private init() {}
+    
     /**
      * 카테고리 목록 가져오기
      */
-    func fetchCategoryList(_ completion: @escaping (Result<[Category], Error>) -> Void) {
+    public static func fetchCategoryList(_ completion: @escaping (Result<[Category], Error>) -> Void) {
         struct Response: Codable {
             let success: Bool
             let data: [Category]
@@ -43,7 +45,7 @@ final class CategoryService {
     /**
      * 카테고리 추가하기
      */
-    func addCategory(_ category: Request.Category, _ completion: @escaping (Result<Category, Error>) -> Void) {
+    public static func addCategory(_ category: Request.Category, _ completion: @escaping (Result<Category, Error>) -> Void) {
         struct Response: Codable {
             let success: Bool
             let data: Category
@@ -72,7 +74,7 @@ final class CategoryService {
     /**
      * 카테고리 수정하기 (전체)
      */
-    func updateAllCategoyList(categoryIds: [String], isSelected: [Bool], _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func updateAllCategoyList(categoryIds: [String], isSelected: [Bool], _ completion: @escaping (Result<Bool, Error>) -> Void) {
         struct Response: Codable {
             let success: Bool
         }
@@ -104,7 +106,7 @@ final class CategoryService {
         }
     }
     
-    func updateCategory(
+    public static func updateCategory(
         categoryId: String,
         category: Request.Category,
         completion: @escaping (Result<Category, Error>) -> Void
@@ -134,7 +136,7 @@ final class CategoryService {
         }
     }
     
-    func deleteCategory(
+    public static func deleteCategory(
         categoryId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {

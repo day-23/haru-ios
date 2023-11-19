@@ -9,31 +9,12 @@ import Alamofire
 import Foundation
 
 final class CalendarService {
-    // TODO: calendarservice -> CalendarViewModel로 함수 이전시키기
-    private var scheduleService: ScheduleService = .init()
-
-    /**
-     * 일정과 할일 가져오기
-     */
-//    func fetchScheduleAndTodo(_ startDate: Date, _ endDate: Date) async -> ([Schedule], [Todo]) {
-//        print("call schedule & todo API")
-//        do {
-    ////            async let scheduleList = scheduleService.fetchScheduleListAsync(startDate, endDate)
-//
-//            // FIXME: struct Todo 변경되면 수정해주기
-//            async let todoList = fetchTodoListAsync(startDate, endDate)
-//
-//            return try await (scheduleList, todoList)
-//        } catch {
-//            print("[Debug] \(error) \(#fileID) \(#function)")
-//            return ([], [])
-//        }
-//    }
+    private init() {}
 
     /**
      * 할일 가져오기 (나중에 TodoService로 옮기기)
      */
-    func fetchTodoListAsync(_ startDate: Date, _ endDate: Date) async throws -> [Todo] {
+    public static func fetchTodoListAsync(_ startDate: Date, _ endDate: Date) async throws -> [Todo] {
         struct Response: Codable {
             struct Pagination: Codable {
                 let totalItems: Int

@@ -15,17 +15,13 @@ final class SearchViewModel: ObservableObject {
 
     @Published var searchUser: User?
 
-    private let searchService: SearchService = .init()
-    private let friendService: FriendService = .init()
-    private let profileService: ProfileService = .init()
-
     // MARK: - 할일과 일정 검색
 
     func searchTodoAndSchedule(
         searchContent: String,
         completion: @escaping (Bool) -> Void
     ) {
-        searchService.searchTodoAndSchedule(searchContent: searchContent) { result in
+        SearchService.searchTodoAndSchedule(searchContent: searchContent) { result in
             switch result {
             case .success(let success):
                 withAnimation {
@@ -188,7 +184,7 @@ final class SearchViewModel: ObservableObject {
         haruId: String,
         completion: @escaping (Bool) -> Void
     ) {
-        searchService.searchUserWithHaruId(haruId: haruId) { result in
+        SearchService.searchUserWithHaruId(haruId: haruId) { result in
             switch result {
             case .success(let success):
                 self.searchUser = success
@@ -206,7 +202,7 @@ final class SearchViewModel: ObservableObject {
         acceptorId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.requestFriend(acceptorId: acceptorId) { result in
+        FriendService.requestFriend(acceptorId: acceptorId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -220,7 +216,7 @@ final class SearchViewModel: ObservableObject {
         requesterId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.acceptRequestFriend(requesterId: requesterId) { result in
+        FriendService.acceptRequestFriend(requesterId: requesterId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -235,7 +231,7 @@ final class SearchViewModel: ObservableObject {
         isRefuse: Bool = true,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.cancelRequestFriend(
+        FriendService.cancelRequestFriend(
             acceptorId: acceptorId,
             isRefuse: isRefuse
         ) { result in
@@ -250,7 +246,7 @@ final class SearchViewModel: ObservableObject {
 
     // friendId: 삭제할 친구의 id
     func deleteFriend(friendId: String, completion: @escaping () -> Void) {
-        friendService.deleteFriend(friendId: friendId) { result in
+        FriendService.deleteFriend(friendId: friendId) { result in
             switch result {
             case .success:
                 completion()

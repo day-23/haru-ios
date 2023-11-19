@@ -72,11 +72,6 @@ final class CalendarViewModel: ObservableObject {
     var allOff: Bool {
         allCategoryOff && allTodoOff
     }
-
-    // MARK: - Service
-
-    private let scheduleService = ScheduleService()
-    private let categoryService = CategoryService()
     
     func setStartOnSunday(_ startOnSunday: Bool) {
         self.startOnSunday = startOnSunday
@@ -115,7 +110,7 @@ final class CalendarViewModel: ObservableObject {
         guard let firstDate = dateList.first?.date, let startDate = Calendar.current.date(byAdding: .day, value: -1, to: firstDate) else { return }
         guard let lastDate = dateList.last?.date, let endDate = Calendar.current.date(byAdding: .day, value: 1, to: lastDate) else { return }
         
-        scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
+        ScheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
             switch result {
             case .success(let success):
                 var beforeRepeat = success
@@ -210,7 +205,7 @@ final class CalendarViewModel: ObservableObject {
     }
     
     func getCategoryList() {
-        categoryService.fetchCategoryList { result in
+        CategoryService.fetchCategoryList { result in
             switch result {
             case .success(let success):
                 self.unknownCategory.isSelected = self.isUnknownCategorySelected
@@ -237,7 +232,7 @@ final class CalendarViewModel: ObservableObject {
             pivotDateList[index] = date
         }
         
-        scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
+        ScheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
             switch result {
             case .success(let success):
                 var beforeRepeat = success
@@ -299,7 +294,7 @@ final class CalendarViewModel: ObservableObject {
             tempPivotDateList[index] = date
         }
         
-        scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
+        ScheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
             switch result {
             case .success(let success):
                 var beforeRepeat = success
@@ -360,7 +355,7 @@ final class CalendarViewModel: ObservableObject {
         
         let dayDurationInSeconds: TimeInterval = 60 * 60 * 24
 
-        scheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
+        ScheduleService.fetchScheduleAndTodo(startDate, endDate) { result in
             switch result {
             case .success(let success):
                 var beforeRepeat = success
@@ -443,7 +438,7 @@ final class CalendarViewModel: ObservableObject {
             isSelected.append(category.isSelected)
         }
         
-        categoryService.updateAllCategoyList(categoryIds: categoryIds, isSelected: isSelected) { result in
+        CategoryService.updateAllCategoyList(categoryIds: categoryIds, isSelected: isSelected) { result in
             switch result {
             case .success:
                 self.getCategoryList()
@@ -463,7 +458,7 @@ final class CalendarViewModel: ObservableObject {
         categoryList.append(Category(id: UUID().uuidString, content: content, color: color, isSelected: true))
         let index = categoryList.endIndex - 1
         
-        categoryService.addCategory(category) { result in
+        CategoryService.addCategory(category) { result in
             switch result {
             case .success(let success):
                 self.categoryList[index] = success
@@ -482,7 +477,7 @@ final class CalendarViewModel: ObservableObject {
     ) {
         let category = Request.Category(content: content, color: color)
         
-        categoryService.updateCategory(categoryId: categoryId, category: category) { result in
+        CategoryService.updateCategory(categoryId: categoryId, category: category) { result in
             switch result {
             case .success:
                 completion()
@@ -496,7 +491,7 @@ final class CalendarViewModel: ObservableObject {
         categoryId: String,
         completion: @escaping () -> Void
     ) {
-        categoryService.deleteCategory(categoryId: categoryId) { result in
+        CategoryService.deleteCategory(categoryId: categoryId) { result in
             switch result {
             case .success:
                 completion()

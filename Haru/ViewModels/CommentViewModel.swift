@@ -34,8 +34,6 @@ final class CommentViewModel: ObservableObject {
     
     @Published var commentTotalCount: [Post.Image.ID: Int] = [:]
     
-    private let commentService: CommentService
-    
     init(
         userId: String,
         postImageIDList: [Post.Image.ID],
@@ -56,8 +54,6 @@ final class CommentViewModel: ObservableObject {
         self.imageCommentUserProfileUrlList = postImageIDList.reduce(into: [String: [URL?]]()) { dictionary, element in
             dictionary[element] = []
         }
-        
-        self.commentService = .init()
     }
     
     func initLoad(isTemplate: Bool = false) {
@@ -113,7 +109,7 @@ final class CommentViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?
     ) {
-        commentService.fetchTargetImageComment(
+        CommentService.fetchTargetImageComment(
             userId: userId,
             postId: postId,
             imageId: imageId,
@@ -153,7 +149,7 @@ final class CommentViewModel: ObservableObject {
         page: Int,
         lastCreatedAt: Date?
     ) {
-        commentService.fetchTargetTemplateComment(
+        CommentService.fetchTargetTemplateComment(
             userId: userId,
             postId: postId,
             page: page,
@@ -194,7 +190,7 @@ final class CommentViewModel: ObservableObject {
     ) {
         let request = Request.Comment(isPublic: isPublic)
         
-        commentService.updateComment(targetUserId: userId, targetCommentId: commentId, comment: request) { result in
+        CommentService.updateComment(targetUserId: userId, targetCommentId: commentId, comment: request) { result in
             switch result {
             case .success:
                 self.imageCommentList[imageId]?[idx].isPublic = isPublic
@@ -209,7 +205,7 @@ final class CommentViewModel: ObservableObject {
         commentId: String,
         imageId: String
     ) {
-        commentService.deleteComment(targetUserId: userId, targetCommentId: commentId) { result in
+        CommentService.deleteComment(targetUserId: userId, targetCommentId: commentId) { result in
             switch result {
             case .success:
                 let tmpPage = self.page

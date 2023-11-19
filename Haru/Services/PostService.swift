@@ -42,9 +42,11 @@ final class PostService {
         return encoder
     }()
 
+    private init() {}
+
     // MARK: - 게시물 불러오기
 
-    func fetchFreindPosts(
+    public static func fetchFreindPosts(
         page: Int,
         limit: Int = 5,
         lastCreatedAt: Date?,
@@ -91,7 +93,7 @@ final class PostService {
         }
     }
 
-    func fetchTargetPosts(
+    public static func fetchTargetPosts(
         targetId: String,
         page: Int,
         limit: Int = 5,
@@ -140,7 +142,7 @@ final class PostService {
     }
 
     // 둘러보기 전체 게시물 불러오기
-    func fetchAllMedia(
+    public static func fetchAllMedia(
         page: Int,
         limit: Int = 12,
         lastCreatedAt: Date?,
@@ -188,7 +190,7 @@ final class PostService {
     }
 
     // 둘러보기 해시태그 게시물 불러오기
-    func fetchMediaHashTag(
+    public static func fetchMediaHashTag(
         hashTagId: String,
         page: Int,
         limit: Int = 12,
@@ -237,7 +239,7 @@ final class PostService {
     }
 
     // 특정 사용자 미디어 전체보기
-    func fetchTargetMediaAll(
+    public static func fetchTargetMediaAll(
         targetId: String,
         page: Int,
         limit: Int = 12,
@@ -285,7 +287,7 @@ final class PostService {
         }
     }
 
-    func fetchTargetMediaHashTag(
+    public static func fetchTargetMediaHashTag(
         targetId: String,
         hashTagId: String,
         page: Int,
@@ -336,7 +338,7 @@ final class PostService {
 
     // MARK: - 게시물 추가, 수정, 삭제
 
-    func createPostWithImages(
+    public static func createPostWithImages(
         imageList: [UIImage],
         content: String,
         tagList: [Tag],
@@ -454,7 +456,7 @@ final class PostService {
             }
     }
 
-    func createPostWithTemplate(
+    public static func createPostWithTemplate(
         templateId: String,
         templateTextColor: String,
         content: String,
@@ -513,7 +515,7 @@ final class PostService {
         }
     }
 
-    func deletePost(
+    public static func deletePost(
         postId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -535,7 +537,7 @@ final class PostService {
         }
     }
 
-    func hidePost(
+    public static func hidePost(
         postId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -557,7 +559,7 @@ final class PostService {
         }
     }
 
-    func reportPost(
+    public static func reportPost(
         postId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -583,7 +585,7 @@ final class PostService {
 
     // 서버에 있는 기본 템플릿 불러오기
     // TODO: ProfileImage 모델 이름에서 다른 이름으로 바꿔주기
-    func fetchTemplate(completion: @escaping (Result<[ProfileImage], Error>) -> Void) {
+    public static func fetchTemplate(completion: @escaping (Result<[ProfileImage], Error>) -> Void) {
         struct Response: Codable {
             let success: Bool
             let data: [ProfileImage]
@@ -608,7 +610,7 @@ final class PostService {
     }
 
     // 인기 해시태그 불러오기
-    func fetchPopularHashTags(
+    public static func fetchPopularHashTags(
         completion: @escaping (Result<[HashTag], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -635,7 +637,7 @@ final class PostService {
     }
 
     // 사용자 해시태그 불러오기
-    func fetchTargetHashTags(
+    public static func fetchTargetHashTags(
         targetId: String,
         completion: @escaping (Result<[HashTag], Error>) -> Void
     ) {
@@ -663,7 +665,7 @@ final class PostService {
         }
     }
 
-    func likeThisPost(
+    public static func likeThisPost(
         targetPostId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {

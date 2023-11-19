@@ -35,7 +35,9 @@ final class FriendService {
         return encoder
     }()
     
-    func fetchFriend(
+    private init() {}
+    
+    public static func fetchFriend(
         userId: String,
         page: Int,
         completion: @escaping (Result<([FriendUser], Post.Pagination), Error>) -> Void
@@ -70,7 +72,7 @@ final class FriendService {
         }
     }
     
-    func fetchRequestFriend(
+    public static func fetchRequestFriend(
         userId: String,
         page: Int,
         completion: @escaping (Result<([FriendUser], Post.Pagination), Error>) -> Void
@@ -105,7 +107,7 @@ final class FriendService {
         }
     }
     
-    func requestFriend(
+    public static func requestFriend(
         acceptorId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -135,7 +137,7 @@ final class FriendService {
     }
     
     // requesterId => 친구 신청 요청을 보낸 사용자
-    func acceptRequestFriend(
+    public static func acceptRequestFriend(
         requesterId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -163,7 +165,7 @@ final class FriendService {
         }
     }
     
-    func cancelRequestFriend(
+    public static func cancelRequestFriend(
         acceptorId: String,
         isRefuse: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -196,7 +198,7 @@ final class FriendService {
         }
     }
     
-    func deleteFriend(
+    public static func deleteFriend(
         friendId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -225,7 +227,7 @@ final class FriendService {
         }
     }
     
-    func blockFriend(
+    public static func blockFriend(
         blockUserId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {

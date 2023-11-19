@@ -38,10 +38,6 @@ final class UserProfileViewModel: ObservableObject {
     @Published var friendCount: Int = -1
     @Published var reqFriendCount: Int = -1
 
-    private let profileService: ProfileService = .init()
-    private let friendService: FriendService = .init()
-    private let searchService: SearchService = .init()
-
     var option: FriendOption = .friendList
 
     var page: Int {
@@ -173,7 +169,7 @@ final class UserProfileViewModel: ObservableObject {
     // MARK: - 사용자 프로필을 위한 함수
 
     func fetchUserProfile() {
-        profileService.fetchUserProfile(userId: userId) { result in
+        ProfileService.fetchUserProfile(userId: userId) { result in
             switch result {
             case .success(let success):
                 self.profileImageURL = nil
@@ -195,7 +191,7 @@ final class UserProfileViewModel: ObservableObject {
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         if let profileImage {
-            profileService.updateUserProfileWithImage(userId: userId, name: name, introduction: introduction, profileImage: profileImage) { result in
+            ProfileService.updateUserProfileWithImage(userId: userId, name: name, introduction: introduction, profileImage: profileImage) { result in
                 switch result {
                 case .success(let success):
                     self.profileImageURL = nil
@@ -213,7 +209,7 @@ final class UserProfileViewModel: ObservableObject {
                 }
             }
         } else {
-            profileService.updateUserProfileWithoutImage(userId: userId, name: name, introduction: introduction) { result in
+            ProfileService.updateUserProfileWithoutImage(userId: userId, name: name, introduction: introduction) { result in
                 switch result {
                 case .success(let success):
                     self.user = success
@@ -232,7 +228,7 @@ final class UserProfileViewModel: ObservableObject {
 
     // userId: 해당 사용자의 친구목록을 불러옴
     func fetchFriend(userId: String, page: Int) {
-        friendService.fetchFriend(userId: userId, page: page) { result in
+        FriendService.fetchFriend(userId: userId, page: page) { result in
             switch result {
             case .success(let success):
                 success.0.forEach { user in
@@ -263,7 +259,7 @@ final class UserProfileViewModel: ObservableObject {
 
     // userId: 해당 사용자의 친구신청 목록을 불러옴
     func fetchRequestFriend(userId: String, page: Int) {
-        friendService.fetchRequestFriend(userId: userId, page: page) { result in
+        FriendService.fetchRequestFriend(userId: userId, page: page) { result in
             switch result {
             case .success(let success):
                 success.0.forEach { user in
@@ -297,7 +293,7 @@ final class UserProfileViewModel: ObservableObject {
         acceptorId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.requestFriend(acceptorId: acceptorId) { result in
+        FriendService.requestFriend(acceptorId: acceptorId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -312,7 +308,7 @@ final class UserProfileViewModel: ObservableObject {
         requesterId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.acceptRequestFriend(requesterId: requesterId) { result in
+        FriendService.acceptRequestFriend(requesterId: requesterId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -327,7 +323,7 @@ final class UserProfileViewModel: ObservableObject {
         isRefuse: Bool = true,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.cancelRequestFriend(
+        FriendService.cancelRequestFriend(
             acceptorId: acceptorId,
             isRefuse: isRefuse
         ) { result in
@@ -342,7 +338,7 @@ final class UserProfileViewModel: ObservableObject {
 
     // friendId: 삭제할 친구의 id
     func deleteFriend(friendId: String, completion: @escaping () -> Void) {
-        friendService.deleteFriend(friendId: friendId) { result in
+        FriendService.deleteFriend(friendId: friendId) { result in
             switch result {
             case .success:
                 completion()
@@ -356,7 +352,7 @@ final class UserProfileViewModel: ObservableObject {
         blockUserId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        friendService.blockFriend(blockUserId: blockUserId) { result in
+        FriendService.blockFriend(blockUserId: blockUserId) { result in
             switch result {
             case .success(let success):
                 completion(.success(success))
@@ -372,7 +368,7 @@ final class UserProfileViewModel: ObservableObject {
     ) {
         switch option {
         case .friendList:
-            searchService.searchFriendWithName(name: name) { result in
+            SearchService.searchFriendWithName(name: name) { result in
                 switch result {
                 case .success(let success):
                     success.forEach { user in
@@ -389,7 +385,7 @@ final class UserProfileViewModel: ObservableObject {
                 }
             }
         case .requestFriendList:
-            searchService.searchReqFriendWithName(name: name) { result in
+            SearchService.searchReqFriendWithName(name: name) { result in
                 switch result {
                 case .success(let success):
                     success.forEach { user in
