@@ -11,8 +11,6 @@ struct SettingAlarmView: View {
     @Environment(\.dismiss) var dismissAction
     @EnvironmentObject var global: Global
 
-    private let userService: UserService = .init()
-
     var body: some View {
         let isMorningAlarmOn: Binding<Bool> = .init {
             guard let user = global.user else {
@@ -27,7 +25,7 @@ struct SettingAlarmView: View {
             }
 
             if global.user?.morningAlarmTime != nil {
-                userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
+                UserService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
                     switch result {
                     case .success:
                         AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
@@ -53,7 +51,7 @@ struct SettingAlarmView: View {
             global.user?.morningAlarmTime = $0
 
             if global.user?.morningAlarmTime != nil {
-                userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
+                UserService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
                     switch result {
                     case .success:
                         AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
@@ -81,7 +79,7 @@ struct SettingAlarmView: View {
             }
 
             if global.user?.nightAlarmTime != nil {
-                userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
+                UserService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
                     switch result {
                     case .success:
                         AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
@@ -107,7 +105,7 @@ struct SettingAlarmView: View {
             global.user?.nightAlarmTime = $0
 
             if global.user?.nightAlarmTime != nil {
-                userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
+                UserService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
                     switch result {
                     case .success:
                         AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MyView: View {
-    private let todoService: TodoService = .init()
     @EnvironmentObject var global: Global
 
     @StateObject var userProfileVM: UserProfileViewModel = .init(userId: Global.shared.user?.id ?? "unknown")
@@ -201,7 +200,7 @@ struct MyView: View {
             }
         }
         .onAppear {
-            self.todoService.fetchStatisticsByRange(
+            TodoService.fetchStatisticsByRange(
                 startDate: self.now.startOfMonth(),
                 endDate: self.now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
             ) { result in
@@ -217,7 +216,7 @@ struct MyView: View {
             }
         }
         .onChange(of: self.now) { _ in
-            self.todoService.fetchStatisticsByRange(
+            TodoService.fetchStatisticsByRange(
                 startDate: self.now.startOfMonth(),
                 endDate: self.now.endOfMonth().addDay().addingTimeInterval(-TimeInterval(1))
             ) { result in

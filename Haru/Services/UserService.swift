@@ -12,8 +12,10 @@ import Foundation
 struct UserService {
     // MARK: - Properties
 
-    let appleAuthDelegate = AppleAuthDelegate()
+    private static let appleAuthDelegate = AppleAuthDelegate()
     private static let baseURL = Constants.baseURL + "user/"
+
+    private init() {}
 
     private static let formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -33,7 +35,7 @@ struct UserService {
         return encoder
     }()
 
-    func updateUserOption(
+    public static func updateUserOption(
         isPublicAccount: Bool? = nil,
         isPostBrowsingEnabled: Bool? = nil,
         isAllowFeedLike: Int? = nil,
@@ -83,7 +85,7 @@ struct UserService {
         }
     }
 
-    func updateMorningAlarmTime(
+    public static func updateMorningAlarmTime(
         time: Date?,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -121,7 +123,7 @@ struct UserService {
         }
     }
 
-    func updateNightAlarmTime(
+    public static func updateNightAlarmTime(
         time: Date?,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -159,7 +161,7 @@ struct UserService {
         }
     }
 
-    func deleteUser(
+    public static func deleteUser(
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
         struct Response: Codable {
@@ -196,15 +198,15 @@ struct UserService {
             request.requestedScopes = [.email]
 
             let controller = ASAuthorizationController(authorizationRequests: [request])
-            self.appleAuthDelegate.completionHandler = { headers in
-                self.deleteAppleUser(headers: headers, completion: completion)
+            UserService.appleAuthDelegate.completionHandler = { headers in
+                UserService.deleteAppleUser(headers: headers, completion: completion)
             }
             controller.delegate = self.appleAuthDelegate
             controller.performRequests()
         }
     }
 
-    func deleteAppleUser(
+    public static func deleteAppleUser(
         headers: HTTPHeaders,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -214,11 +216,11 @@ struct UserService {
 
         // 애플 계정 삭제 API 호출
         AFProxy.request(
-            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")" + "/apple",
+            self.baseURL + "\(Global.shared.user?.id ?? "unknown")" + "/apple",
             method: .delete,
             encoding: JSONEncoding.default,
             headers: headers
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: self.decoder) { response in
             switch response.result {
             case .success(let data):
                 Global.shared.user = nil
@@ -242,7 +244,7 @@ class AppleAuthDelegate: NSObject, ASAuthorizationControllerDelegate {
             if let authCodeData = appleIDCredential.authorizationCode,
                let authCode = String(data: authCodeData, encoding: .utf8)
             {
-                AuthService().validateAppleUserWithAuthCode(authCode: authCode) { result in
+                AuthService.validateAppleUserWithAuthCode(authCode: authCode) { result in
                     switch result {
                     case .success(let data):
                         print("Data: \(data)")
@@ -259,7 +261,7 @@ class AppleAuthDelegate: NSObject, ASAuthorizationControllerDelegate {
                             "refreshToken": data.data.refreshToken,
                         ]
 
-                        AuthService().validateUser(headers: headers) { result in
+                        AuthService.validateUser(headers: headers) { result in
                             switch result {
                             case .success(let data):
                                 print("UserVerifyResponse: \(data)")
