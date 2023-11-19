@@ -64,13 +64,12 @@ final class ScheduleService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -113,13 +112,12 @@ final class ScheduleService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date/all",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -153,13 +151,12 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -188,13 +185,12 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(scheduleId ?? "unknown")",
             method: .patch,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -214,13 +210,12 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/front",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -236,13 +231,12 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/middle",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -258,13 +252,12 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/back",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -285,14 +278,13 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/\(at.rawValue)",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -307,10 +299,9 @@ final class ScheduleService {
      * 일정 삭제하기 (모든 일정 삭제, 일반 삭제)
      */
     func deleteSchedule(scheduleId: String, _ completion: @escaping (Result<Bool, Error>) -> Void) {
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)",
-            method: .delete,
-            interceptor: ApiRequestInterceptor()
+            method: .delete
         ).response { response in
             switch response.result {
             case .success:
@@ -336,13 +327,12 @@ final class ScheduleService {
             "repeatStart": Self.formatter.string(from: repeatStart),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/front",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -366,13 +356,12 @@ final class ScheduleService {
             "repeatStart": Self.formatter.string(from: repeatStart),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/middle",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -395,13 +384,12 @@ final class ScheduleService {
             "repeatEnd": Self.formatter.string(from: repeatEnd),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/back",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:

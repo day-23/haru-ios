@@ -54,13 +54,12 @@ final class FriendService {
             "page": page,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(userId)",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
@@ -90,13 +89,12 @@ final class FriendService {
             "page": page,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + "\(userId)" + "/request",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
@@ -119,13 +117,12 @@ final class FriendService {
             "acceptorId": acceptorId,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/request",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .response { response in
             switch response.result {
@@ -150,13 +147,12 @@ final class FriendService {
             "requesterId": requesterId,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/accept",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -183,13 +179,12 @@ final class FriendService {
             "acceptorId": acceptor,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + requester + "/request",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .response { response in
             switch response.result {
@@ -213,13 +208,12 @@ final class FriendService {
             "friendId": friendId,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .response { response in
             switch response.result {
@@ -243,13 +237,12 @@ final class FriendService {
             "blockUserId": blockUserId,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/block",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .response { response in
             switch response.result {

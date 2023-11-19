@@ -62,13 +62,12 @@ final class CalendarService {
 
         return try await withCheckedThrowingContinuation { continuation in
 
-            AF.request(
+            AFProxy.request(
                 Constants.baseURL + "todo/" + (Global.shared.user?.id ?? "unknown") + "/todos/date",
                 method: .post,
                 parameters: parameters,
                 encoding: JSONEncoding.default,
-                headers: headers,
-                interceptor: ApiRequestInterceptor()
+                headers: headers
             )
             .responseDecodable(of: Response.self, decoder: decoder) { response in
                 switch response.result {

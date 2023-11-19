@@ -66,13 +66,12 @@ struct UserService {
             params["isAllowSearch"] = isAllowSearch
         }
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/setting",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):
@@ -105,13 +104,12 @@ struct UserService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/setting",
             method: .patch,
             parameters: RequestTime(morningAlarmTime: time),
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):
@@ -144,13 +142,12 @@ struct UserService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/setting",
             method: .patch,
             parameters: RequestTime(nightAlarmTime: time),
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):
@@ -175,12 +172,11 @@ struct UserService {
 
         if Global.shared.user?.socialAccountType == "K" {
             // 카카오 계정
-            AF.request(
+            AFProxy.request(
                 Self.baseURL + "\(Global.shared.user?.id ?? "unknown")",
                 method: .delete,
                 encoding: JSONEncoding.default,
-                headers: headers,
-                interceptor: ApiRequestInterceptor()
+                headers: headers
             ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
                 switch response.result {
                 case .success(let data):
@@ -217,12 +213,11 @@ struct UserService {
         }
 
         // 애플 계정 삭제 API 호출
-        AF.request(
+        AFProxy.request(
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")" + "/apple",
             method: .delete,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):

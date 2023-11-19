@@ -24,11 +24,10 @@ final class CategoryService {
             "Content-Type": "application/json",
         ]
         
-        AF.request(
+        AFProxy.request(
             CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/categories",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self) { response in
             switch response.result {
@@ -54,13 +53,12 @@ final class CategoryService {
             "Content-Type": "application/json",
         ]
         
-        AF.request(
+        AFProxy.request(
             CategoryService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: category,
             encoder: JSONParameterEncoder(),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -90,13 +88,12 @@ final class CategoryService {
         
         let requestBody = Request(categoryIds: categoryIds, isSelected: isSelected)
         
-        AF.request(
+        AFProxy.request(
             CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/order/categories",
             method: .patch,
             parameters: requestBody,
             encoder: JSONParameterEncoder(),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -121,13 +118,12 @@ final class CategoryService {
             "Content-Type": "application/json",
         ]
         
-        AF.request(
+        AFProxy.request(
             CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(categoryId)",
             method: .patch,
             parameters: category,
             encoder: JSONParameterEncoder(),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -156,13 +152,12 @@ final class CategoryService {
         
         let requestBody = Request(categoryIds: [categoryId])
         
-        AF.request(
+        AFProxy.request(
             CategoryService.baseURL + (Global.shared.user?.id ?? "unknown") + "/categories",
             method: .delete,
             parameters: requestBody,
             encoder: JSONParameterEncoder(),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):

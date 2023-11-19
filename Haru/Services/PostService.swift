@@ -75,13 +75,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/follow/feed",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -124,13 +123,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/feed",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -173,13 +171,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/all",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -223,13 +220,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/hashtag/\(hashTagId)/",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -273,13 +269,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/media",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -323,13 +318,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/media/hashtag/\(hashTagId)",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -414,28 +408,27 @@ final class PostService {
             Global.shared.isLoading = true
         }
 
-        AF.upload(multipartFormData: { multipartFormData in
-                      for postImage in imageList {
-                          if let image = postImage.jpegData(compressionQuality: 1) {
-                              multipartFormData.append(image, withName: "images", fileName: "\(image).jpeg", mimeType: "image/jpeg")
-                          }
-                      }
+        AFProxy.upload(multipartFormData: { multipartFormData in
+                           for postImage in imageList {
+                               if let image = postImage.jpegData(compressionQuality: 1) {
+                                   multipartFormData.append(image, withName: "images", fileName: "\(image).jpeg", mimeType: "image/jpeg")
+                               }
+                           }
 
-                      for (key, value) in parameters {
-                          if let data = value as? String {
-                              multipartFormData.append(data.data(using: .utf8)!, withName: key)
-                          } else if let dataList = value as? [Tag] {
-                              for data in dataList {
-                                  multipartFormData.append(data.content.data(using: .utf8)!, withName: key)
-                              }
-                          }
-                      }
-                  },
-                  to: PostService.baseURL + "\(Global.shared.user?.id ?? "unknown")",
-                  usingThreshold: .init(),
-                  method: .post,
-                  headers: headers,
-                  interceptor: ApiRequestInterceptor())
+                           for (key, value) in parameters {
+                               if let data = value as? String {
+                                   multipartFormData.append(data.data(using: .utf8)!, withName: key)
+                               } else if let dataList = value as? [Tag] {
+                                   for data in dataList {
+                                       multipartFormData.append(data.content.data(using: .utf8)!, withName: key)
+                                   }
+                               }
+                           }
+                       },
+                       to: PostService.baseURL + "\(Global.shared.user?.id ?? "unknown")",
+                       usingThreshold: .init(),
+                       method: .post,
+                       headers: headers)
             .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
                 switch response.result {
                 case .success:
@@ -481,13 +474,12 @@ final class PostService {
             },
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -529,11 +521,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)",
             method: .delete,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -552,11 +543,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/hide",
             method: .post,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -575,11 +565,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/report",
             method: .post,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -604,11 +593,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -632,11 +620,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/hashtags/",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -661,12 +648,11 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/hashtags/\(targetId)",
             method: .get,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -689,12 +675,11 @@ final class PostService {
             "Content-Type": "multipart/form-data; boundary=Boundary-\(UUID().uuidString)",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(targetPostId)/like",
             method: .post,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):

@@ -67,11 +67,10 @@ struct AuthService {
             let data: Me
         }
 
-        AF.request(
+        AFProxy.request(
             AuthService.baseURL + "verify-token",
             method: .post,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let data):

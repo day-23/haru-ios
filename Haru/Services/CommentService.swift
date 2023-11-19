@@ -53,11 +53,10 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/\(targetPostImageId)/comments/recent",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -85,13 +84,12 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/\(targetPostImageId)",
             method: .post,
             parameters: comment,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -137,13 +135,12 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/",
             method: .post,
             parameters: comment,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -189,13 +186,12 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
             method: .patch,
             parameters: comment,
             encoder: JSONParameterEncoder.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -227,13 +223,12 @@ final class CommentService {
             "y": y,
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/comments/",
             method: .patch,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -258,11 +253,10 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
             method: .delete,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -309,13 +303,12 @@ final class CommentService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + userId + "/\(postId)/\(imageId)/comments/all",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -359,13 +352,12 @@ final class CommentService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + userId + "/\(postId)/comments/all",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
