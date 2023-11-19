@@ -47,7 +47,7 @@ struct SignInWithAppleButton: UIViewRepresentable {
                 if let authCodeData = appleIDCredential.authorizationCode,
                    let authCode = String(data: authCodeData, encoding: .utf8)
                 {
-                    AuthService().validateAppleUserWithAuthCode(authCode: authCode) { result in
+                    AuthService.validateAppleUserWithAuthCode(authCode: authCode) { result in
                         switch result {
                         case .success(let data):
                             print("Data: \(data)")
@@ -64,7 +64,7 @@ struct SignInWithAppleButton: UIViewRepresentable {
                                 "refreshToken": data.data.refreshToken
                             ]
 
-                            AuthService().validateUser(headers: headers) { result in
+                            AuthService.validateUser(headers: headers) { result in
                                 switch result {
                                 case .success(let data):
                                     print("UserVerifyResponse: \(data)")

@@ -9,8 +9,6 @@ import Foundation
 import SwiftUI
 
 final class TodoState: ObservableObject {
-    private let todoService = TodoService()
-
     @Published var todoListByTag: [Todo] = []
     @Published var todoListByFlag: [Todo] = []
     @Published var todoListByCompleted: [Todo] = []
@@ -26,7 +24,7 @@ final class TodoState: ObservableObject {
         todo: Request.Todo,
         completion: @escaping (Result<Todo, Error>) -> Void
     ) {
-        todoService.addTodo(todo: todo) { result in
+        TodoService.addTodo(todo: todo) { result in
             switch result {
             case let .success(addedTodo):
                 completion(.success(addedTodo))
@@ -42,7 +40,7 @@ final class TodoState: ObservableObject {
     func fetchTodoListByTag(
         tag: Tag
     ) {
-        todoService.fetchTodoListByTag(tag: tag) { result in
+        TodoService.fetchTodoListByTag(tag: tag) { result in
             switch result {
             case let .success(response):
                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -57,7 +55,7 @@ final class TodoState: ObservableObject {
     }
 
     func fetchTodoListByFlag() {
-        todoService.fetchTodoListByFlag { result in
+        TodoService.fetchTodoListByFlag { result in
             switch result {
             case let .success(success):
                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -70,7 +68,7 @@ final class TodoState: ObservableObject {
     }
 
     func fetchTodoListByCompletedInMain() {
-        todoService.fetchTodoListByCompletedInMain { result in
+        TodoService.fetchTodoListByCompletedInMain { result in
             switch result {
             case let .success(success):
                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -83,7 +81,7 @@ final class TodoState: ObservableObject {
     }
 
     func fetchTodoListByTodayTodoAndUntilToday() {
-        todoService.fetchTodoListByTodayTodoAndUntilToday { result in
+        TodoService.fetchTodoListByTodayTodoAndUntilToday { result in
             switch result {
             case let .success(success):
                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -99,7 +97,7 @@ final class TodoState: ObservableObject {
     }
 
     func fetchTodoListWithoutTag() {
-        todoService.fetchTodoListWithoutTag { result in
+        TodoService.fetchTodoListWithoutTag { result in
             switch result {
             case let .success(success):
                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -112,7 +110,7 @@ final class TodoState: ObservableObject {
     }
 
     func fetchAllTodoList() {
-        todoService.fetchAllTodoList { result in
+        TodoService.fetchAllTodoList { result in
             switch result {
             case let .success(success):
                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -137,7 +135,7 @@ final class TodoState: ObservableObject {
         todo: Request.Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.updateTodo(todoId: todoId,
+        TodoService.updateTodo(todoId: todoId,
                                todo: todo)
         { result in
             switch result {
@@ -157,7 +155,7 @@ final class TodoState: ObservableObject {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.updateTodoWithRepeat(
+        TodoService.updateTodoWithRepeat(
             todoId: todoId,
             todo: todo,
             date: date,
@@ -177,7 +175,7 @@ final class TodoState: ObservableObject {
         todo: Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.updateFlag(todoId: todo.id,
+        TodoService.updateFlag(todoId: todo.id,
                                flag: !todo.flag)
         { result in
             switch result {
@@ -194,7 +192,7 @@ final class TodoState: ObservableObject {
         todo: Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.updateFolded(todoId: todo.id,
+        TodoService.updateFolded(todoId: todo.id,
                                  folded: !todo.folded)
         { result in
             switch result {
@@ -208,7 +206,7 @@ final class TodoState: ObservableObject {
     }
 
     func updateOrderMain() {
-        todoService.updateOrderMain(
+        TodoService.updateOrderMain(
             todoListByFlag: todoListByFlag,
             todoListWithAnyTag: todoListWithAnyTag,
             todoListWithoutTag: todoListWithoutTag,
@@ -217,7 +215,7 @@ final class TodoState: ObservableObject {
     }
 
     func updateOrderHaru() {
-        todoService.updateOrderHaru(
+        TodoService.updateOrderHaru(
             todoListByFlagWithToday: todoListByFlagWithToday,
             todoListByTodayTodo: todoListByTodayTodo,
             todoListByUntilToday: todoListByUntilToday
@@ -225,19 +223,19 @@ final class TodoState: ObservableObject {
     }
 
     func updateOrderFlag() {
-        todoService.updateOrderFlag(
+        TodoService.updateOrderFlag(
             todoListByFlag: todoListByFlag
         )
     }
 
     func updateOrderWithoutTag() {
-        todoService.updateOrderWithoutTag(
+        TodoService.updateOrderWithoutTag(
             todoListWithoutTag: todoListWithoutTag
         )
     }
 
     func updateOrderByTag(tagId: String) {
-        todoService.updateOrderByTag(
+        TodoService.updateOrderByTag(
             tagId: tagId,
             todoListByTag: todoListByTag
         )
@@ -248,7 +246,7 @@ final class TodoState: ObservableObject {
         completed: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.completeTodo(
+        TodoService.completeTodo(
             todoId: todoId,
             completed: completed
         ) { result in
@@ -267,7 +265,7 @@ final class TodoState: ObservableObject {
         completed: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.completeSubTodo(subTodoId: subTodoId,
+        TodoService.completeSubTodo(subTodoId: subTodoId,
                                     completed: completed)
         { result in
             switch result {
@@ -286,7 +284,7 @@ final class TodoState: ObservableObject {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.completeTodoWithRepeat(
+        TodoService.completeTodoWithRepeat(
             todo: todo,
             date: date,
             at: at
@@ -307,7 +305,7 @@ final class TodoState: ObservableObject {
         todoId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.deleteTodo(todoId: todoId) { result in
+        TodoService.deleteTodo(todoId: todoId) { result in
             switch result {
             case let .success(success):
                 completion(.success(success))
@@ -323,7 +321,7 @@ final class TodoState: ObservableObject {
         at: RepeatAt,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.deleteTodoWithRepeat(
+        TodoService.deleteTodoWithRepeat(
             todoId: todoId,
             date: date,
             at: at
@@ -342,7 +340,7 @@ final class TodoState: ObservableObject {
         subTodoId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        todoService.deleteSubTodo(todoId: todoId, subTodoId: subTodoId) { result in
+        TodoService.deleteSubTodo(todoId: todoId, subTodoId: subTodoId) { result in
             switch result {
             case let .success(success):
                 completion(.success(success))

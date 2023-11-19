@@ -9,7 +9,6 @@ import SwiftUI
 
 struct TagDetailView: View {
     @Environment(\.dismiss) var dismissAction
-    private let tagService: TagService = .init()
 
     private let tagId: String
     private let originalContent: String
@@ -108,7 +107,7 @@ struct TagDetailView: View {
         }
         .confirmationDialog("태그를 삭제할까요?", isPresented: $deleteButtonTapped, titleVisibility: .visible) {
             Button("삭제하기", role: .destructive) {
-                tagService.deleteTag(tagId: tagId) { result in
+                TagService.deleteTag(tagId: tagId) { result in
                     switch result {
                     case .success:
                         dismissAction.callAsFunction()
@@ -183,7 +182,7 @@ struct TagDetailView: View {
             }
         }
         .onAppear {
-            tagService.fetchTodoCountByTag(tagId: tagId) { result in
+            TagService.fetchTodoCountByTag(tagId: tagId) { result in
                 switch result {
                 case .success(let data):
                     count = data

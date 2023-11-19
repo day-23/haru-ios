@@ -29,9 +29,11 @@ struct TagService {
         return encoder
     }()
 
+    private init() {}
+
     // MARK: - CREATE API
 
-    func createTag(
+    public static func createTag(
         content: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -61,7 +63,7 @@ struct TagService {
 
     // MARK: - READ API
 
-    func fetchTags(
+    public static func fetchTags(
         completion: @escaping (Result<[Tag], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -82,7 +84,7 @@ struct TagService {
         }
     }
 
-    func fetchTodoCountByTag(
+    public static func fetchTodoCountByTag(
         tagId: String,
         completion: @escaping (Result<Int, Error>) -> Void
     ) {
@@ -92,10 +94,10 @@ struct TagService {
         }
 
         AFProxy.request(
-            Self.baseURL +
+            baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(tagId)/todoCnt",
             method: .get
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case let .success(data):
                 completion(.success(data.data))
@@ -108,7 +110,7 @@ struct TagService {
 
     // MARK: - UPDATE API
 
-    func updateTag(
+    public static func updateTag(
         tagId: String,
         params: Parameters,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -141,7 +143,7 @@ struct TagService {
 
     // MARK: - DELETE API
 
-    func deleteTag(
+    public static func deleteTag(
         tagId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
