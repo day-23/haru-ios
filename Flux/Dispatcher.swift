@@ -7,11 +7,19 @@
 
 import Foundation
 
-final class Dispatcher {
+final class FluxDispatcher {
     private init() {}
-    public static let `default`: Dispatcher = .init()
+    public static let `default`: FluxDispatcher = .init()
 
     private var stores: [String: Any] = [:]
+
+    public func register<T>(store: Store<T>) {
+        if stores.keys.contains(store.id) {
+            return
+        }
+
+        stores[store.id] = store
+    }
 
     public func get<T>(for type: T.Type) -> [Store<T>] {
         var res: [Store<T>] = []
@@ -31,29 +39,24 @@ final class Dispatcher {
                 return store
             }
         }
+
         return nil
     }
 
-    public func register<T>(store: Store<T>) {
-        if stores.keys.contains(store.id) {
-            return
-        }
-
-        stores[store.id] = store
-    }
-
-    public func dispatch<T>(key: String, for type: T.Type) {
+    public func dispatch<T>(key: String, params: [String: Any] = [:], for type: T.Type) {
         for store in get(for: type) {
-            store.update(key: key)
+            store.update(key: key, params: params)
         }
     }
 
-    public func dispatch<T>(key: String, for type: T.Type, id: String) {
-        for store in stores.values {
-            if let store = store as? Store<T>, store.id == id {
-                store.update(key: key)
+    public func dispatch<T>(key: String, params: [String: Any] = [:], id: String, for type: T.Type) {
+        for store in get(for: type) {
+            if store.id == id {
+                store.update(key: key, params: params)
                 return
             }
         }
     }
 }
+
+let Dispatcher = FluxDispatcher.default
