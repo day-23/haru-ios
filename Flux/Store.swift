@@ -7,15 +7,11 @@
 
 import Foundation
 
-final class Store<T> {
+final class Store<T>: ObservableObject {
     typealias Action = (T) -> T
 
-    static func == (lhs: Store<T>, rhs: Store<T>) -> Bool {
-        return lhs.id == rhs.id
-    }
-
     public let id: String
-    private var state: T
+    @Published private(set) var state: T
     private(set) var reducer: [String: Action] = [:]
 
     public func update(key: String) {
