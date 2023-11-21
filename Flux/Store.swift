@@ -7,22 +7,25 @@
 
 import Foundation
 
-final class Store<T>: ObservableObject {
-    typealias Action = (T, [String: Any]) -> T
+typealias Action = Hashable & RawRepresentable
+typealias UpdaterParameters = Any
+typealias Updater<T> = (T, UpdaterParameters) -> T
+typealias Reducer<T, A: Action> = [A: Updater<T>]
 
+final class Store<T, A: Action>: ObservableObject {
     public let id: String
     @Published private(set) var state: T
-    private(set) var reducer: [String: Action] = [:]
+    private(set) var reducer: Reducer<T, A> = [:]
 
-    public func update(key: String, params: [String: Any]) {
-        guard let action = reducer[key] else {
+    public func update(action: A, params: UpdaterParameters) {
+        guard let updater = reducer[action] else {
             return
         }
 
-        state = action(state, params)
+        state = updater(state, params)
     }
 
-    init(id: String = UUID().uuidString, initialState state: T, reducer: [String: Action]) {
+    init(id: String = UUID().uuidString, initialState state: T, reducer: [A: Updater<T>]) {
         self.id = id
         self.state = state
         self.reducer = reducer

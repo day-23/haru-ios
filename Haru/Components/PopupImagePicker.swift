@@ -131,11 +131,12 @@ struct PopupImagePicker: View {
                                 if imagePickerModel.fetchedImages.firstIndex(where: { $0.id == imageAsset.id })
                                     == imagePickerModel.fetchedImages.count - 1
                                 {
-                                    Global.shared.toastMessageContent = "최근 \(min(200, imagePickerModel.fetchedImages.count))개의 사진을 모두 불러 왔습니다."
-                                    Global.shared.toastMessageTheme = .dark
-                                    withAnimation {
-                                        Global.shared.showToastMessage = true
-                                    }
+                                    Dispatcher.dispatch(action: Global.Actions.showToastMessage,
+                                                        params: [
+                                                            "message": "최근 \(min(200, imagePickerModel.fetchedImages.count))개의 사진을 모두 불러 왔습니다.",
+                                                            "theme": Global.ToastMessageTheme.dark,
+                                                        ],
+                                                        storeId: "global", for: Global.self)
                                 }
                             }
                             .contentShape(RoundedRectangle(cornerRadius: 8))

@@ -12,6 +12,15 @@ import UserNotifications
 final class Global: ObservableObject {
     private init() {}
 
+    enum Actions: String {
+        case setIsTabViewActive
+        case setIsFaded
+        case setIsNetworkConnected
+        case setIsLoading
+        case setIsLoggedIn
+        case showToastMessage
+    }
+
     enum ToastMessageTheme {
         case `default`
         case light
@@ -73,6 +82,50 @@ final class Global: ObservableObject {
 
         [Color(0x105C08), Color(0x39972E), Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0)],
 
-        [Color(0x105C08), Color(0x39972E), Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0)]
+        [Color(0x105C08), Color(0x39972E), Color(0x3EDB67), Color(0x55E1B6), Color(0x69FFD0), Color(0x05C5C0)],
     ]
 }
+
+let GlobalReducer: Reducer<Global, Global.Actions> = [
+    .setIsFaded: { curr, value in
+        guard let value = value as? Bool else { return curr }
+        curr.isFaded = value
+        return curr
+    },
+    .setIsLoading: { curr, value in
+        guard let value = value as? Bool else { return curr }
+        curr.isLoading = value
+        return curr
+    },
+    .setIsLoggedIn: { curr, value in
+        guard let value = value as? Bool else { return curr }
+        curr.isLoggedIn = value
+        return curr
+    },
+    .setIsNetworkConnected: { curr, value in
+        guard let value = value as? Bool else { return curr }
+        curr.isNetworkConnected = value
+        return curr
+    },
+    .setIsTabViewActive: { curr, value in
+        guard let value = value as? Bool else { return curr }
+        curr.isTabViewActive = value
+        return curr
+    },
+    .showToastMessage: { curr, params in
+        if curr.showToastMessage {
+            return curr
+        }
+
+        guard let params = params as? [String: Any] else { return curr }
+        guard let message = params["message"] as? String else { return curr }
+        guard let theme = params["theme"] as? Global.ToastMessageTheme else { return curr }
+
+        curr.toastMessageContent = message
+        curr.toastMessageTheme = theme
+        withAnimation {
+            curr.showToastMessage = true
+        }
+        return curr
+    },
+]
