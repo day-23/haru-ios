@@ -281,7 +281,11 @@ struct SignUpView: View {
                     ) { result in
                         switch result {
                         case .success(let response):
-                            Global.shared.user = response
+                            Dispatcher.dispatch(
+                                action: Global.Actions.setUserData,
+                                params: response,
+                                for: Global.self
+                            )
                         case .failure(let error):
                             switch error {
                             case ProfileService.ProfileError.badname:

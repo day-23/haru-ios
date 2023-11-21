@@ -201,7 +201,11 @@ final class UserProfileViewModel: ObservableObject {
 
                     self.user = success
                     // FIXME: Global 변경 되면 수정해주기
-                    Global.shared.user?.user = success
+                    Dispatcher.dispatch(
+                        action: Global.Actions.setUserProfile,
+                        params: success,
+                        for: Global.self
+                    )
                     completion(.success(true))
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")
@@ -214,7 +218,11 @@ final class UserProfileViewModel: ObservableObject {
                 case .success(let success):
                     self.user = success
                     // FIXME: Global 변경 되면 수정해주기
-                    Global.shared.user?.user = success
+                    Dispatcher.dispatch(
+                        action: Global.Actions.setUserProfile,
+                        params: success,
+                        for: Global.self
+                    )
                     completion(.success(true))
                 case .failure(let failure):
                     print("[Debug] \(failure) \(#fileID) \(#function)")

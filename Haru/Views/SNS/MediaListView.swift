@@ -86,9 +86,13 @@ struct MediaListView: View {
                                    !postVM.isEnd
                                 {
                                     postVM.isEnd = true
-                                    Global.shared.toastMessageContent = "최근 게시글을 모두 불러왔습니다."
+
                                     withAnimation {
-                                        Global.shared.showToastMessage = true
+                                        Dispatcher.dispatch(
+                                            action: Global.Actions.showToastMessage,
+                                            params: ["message": "최근 게시글을 모두 불러왔습니다."],
+                                            for: Global.self
+                                        )
                                     }
                                 }
                             })

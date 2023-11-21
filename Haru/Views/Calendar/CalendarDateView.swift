@@ -32,14 +32,14 @@ struct CalendarDateView: View {
         let _isOptionModalVisible: Binding<Bool> = .init {
             self.isOptionModalVisible && self.global.isFaded
         } set: {
-            Global.shared.isFaded = $0
+            Dispatcher.dispatch(action: Global.Actions.setIsFaded, params: $0, for: Global.self)
             self.isOptionModalVisible = $0
         }
         
         let _isDayModalVisible: Binding<Bool> = .init {
             self.isDayModalVisible && self.global.isFaded
         } set: {
-            Global.shared.isFaded = $0
+            Dispatcher.dispatch(action: Global.Actions.setIsFaded, params: $0, for: Global.self)
             self.isDayModalVisible = $0
             if !self.isDayModalVisible {
                 self.calendarVM.getCurMonthSchList(self.calendarVM.dateList)

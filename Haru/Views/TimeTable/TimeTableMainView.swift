@@ -34,7 +34,13 @@ struct TimeTableMainView: View {
     var body: some View {
         let isPopupVisible: Binding<Bool> = .init {
             Global.shared.isFaded
-        } set: { Global.shared.isFaded = $0 }
+        } set: {
+            Dispatcher.dispatch(
+                action: Global.Actions.setIsFaded,
+                params: $0,
+                for: Global.self
+            )
+        }
 
         return ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {

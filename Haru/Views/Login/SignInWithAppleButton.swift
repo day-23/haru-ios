@@ -70,7 +70,11 @@ struct SignInWithAppleButton: UIViewRepresentable {
                                     print("UserVerifyResponse: \(data)")
 
                                     // Save the ID and new access token into Keychain
-                                    Global.shared.user = data
+                                    Dispatcher.dispatch(
+                                        action: Global.Actions.setUserData,
+                                        params: data,
+                                        for: Global.self
+                                    )
                                     _ = KeychainService.save(key: "accessToken", data: data.accessToken.data(using: .utf8)!)
                                     DispatchQueue.main.async {
                                         self.parent.isLoggedIn = true // Set isLoggedIn to true on successful login

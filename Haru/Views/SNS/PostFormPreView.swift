@@ -185,14 +185,20 @@ struct PostFormPreView: View {
                                 case .failure(let error):
                                     switch error {
                                     case PostService.PostError.badword:
-                                        Global.shared.toastMessageContent = "게시글에 부적절한 단어가 포함되어 있습니다."
                                         withAnimation {
-                                            Global.shared.showToastMessage = true
+                                            Dispatcher.dispatch(
+                                                action: Global.Actions.showToastMessage,
+                                                params: ["message": "게시글에 부적절한 단어가 포함되어 있습니다."],
+                                                for: Global.self
+                                            )
                                         }
                                     case PostService.PostError.tooManyPost:
-                                        Global.shared.toastMessageContent = "게시글을 너무 자주 작성할 수 없습니다."
                                         withAnimation {
-                                            Global.shared.showToastMessage = true
+                                            Dispatcher.dispatch(
+                                                action: Global.Actions.showToastMessage,
+                                                params: ["message": "게시글을 너무 자주 작성할 수 없습니다."],
+                                                for: Global.self
+                                            )
                                         }
                                     default:
                                         break
@@ -212,14 +218,20 @@ struct PostFormPreView: View {
                                     case .failure(let error):
                                         switch error {
                                         case PostService.PostError.badword:
-                                            Global.shared.toastMessageContent = "게시글에 부적절한 단어가 포함되어 있습니다."
                                             withAnimation {
-                                                Global.shared.showToastMessage = true
+                                                Dispatcher.dispatch(
+                                                    action: Global.Actions.showToastMessage,
+                                                    params: ["message": "게시글에 부적절한 단어가 포함되어 있습니다."],
+                                                    for: Global.self
+                                                )
                                             }
                                         case PostService.PostError.tooManyPost:
-                                            Global.shared.toastMessageContent = "게시글을 너무 자주 작성할 수 없습니다."
                                             withAnimation {
-                                                Global.shared.showToastMessage = true
+                                                Dispatcher.dispatch(
+                                                    action: Global.Actions.showToastMessage,
+                                                    params: ["message": "게시글을 너무 자주 작성할 수 없습니다."],
+                                                    for: Global.self
+                                                )
                                             }
                                         default:
                                             break
@@ -228,8 +240,13 @@ struct PostFormPreView: View {
                                     }
                                 }
                             } else {
-                                // TODO: 토스트 메세지로 템플릿 이미지를 못불러왔다고 알려주기
-                                print("문제 있음")
+                                withAnimation {
+                                    Dispatcher.dispatch(
+                                        action: Global.Actions.showToastMessage,
+                                        params: ["message": "게시글을 불러오지 못하고 있습니다."],
+                                        for: Global.self
+                                    )
+                                }
                             }
                         }
                     } label: {

@@ -230,7 +230,11 @@ struct CalendarDayDetailView: View {
         )
         .onChange(of: focused) { _ in
             withAnimation {
-                Global.shared.isTabViewActive.toggle()
+                Dispatcher.dispatch(
+                    action: Global.Actions.setIsTabViewActive,
+                    params: !Global.shared.isTabViewActive,
+                    for: Global.self
+                )
             }
         }
     }
