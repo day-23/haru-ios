@@ -936,10 +936,15 @@ struct CommentView: View, KeyboardReadable {
                 case .failure(let error):
                     switch error {
                     case CommentService.CommentError.badword:
-                        Global.shared.toastMessageTheme = .light
-                        Global.shared.toastMessageContent = "댓글에 부적절한 단어가 포함되어 있습니다."
                         withAnimation {
-                            Global.shared.showToastMessage = true
+                            Dispatcher.dispatch(
+                                action: Global.Actions.showToastMessage,
+                                params: [
+                                    "message": "댓글에 부적절한 단어가 포함되어 있습니다.",
+                                    "theme": Global.ToastMessageTheme.light
+                                ],
+                                for: Global.self
+                            )
                         }
                     default:
                         break
@@ -963,10 +968,15 @@ struct CommentView: View, KeyboardReadable {
                 case .failure(let error):
                     switch error {
                     case CommentService.CommentError.badword:
-                        Global.shared.toastMessageTheme = .light
-                        Global.shared.toastMessageContent = "댓글에 부적절한 단어가 포함되어 있습니다."
                         withAnimation {
-                            Global.shared.showToastMessage = true
+                            Dispatcher.dispatch(
+                                action: Global.Actions.showToastMessage,
+                                params: [
+                                    "message": "댓글에 부적절한 단어가 포함되어 있습니다.",
+                                    "theme": Global.ToastMessageTheme.light
+                                ],
+                                for: Global.self
+                            )
                         }
                     default:
                         break

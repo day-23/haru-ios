@@ -78,7 +78,10 @@ struct SettingView: View {
                             titleVisibility: .visible
                         ) {
                             Button("로그아웃", role: .destructive) {
-                                Global.shared.user = nil
+                                Dispatcher.dispatch(
+                                    action: Global.Actions.logout,
+                                    for: Global.self
+                                )
                                 KeychainService.logout()
                                 AlarmHelper.removeAllNotification()
                                 self.isLoggedIn = false

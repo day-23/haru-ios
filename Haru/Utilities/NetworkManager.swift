@@ -36,9 +36,9 @@ final class NetworkManager {
 
                 if self?.isConnected == true {
                     // 네트워크 연결 OK
-                    Global.shared.isNetworkConnected = true
+                    Dispatcher.dispatch(action: Global.Actions.setIsNetworkConnected, params: true, for: Global.self)
                 } else {
-                    Global.shared.isNetworkConnected = false
+                    Dispatcher.dispatch(action: Global.Actions.setIsNetworkConnected, params: false, for: Global.self)
                 }
             }
         }

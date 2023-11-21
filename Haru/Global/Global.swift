@@ -19,6 +19,9 @@ final class Global: ObservableObject {
         case setIsLoading
         case setIsLoggedIn
         case showToastMessage
+        case setUserProfile
+        case setUserData
+        case logout
     }
 
     enum ToastMessageTheme {
@@ -119,13 +122,28 @@ let GlobalReducer: Reducer<Global, Global.Actions> = [
 
         guard let params = params as? [String: Any] else { return curr }
         guard let message = params["message"] as? String else { return curr }
-        guard let theme = params["theme"] as? Global.ToastMessageTheme else { return curr }
+
+        if let theme = params["theme"] as? Global.ToastMessageTheme {
+            curr.toastMessageTheme = theme
+        }
 
         curr.toastMessageContent = message
-        curr.toastMessageTheme = theme
-        withAnimation {
-            curr.showToastMessage = true
-        }
+        curr.showToastMessage = true
+
+        return curr
+    },
+    .setUserProfile: { curr, value in
+        guard let user = value as? User else { return curr }
+        curr.user?.user = user
+        return curr
+    },
+    .setUserData: { curr, value in
+        guard let user = value as? Me else { return curr }
+        curr.user = user
+        return curr
+    },
+    .logout: { curr, _ in
+        curr.user = nil
         return curr
     },
 ]

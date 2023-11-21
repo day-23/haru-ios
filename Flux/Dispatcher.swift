@@ -21,7 +21,7 @@ final class FluxDispatcher {
         stores[store.id] = store
     }
 
-    public func unregister(id: String) {
+    public func unregister(storeId id: String) {
         stores.removeValue(forKey: id)
     }
 

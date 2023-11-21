@@ -121,7 +121,11 @@ struct TagManageView: View, KeyboardReadable {
         )
         .onReceive(keyboardEventPublisher) { value in
             isKeyboardUp = value
-            Global.shared.isTabViewActive = !isKeyboardUp
+            Dispatcher.dispatch(
+                action: Global.Actions.setIsTabViewActive,
+                params: !isKeyboardUp,
+                for: Global.self
+            )
         }
     }
 }
