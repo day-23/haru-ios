@@ -12,6 +12,8 @@ struct CommentView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismissAction
     let deviceSize = UIScreen.main.bounds.size
 
+    @StateObject var commentFormViewModel: CommentFormViewModel = .init()
+
     @Binding var post: Post
 
     var isTemplate: Bool = false
@@ -51,6 +53,7 @@ struct CommentView: View, KeyboardReadable {
         return result
     }
 
+    // commentView에서 사용하는 속성
     @State var isCommentWriting: Bool = false // 댓글을 작성 중인가
     @State var isCommentDeleting: Bool = false // 댓글을 삭제 중인가 (자신이 작성한 댓글)
     @State var isCommentEditing: Bool = false // 댓글을 수정 중인가 (본인 게시물에서만 가능)
@@ -62,6 +65,7 @@ struct CommentView: View, KeyboardReadable {
 
     @State var cancelEditing: Bool = false
     @State var confirmEditing: Bool = false
+    @State var overHide: Bool = false
 
     @State var textRect = CGRect()
 
@@ -77,25 +81,6 @@ struct CommentView: View, KeyboardReadable {
 
     @State var hideCommentTarget: Post.Comment?
     @State var delCommentTarget: Post.Comment?
-
-    // 댓글 작성에 필요한 필드
-    @State var content: String = ""
-    @State var x: Double?
-    @State var y: Double?
-
-    @State var startingX: CGFloat?
-    @State var startingY: CGFloat?
-
-    // 댓글 편집에 필요한 필드
-    @State var textSize: [String: CGSize] = [:]
-    @State var draggingList: [String: Bool] = [:]
-    @State var xList: [String: Double] = [:]
-    @State var yList: [String: Double] = [:]
-
-    @State var startingXList: [String: CGFloat] = [:]
-    @State var startingYList: [String: CGFloat] = [:]
-
-    @State var overHide: Bool = false
 
     var isMine: Bool // 해당 게시물이 내 게시물인지 남의 게시물인지
 
@@ -143,10 +128,10 @@ struct CommentView: View, KeyboardReadable {
                                 {
                                     return
                                 }
-                                x = UIScreen.main.bounds.size.width / 2
-                                y = UIScreen.main.bounds.size.width / 2
-                                startingX = UIScreen.main.bounds.size.width / 2
-                                startingY = UIScreen.main.bounds.size.width / 2
+                                commentFormViewModel.x = UIScreen.main.bounds.size.width / 2
+                                commentFormViewModel.y = UIScreen.main.bounds.size.width / 2
+                                commentFormViewModel.startingX = UIScreen.main.bounds.size.width / 2
+                                commentFormViewModel.startingY = UIScreen.main.bounds.size.width / 2
 
                                 withAnimation(.linear(duration: 0.1)) {
                                     isCommentWriting = true
@@ -251,7 +236,7 @@ struct CommentView: View, KeyboardReadable {
                     }
                 } else {
                     HStack {
-                        Text(content == "" ? "댓글을 입력해주세요" : content)
+                        Text(commentFormViewModel.content == "" ? "댓글을 입력해주세요" : commentFormViewModel.content)
                             .lineLimit(4)
                             .font(.pretendard(size: 14, weight: .bold))
                             .padding(.horizontal, 8)
@@ -442,7 +427,7 @@ struct CommentView: View, KeyboardReadable {
                             .renderingMode(.template)
                             .frame(width: 24, height: 24)
                             .foregroundColor(Color(0xFDFDFD))
-                    }.disabled(isCommentWriting && content == "")
+                    }.disabled(isCommentWriting && commentFormViewModel.content == "")
                 }
             }
         }
@@ -451,7 +436,7 @@ struct CommentView: View, KeyboardReadable {
                             titleVisibility: .visible)
         {
             Button("삭제하기", role: .destructive) {
-                content = ""
+                commentFormViewModel.content = ""
                 isCommentWriting = false
             }
         }
@@ -510,20 +495,20 @@ struct CommentView: View, KeyboardReadable {
                     overDelete = false
                 }
 
-                x = value.location.x
-                y = value.location.y
+                commentFormViewModel.x = value.location.x
+                commentFormViewModel.y = value.location.y
 
                 // 범위 막기
                 if value.location.y < 10 {
-                    y = CGFloat(10) + textRect.height / 2
+                    commentFormViewModel.y = CGFloat(10) + textRect.height / 2
                 }
 
                 if value.location.x - textRect.width / 2 <= 10 {
-                    x = textRect.width / 2 + CGFloat(10)
+                    commentFormViewModel.x = textRect.width / 2 + CGFloat(10)
                 }
 
                 if value.location.x + textRect.width / 2 >= sz - 10 {
-                    x = CGFloat(sz - 10) - textRect.width / 2
+                    commentFormViewModel.x = CGFloat(sz - 10) - textRect.width / 2
                 }
             }
             .onEnded { value in
@@ -539,7 +524,7 @@ struct CommentView: View, KeyboardReadable {
                 }
 
                 if value.location.y + textRect.height / 2 >= sz - 10 {
-                    y = CGFloat(sz - 10) - textRect.height / 2
+                    commentFormViewModel.y = CGFloat(sz - 10) - textRect.height / 2
                 }
 
                 withAnimation {
@@ -615,10 +600,10 @@ struct CommentView: View, KeyboardReadable {
                     isCommentDeleting = true
                     deleteWriting = true
                 } else {
-                    x = deviceSize.width / 2
-                    y = deviceSize.width / 2
-                    startingX = deviceSize.width / 2
-                    startingY = deviceSize.width / 2
+                    commentFormViewModel.x = deviceSize.width / 2
+                    commentFormViewModel.y = deviceSize.width / 2
+                    commentFormViewModel.startingX = deviceSize.width / 2
+                    commentFormViewModel.startingY = deviceSize.width / 2
                     withAnimation(.linear(duration: 0.1)) {
                         isCommentWriting = true
                     }
@@ -626,8 +611,8 @@ struct CommentView: View, KeyboardReadable {
                 }
             }
 
-            if isCommentWriting, let x, let y {
-                TextFieldDynamicWidth(title: "        ", text: $content, textRect: $textRect) { _ in
+            if isCommentWriting, let x = commentFormViewModel.x, let y = commentFormViewModel.y {
+                TextFieldDynamicWidth(title: "        ", text: $commentFormViewModel.content, textRect: $textRect) { _ in
                     // logic
                 } onCommit: {
                     // logic
@@ -648,9 +633,9 @@ struct CommentView: View, KeyboardReadable {
                 .simultaneousGesture(
                     combined
                 )
-                .onChange(of: content) { value in
+                .onChange(of: commentFormViewModel.content) { value in
                     if value.count > 25 {
-                        content = String(
+                        commentFormViewModel.content = String(
                             value[
                                 value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
                             ]
@@ -658,7 +643,7 @@ struct CommentView: View, KeyboardReadable {
                     }
 
                     if value.last == "\n" {
-                        content = String(
+                        commentFormViewModel.content = String(
                             value[
                                 value.startIndex ..< value.index(value.endIndex, offsetBy: -1)
                             ]
@@ -681,10 +666,10 @@ struct CommentView: View, KeyboardReadable {
             ForEach(commentList[postPageNum]) { comment in
                 let longPress = LongPressGesture(minimumDuration: 0.1)
                     .onEnded { _ in
-                        startingXList[comment.id] = CGFloat(comment.x)
-                        startingYList[comment.id] = CGFloat(comment.y)
+                        commentFormViewModel.startingXList[comment.id] = CGFloat(comment.x)
+                        commentFormViewModel.startingYList[comment.id] = CGFloat(comment.y)
                         withAnimation {
-                            draggingList[comment.id] = true
+                            commentFormViewModel.draggingList[comment.id] = true
                             HapticManager.instance.impact(style: .heavy)
                         }
                     }
@@ -704,20 +689,20 @@ struct CommentView: View, KeyboardReadable {
                             overHide = false
                         }
 
-                        xList[comment.id] = value.location.x
-                        yList[comment.id] = value.location.y
+                        commentFormViewModel.xList[comment.id] = value.location.x
+                        commentFormViewModel.yList[comment.id] = value.location.y
 
                         // 범위
                         if value.location.y < 10 {
-                            yList[comment.id] = CGFloat(10) + ((textSize[comment.id]?.height ?? 0) / 2)
+                            commentFormViewModel.yList[comment.id] = CGFloat(10) + ((commentFormViewModel.textSize[comment.id]?.height ?? 0) / 2)
                         }
 
-                        if value.location.x - ((textSize[comment.id]?.width ?? 0) / 2) <= 10 {
-                            xList[comment.id] = CGFloat(10) + ((textSize[comment.id]?.width ?? 0) / 2)
+                        if value.location.x - ((commentFormViewModel.textSize[comment.id]?.width ?? 0) / 2) <= 10 {
+                            commentFormViewModel.xList[comment.id] = CGFloat(10) + ((commentFormViewModel.textSize[comment.id]?.width ?? 0) / 2)
                         }
 
-                        if value.location.x + ((textSize[comment.id]?.width ?? 0) / 2) >= sz - 10 {
-                            xList[comment.id] = CGFloat(sz - 10) - ((textSize[comment.id]?.width ?? 0) / 2)
+                        if value.location.x + ((commentFormViewModel.textSize[comment.id]?.width ?? 0) / 2) >= sz - 10 {
+                            commentFormViewModel.xList[comment.id] = CGFloat(sz - 10) - ((commentFormViewModel.textSize[comment.id]?.width ?? 0) / 2)
                         }
                     }
                     .onEnded { value in
@@ -727,11 +712,11 @@ struct CommentView: View, KeyboardReadable {
                             overHide = false
                         }
 
-                        if value.location.y + ((textSize[comment.id]?.height ?? 0) / 2) >= sz - 10 {
-                            yList[comment.id] = CGFloat(sz - 10) - ((textSize[comment.id]?.height ?? 0) / 2)
+                        if value.location.y + ((commentFormViewModel.textSize[comment.id]?.height ?? 0) / 2) >= sz - 10 {
+                            commentFormViewModel.yList[comment.id] = CGFloat(sz - 10) - ((commentFormViewModel.textSize[comment.id]?.height ?? 0) / 2)
                         }
                         withAnimation {
-                            draggingList[comment.id] = false
+                            commentFormViewModel.draggingList[comment.id] = false
                         }
                     }
 
@@ -748,11 +733,11 @@ struct CommentView: View, KeyboardReadable {
                     .cornerRadius(9)
                     .background(ViewGeometry())
                     .onPreferenceChange(ViewSizeKey.self) {
-                        textSize[comment.id] = $0
+                        commentFormViewModel.textSize[comment.id] = $0
                     }
                     .position(
-                        x: isCommentEditing ? (xList[comment.id] ?? comment.x)! : comment.x,
-                        y: isCommentEditing ? (yList[comment.id] ?? comment.y)! : comment.y
+                        x: isCommentEditing ? (commentFormViewModel.xList[comment.id] ?? comment.x)! : comment.x,
+                        y: isCommentEditing ? (commentFormViewModel.yList[comment.id] ?? comment.y)! : comment.y
                     )
                     .foregroundColor(
                         isCommentDeleting && alreadyComment[postPageNum]?.0.id == comment.id ?
@@ -854,16 +839,16 @@ struct CommentView: View, KeyboardReadable {
             }
         }
         .onChange(of: postPageNum, perform: { _ in
-            xList = [:]
-            yList = [:]
-            startingXList = [:]
-            startingYList = [:]
-            draggingList = [:]
-            content = ""
-            x = nil
-            y = nil
-            startingX = nil
-            startingY = nil
+            commentFormViewModel.xList = [:]
+            commentFormViewModel.yList = [:]
+            commentFormViewModel.startingXList = [:]
+            commentFormViewModel.startingYList = [:]
+            commentFormViewModel.draggingList = [:]
+            commentFormViewModel.content = ""
+            commentFormViewModel.x = nil
+            commentFormViewModel.y = nil
+            commentFormViewModel.startingX = nil
+            commentFormViewModel.startingY = nil
         })
         .background(Color(0xFDFDFD))
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
@@ -895,23 +880,33 @@ struct CommentView: View, KeyboardReadable {
         .cornerRadius(10)
     }
 
+    // MARK: - CommentView를 위한 메서드
+
     func fetchCommentList() {
         for (idx, postImage) in postImageList.enumerated() {
-            CommentService.fetchImageComment(
-                targetPostId: postId,
-                targetPostImageId: postImage.id
-            ) { result in
-                switch result {
-                case .success(let success):
-                    self.commentList[idx] = success.compactMap {
-                        Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
-                    }
-                case .failure(let failure):
-                    print("[Debug] \(failure)")
-                    print("\(#file) \(#function)")
-                    self.commentList[idx] = postImage.comments.compactMap {
-                        Post.Comment(id: $0.id, user: $0.user, content: $0.content, x: $0.x / 100 * deviceSize.width, y: $0.y / 100 * deviceSize.width, createdAt: $0.createdAt)
-                    }
+            commentFormViewModel.fetchImageComment(targetPostId: postId, targetPostImageId: postImage.id) { success in
+                self.commentList[idx] = success.compactMap {
+                    Post.Comment(
+                        id: $0.id,
+                        user: $0.user,
+                        content: $0.content,
+                        x: $0.x / 100 * deviceSize.width,
+                        y: $0.y / 100 * deviceSize.width,
+                        createdAt: $0.createdAt
+                    )
+                }
+            } failureAction: { failure in
+                print("[Debug] \(failure)")
+                print("\(#file) \(#function)")
+                self.commentList[idx] = postImage.comments.compactMap {
+                    Post.Comment(
+                        id: $0.id,
+                        user: $0.user,
+                        content: $0.content,
+                        x: $0.x / 100 * deviceSize.width,
+                        y: $0.y / 100 * deviceSize.width,
+                        createdAt: $0.createdAt
+                    )
                 }
             }
         }
@@ -919,148 +914,89 @@ struct CommentView: View, KeyboardReadable {
 
     func createComment() {
         if !isTemplate {
-            CommentService.createComment(
+            commentFormViewModel.createComment(
                 targetPostId: postId,
-                targetPostImageId: postImageList[postPageNum].id,
-                comment: Request.Comment(content: content, x: x, y: y)
-            ) { result in
-                switch result {
-                case .success:
-                    content = ""
-                    x = nil
-                    y = nil
-                    isCommentWriting = false
-                    fetchCommentList()
-
-                    post.isCommented = true
-                case .failure(let error):
-                    switch error {
-                    case CommentService.CommentError.badword:
-                        withAnimation {
-                            Dispatcher.dispatch(
-                                action: Global.Actions.showToastMessage,
-                                params: [
-                                    "message": "댓글에 부적절한 단어가 포함되어 있습니다.",
-                                    "theme": Global.ToastMessageTheme.light
-                                ],
-                                for: Global.self
-                            )
-                        }
-                    default:
-                        break
+                targetPostImageId: postImageList[postPageNum].id
+            ) {
+                isCommentWriting = false
+                fetchCommentList()
+                post.isCommented = true
+            } failureAction: { error in
+                switch error {
+                case CommentService.CommentError.badword:
+                    withAnimation {
+                        Dispatcher.dispatch(
+                            action: Global.Actions.showToastMessage,
+                            params: [
+                                "message": "댓글에 부적절한 단어가 포함되어 있습니다.",
+                                "theme": Global.ToastMessageTheme.light
+                            ],
+                            for: Global.self
+                        )
                     }
+                default:
+                    break
                 }
             }
         } else {
-            CommentService.createCommentTemplate(
-                targetPostId: postId,
-                comment: Request.Comment(content: content, x: x, y: y)
-            ) { result in
-                switch result {
-                case .success:
-                    content = ""
-                    x = nil
-                    y = nil
-                    isCommentWriting = false
-
-                    fetchCommentList()
-                    post.isCommented = true
-                case .failure(let error):
-                    switch error {
-                    case CommentService.CommentError.badword:
-                        withAnimation {
-                            Dispatcher.dispatch(
-                                action: Global.Actions.showToastMessage,
-                                params: [
-                                    "message": "댓글에 부적절한 단어가 포함되어 있습니다.",
-                                    "theme": Global.ToastMessageTheme.light
-                                ],
-                                for: Global.self
-                            )
-                        }
-                    default:
-                        break
+            commentFormViewModel.createCommentTemplate(targetPostId: postId) {
+                isCommentEditing = false
+                fetchCommentList()
+                post.isCommented = true
+            } failureAction: { error in
+                switch error {
+                case CommentService.CommentError.badword:
+                    withAnimation {
+                        Dispatcher.dispatch(
+                            action: Global.Actions.showToastMessage,
+                            params: [
+                                "message": "댓글에 부적절한 단어가 포함되어 있습니다.",
+                                "theme": Global.ToastMessageTheme.light
+                            ],
+                            for: Global.self
+                        )
                     }
+                default:
+                    break
                 }
             }
         }
     }
 
     func updateComment() {
-        let targetCommentIdList = Array(xList.keys)
-        var xList_ = [Double]()
-        var yList_ = [Double]()
-        for key in targetCommentIdList {
-            let x = (xList[key] ?? 190) / UIScreen.main.bounds.size.width * 100
-            let y = (yList[key] ?? 190) / UIScreen.main.bounds.size.width * 100
-            xList_.append(x)
-            yList_.append(y)
-        }
-
-        CommentService.updateCommentList(
-            targetPostId: postId,
-            targetCommentIdList: targetCommentIdList,
-            xList: xList_,
-            yList: yList_
-        ) { result in
-            switch result {
-            case .success:
-                xList = [:]
-                yList = [:]
-                startingXList = [:]
-                startingYList = [:]
-                draggingList = [:]
-                isCommentEditing = false
-
-                fetchCommentList()
-            case .failure:
-                print("실패!")
-            }
+        commentFormViewModel.updateCommentList(targetPostId: postId) {
+            isCommentEditing = false
+            fetchCommentList()
+        } failureAction: {
+            print("실패!")
         }
     }
 
     func updateCommentHide(target: Post.Comment) {
-        let request = Request.Comment(isPublic: false)
-
-        CommentService.updateComment(
-            targetUserId: target.user.id,
-            targetCommentId: target.id,
-            comment: request
-        ) { result in
-            switch result {
-            case .success:
-                fetchCommentList()
-                hideCommentModalVis = false
-                hideCommentTarget = nil
-            case .failure(let failure):
-                print("[Debug] \(failure) \(#fileID) \(#function)")
-            }
+        commentFormViewModel.updateComment(target: target) {
+            self.fetchCommentList()
+            self.hideCommentModalVis = false
+            self.hideCommentTarget = nil
+        } failureAction: { failure in
+            print("[Debug] \(failure) \(#fileID) \(#function)")
         }
     }
 
     func deleteComment() {
-        if let target = delCommentTarget {
-            CommentService.deleteComment(
-                targetUserId: target.user.id,
-                targetCommentId: target.id
-            ) { result in
-                switch result {
-                case .success:
-                    fetchCommentList()
-                    post.isCommented = false
-                case .failure(let failure):
-                    print("[Debug] \(failure)")
-                }
-            }
+        guard let target = delCommentTarget else {
+            return
+        }
+
+        commentFormViewModel.deleteComment(target: target) {
+            fetchCommentList()
+            post.isCommented = false
+        } failureAction: { failure in
+            print("[Debug] \(failure)")
         }
     }
 
     func clearEditing() {
-        xList = [:]
-        yList = [:]
-        startingXList = [:]
-        startingYList = [:]
-        draggingList = [:]
+        commentFormViewModel.clearEditing()
         isCommentEditing = false
     }
 }
