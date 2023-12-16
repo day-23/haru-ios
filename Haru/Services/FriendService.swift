@@ -35,7 +35,9 @@ final class FriendService {
         return encoder
     }()
     
-    func fetchFriend(
+    private init() {}
+    
+    public static func fetchFriend(
         userId: String,
         page: Int,
         completion: @escaping (Result<([FriendUser], Post.Pagination), Error>) -> Void
@@ -54,13 +56,12 @@ final class FriendService {
             "page": page,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(userId)",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
@@ -71,7 +72,7 @@ final class FriendService {
         }
     }
     
-    func fetchRequestFriend(
+    public static func fetchRequestFriend(
         userId: String,
         page: Int,
         completion: @escaping (Result<([FriendUser], Post.Pagination), Error>) -> Void
@@ -90,13 +91,12 @@ final class FriendService {
             "page": page,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + "\(userId)" + "/request",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case .success(let response):
@@ -107,7 +107,7 @@ final class FriendService {
         }
     }
     
-    func requestFriend(
+    public static func requestFriend(
         acceptorId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -119,13 +119,12 @@ final class FriendService {
             "acceptorId": acceptorId,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/request",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .response { response in
             switch response.result {
@@ -138,7 +137,7 @@ final class FriendService {
     }
     
     // requesterId => 친구 신청 요청을 보낸 사용자
-    func acceptRequestFriend(
+    public static func acceptRequestFriend(
         requesterId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -150,13 +149,12 @@ final class FriendService {
             "requesterId": requesterId,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/accept",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -167,7 +165,7 @@ final class FriendService {
         }
     }
     
-    func cancelRequestFriend(
+    public static func cancelRequestFriend(
         acceptorId: String,
         isRefuse: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -183,13 +181,12 @@ final class FriendService {
             "acceptorId": acceptor,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + requester + "/request",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .response { response in
             switch response.result {
@@ -201,7 +198,7 @@ final class FriendService {
         }
     }
     
-    func deleteFriend(
+    public static func deleteFriend(
         friendId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -213,13 +210,12 @@ final class FriendService {
             "friendId": friendId,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .response { response in
             switch response.result {
@@ -231,7 +227,7 @@ final class FriendService {
         }
     }
     
-    func blockFriend(
+    public static func blockFriend(
         blockUserId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -243,13 +239,12 @@ final class FriendService {
             "blockUserId": blockUserId,
         ]
         
-        AF.request(
+        AFProxy.request(
             FriendService.baseURL + (Global.shared.user?.id ?? "unknown") + "/block",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .response { response in
             switch response.result {

@@ -39,7 +39,9 @@ final class CommentService {
         return encoder
     }()
 
-    func fetchImageComment(
+    private init() {}
+
+    public static func fetchImageComment(
         targetPostId: String,
         targetPostImageId: String,
         completion: @escaping (Result<[Post.Comment], Error>) -> Void
@@ -53,11 +55,10 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/\(targetPostImageId)/comments/recent",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -70,7 +71,7 @@ final class CommentService {
     }
 
     // 이미지 게시물에 댓글 작성
-    func createComment(
+    public static func createComment(
         targetPostId: String,
         targetPostImageId: String,
         comment: Request.Comment,
@@ -85,13 +86,12 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/\(targetPostImageId)",
             method: .post,
             parameters: comment,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -123,7 +123,7 @@ final class CommentService {
     }
 
     // 템플릿 게시물에 댓글 작성
-    func createCommentTemplate(
+    public static func createCommentTemplate(
         targetPostId: String,
         comment: Request.Comment,
         completion: @escaping (Result<Post.Comment, Error>) -> Void
@@ -137,13 +137,12 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/",
             method: .post,
             parameters: comment,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -175,7 +174,7 @@ final class CommentService {
     }
 
     // 이미지 게시물의 댓글 수정 (ver.1에서는 기능 사용 안함)
-    func updateComment(
+    public static func updateComment(
         targetUserId: String,
         targetCommentId: String,
         comment: Request.Comment,
@@ -189,13 +188,12 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
             method: .patch,
             parameters: comment,
             encoder: JSONParameterEncoder.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -206,7 +204,7 @@ final class CommentService {
         }
     }
 
-    func updateCommentList(
+    public static func updateCommentList(
         targetPostId: String,
         targetCommentIdList: [String],
         xList: [Double],
@@ -227,13 +225,12 @@ final class CommentService {
             "y": y,
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(targetPostId)/comments/",
             method: .patch,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -245,7 +242,7 @@ final class CommentService {
         }
     }
 
-    func deleteComment(
+    public static func deleteComment(
         targetUserId: String,
         targetCommentId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -258,11 +255,10 @@ final class CommentService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + "\(targetUserId)/\(targetCommentId)",
             method: .delete,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):
@@ -275,7 +271,7 @@ final class CommentService {
 
     // MARK: - 댓글 리스트용 api
 
-    func fetchTargetImageComment(
+    public static func fetchTargetImageComment(
         userId: String,
         postId: String,
         imageId: String,
@@ -309,13 +305,12 @@ final class CommentService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + userId + "/\(postId)/\(imageId)/comments/all",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -326,7 +321,7 @@ final class CommentService {
         }
     }
 
-    func fetchTargetTemplateComment(
+    public static func fetchTargetTemplateComment(
         userId: String,
         postId: String,
         page: Int,
@@ -359,13 +354,12 @@ final class CommentService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             CommentService.baseURL + userId + "/\(postId)/comments/all",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):

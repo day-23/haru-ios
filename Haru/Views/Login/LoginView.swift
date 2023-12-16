@@ -73,35 +73,42 @@ struct LoginView: View {
                             .background(Color(0xfdfdfd))
                             .cornerRadius(12)
                             .onTapGesture {
-                                Global.shared.toastMessageContent = "하루 애플리케이션을 둘러보세요"
                                 withAnimation {
-                                    Global.shared.showToastMessage = true
+                                    Dispatcher.dispatch(
+                                        action: Global.Actions.showToastMessage,
+                                        params: ["message": "하루 애플리케이션을 둘러보세요"],
+                                        for: Global.self
+                                    )
                                 }
 
-                                Global.shared.user = Me(
-                                    user: User(
-                                        id: "guest",
-                                        name: "GUEST",
-                                        introduction: "게스트 계정입니다.",
-                                        postCount: 0,
-                                        friendCount: 0,
-                                        friendStatus: 0,
-                                        isPublicAccount: true
+                                Dispatcher.dispatch(
+                                    action: Global.Actions.setUserData,
+                                    params: Me(
+                                        user: User(
+                                            id: "guest",
+                                            name: "GUEST",
+                                            introduction: "게스트 계정입니다.",
+                                            postCount: 0,
+                                            friendCount: 0,
+                                            friendStatus: 0,
+                                            isPublicAccount: true
+                                        ),
+                                        haruId: "GUEST",
+                                        email: "Guest@haru.com",
+                                        socialAccountType: "GUEST",
+                                        isPostBrowsingEnabled: true,
+                                        isAllowFeedLike: 2,
+                                        isAllowFeedComment: 2,
+                                        isAllowSearch: true,
+                                        isSignUp: true,
+                                        isMaliciousUser: false,
+                                        morningAlarmTime: nil,
+                                        nightAlarmTime: nil,
+                                        isScheduleAlarmOn: true,
+                                        createdAt: .now,
+                                        accessToken: "GUEST"
                                     ),
-                                    haruId: "GUEST",
-                                    email: "Guest@haru.com",
-                                    socialAccountType: "GUEST",
-                                    isPostBrowsingEnabled: true,
-                                    isAllowFeedLike: 2,
-                                    isAllowFeedComment: 2,
-                                    isAllowSearch: true,
-                                    isSignUp: true,
-                                    isMaliciousUser: false,
-                                    morningAlarmTime: nil,
-                                    nightAlarmTime: nil,
-                                    isScheduleAlarmOn: true,
-                                    createdAt: .now,
-                                    accessToken: "GUEST"
+                                    for: Global.self
                                 )
 
                                 isLoggedIn = true

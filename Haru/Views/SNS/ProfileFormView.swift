@@ -137,7 +137,11 @@ struct ProfileFormView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     withAnimation {
-                        Global.shared.isLoading = true
+                        Dispatcher.dispatch(
+                            action: Global.Actions.setIsLoading,
+                            params: true,
+                            for: Global.self
+                        )
                     }
 
                     userProfileVM.updateUserProfile(name: name, introduction: introduction, profileImage: image) { result in
@@ -147,16 +151,23 @@ struct ProfileFormView: View {
                         case .failure(let error):
                             switch error {
                             case ProfileService.ProfileError.invalid:
-                                Global.shared.toastMessageContent = "사용할 수 없는 단어가 포함되어 있습니다."
                                 withAnimation {
-                                    Global.shared.showToastMessage = true
+                                    Dispatcher.dispatch(
+                                        action: Global.Actions.showToastMessage,
+                                        params: ["message": "사용할 수 없는 단어가 포함되어 있습니다."],
+                                        for: Global.self
+                                    )
                                 }
                             default:
                                 break
                             }
                         }
                         withAnimation {
-                            Global.shared.isLoading = false
+                            Dispatcher.dispatch(
+                                action: Global.Actions.setIsLoading,
+                                params: false,
+                                for: Global.self
+                            )
                         }
                     }
                 } label: {

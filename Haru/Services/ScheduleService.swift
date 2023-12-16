@@ -30,10 +30,12 @@ final class ScheduleService {
         return encoder
     }()
 
+    private init() {}
+
     /**
      * 현재 선택된 달을 기준으로 이전 달, (선택된) 현재 달, 다음 달의 스케줄 데이터 가져오기
      */
-    func fetchScheduleList(
+    public static func fetchScheduleList(
         _ startDate: Date,
         _ endDate: Date,
         _ completion: @escaping (Result<[Schedule], Error>) -> Void
@@ -64,13 +66,12 @@ final class ScheduleService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -81,7 +82,7 @@ final class ScheduleService {
         }
     }
 
-    func fetchScheduleAndTodo(
+    public static func fetchScheduleAndTodo(
         _ startDate: Date,
         _ endDate: Date,
         _ completion: @escaping (Result<([Schedule], [Todo]), Error>) -> Void
@@ -113,13 +114,12 @@ final class ScheduleService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/schedules/date/all",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -143,7 +143,7 @@ final class ScheduleService {
     /**
      * 일정 추가하기
      */
-    func addSchedule(_ schedule: Request.Schedule, _ completion: @escaping (Result<Schedule, Error>) -> Void) {
+    public static func addSchedule(_ schedule: Request.Schedule, _ completion: @escaping (Result<Schedule, Error>) -> Void) {
         struct Response: Codable {
             let success: Bool
             let data: Schedule
@@ -153,13 +153,12 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -174,7 +173,7 @@ final class ScheduleService {
     /**
      * 일정 업데이트 API
      */
-    func updateSchedule(
+    public static func updateSchedule(
         scheduleId: String?,
         schedule: Request.Schedule,
         completion: @escaping (Result<Schedule, Error>) -> Void
@@ -188,13 +187,12 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(scheduleId ?? "unknown")",
             method: .patch,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -209,18 +207,17 @@ final class ScheduleService {
     /**
      * 일정 수정하기 (이 일정만 수정)
      */
-    func updateRepeatFrontSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func updateRepeatFrontSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/front",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -231,18 +228,17 @@ final class ScheduleService {
         }
     }
 
-    func updateRepeatMiddleSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func updateRepeatMiddleSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/middle",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -253,18 +249,17 @@ final class ScheduleService {
         }
     }
 
-    func updateRepeatBackSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func updateRepeatBackSchedule(scheduleId: String?, schedule: Request.RepeatSchedule, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId ?? "unknown")/repeat/back",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -275,7 +270,7 @@ final class ScheduleService {
         }
     }
 
-    func updateScheduleWithRepeat(
+    public static func updateScheduleWithRepeat(
         scheduleId: String,
         schedule: Request.RepeatSchedule,
         at: RepeatAt,
@@ -285,14 +280,13 @@ final class ScheduleService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/\(at.rawValue)",
             method: .put,
             parameters: schedule,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -306,11 +300,10 @@ final class ScheduleService {
     /**
      * 일정 삭제하기 (모든 일정 삭제, 일반 삭제)
      */
-    func deleteSchedule(scheduleId: String, _ completion: @escaping (Result<Bool, Error>) -> Void) {
-        AF.request(
+    public static func deleteSchedule(scheduleId: String, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)",
-            method: .delete,
-            interceptor: ApiRequestInterceptor()
+            method: .delete
         ).response { response in
             switch response.result {
             case .success:
@@ -327,7 +320,7 @@ final class ScheduleService {
     /**
      * 일정 삭제하기 (이 일정만 삭제)
      */
-    func deleteRepeatFrontSchedule(scheduleId: String, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func deleteRepeatFrontSchedule(scheduleId: String, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -336,13 +329,12 @@ final class ScheduleService {
             "repeatStart": Self.formatter.string(from: repeatStart),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/front",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -356,7 +348,7 @@ final class ScheduleService {
         }
     }
 
-    func deleteRepeatMiddleSchedule(scheduleId: String, removedDate: Date, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func deleteRepeatMiddleSchedule(scheduleId: String, removedDate: Date, repeatStart: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -366,13 +358,12 @@ final class ScheduleService {
             "repeatStart": Self.formatter.string(from: repeatStart),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/middle",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -386,7 +377,7 @@ final class ScheduleService {
         }
     }
 
-    func deleteRepeatBackSchedule(scheduleId: String, repeatEnd: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
+    public static func deleteRepeatBackSchedule(scheduleId: String, repeatEnd: Date, _ completion: @escaping (Result<Bool, Error>) -> Void) {
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
         ]
@@ -395,13 +386,12 @@ final class ScheduleService {
             "repeatEnd": Self.formatter.string(from: repeatEnd),
         ]
 
-        AF.request(
+        AFProxy.request(
             ScheduleService.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(scheduleId)/repeat/back",
             method: .delete,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:

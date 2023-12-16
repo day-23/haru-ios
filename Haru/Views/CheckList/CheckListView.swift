@@ -23,7 +23,7 @@ struct CheckListView: View {
         let isTagManageModalVisible: Binding<Bool> = .init {
             Global.shared.isFaded
         } set: {
-            Global.shared.isFaded = $0
+            Dispatcher.dispatch(action: Global.Actions.setIsFaded, params: $0, for: Global.self)
         }
 
         return ZStack(alignment: .bottomTrailing) {
@@ -409,7 +409,11 @@ struct CheckListView: View {
             }
 
             withAnimation {
-                Global.shared.isTabViewActive = !value
+                Dispatcher.dispatch(
+                    action: Global.Actions.setIsTabViewActive,
+                    params: !value,
+                    for: Global.self
+                )
             }
         })
         .contentShape(Rectangle())

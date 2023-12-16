@@ -15,13 +15,12 @@ final class AlarmHelper {
     }
 
     private init() {}
-    private static let todoService: TodoService = .init()
 
     static func createRegularNotification(
         regular: Regular,
         time: Date
     ) {
-        todoService.fetchTodoListByTodayTodoAndUntilToday { result in
+        TodoService.fetchTodoListByTodayTodoAndUntilToday { result in
             switch result {
             case .success(let data):
                 var count = 0

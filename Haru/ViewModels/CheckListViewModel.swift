@@ -25,7 +25,6 @@ final class CheckListViewModel: ObservableObject {
         _todoState = todoState
     }
 
-    private let tagService: TagService = .init()
     var mode: CheckListViewModel.Mode = .main
 
     @Published var tagContent: String = ""
@@ -75,7 +74,7 @@ final class CheckListViewModel: ObservableObject {
         content: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        tagService.createTag(content: content) { result in
+        TagService.createTag(content: content) { result in
             switch result {
             case .success:
                 self.fetchTags()
@@ -103,7 +102,7 @@ final class CheckListViewModel: ObservableObject {
     // MARK: - Read
 
     func fetchTags() {
-        tagService.fetchTags { result in
+        TagService.fetchTags { result in
             switch result {
             case let .success(tagList):
                 withAnimation {
@@ -281,7 +280,7 @@ final class CheckListViewModel: ObservableObject {
             "isSelected": !isSeleted
         ]
 
-        tagService.updateTag(
+        TagService.updateTag(
             tagId: tagId,
             params: params
         ) { result in
@@ -300,7 +299,7 @@ final class CheckListViewModel: ObservableObject {
         params: Parameters,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        tagService.updateTag(
+        TagService.updateTag(
             tagId: tagId,
             params: params
         ) { result in
@@ -375,7 +374,7 @@ final class CheckListViewModel: ObservableObject {
         tagId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        tagService.deleteTag(tagId: tagId) { result in
+        TagService.deleteTag(tagId: tagId) { result in
             switch result {
             case .success:
                 self.fetchTodoList()

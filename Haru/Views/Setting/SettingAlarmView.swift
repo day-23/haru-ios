@@ -9,120 +9,10 @@ import SwiftUI
 
 struct SettingAlarmView: View {
     @Environment(\.dismiss) var dismissAction
-    @EnvironmentObject var global: Global
-
-    private let userService: UserService = .init()
+    @ObservedObject var settingAlarmViewModel: SettingAlarmViewModel = .init()
 
     var body: some View {
-        let isMorningAlarmOn: Binding<Bool> = .init {
-            guard let user = global.user else {
-                return false
-            }
-            return user.morningAlarmTime != nil
-        } set: {
-            if $0 {
-                global.user?.morningAlarmTime = .now
-            } else {
-                global.user?.morningAlarmTime = nil
-            }
-
-            if global.user?.morningAlarmTime != nil {
-                userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
-                    switch result {
-                    case .success:
-                        AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
-                    case .failure:
-                        break
-                    }
-                }
-            } else {
-                Task {
-                    await AlarmHelper.removeRegularNotification(regular: .morning)
-                }
-            }
-        }
-
-        let morningAlarmTime: Binding<Date> = .init {
-            guard let user = global.user,
-                  let time = user.morningAlarmTime
-            else {
-                return .now
-            }
-            return time
-        } set: {
-            global.user?.morningAlarmTime = $0
-
-            if global.user?.morningAlarmTime != nil {
-                userService.updateMorningAlarmTime(time: global.user?.morningAlarmTime) { result in
-                    switch result {
-                    case .success:
-                        AlarmHelper.createRegularNotification(regular: .morning, time: global.user?.morningAlarmTime ?? .now)
-                    case .failure:
-                        break
-                    }
-                }
-            } else {
-                Task {
-                    await AlarmHelper.removeRegularNotification(regular: .morning)
-                }
-            }
-        }
-
-        let isNightAlarmOn: Binding<Bool> = .init {
-            guard let user = global.user else {
-                return false
-            }
-            return user.nightAlarmTime != nil
-        } set: {
-            if $0 {
-                global.user?.nightAlarmTime = .now
-            } else {
-                global.user?.nightAlarmTime = nil
-            }
-
-            if global.user?.nightAlarmTime != nil {
-                userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
-                    switch result {
-                    case .success:
-                        AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
-                    case .failure:
-                        break
-                    }
-                }
-            } else {
-                Task {
-                    await AlarmHelper.removeRegularNotification(regular: .evening)
-                }
-            }
-        }
-
-        let nightAlarmTime: Binding<Date> = .init {
-            guard let user = global.user,
-                  let time = user.nightAlarmTime
-            else {
-                return .now
-            }
-            return time
-        } set: {
-            global.user?.nightAlarmTime = $0
-
-            if global.user?.nightAlarmTime != nil {
-                userService.updateNightAlarmTime(time: global.user?.nightAlarmTime) { result in
-                    switch result {
-                    case .success:
-                        AlarmHelper.createRegularNotification(regular: .evening, time: global.user?.nightAlarmTime ?? .now)
-                    case .failure:
-                        break
-                    }
-                }
-            } else {
-                Task {
-                    await AlarmHelper.removeRegularNotification(regular: .evening)
-                }
-            }
-        }
-
-        return VStack(spacing: 0) {
+        VStack(spacing: 0) {
             SettingHeader(header: "알림") {
                 dismissAction.callAsFunction()
             }
@@ -144,15 +34,15 @@ struct SettingAlarmView: View {
 
                         Spacer()
 
-                        if isMorningAlarmOn.wrappedValue {
+                        if settingAlarmViewModel.isMorningAlarmOn {
                             CustomDatePicker(
-                                selection: morningAlarmTime,
+                                selection: $settingAlarmViewModel.morningAlarmTime,
                                 displayedComponents: [.hourAndMinute]
                             )
                             .padding(.trailing, 16)
                         }
 
-                        Toggle(isOn: isMorningAlarmOn.animation()) {}
+                        Toggle(isOn: $settingAlarmViewModel.isMorningAlarmOn.animation()) {}
                             .toggleStyle(CustomToggleStyle())
                     }
                     .frame(height: 25)
@@ -164,15 +54,15 @@ struct SettingAlarmView: View {
 
                         Spacer()
 
-                        if isNightAlarmOn.wrappedValue {
+                        if settingAlarmViewModel.isNightAlarmOn {
                             CustomDatePicker(
-                                selection: nightAlarmTime,
+                                selection: $settingAlarmViewModel.nightAlarmTime,
                                 displayedComponents: [.hourAndMinute]
                             )
                             .padding(.trailing, 16)
                         }
 
-                        Toggle(isOn: isNightAlarmOn.animation()) {}
+                        Toggle(isOn: $settingAlarmViewModel.isNightAlarmOn.animation()) {}
                             .toggleStyle(CustomToggleStyle())
                     }
                     .frame(height: 25)

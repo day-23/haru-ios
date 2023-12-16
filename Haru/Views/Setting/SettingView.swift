@@ -55,7 +55,7 @@ struct SettingView: View {
                 Divider()
                     .padding(.horizontal, 20)
 
-                Text("Version 1.0.4")
+                Text("Version 1.0.5")
                     .font(.pretendard(size: 14, weight: .regular))
                     .foregroundColor(Color(0x646464))
                     .padding(.leading, 34)
@@ -78,7 +78,10 @@ struct SettingView: View {
                             titleVisibility: .visible
                         ) {
                             Button("로그아웃", role: .destructive) {
-                                Global.shared.user = nil
+                                Dispatcher.dispatch(
+                                    action: Global.Actions.logout,
+                                    for: Global.self
+                                )
                                 KeychainService.logout()
                                 AlarmHelper.removeAllNotification()
                                 self.isLoggedIn = false

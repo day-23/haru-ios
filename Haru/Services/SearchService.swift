@@ -33,9 +33,11 @@ final class SearchService {
         return encoder
     }()
 
+    private init() {}
+
     // MARK: - 일정과 할일 검색
 
-    func searchTodoAndSchedule(
+    public static func searchTodoAndSchedule(
         searchContent: String,
         completion: @escaping (Result<([Schedule], [Todo]), Error>) -> Void
     ) {
@@ -57,13 +59,12 @@ final class SearchService {
             "content": searchContent,
         ]
 
-        AF.request(
+        AFProxy.request(
             SearchService.prodBaseURL + (Global.shared.user?.id ?? "unknown") + "/search",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -77,7 +78,7 @@ final class SearchService {
 
     // MARK: - 사용자 검색
 
-    func searchUserWithHaruId(
+    public static func searchUserWithHaruId(
         haruId: String,
         completion: @escaping (Result<User, Error>) -> Void
     ) {
@@ -90,11 +91,10 @@ final class SearchService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             SearchService.userBaseURL + (Global.shared.user?.id ?? "unknown") + "/search/user/\(haruId)",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -106,7 +106,7 @@ final class SearchService {
         }
     }
 
-    func searchFriendWithName(
+    public static func searchFriendWithName(
         name: String,
         completion: @escaping (Result<[FriendUser], Error>) -> Void
     ) {
@@ -124,13 +124,12 @@ final class SearchService {
             "name": name,
         ]
 
-        AF.request(
+        AFProxy.request(
             SearchService.friendBaseURL + (Global.shared.user?.id ?? "unknown") + "/search/",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -142,7 +141,7 @@ final class SearchService {
         }
     }
 
-    func searchReqFriendWithName(
+    public static func searchReqFriendWithName(
         name: String,
         completion: @escaping (Result<[FriendUser], Error>) -> Void
     ) {
@@ -160,13 +159,12 @@ final class SearchService {
             "name": name,
         ]
 
-        AF.request(
+        AFProxy.request(
             SearchService.friendBaseURL + (Global.shared.user?.id ?? "unknown") + "/request/search/",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {

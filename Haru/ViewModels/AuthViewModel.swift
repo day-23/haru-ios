@@ -11,8 +11,6 @@ import KakaoSDKAuth
 import KakaoSDKUser
 
 class AuthViewModel: ObservableObject {
-    private let authService: AuthService = .init()
-
     func validateUserByHaruServer(completion: @escaping (Bool) -> Void) {
         if let accessTokenData = KeychainService.load(key: "accessToken"),
            let refreshTokenData = KeychainService.load(key: "refreshToken"),
@@ -23,13 +21,13 @@ class AuthViewModel: ObservableObject {
                 "accessToken": accessToken,
                 "refreshToken": refreshToken
             ]
-            authService.validateUser(headers: headers) { result in
+            AuthService.validateUser(headers: headers) { result in
                 switch result {
                 case .success(let data):
                     print("UserVerifyResponse: \(data)")
 
                     // Save the ID and new access token into Keychain
-                    Global.shared.user = data
+                    Dispatcher.dispatch(action: Global.Actions.setUserData, params: data, for: Global.self)
                     _ = KeychainService.save(key: "accessToken", data: data.accessToken.data(using: .utf8)!)
                     completion(true)
                 case .failure(let error):
@@ -68,7 +66,7 @@ class AuthViewModel: ObservableObject {
                 return
             }
 
-            authService.validateKakaoUserWithToken(token: oauthToken.accessToken) { result in
+            AuthService.validateKakaoUserWithToken(token: oauthToken.accessToken) { result in
                 switch result {
                 case .success(let data):
                     print(data)

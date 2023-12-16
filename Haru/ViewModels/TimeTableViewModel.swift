@@ -27,9 +27,6 @@ struct TodoCell: Identifiable, Equatable {
 }
 
 final class TimeTableViewModel: ObservableObject {
-    private var scheduleService: ScheduleService = .init()
-    private var todoService: TodoService = .init()
-
     @Published var todoListByDate: [[TodoCell]] = Array(repeating: [], count: 7)
 
     @Published var scheduleList: [ScheduleCell] = []
@@ -420,7 +417,7 @@ final class TimeTableViewModel: ObservableObject {
             return
         }
 
-        scheduleService.fetchScheduleList(
+        ScheduleService.fetchScheduleList(
             startDate, endDate
         ) { result in
             switch result {
@@ -503,7 +500,7 @@ final class TimeTableViewModel: ObservableObject {
             return
         }
 
-        todoService.fetchTodoListByRange(
+        TodoService.fetchTodoListByRange(
             startDate: startDate,
             endDate: endDate
         ) { result in
@@ -617,7 +614,7 @@ final class TimeTableViewModel: ObservableObject {
         scheduleList = scheduleList.filter { $0.id != draggingSchedule.id }
 
         if at == .none {
-            scheduleService.updateSchedule(
+            ScheduleService.updateSchedule(
                 scheduleId: draggingSchedule.data.id,
                 schedule: Request.Schedule(
                     content: draggingSchedule.data.content,
@@ -708,7 +705,7 @@ final class TimeTableViewModel: ObservableObject {
                 return date
             }
 
-            scheduleService.updateScheduleWithRepeat(
+            ScheduleService.updateScheduleWithRepeat(
                 scheduleId: draggingSchedule.data.id,
                 schedule: Request.RepeatSchedule(
                     content: draggingSchedule.data.content,
@@ -769,7 +766,7 @@ final class TimeTableViewModel: ObservableObject {
             }
 
             if draggingTodo.at == .none {
-                todoService.updateTodo(
+                TodoService.updateTodo(
                     todoId: draggingTodo.data.id,
                     todo: Request.Todo(
                         content: draggingTodo.data.content,
@@ -814,7 +811,7 @@ final class TimeTableViewModel: ObservableObject {
                         if let nextEndDate = try draggingTodo.data.nextEndDate() {
                             date = nextEndDate
                         } else {
-                            todoService.updateTodo(
+                            TodoService.updateTodo(
                                 todoId: draggingTodo.data.id,
                                 todo: Request.Todo(
                                     content: draggingTodo.data.content,
@@ -865,7 +862,7 @@ final class TimeTableViewModel: ObservableObject {
                     }
                 }
 
-                todoService.updateTodoWithRepeat(
+                TodoService.updateTodoWithRepeat(
                     todoId: draggingTodo.data.id,
                     todo: Request.Todo(
                         content: draggingTodo.data.content,

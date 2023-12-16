@@ -42,9 +42,11 @@ final class PostService {
         return encoder
     }()
 
+    private init() {}
+
     // MARK: - 게시물 불러오기
 
-    func fetchFreindPosts(
+    public static func fetchFreindPosts(
         page: Int,
         limit: Int = 5,
         lastCreatedAt: Date?,
@@ -75,13 +77,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/follow/feed",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -92,7 +93,7 @@ final class PostService {
         }
     }
 
-    func fetchTargetPosts(
+    public static func fetchTargetPosts(
         targetId: String,
         page: Int,
         limit: Int = 5,
@@ -124,13 +125,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/feed",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -142,7 +142,7 @@ final class PostService {
     }
 
     // 둘러보기 전체 게시물 불러오기
-    func fetchAllMedia(
+    public static func fetchAllMedia(
         page: Int,
         limit: Int = 12,
         lastCreatedAt: Date?,
@@ -173,13 +173,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/all",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -191,7 +190,7 @@ final class PostService {
     }
 
     // 둘러보기 해시태그 게시물 불러오기
-    func fetchMediaHashTag(
+    public static func fetchMediaHashTag(
         hashTagId: String,
         page: Int,
         limit: Int = 12,
@@ -223,13 +222,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/hashtag/\(hashTagId)/",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -241,7 +239,7 @@ final class PostService {
     }
 
     // 특정 사용자 미디어 전체보기
-    func fetchTargetMediaAll(
+    public static func fetchTargetMediaAll(
         targetId: String,
         page: Int,
         limit: Int = 12,
@@ -273,13 +271,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/media",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -290,7 +287,7 @@ final class PostService {
         }
     }
 
-    func fetchTargetMediaHashTag(
+    public static func fetchTargetMediaHashTag(
         targetId: String,
         hashTagId: String,
         page: Int,
@@ -323,13 +320,12 @@ final class PostService {
             }
         }
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/posts/user/\(targetId)/media/hashtag/\(hashTagId)",
             method: .get,
             parameters: parameters,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -342,7 +338,7 @@ final class PostService {
 
     // MARK: - 게시물 추가, 수정, 삭제
 
-    func createPostWithImages(
+    public static func createPostWithImages(
         imageList: [UIImage],
         content: String,
         tagList: [Tag],
@@ -414,28 +410,27 @@ final class PostService {
             Global.shared.isLoading = true
         }
 
-        AF.upload(multipartFormData: { multipartFormData in
-                      for postImage in imageList {
-                          if let image = postImage.jpegData(compressionQuality: 1) {
-                              multipartFormData.append(image, withName: "images", fileName: "\(image).jpeg", mimeType: "image/jpeg")
-                          }
-                      }
+        AFProxy.upload(multipartFormData: { multipartFormData in
+                           for postImage in imageList {
+                               if let image = postImage.jpegData(compressionQuality: 1) {
+                                   multipartFormData.append(image, withName: "images", fileName: "\(image).jpeg", mimeType: "image/jpeg")
+                               }
+                           }
 
-                      for (key, value) in parameters {
-                          if let data = value as? String {
-                              multipartFormData.append(data.data(using: .utf8)!, withName: key)
-                          } else if let dataList = value as? [Tag] {
-                              for data in dataList {
-                                  multipartFormData.append(data.content.data(using: .utf8)!, withName: key)
-                              }
-                          }
-                      }
-                  },
-                  to: PostService.baseURL + "\(Global.shared.user?.id ?? "unknown")",
-                  usingThreshold: .init(),
-                  method: .post,
-                  headers: headers,
-                  interceptor: ApiRequestInterceptor())
+                           for (key, value) in parameters {
+                               if let data = value as? String {
+                                   multipartFormData.append(data.data(using: .utf8)!, withName: key)
+                               } else if let dataList = value as? [Tag] {
+                                   for data in dataList {
+                                       multipartFormData.append(data.content.data(using: .utf8)!, withName: key)
+                                   }
+                               }
+                           }
+                       },
+                       to: PostService.baseURL + "\(Global.shared.user?.id ?? "unknown")",
+                       usingThreshold: .init(),
+                       method: .post,
+                       headers: headers)
             .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
                 switch response.result {
                 case .success:
@@ -461,7 +456,7 @@ final class PostService {
             }
     }
 
-    func createPostWithTemplate(
+    public static func createPostWithTemplate(
         templateId: String,
         templateTextColor: String,
         content: String,
@@ -481,13 +476,12 @@ final class PostService {
             },
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -521,7 +515,7 @@ final class PostService {
         }
     }
 
-    func deletePost(
+    public static func deletePost(
         postId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -529,11 +523,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)",
             method: .delete,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -544,7 +537,7 @@ final class PostService {
         }
     }
 
-    func hidePost(
+    public static func hidePost(
         postId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -552,11 +545,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/hide",
             method: .post,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -567,7 +559,7 @@ final class PostService {
         }
     }
 
-    func reportPost(
+    public static func reportPost(
         postId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -575,11 +567,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(postId)/report",
             method: .post,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -594,7 +585,7 @@ final class PostService {
 
     // 서버에 있는 기본 템플릿 불러오기
     // TODO: ProfileImage 모델 이름에서 다른 이름으로 바꿔주기
-    func fetchTemplate(completion: @escaping (Result<[ProfileImage], Error>) -> Void) {
+    public static func fetchTemplate(completion: @escaping (Result<[ProfileImage], Error>) -> Void) {
         struct Response: Codable {
             let success: Bool
             let data: [ProfileImage]
@@ -604,11 +595,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/template",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -620,7 +610,7 @@ final class PostService {
     }
 
     // 인기 해시태그 불러오기
-    func fetchPopularHashTags(
+    public static func fetchPopularHashTags(
         completion: @escaping (Result<[HashTag], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -632,11 +622,10 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/hashtags/",
             method: .get,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -648,7 +637,7 @@ final class PostService {
     }
 
     // 사용자 해시태그 불러오기
-    func fetchTargetHashTags(
+    public static func fetchTargetHashTags(
         targetId: String,
         completion: @escaping (Result<[HashTag], Error>) -> Void
     ) {
@@ -661,12 +650,11 @@ final class PostService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/hashtags/\(targetId)",
             method: .get,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -677,7 +665,7 @@ final class PostService {
         }
     }
 
-    func likeThisPost(
+    public static func likeThisPost(
         targetPostId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -689,12 +677,11 @@ final class PostService {
             "Content-Type": "multipart/form-data; boundary=Boundary-\(UUID().uuidString)",
         ]
 
-        AF.request(
+        AFProxy.request(
             PostService.baseURL + (Global.shared.user?.id ?? "unknown") + "/\(targetPostId)/like",
             method: .post,
             encoding: URLEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self) { response in
             switch response.result {
             case let .success(response):

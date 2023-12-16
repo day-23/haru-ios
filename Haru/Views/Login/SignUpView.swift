@@ -9,8 +9,6 @@ import Photos
 import SwiftUI
 
 struct SignUpView: View {
-    private var profileService: ProfileService = .init()
-
     @State private var nickname: String = ""
     @State private var haruId: String = ""
 
@@ -94,7 +92,7 @@ struct SignUpView: View {
                                     }
 
                                     if !isIdFieldFocused {
-                                        profileService.validateHaruId(
+                                        ProfileService.validateHaruId(
                                             haruId: haruId
                                         ) { result in
                                             switch result {
@@ -200,7 +198,7 @@ struct SignUpView: View {
                                     }
 
                                     if !isNicknameFieldFocused {
-                                        profileService.validateNickname(nickname: nickname) { result in
+                                        ProfileService.validateNickname(nickname: nickname) { result in
                                             switch result {
                                             case .success:
                                                 isValidNickname = true
@@ -276,14 +274,18 @@ struct SignUpView: View {
                 }
 
                 if let user = Global.shared.user {
-                    profileService.initUserProfileWithoutImage(
+                    ProfileService.initUserProfileWithoutImage(
                         userId: user.id,
                         name: nickname,
                         haruId: haruId
                     ) { result in
                         switch result {
                         case .success(let response):
-                            Global.shared.user = response
+                            Dispatcher.dispatch(
+                                action: Global.Actions.setUserData,
+                                params: response,
+                                for: Global.self
+                            )
                         case .failure(let error):
                             switch error {
                             case ProfileService.ProfileError.badname:

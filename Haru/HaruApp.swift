@@ -92,6 +92,8 @@ struct HaruApp: App {
         // Kakao SDK 초기화
         let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] ?? ""
         KakaoSDK.initSDK(appKey: kakaoAppKey as! String)
+
+        Dispatcher.register(store: Store(id: "global", initialState: Global.shared, reducer: GlobalReducer))
     }
 
     var body: some Scene {

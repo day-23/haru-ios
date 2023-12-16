@@ -31,9 +31,11 @@ struct TodoService {
         return encoder
     }()
 
+    private init() {}
+
     // MARK: - Todo Create API
 
-    func addTodo(
+    public static func addTodo(
         todo: Request.Todo,
         completion: @escaping (Result<Todo, Error>) -> Void
     ) {
@@ -46,13 +48,12 @@ struct TodoService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL + (Global.shared.user?.id ?? "unknown"),
             method: .post,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(
             of: Response.self,
             decoder: Self.decoder
@@ -68,7 +69,7 @@ struct TodoService {
 
     // MARK: - Todo Read API
 
-    func fetchAllTodoList(
+    public static func fetchAllTodoList(
         completion: @escaping (Result<(
             flaggedTodos: [Todo],
             taggedTodos: [Todo],
@@ -114,13 +115,12 @@ struct TodoService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos/all",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -141,7 +141,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoList(
+    public static func fetchTodoList(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -157,10 +157,9 @@ struct TodoService {
             }
         }
 
-        AF.request(
-            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/todos",
-            interceptor: ApiRequestInterceptor()
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        AFProxy.request(
+            baseURL + "\(Global.shared.user?.id ?? "unknown")/todos"
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -170,7 +169,7 @@ struct TodoService {
         }
     }
 
-    func fetchMainTodoList(
+    public static func fetchMainTodoList(
         completion: @escaping (Result<(flaggedTodos: [Todo],
                                        taggedTodos: [Todo],
                                        untaggedTodos: [Todo],
@@ -188,11 +187,10 @@ struct TodoService {
             }
         }
 
-        AF.request(
-            Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main",
-            interceptor: ApiRequestInterceptor()
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        AFProxy.request(
+            baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/main"
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case let .success(response):
                 let data = response.data
@@ -208,7 +206,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListByTodayTodoAndUntilToday(
+    public static func fetchTodoListByTodayTodoAndUntilToday(
         completion: @escaping (
             Result<(
                 flaggedTodos: [Todo],
@@ -250,14 +248,13 @@ struct TodoService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/today",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -274,7 +271,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListByFlag(
+    public static func fetchTodoListByFlag(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -282,11 +279,10 @@ struct TodoService {
             let data: [Todo]
         }
 
-        AF.request(
-            Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/flag",
-            interceptor: ApiRequestInterceptor()
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        AFProxy.request(
+            baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/flag"
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -296,7 +292,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListWithAnyTag(
+    public static func fetchTodoListWithAnyTag(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -304,11 +300,10 @@ struct TodoService {
             let data: [Todo]
         }
 
-        AF.request(
-            Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/tag",
-            interceptor: ApiRequestInterceptor()
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        AFProxy.request(
+            baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/tag"
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -318,7 +313,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListWithoutTag(
+    public static func fetchTodoListWithoutTag(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -326,11 +321,10 @@ struct TodoService {
             let data: [Todo]
         }
 
-        AF.request(
-            Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/untag",
-            interceptor: ApiRequestInterceptor()
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        AFProxy.request(
+            baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/untag"
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -340,7 +334,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListByCompletedInMain(
+    public static func fetchTodoListByCompletedInMain(
         completion: @escaping (Result<[Todo], Error>) -> Void
     ) {
         struct Response: Codable {
@@ -348,11 +342,10 @@ struct TodoService {
             let data: [Todo]
         }
 
-        AF.request(
-            Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/main/completed",
-            interceptor: ApiRequestInterceptor()
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        AFProxy.request(
+            baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/main/completed"
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case let .success(response):
                 completion(.success(response.data))
@@ -362,7 +355,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListByTag(
+    public static func fetchTodoListByTag(
         tag: Tag,
         completion: @escaping (Result<(
             flaggedTodos: [Todo],
@@ -381,11 +374,10 @@ struct TodoService {
             }
         }
 
-        AF.request(
-            Self.baseURL +
-                "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)",
-            interceptor: ApiRequestInterceptor()
-        ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
+        AFProxy.request(
+            baseURL +
+                "\(Global.shared.user?.id ?? "unknown")/todos/tag?tagId=\(tag.id)"
+        ).responseDecodable(of: Response.self, decoder: decoder) { response in
             switch response.result {
             case let .success(response):
                 let data = response.data
@@ -400,7 +392,7 @@ struct TodoService {
         }
     }
 
-    func fetchTodoListByRange(
+    public static func fetchTodoListByRange(
         startDate: Date,
         endDate: Date,
         completion: @escaping (Result<[Todo], Error>) -> Void
@@ -426,14 +418,13 @@ struct TodoService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/date",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -444,7 +435,7 @@ struct TodoService {
         }
     }
 
-    func fetchStatisticsByRange(
+    public static func fetchStatisticsByRange(
         startDate: Date,
         endDate: Date,
         completion: @escaping (Result<(completed: Int, totalItems: Int), Error>) -> Void
@@ -470,14 +461,13 @@ struct TodoService {
             "endDate": Self.formatter.string(from: endDate),
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todos/statistics",
             method: .post,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -495,7 +485,7 @@ struct TodoService {
 
     // MARK: - Todo Update API
 
-    func updateTodo(
+    public static func updateTodo(
         todoId: String,
         todo: Request.Todo,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -504,14 +494,13 @@ struct TodoService {
             "Content-Type": "application/json",
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
             method: .put,
             parameters: todo,
             encoder: JSONParameterEncoder(encoder: Self.encoder),
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -522,7 +511,7 @@ struct TodoService {
         }
     }
 
-    func updateTodoWithRepeat(
+    public static func updateTodoWithRepeat(
         todoId: String,
         todo: Request.Todo,
         date: Date,
@@ -552,14 +541,13 @@ struct TodoService {
             params["preRepeatEnd"] = Self.formatter.string(from: date)
         }
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todo/\(todoId)/repeat/\(at.rawValue)",
             method: .put,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -570,7 +558,7 @@ struct TodoService {
         }
     }
 
-    func updateFlag(
+    public static func updateFlag(
         todoId: String,
         flag: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -583,13 +571,12 @@ struct TodoService {
             "flag": flag,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/flag/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -600,7 +587,7 @@ struct TodoService {
         }
     }
 
-    func updateFolded(
+    public static func updateFolded(
         todoId: String,
         folded: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -613,13 +600,12 @@ struct TodoService {
             "folded": folded,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/folded/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -630,7 +616,7 @@ struct TodoService {
         }
     }
 
-    func updateOrderMain(
+    public static func updateOrderMain(
         todoListByFlag: [Todo],
         todoListWithAnyTag: [Todo],
         todoListWithoutTag: [Todo],
@@ -648,14 +634,13 @@ struct TodoService {
             "todoIds": todoIds,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos/",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -666,7 +651,7 @@ struct TodoService {
         }
     }
 
-    func updateOrderHaru(
+    public static func updateOrderHaru(
         todoListByFlagWithToday: [Todo],
         todoListByTodayTodo: [Todo],
         todoListByUntilToday: [Todo]
@@ -684,14 +669,13 @@ struct TodoService {
             "todoIds": todoIds,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos/today",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -702,7 +686,7 @@ struct TodoService {
         }
     }
 
-    func updateOrderFlag(
+    public static func updateOrderFlag(
         todoListByFlag: [Todo]
     ) {
         let todoIds: [String] = todoListByFlag.map(\.id)
@@ -715,14 +699,13 @@ struct TodoService {
             "todoIds": todoIds,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -733,7 +716,7 @@ struct TodoService {
         }
     }
 
-    func updateOrderWithoutTag(
+    public static func updateOrderWithoutTag(
         todoListWithoutTag: [Todo]
     ) {
         let todoIds: [String] = todoListWithoutTag.map(\.id)
@@ -746,14 +729,13 @@ struct TodoService {
             "todoIds": todoIds,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -764,7 +746,7 @@ struct TodoService {
         }
     }
 
-    func updateOrderByTag(
+    public static func updateOrderByTag(
         tagId: String,
         todoListByTag: [Todo]
     ) {
@@ -779,14 +761,13 @@ struct TodoService {
             "todoIds": todoIds,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/order/todos/tag",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -797,7 +778,7 @@ struct TodoService {
         }
     }
 
-    func completeTodo(
+    public static func completeTodo(
         todoId: String,
         completed: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -810,14 +791,13 @@ struct TodoService {
             "completed": completed,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -829,7 +809,7 @@ struct TodoService {
         }
     }
 
-    func completeSubTodo(
+    public static func completeSubTodo(
         subTodoId: String,
         completed: Bool,
         completion: @escaping (Result<Bool, Error>) -> Void
@@ -842,14 +822,13 @@ struct TodoService {
             "completed": completed,
         ]
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/complete/subtodo/\(subTodoId)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -861,7 +840,7 @@ struct TodoService {
         }
     }
 
-    func completeTodoWithRepeat(
+    public static func completeTodoWithRepeat(
         todo: Todo,
         date: Date,
         at: RepeatAt,
@@ -894,14 +873,13 @@ struct TodoService {
             params["completedDate"] = Self.formatter.string(from: endDate)
         }
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/complete/todo/\(todo.id)/repeat/\(at.rawValue)",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -915,14 +893,13 @@ struct TodoService {
 
     // MARK: - Todo Delete API
 
-    func deleteTodo(
+    public static func deleteTodo(
         todoId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        AF.request(
-            Self.baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
-            method: .delete,
-            interceptor: ApiRequestInterceptor()
+        AFProxy.request(
+            baseURL + "\(Global.shared.user?.id ?? "unknown")/\(todoId)",
+            method: .delete
         ).response { response in
             switch response.result {
             case .success:
@@ -936,7 +913,7 @@ struct TodoService {
         }
     }
 
-    func deleteTodoWithRepeat(
+    public static func deleteTodoWithRepeat(
         todoId: String,
         date: Date,
         at: RepeatAt,
@@ -964,14 +941,13 @@ struct TodoService {
             params["repeatEnd"] = Self.formatter.string(from: date)
         }
 
-        AF.request(
+        AFProxy.request(
             Self.baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/todo/\(todoId)/repeat/\(at.rawValue)",
             method: .delete,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).response { response in
             switch response.result {
             case .success:
@@ -985,16 +961,15 @@ struct TodoService {
         }
     }
 
-    func deleteTag(
+    public static func deleteTag(
         todoId: String,
         tagId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        AF.request(
-            Self.baseURL +
+        AFProxy.request(
+            baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(todoId)/tag/\(tagId)",
-            method: .delete,
-            interceptor: ApiRequestInterceptor()
+            method: .delete
         ).response { response in
             switch response.result {
             case .success:
@@ -1005,16 +980,15 @@ struct TodoService {
         }
     }
 
-    func deleteSubTodo(
+    public static func deleteSubTodo(
         todoId: String,
         subTodoId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
-        AF.request(
-            Self.baseURL +
+        AFProxy.request(
+            baseURL +
                 "\(Global.shared.user?.id ?? "unknown")/\(todoId)/subtodo/\(subTodoId)",
-            method: .delete,
-            interceptor: ApiRequestInterceptor()
+            method: .delete
         ).response { response in
             switch response.result {
             case .success:

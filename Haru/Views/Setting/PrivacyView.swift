@@ -8,105 +8,11 @@
 import SwiftUI
 
 struct PrivacyView: View {
-    private let userService: UserService = .init()
-
     @Environment(\.dismiss) var dismissAction
-    @EnvironmentObject var global: Global
+    @ObservedObject var privacyViewModel: PrivacyViewModel = .init()
 
     var body: some View {
-        let isPublicAccount: Binding<Bool> = Binding {
-            guard let user = self.global.user else {
-                return false
-            }
-            return !user.user.isPublicAccount
-        } set: {
-            self.global.user?.user.isPublicAccount = !$0
-            self.userService.updateUserOption(isPublicAccount: !$0) { _ in }
-        }
-
-        let isPostBrowsingEnabled: Binding<Bool> = Binding {
-            guard let user = self.global.user else {
-                return false
-            }
-            return user.isPostBrowsingEnabled
-        } set: {
-            self.global.user?.isPostBrowsingEnabled = $0
-            self.userService.updateUserOption(isPostBrowsingEnabled: $0) { _ in }
-        }
-
-        let isAllowFeedLike: Binding<String> = Binding {
-            guard let user = self.global.user else {
-                return "허용 안함"
-            }
-            switch user.isAllowFeedLike {
-            case 0:
-                return "허용 안함"
-            case 1:
-                return "친구만"
-            case 2:
-                return "모든 사람"
-            default:
-                return "허용 안함"
-            }
-        } set: {
-            switch $0 {
-            case "허용 안함":
-                self.global.user?.isAllowFeedLike = 0
-                self.userService.updateUserOption(isAllowFeedLike: 0) { _ in }
-            case "친구만":
-                self.global.user?.isAllowFeedLike = 1
-                self.userService.updateUserOption(isAllowFeedLike: 1) { _ in }
-            case "모든 사람":
-                self.global.user?.isAllowFeedLike = 2
-                self.userService.updateUserOption(isAllowFeedLike: 2) { _ in }
-            default:
-                self.global.user?.isAllowFeedLike = 0
-                self.userService.updateUserOption(isAllowFeedLike: 0) { _ in }
-            }
-        }
-
-        let isAllowFeedComment: Binding<String> = Binding {
-            guard let user = self.global.user else {
-                return "허용 안함"
-            }
-            switch user.isAllowFeedComment {
-            case 0:
-                return "허용 안함"
-            case 1:
-                return "친구만"
-            case 2:
-                return "모든 사람"
-            default:
-                return "허용 안함"
-            }
-        } set: {
-            switch $0 {
-            case "허용 안함":
-                self.global.user?.isAllowFeedComment = 0
-                self.userService.updateUserOption(isAllowFeedComment: 0) { _ in }
-            case "친구만":
-                self.global.user?.isAllowFeedComment = 1
-                self.userService.updateUserOption(isAllowFeedComment: 1) { _ in }
-            case "모든 사람":
-                self.global.user?.isAllowFeedComment = 2
-                self.userService.updateUserOption(isAllowFeedComment: 2) { _ in }
-            default:
-                self.global.user?.isAllowFeedComment = 0
-                self.userService.updateUserOption(isAllowFeedComment: 0) { _ in }
-            }
-        }
-
-        let isAllowSearch: Binding<Bool> = Binding {
-            guard let user = self.global.user else {
-                return false
-            }
-            return user.isAllowSearch
-        } set: {
-            self.global.user?.isAllowSearch = $0
-            self.userService.updateUserOption(isAllowSearch: $0) { _ in }
-        }
-
-        return VStack(spacing: 0) {
+        VStack(spacing: 0) {
             SettingHeader(header: "개인정보 보호") {
                 self.dismissAction.callAsFunction()
             }
@@ -134,7 +40,7 @@ struct PrivacyView: View {
                         Spacer()
 
                         Toggle(
-                            isOn: isPublicAccount.animation()
+                            isOn: $privacyViewModel.isPublicAccount.animation()
                         ) {}
                             .toggleStyle(CustomToggleStyle())
                     }
@@ -162,7 +68,7 @@ struct PrivacyView: View {
                         Spacer()
 
                         Toggle(
-                            isOn: isPostBrowsingEnabled.animation()
+                            isOn: $privacyViewModel.isPostBrowsingEnabled.animation()
                         ) {}
                             .toggleStyle(CustomToggleStyle())
                     }
@@ -176,17 +82,17 @@ struct PrivacyView: View {
 
                         Menu {
                             Button("허용 안함") {
-                                isAllowFeedLike.wrappedValue = "허용 안함"
+                                privacyViewModel.isAllowFeedLike = "허용 안함"
                             }
                             Button("친구만") {
-                                isAllowFeedLike.wrappedValue = "친구만"
+                                privacyViewModel.isAllowFeedLike = "친구만"
                             }
                             Button("모든 사람") {
-                                isAllowFeedLike.wrappedValue = "모든 사람"
+                                privacyViewModel.isAllowFeedLike = "모든 사람"
                             }
                         } label: {
                             HStack(spacing: 10) {
-                                Text(isAllowFeedLike.wrappedValue)
+                                Text(privacyViewModel.isAllowFeedLike)
                                     .font(.pretendard(size: 14, weight: .regular))
                                     .foregroundColor(Color(0x1dafff))
 
@@ -213,17 +119,17 @@ struct PrivacyView: View {
 
                         Menu {
                             Button("허용 안함") {
-                                isAllowFeedComment.wrappedValue = "허용 안함"
+                                privacyViewModel.isAllowFeedComment = "허용 안함"
                             }
                             Button("친구만") {
-                                isAllowFeedComment.wrappedValue = "친구만"
+                                privacyViewModel.isAllowFeedComment = "친구만"
                             }
                             Button("모든 사람") {
-                                isAllowFeedComment.wrappedValue = "모든 사람"
+                                privacyViewModel.isAllowFeedComment = "모든 사람"
                             }
                         } label: {
                             HStack(spacing: 10) {
-                                Text(isAllowFeedComment.wrappedValue)
+                                Text(privacyViewModel.isAllowFeedComment)
                                     .font(.pretendard(size: 14, weight: .regular))
                                     .foregroundColor(Color(0x1dafff))
 
@@ -270,7 +176,7 @@ struct PrivacyView: View {
                         Spacer()
 
                         Toggle(
-                            isOn: isAllowSearch.animation()
+                            isOn: $privacyViewModel.isAllowSearch.animation()
                         ) {}
                             .toggleStyle(CustomToggleStyle())
                     }
@@ -289,12 +195,5 @@ struct PrivacyView: View {
         }
         .navigationBarBackButtonHidden()
         .contentShape(Rectangle())
-    }
-}
-
-struct PrivacyView_Previews: PreviewProvider {
-    static var previews: some View {
-        PrivacyView()
-            .environmentObject(Global.shared)
     }
 }

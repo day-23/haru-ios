@@ -329,7 +329,6 @@ final class ScheduleFormViewModel: ObservableObject {
     
     // MARK: - DI
 
-    private var scheduleService: ScheduleService = .init()
     private var successAction: () -> Void
     var categoryList: [Category]
 
@@ -647,7 +646,7 @@ final class ScheduleFormViewModel: ObservableObject {
     func addSchedule() {
         let schedule = createSchedule()
     
-        scheduleService.addSchedule(schedule) { result in
+        ScheduleService.addSchedule(schedule) { result in
             switch result {
             case .success:
                 // TODO: 추가된 일정을 로컬에서 가지고 있을 수 있나? (반복 일정의 경우 생각해볼 것)
@@ -668,7 +667,7 @@ final class ScheduleFormViewModel: ObservableObject {
         repeatEnd = pivotDate
         let schedule = createSchedule()
         
-        scheduleService.addSchedule(schedule) { result in
+        ScheduleService.addSchedule(schedule) { result in
             switch result {
             case .success:
                 // FIXME: getCurMonthSchList를 호출할 필요가 있나?
@@ -685,7 +684,7 @@ final class ScheduleFormViewModel: ObservableObject {
     func updateSchedule() {
         let schedule = createSchedule()
         
-        scheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+        ScheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
             switch result {
             case .success:
                 // FIXME: getCurMonthSchList를 호출할 필요가 있나?
@@ -704,7 +703,7 @@ final class ScheduleFormViewModel: ObservableObject {
             || (from == .timeTable && at == .front)
         {
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart)
-            scheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+            ScheduleService.updateRepeatFrontSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -717,7 +716,7 @@ final class ScheduleFormViewModel: ObservableObject {
             (from == .timeTable && at == .back)
         {
             let schedule = createRepeatSchedule(preRepeatEnd: prevRepeatEnd)
-            scheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+            ScheduleService.updateRepeatBackSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -729,7 +728,7 @@ final class ScheduleFormViewModel: ObservableObject {
             (from == .timeTable && at == .middle)
         {
             let schedule = createRepeatSchedule(nextRepeatStart: nextRepeatStart, changedDate: tmpRepeatStart)
-            scheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+            ScheduleService.updateRepeatMiddleSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -739,7 +738,7 @@ final class ScheduleFormViewModel: ObservableObject {
             }
         } else {
             let schedule = createSchedule()
-            scheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
+            ScheduleService.updateSchedule(scheduleId: scheduleId, schedule: schedule) { result in
                 switch result {
                 case .success:
                     // FIXME: getCurMonthSchList를 호출할 필요가 있나?
@@ -755,7 +754,7 @@ final class ScheduleFormViewModel: ObservableObject {
      * 일정 삭제하기
      */
     func deleteSchedule() {
-        scheduleService.deleteSchedule(scheduleId: scheduleId ?? "unknown") { result in
+        ScheduleService.deleteSchedule(scheduleId: scheduleId ?? "unknown") { result in
             switch result {
             case .success:
                 self.successAction()
@@ -771,7 +770,7 @@ final class ScheduleFormViewModel: ObservableObject {
     func deleteTargetSchedule(isAfter: Bool = false) {
         // front 호출
         if oriSchedule?.at == .front || at == .front {
-            scheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId ?? "unknown", repeatStart: nextRepeatStart ?? repeatStart) { result in
+            ScheduleService.deleteRepeatFrontSchedule(scheduleId: scheduleId ?? "unknown", repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -783,7 +782,7 @@ final class ScheduleFormViewModel: ObservableObject {
             oriSchedule?.at == .back ||
             at == .back
         {
-            scheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId ?? "unknown", repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
+            ScheduleService.deleteRepeatBackSchedule(scheduleId: scheduleId ?? "unknown", repeatEnd: prevRepeatEnd ?? repeatEnd) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -794,7 +793,7 @@ final class ScheduleFormViewModel: ObservableObject {
         } else if oriSchedule?.at == .middle ||
             at == .middle
         {
-            scheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId ?? "unknown", removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
+            ScheduleService.deleteRepeatMiddleSchedule(scheduleId: scheduleId ?? "unknown", removedDate: repeatStart, repeatStart: nextRepeatStart ?? repeatStart) { result in
                 switch result {
                 case .success:
                     self.successAction()
@@ -803,7 +802,7 @@ final class ScheduleFormViewModel: ObservableObject {
                 }
             }
         } else {
-            scheduleService.deleteSchedule(scheduleId: scheduleId ?? "unknown") { result in
+            ScheduleService.deleteSchedule(scheduleId: scheduleId ?? "unknown") { result in
                 switch result {
                 case .success:
                     self.successAction()

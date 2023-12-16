@@ -31,10 +31,12 @@ struct ProfileService {
         return decoder
     }()
 
+    private init() {}
+
     /**
      * 유저 프로필 정보 가져오기
      */
-    func fetchUserProfile(
+    public static func fetchUserProfile(
         userId: String,
         completion: @escaping (Result<User, Error>) -> Void
     ) {
@@ -43,10 +45,9 @@ struct ProfileService {
             let data: User
         }
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + (Global.shared.user?.id ?? "unknown") + "/info" + "/\(userId)",
-            method: .get,
-            interceptor: ApiRequestInterceptor()
+            method: .get
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -61,7 +62,7 @@ struct ProfileService {
     /**
      * 유저 프로필 변경 사진과 함께
      */
-    func updateUserProfileWithImage(
+    public static func updateUserProfileWithImage(
         userId: String,
         name: String,
         introduction: String,
@@ -83,7 +84,7 @@ struct ProfileService {
             "introduction": introduction,
         ]
 
-        AF.upload(
+        AFProxy.upload(
             multipartFormData: { multipartFormData in
                 if let image = profileImage.jpegData(compressionQuality: 1) {
                     multipartFormData.append(image, withName: "image", fileName: "\(image).jpeg", mimeType: "image/jpeg")
@@ -97,8 +98,7 @@ struct ProfileService {
             to: ProfileService.baseURL + "\(userId)/profile/image",
             usingThreshold: .init(),
             method: .patch,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(data):
@@ -132,7 +132,7 @@ struct ProfileService {
     /**
      * 유저 프로필 사진은 변경하지 않은 경우
      */
-    func updateUserProfileWithoutImage(
+    public static func updateUserProfileWithoutImage(
         userId: String,
         name: String,
         introduction: String,
@@ -152,13 +152,12 @@ struct ProfileService {
             "introduction": introduction,
         ]
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + "\(userId)/profile",
             method: .patch,
             parameters: parameters,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
@@ -173,7 +172,7 @@ struct ProfileService {
     /**
      * 초기에 유저 정보가 입력될 때 호출 (이미지 포함)
      */
-    func initUserProfileWithImage(
+    public static func initUserProfileWithImage(
         userId: String,
         name: String,
         haruId: String,
@@ -194,7 +193,7 @@ struct ProfileService {
             "haruId": haruId,
         ]
 
-        AF.upload(
+        AFProxy.upload(
             multipartFormData: { multipartFormData in
                 if let image = profileImage.jpegData(compressionQuality: 1) {
                     multipartFormData.append(image, withName: "image", fileName: "\(image).jpeg", mimeType: "image/jpeg")
@@ -208,8 +207,7 @@ struct ProfileService {
             to: ProfileService.baseURL + "\(userId)/profile/image/init",
             usingThreshold: .init(),
             method: .patch,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         ).responseDecodable(of: Response.self, decoder: Self.decoder) { response in
             switch response.result {
             case let .success(response):
@@ -223,7 +221,7 @@ struct ProfileService {
     /**
      * 초기에 유저 정보가 입력될 때 호출 (이미지 제외)
      */
-    func initUserProfileWithoutImage(
+    public static func initUserProfileWithoutImage(
         userId: String,
         name: String,
         haruId: String,
@@ -253,13 +251,12 @@ struct ProfileService {
             "haruId": haruId,
         ]
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + "\(userId)/profile/init",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder
@@ -285,7 +282,7 @@ struct ProfileService {
     }
 
     // 아이디 중복 검사
-    func validateHaruId(
+    public static func validateHaruId(
         haruId: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -301,13 +298,12 @@ struct ProfileService {
             "haruId": haruId,
         ]
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + "\(Global.shared.user?.id ?? "unknown")/profile/init/haruId",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder
@@ -339,7 +335,7 @@ struct ProfileService {
         }
     }
 
-    func validateNickname(
+    public static func validateNickname(
         nickname: String,
         completion: @escaping (Result<Bool, Error>) -> Void
     ) {
@@ -355,13 +351,12 @@ struct ProfileService {
             "name": nickname,
         ]
 
-        AF.request(
+        AFProxy.request(
             ProfileService.baseURL + "\(Global.shared.user?.id ?? "unknown")/profile/init/name",
             method: .patch,
             parameters: params,
             encoding: JSONEncoding.default,
-            headers: headers,
-            interceptor: ApiRequestInterceptor()
+            headers: headers
         )
         .responseDecodable(
             of: Response.self, decoder: Self.decoder
