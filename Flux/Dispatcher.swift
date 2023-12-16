@@ -27,7 +27,7 @@ final class FluxDispatcher {
 
     public func get<T, A: Action>(
         for type: T.Type,
-        enumType: A.Type) -> [Store<T, A>]
+        actionType: A.Type) -> [Store<T, A>]
     {
         var res: [Store<T, A>] = []
 
@@ -43,9 +43,9 @@ final class FluxDispatcher {
     public func get<T, A: Action>(
         storeId id: String,
         for type: T.Type,
-        enumType: A.Type) -> Store<T, A>?
+        actionType: A.Type) -> Store<T, A>?
     {
-        for store in get(for: type, enumType: enumType) {
+        for store in get(for: type, actionType: actionType) {
             if store.id == id {
                 return store
             }
